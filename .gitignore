@@ -79,3 +79,11 @@ dashboard/backend/venv/
 *.csv
 *.xlsx
 *_export.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+*.cache
