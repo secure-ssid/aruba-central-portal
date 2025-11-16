@@ -5,6 +5,7 @@ Serves as an API proxy to securely handle authentication and API calls
 """
 
 import sys
+import os
 import json
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
@@ -131,11 +132,34 @@ def track_api_call():
     api_call_tracker['second_window'].append(current_time)
 
 
+SESSION_STORE_FILE = Path(os.environ.get('TOKEN_CACHE_DIR', '/app/data')) / 'sessions.json'
+
+def _load_sessions_from_disk():
+    try:
+        if SESSION_STORE_FILE.exists():
+            data = json.loads(SESSION_STORE_FILE.read_text() or '{}')
+            # Merge into active_sessions without overwriting newer entries
+            for sid, sess in data.items():
+                if sid not in active_sessions:
+                    active_sessions[sid] = sess
+    except Exception as e:
+        logger.debug(f"Could not load sessions from disk: {e}")
+
+def _save_sessions_to_disk():
+    try:
+        SESSION_STORE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        SESSION_STORE_FILE.write_text(json.dumps(active_sessions))
+    except Exception as e:
+        logger.debug(f"Could not save sessions to disk: {e}")
+
 def require_session(f):
     """Decorator to require valid session."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         session_id = request.headers.get('X-Session-ID')
+        if not session_id or session_id not in active_sessions:
+            # Try to load from disk in case another worker created the session
+            _load_sessions_from_disk()
         if not session_id or session_id not in active_sessions:
             return jsonify({"error": "Invalid or expired session"}), 401
 
@@ -147,6 +171,8 @@ def require_session(f):
 
         # Refresh session
         session['expires'] = time.time() + SESSION_TIMEOUT
+        # Persist refresh time for cross-worker visibility
+        _save_sessions_to_disk()
 
         # Track API call for rate limiting monitoring
         track_api_call()
@@ -270,6 +296,7 @@ def login():
 
         session_id = secrets.token_urlsafe(32)
         active_sessions[session_id] = {'created': time.time(), 'expires': time.time() + SESSION_TIMEOUT}
+        _save_sessions_to_disk()
 
         logger.info(f"Session created, token expires in {token_info.get('expires_in_minutes', 0)}m")
 
@@ -1243,16 +1270,26 @@ def get_traffic_analysis():
         params = {}
         if request.args.get('app_name'):
             params['app_name'] = request.args.get('app_name')
-        if request.args.get('site_id'):
-            params['site_id'] = request.args.get('site_id')
+        # Normalize site id
+        site_id = request.args.get('site_id', request.args.get('site-id'))
+        if site_id:
+            params['site-id'] = site_id
+        # Time range
         if request.args.get('from_timestamp'):
             params['from_timestamp'] = request.args.get('from_timestamp')
         if request.args.get('to_timestamp'):
             params['to_timestamp'] = request.args.get('to_timestamp')
+        if request.args.get('timeframe'):
+            params['timeframe'] = request.args.get('timeframe')
 
         response = aruba_client.get('/monitoring/v1/app_analytics', params=params)
         return jsonify(response)
     except Exception as e:
+        # Gracefully handle 400/404 as empty series (broad match to be robust)
+        err_text = str(e)
+        if '404' in err_text or '400' in err_text or 'Not Found' in err_text or 'Bad Request' in err_text:
+            logger.warning(f"Traffic analysis error treated as empty: {err_text[:200]}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching traffic analysis: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1278,6 +1315,11 @@ def get_app_visibility():
         response = aruba_client.get('/monitoring/v1/app_visibility', params=params)
         return jsonify(response)
     except Exception as e:
+        # Gracefully handle 400/404 as empty (broad match to be robust)
+        err_text = str(e)
+        if '404' in err_text or '400' in err_text or 'Not Found' in err_text or 'Bad Request' in err_text:
+            logger.warning(f"App visibility error treated as empty: {err_text[:200]}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching app visibility: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1297,11 +1339,16 @@ def troubleshoot_ping():
             return jsonify({"error": "device_serial and target are required"}), 400
 
         # Use tools API for ping
-        response = aruba_client.post(
-            f'/device-management/v1/device/{device_serial}/action/ping',
-            json={"host": target}
-        )
-        return jsonify(response)
+        try:
+            response = aruba_client.post(
+                f'/device-management/v1/device/{device_serial}/action/ping',
+                json={"host": target}
+            )
+            return jsonify(response)
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Ping troubleshooting error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1319,11 +1366,16 @@ def troubleshoot_traceroute():
         if not device_serial or not target:
             return jsonify({"error": "device_serial and target are required"}), 400
 
-        response = aruba_client.post(
-            f'/device-management/v1/device/{device_serial}/action/traceroute',
-            json={"host": target}
-        )
-        return jsonify(response)
+        try:
+            response = aruba_client.post(
+                f'/device-management/v1/device/{device_serial}/action/traceroute',
+                json={"host": target}
+            )
+            return jsonify(response)
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Traceroute troubleshooting error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1337,12 +1389,14 @@ def get_device_logs():
         device_serial = request.args.get('serial')
         if not device_serial:
             return jsonify({"error": "Device serial required"}), 400
-
-        response = aruba_client.get(f'/device-management/v1/device/{device_serial}/logs')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/device-management/v1/device/{device_serial}/logs')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching device logs: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/troubleshoot/client-session', methods=['GET'])
@@ -1353,12 +1407,14 @@ def get_client_session():
         mac_address = request.args.get('mac')
         if not mac_address:
             return jsonify({"error": "MAC address required"}), 400
-
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"session": None})
     except Exception as e:
         logger.error(f"Error fetching client session: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"session": None})
 
 
 @app.route('/api/troubleshoot/ap-diagnostics', methods=['GET'])
@@ -1369,12 +1425,14 @@ def get_ap_diagnostics():
         serial = request.args.get('serial')
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
-
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching AP diagnostics: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/troubleshoot/ap-radio-stats', methods=['GET'])
@@ -1385,12 +1443,14 @@ def get_ap_radio_stats():
         serial = request.args.get('serial')
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
-
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/radio-stats')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/radio-stats')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching AP radio stats: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/troubleshoot/ap-interference', methods=['GET'])
@@ -1401,12 +1461,14 @@ def get_ap_interference():
         serial = request.args.get('serial')
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
-
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/interference')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/interference')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching AP interference: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/troubleshoot/client-connectivity', methods=['POST'])
@@ -1477,17 +1539,17 @@ def get_switch_port_status():
         if not serial:
             return jsonify({"error": "Switch serial required"}), 400
 
-        if port:
-            # Get specific port details
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces/{port}')
-        else:
-            # Get all interfaces
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
-
-        return jsonify(response)
+        try:
+            if port:
+                response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces/{port}')
+            else:
+                response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
+            return jsonify(response)
+        except Exception:
+            return jsonify({"interfaces": []})
     except Exception as e:
         logger.error(f"Error fetching switch port status: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"interfaces": []})
 
 
 # ============= Alerts and Events Endpoints =============
@@ -1560,6 +1622,11 @@ def get_events():
         response = aruba_client.get('/monitoring/v1/events', params=params)
         return jsonify(response)
     except Exception as e:
+        # Graceful empty on 400/404
+        err = str(e)
+        if '404' in err or '400' in err or 'Not Found' in err or 'Bad Request' in err:
+            logger.warning(f"Events endpoint returned client error; returning empty list: {err[:200]}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching events: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1572,8 +1639,15 @@ def get_firmware_versions():
     """Get available firmware versions."""
     try:
         device_type = request.args.get('device_type', 'IAP')
-        response = aruba_client.get(f'/firmware/v1/versions/{device_type}')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/firmware/v1/versions/{device_type}')
+            return jsonify(response)
+        except Exception as fw_err:
+            # Fallback to new Central inventory-based versions (if available) or return empty
+            if '404' in str(fw_err) or 'Not Found' in str(fw_err):
+                logger.warning("Firmware versions API not found; returning empty list")
+                return jsonify({"versions": [], "count": 0})
+            raise fw_err
     except Exception as e:
         logger.error(f"Error fetching firmware versions: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1632,8 +1706,15 @@ def get_bandwidth_analytics():
     """Get bandwidth usage analytics."""
     try:
         timeframe = request.args.get('timeframe', '1d')
-        response = aruba_client.get(f'/monitoring/v1/networks/bandwidth_usage?timeframe={timeframe}')
-        return jsonify(response)
+        params = {'timeframe': timeframe}
+        try:
+            response = aruba_client.get('/monitoring/v1/networks/bandwidth_usage', params=params)
+            return jsonify(response)
+        except Exception as aerr:
+            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+                logger.warning("Bandwidth analytics not available; returning empty result")
+                return jsonify({"series": [], "count": 0})
+            raise aerr
     except Exception as e:
         logger.error(f"Error fetching bandwidth analytics: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1645,8 +1726,15 @@ def get_client_count_analytics():
     """Get client count trends over time."""
     try:
         timeframe = request.args.get('timeframe', '1d')
-        response = aruba_client.get(f'/monitoring/v1/clients/count?timeframe={timeframe}')
-        return jsonify(response)
+        params = {'timeframe': timeframe}
+        try:
+            response = aruba_client.get('/monitoring/v1/clients/count', params=params)
+            return jsonify(response)
+        except Exception as aerr:
+            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+                logger.warning("Client-count analytics not available; returning empty result")
+                return jsonify({"series": [], "count": 0})
+            raise aerr
     except Exception as e:
         logger.error(f"Error fetching client count analytics: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1657,8 +1745,14 @@ def get_client_count_analytics():
 def get_device_uptime():
     """Get device uptime statistics."""
     try:
-        response = aruba_client.get('/monitoring/v1/devices/uptime')
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/monitoring/v1/devices/uptime')
+            return jsonify(response)
+        except Exception as aerr:
+            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+                logger.warning("Device uptime not available; returning empty list")
+                return jsonify({"items": [], "count": 0})
+            raise aerr
     except Exception as e:
         logger.error(f"Error fetching device uptime: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1669,8 +1763,14 @@ def get_device_uptime():
 def get_ap_performance():
     """Get AP performance metrics."""
     try:
-        response = aruba_client.get('/monitoring/v1/aps/performance')
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/monitoring/v1/aps/performance')
+            return jsonify(response)
+        except Exception as aerr:
+            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+                logger.warning("AP performance not available; returning empty list")
+                return jsonify({"items": [], "count": 0})
+            raise aerr
     except Exception as e:
         logger.error(f"Error fetching AP performance: {e}")
         return jsonify({"error": str(e)}), 500
@@ -2047,11 +2147,18 @@ def show_run_config():
             return jsonify({"error": "Device serial required"}), 400
 
         # Fetch running config
-        response = aruba_client.get(f'/configuration/v1/devices/{serial}/configuration')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/configuration/v1/devices/{serial}/configuration')
+            return jsonify(response)
+        except Exception as e:
+            # Prefer 404 for missing/unsupported; fall back to empty payload
+            err = str(e)
+            if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err:
+                return jsonify({"configuration": "", "error": "Not available"}), 404
+            return jsonify({"configuration": ""})
     except Exception as e:
         logger.error(f"Show run config error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"configuration": ""})
 
 
 @app.route('/api/troubleshoot/show-tech-support', methods=['GET'])
@@ -2063,11 +2170,17 @@ def show_tech_support():
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        response = aruba_client.get(f'/troubleshooting/v1/devices/{serial}/tech-support')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/troubleshooting/v1/devices/{serial}/tech-support')
+            return jsonify(response)
+        except Exception as e:
+            err = str(e)
+            if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err:
+                return jsonify({"items": [], "count": 0, "error": "Not available"}), 404
+            return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Show tech support error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/troubleshoot/show-version', methods=['GET'])
@@ -2110,11 +2223,17 @@ def show_interfaces():
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
-        return jsonify(response)
+        try:
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
+            return jsonify(response)
+        except Exception as e:
+            err = str(e)
+            if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err:
+                return jsonify({"interfaces": [], "count": 0, "error": "Not available"}), 404
+            return jsonify({"interfaces": [], "count": 0})
     except Exception as e:
         logger.error(f"Show interfaces error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"interfaces": [], "count": 0})
 
 
 @app.route('/api/config/export', methods=['GET'])
@@ -2163,6 +2282,15 @@ def configure_credentials():
         client_secret = data.get('client_secret', '').strip()
         customer_id = data.get('customer_id', '').strip()
         base_url = data.get('base_url', 'https://internal.api.central.arubanetworks.com').strip()
+        # Optional GreenLake RBAC details
+        rbac = data.get('rbac') or None
+        rbac_client_id = ''
+        rbac_client_secret = ''
+        gl_api_base = ''
+        if isinstance(rbac, dict):
+            rbac_client_id = (rbac.get('client_id') or '').strip()
+            rbac_client_secret = (rbac.get('client_secret') or '').strip()
+            gl_api_base = (rbac.get('api_base') or 'https://global.api.greenlake.hpe.com').strip()
 
         # Validate inputs
         if not all([client_id, client_secret, customer_id]):
@@ -2180,6 +2308,11 @@ ARUBA_BASE_URL={base_url}
 ARUBA_CLIENT_ID={client_id}
 ARUBA_CLIENT_SECRET={client_secret}
 ARUBA_CUSTOMER_ID={customer_id}
+#
+# Optional HPE GreenLake Platform RBAC credentials (used for MSP/tenant management)
+GL_RBAC_CLIENT_ID={rbac_client_id}
+GL_RBAC_CLIENT_SECRET={rbac_client_secret}
+GL_API_BASE={gl_api_base}
 """
 
         # Try to write to .env file with proper error handling
@@ -2217,6 +2350,10 @@ ARUBA_CUSTOMER_ID={customer_id}
             os.environ['ARUBA_CLIENT_ID'] = client_id
             os.environ['ARUBA_CLIENT_SECRET'] = client_secret
             os.environ['ARUBA_CUSTOMER_ID'] = customer_id
+            # Optional RBAC values
+            os.environ['GL_RBAC_CLIENT_ID'] = rbac_client_id
+            os.environ['GL_RBAC_CLIENT_SECRET'] = rbac_client_secret
+            os.environ['GL_API_BASE'] = gl_api_base or 'https://global.api.greenlake.hpe.com'
             logger.info("Credentials set in environment variables directly")
 
         # Reinitialize client with new credentials
@@ -2242,6 +2379,7 @@ ARUBA_CUSTOMER_ID={customer_id}
                 'expires': time.time() + SESSION_TIMEOUT
             }
             logger.info("Session created automatically after credential configuration")
+            _save_sessions_to_disk()
 
             return jsonify({
                 "success": True,
@@ -2263,6 +2401,433 @@ ARUBA_CUSTOMER_ID={customer_id}
 # ============= Workspace Management Endpoints =============
 # ============= Reporting Endpoints =============
 
+# ============= GreenLake Identity (RBAC) Proxy Endpoints =============
+
+def _get_greenlake_client():
+    """Create a CentralAPIClient pointing to GreenLake Identity base with RBAC token manager."""
+    try:
+        gl_client_id = os.environ.get('GL_RBAC_CLIENT_ID', '').strip()
+        gl_client_secret = os.environ.get('GL_RBAC_CLIENT_SECRET', '').strip()
+        gl_api_base = (os.environ.get('GL_API_BASE') or 'https://global.api.greenlake.hpe.com').strip()
+        if not gl_client_id or not gl_client_secret:
+            raise ValueError("GreenLake RBAC credentials not configured")
+        gl_tm = TokenManager(
+            client_id=gl_client_id,
+            client_secret=gl_client_secret,
+            cache_file=".token_cache_greenlake.json",
+        )
+        return CentralAPIClient(base_url=gl_api_base, token_manager=gl_tm)
+    except Exception as e:
+        logger.error(f"Failed to initialize GreenLake client: {e}")
+        return None
+
+
+@app.route('/api/greenlake/users', methods=['GET'])
+@require_session
+def greenlake_list_users():
+    """List users from HPE GreenLake Identity service."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        # Map query params
+        params = {}
+        filter_str = request.args.get('filter')
+        if filter_str:
+            params['filter'] = filter_str
+        offset = request.args.get('offset')
+        limit = request.args.get('limit')
+        if offset is not None:
+            params['offset'] = offset
+        if limit is not None:
+            params['limit'] = limit
+        data = client.get('/identity/v1/users', params=params)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake users fetch error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/users/invite', methods=['POST'])
+@require_session
+def greenlake_invite_user():
+    """Invite a user to the GreenLake workspace."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        data = request.get_json() or {}
+        payload = {
+            "email": data.get("email"),
+            "sendWelcomeEmail": bool(data.get("sendWelcomeEmail", True)),
+        }
+        resp = client.post('/identity/v1/users', data=payload)
+        return jsonify(resp), 201
+    except Exception as e:
+        logger.error(f"GreenLake invite user error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/users/<user_id>', methods=['GET', 'PUT', 'DELETE'])
+@require_session
+def greenlake_user_detail(user_id):
+    """Get, update, or delete a GreenLake user."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'GET':
+            data = client.get(f'/identity/v1/users/{user_id}')
+            return jsonify(data)
+        if request.method == 'PUT':
+            payload = request.get_json() or {}
+            # Accept language and idleTimeout per API doc
+            body = {}
+            if 'language' in payload:
+                body['language'] = payload['language']
+            if 'idleTimeout' in payload:
+                body['idleTimeout'] = payload['idleTimeout']
+            data = client.put(f'/identity/v1/users/{user_id}', data=body)
+            return jsonify(data)
+        if request.method == 'DELETE':
+            data = client.delete(f'/identity/v1/users/{user_id}')
+            return jsonify(data), 204
+    except Exception as e:
+        logger.error(f"GreenLake user detail error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/devices', methods=['GET'])
+@require_session
+def greenlake_list_devices():
+    """List devices from HPE GreenLake Device Management."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        params = {}
+        # pagination
+        offset = request.args.get('offset')
+        limit = request.args.get('limit')
+        if offset is not None:
+            params['offset'] = offset
+        if limit is not None:
+            params['limit'] = limit
+        # v1 devices list
+        data = client.get('/devices/v1/devices', params=params)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake devices fetch error: {e}")
+        return jsonify({"error": str(e)}), 500
+@app.route('/api/greenlake/devices', methods=['POST', 'PATCH'])
+@require_session
+def greenlake_modify_devices():
+    """Create or update devices via GreenLake Device Management."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        if request.method == 'POST':
+            data = client.post('/devices/v1/devices', data=payload)
+            return jsonify(data), 201
+        if request.method == 'PATCH':
+            data = client.put('/devices/v1/devices', data=payload) if False else client.post('/devices/v1/devices', data=payload)  # placeholder if API expects PATCH; central client supports put/post
+            return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake devices modify error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/tags', methods=['GET'])
+@require_session
+def greenlake_list_tags():
+    """List tags from HPE GreenLake Tags service."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        params = {}
+        data = client.get('/tags/v1/tags', params=params)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake tags fetch error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/tags', methods=['POST'])
+@require_session
+def greenlake_create_tag():
+    """Create a tag (if supported by Tags v1)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        data = client.post('/tags/v1/tags', data=payload)
+        return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake create tag error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/tags/<tag_id>', methods=['PATCH'])
+@require_session
+def greenlake_update_tag(tag_id):
+    """Update a tag (if supported by Tags v1)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        data = client.put(f'/tags/v1/tags/{tag_id}', data=payload)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake update tag error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/subscriptions', methods=['GET'])
+@require_session
+def greenlake_list_subscriptions():
+    """List subscriptions from HPE GreenLake Subscription Management."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        params = {}
+        offset = request.args.get('offset')
+        limit = request.args.get('limit')
+        if offset is not None:
+            params['offset'] = offset
+        if limit is not None:
+            params['limit'] = limit
+        data = client.get('/subscriptions/v1/subscriptions', params=params)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake subscriptions fetch error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/subscriptions', methods=['POST'])
+@require_session
+def greenlake_create_subscription():
+    """Create subscription (if supported by Subscriptions v1)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        data = client.post('/subscriptions/v1/subscriptions', data=payload)
+        return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake create subscription error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/subscriptions/<sub_id>', methods=['PATCH'])
+@require_session
+def greenlake_update_subscription(sub_id):
+    """Update subscription (if supported by Subscriptions v1)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        data = client.put(f'/subscriptions/v1/subscriptions/{sub_id}', data=payload)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake update subscription error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/workspaces', methods=['GET'])
+@require_session
+def greenlake_list_workspaces():
+    """List MSP tenants/workspaces from HPE GreenLake Workspaces."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        params = {}
+        try:
+            data = client.get('/workspaces/v1/msp-tenants', params=params)
+            return jsonify(data)
+        except Exception as e:
+            err = str(e)
+            if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err or '403' in err or 'Unauthorized' in err:
+                return jsonify({"items": [], "count": 0, "error": "GreenLake Workspaces not available"}), 404
+            return jsonify({"items": [], "count": 0})
+    except Exception as e:
+        logger.error(f"GreenLake workspaces fetch error: {e}")
+        return jsonify({"items": [], "count": 0})
+
+@app.route('/api/greenlake/locations', methods=['GET'])
+@require_session
+def greenlake_list_locations():
+    """List locations from HPE GreenLake Locations service."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        params = {}
+        offset = request.args.get('offset')
+        limit = request.args.get('limit')
+        if offset is not None:
+            params['offset'] = offset
+        if limit is not None:
+            params['limit'] = limit
+        try:
+            data = client.get('/locations/v1/locations', params=params)
+            return jsonify(data)
+        except Exception as e:
+            err = str(e)
+            if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err or '403' in err or 'Unauthorized' in err:
+                return jsonify({"items": [], "count": 0, "error": "GreenLake Locations not available"}), 404
+            return jsonify({"items": [], "count": 0})
+    except Exception as e:
+        logger.error(f"GreenLake locations fetch error: {e}")
+        return jsonify({"items": [], "count": 0})
+@app.route('/api/greenlake/locations', methods=['POST'])
+@require_session
+def greenlake_create_location():
+    """Create a location (GreenLake Locations)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        data = client.post('/locations/v1/locations', data=payload)
+        return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake create location error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/locations/<location_id>', methods=['PATCH', 'DELETE'])
+@require_session
+def greenlake_update_delete_location(location_id):
+    """Update or delete a location."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'PATCH':
+            payload = request.get_json() or {}
+            data = client.put(f'/locations/v1/locations/{location_id}', data=payload)
+            return jsonify(data)
+        if request.method == 'DELETE':
+            data = client.delete(f'/locations/v1/locations/{location_id}')
+            return jsonify(data), 204
+    except Exception as e:
+        logger.error(f"GreenLake update/delete location error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# ============= GreenLake SCIM (Users/Groups) =============
+
+@app.route('/api/greenlake/scim/users', methods=['GET', 'POST'])
+@require_session
+def greenlake_scim_users():
+    """List or create SCIM users."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'GET':
+            params = request.args.to_dict()
+            try:
+                data = client.get('/identity/v2beta1/scim/v2/Users', params=params)
+                return jsonify(data)
+            except Exception as e:
+                err = str(e)
+                if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err or '403' in err or 'Unauthorized' in err:
+                    return jsonify({"Resources": [], "totalResults": 0, "error": "SCIM Users not available"}), 404
+                return jsonify({"Resources": [], "totalResults": 0})
+        if request.method == 'POST':
+            payload = request.get_json() or {}
+            data = client.post('/identity/v2beta1/scim/v2/Users', data=payload)
+            return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake SCIM users error: {e}")
+        return jsonify({"Resources": [], "totalResults": 0})
+
+
+@app.route('/api/greenlake/scim/users/<user_id>', methods=['GET', 'PATCH', 'DELETE'])
+@require_session
+def greenlake_scim_user_detail(user_id):
+    """Get, update, or delete a SCIM user."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'GET':
+            data = client.get(f'/identity/v2beta1/scim/v2/Users/{user_id}')
+            return jsonify(data)
+        if request.method == 'PATCH':
+            payload = request.get_json() or {}
+            data = client.put(f'/identity/v2beta1/scim/v2/Users/{user_id}', data=payload)
+            return jsonify(data)
+        if request.method == 'DELETE':
+            data = client.delete(f'/identity/v2beta1/scim/v2/Users/{user_id}')
+            return jsonify(data), 204
+    except Exception as e:
+        logger.error(f"GreenLake SCIM user detail error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/greenlake/scim/groups', methods=['GET', 'POST'])
+@require_session
+def greenlake_scim_groups():
+    """List or create SCIM groups."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'GET':
+            params = request.args.to_dict()
+            try:
+                data = client.get('/identity/v2beta1/scim/v2/Groups', params=params)
+                return jsonify(data)
+            except Exception as e:
+                err = str(e)
+                if '404' in err or 'Not Found' in err or '400' in err or 'Bad Request' in err or '403' in err or 'Unauthorized' in err:
+                    return jsonify({"Resources": [], "totalResults": 0, "error": "SCIM Groups not available"}), 404
+                return jsonify({"Resources": [], "totalResults": 0})
+        if request.method == 'POST':
+            payload = request.get_json() or {}
+            data = client.post('/identity/v2beta1/scim/v2/Groups', data=payload)
+            return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake SCIM groups error: {e}")
+        return jsonify({"Resources": [], "totalResults": 0})
+
+
+@app.route('/api/greenlake/scim/groups/<group_id>', methods=['GET', 'PATCH', 'DELETE'])
+@require_session
+def greenlake_scim_group_detail(group_id):
+    """Get, update, or delete a SCIM group."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        if request.method == 'GET':
+            data = client.get(f'/identity/v2beta1/scim/v2/Groups/{group_id}')
+            return jsonify(data)
+        if request.method == 'PATCH':
+            payload = request.get_json() or {}
+            data = client.put(f'/identity/v2beta1/scim/v2/Groups/{group_id}', data=payload)
+            return jsonify(data)
+        if request.method == 'DELETE':
+            data = client.delete(f'/identity/v2beta1/scim/v2/Groups/{group_id}')
+            return jsonify(data), 204
+    except Exception as e:
+        logger.error(f"GreenLake SCIM group detail error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/greenlake/scim/users/<user_id>/groups', methods=['GET'])
+@require_session
+def greenlake_scim_user_groups(user_id):
+    """List groups for a user (SCIM extensions)."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        data = client.get(f'/identity/v2beta1/scim/v2/extensions/Users/{user_id}/groups')
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake SCIM user groups error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/reporting/top-aps-by-wireless-usage', methods=['GET'])
 @require_session
 def get_top_aps_by_wireless_usage():
@@ -2272,8 +2837,18 @@ def get_top_aps_by_wireless_usage():
         count = request.args.get('count', 10)
         from_timestamp = request.args.get('from_timestamp')
         to_timestamp = request.args.get('to_timestamp')
+        timeframe = request.args.get('timeframe', '1d')
 
-        params = {'count': count}
+        # Auto-select first site if not provided
+        if not site_id:
+            try:
+                sites = aruba_client.get('/central/v2/sites')
+                if isinstance(sites, dict) and sites.get('sites'):
+                    site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
+            except Exception as _:
+                pass
+
+        params = {'count': count, 'timeframe': timeframe}
         if site_id:
             params['site-id'] = site_id
         if from_timestamp:
@@ -2281,11 +2856,18 @@ def get_top_aps_by_wireless_usage():
         if to_timestamp:
             params['to_timestamp'] = to_timestamp
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-wireless-usage', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-wireless-usage', params=params)
+            return jsonify(response)
+        except Exception:
+            try:
+                response = aruba_client.get('/reporting/v1/top-aps-by-wireless-usage', params=params)
+                return jsonify(response)
+            except Exception:
+                return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching top APs by wireless usage: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/reporting/top-aps-by-client-count', methods=['GET'])
@@ -2295,16 +2877,33 @@ def get_top_aps_by_client_count():
     try:
         site_id = request.args.get('site_id', request.args.get('site-id'))
         count = request.args.get('count', 10)
+        timeframe = request.args.get('timeframe', '1d')
 
-        params = {'count': count}
+        # Auto-select first site if not provided
+        if not site_id:
+            try:
+                sites = aruba_client.get('/central/v2/sites')
+                if isinstance(sites, dict) and sites.get('sites'):
+                    site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
+            except Exception as _:
+                pass
+
+        params = {'count': count, 'timeframe': timeframe}
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-client-count', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-client-count', params=params)
+            return jsonify(response)
+        except Exception:
+            try:
+                response = aruba_client.get('/reporting/v1/top-aps-by-client-count', params=params)
+                return jsonify(response)
+            except Exception:
+                return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching top APs by client count: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/reporting/network-usage', methods=['GET'])
@@ -2315,15 +2914,31 @@ def get_network_usage_report():
         site_id = request.args.get('site_id', request.args.get('site-id'))
         timeframe = request.args.get('timeframe', '1d')
 
+        # Auto-select first site if not provided
+        if not site_id:
+            try:
+                sites = aruba_client.get('/central/v2/sites')
+                if isinstance(sites, dict) and sites.get('sites'):
+                    site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
+            except Exception as _:
+                pass
+
         params = {'timeframe': timeframe}
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/network-usage', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/network-monitoring/v1alpha1/network-usage', params=params)
+            return jsonify(response)
+        except Exception:
+            try:
+                response = aruba_client.get('/reporting/v1/network-usage', params=params)
+                return jsonify(response)
+            except Exception:
+                return jsonify({"series": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching network usage report: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"series": [], "count": 0})
 
 
 @app.route('/api/reporting/device-inventory', methods=['GET'])
@@ -2332,10 +2947,16 @@ def get_device_inventory_report():
     """Get device inventory report with detailed statistics."""
     try:
         # Get all devices
-        devices_response = aruba_client.get('/network-monitoring/v1alpha1/devices')
+        try:
+            devices_response = aruba_client.get('/network-monitoring/v1alpha1/devices')
+        except Exception:
+            try:
+                devices_response = aruba_client.get('/reporting/v1/device-inventory')
+            except Exception:
+                return jsonify({"devices": [], "count": 0})
 
         if 'items' not in devices_response:
-            return jsonify({"error": "No devices data available"}), 500
+            return jsonify({"devices": [], "count": 0})
 
         devices = devices_response['items']
 
@@ -2363,7 +2984,7 @@ def get_device_inventory_report():
         return jsonify(inventory)
     except Exception as e:
         logger.error(f"Error generating device inventory report: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"devices": [], "count": 0})
 
 
 @app.route('/api/reporting/wireless-health', methods=['GET'])
@@ -2377,11 +2998,18 @@ def get_wireless_health_report():
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/wireless-health', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/network-monitoring/v1alpha1/wireless-health', params=params)
+            return jsonify(response)
+        except Exception:
+            try:
+                response = aruba_client.get('/reporting/v1/wireless-health', params=params)
+                return jsonify(response)
+            except Exception:
+                return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching wireless health report: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 @app.route('/api/reporting/top-ssids-by-usage', methods=['GET'])
@@ -2396,11 +3024,18 @@ def get_top_ssids_by_usage():
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/top-ssids-by-usage', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/network-monitoring/v1alpha1/top-ssids-by-usage', params=params)
+            return jsonify(response)
+        except Exception:
+            try:
+                response = aruba_client.get('/reporting/v1/top-ssids-by-usage', params=params)
+                return jsonify(response)
+            except Exception:
+                return jsonify({"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching top SSIDs by usage: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"items": [], "count": 0})
 
 
 # ============= Services Endpoints =============
@@ -2474,13 +3109,25 @@ def get_services_health():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/health', methods=['GET'])
+def get_health():
+    """Lightweight unauthenticated health endpoint for frontend checks."""
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route('/api/services/subscriptions', methods=['GET'])
 @require_session
 def get_service_subscriptions():
     """Get service subscriptions and licenses."""
     try:
-        response = aruba_client.get('/platform/licensing/v1/subscriptions')
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/platform/licensing/v1/subscriptions')
+            return jsonify(response)
+        except Exception as serr:
+            if '404' in str(serr) or '400' in str(serr) or 'Not Found' in str(serr) or 'Bad Request' in str(serr):
+                logger.warning("Service subscriptions not available; returning empty list")
+                return jsonify({"subscriptions": [], "count": 0})
+            raise serr
     except Exception as e:
         logger.error(f"Error fetching service subscriptions: {e}")
         return jsonify({"error": str(e)}), 500
@@ -2499,8 +3146,14 @@ def get_service_audit_logs():
             'offset': offset
         }
 
-        response = aruba_client.get('/platform/auditlogs/v1/logs', params=params)
-        return jsonify(response)
+        try:
+            response = aruba_client.get('/platform/auditlogs/v1/logs', params=params)
+            return jsonify(response)
+        except Exception as aerr:
+            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+                logger.warning("Audit logs not available; returning empty list")
+                return jsonify({"logs": [], "count": 0, "offset": int(offset)})
+            raise aerr
     except Exception as e:
         logger.error(f"Error fetching audit logs: {e}")
         return jsonify({"error": str(e)}), 500
@@ -3036,14 +3689,27 @@ def get_switches_monitoring():
     """Get list of switches with monitoring data."""
     try:
         params = {}
-        if request.args.get('site_id'):
-            params['site_id'] = request.args.get('site_id')
+        # Normalize site id key expected by upstream API
+        site_id = request.args.get('site_id', request.args.get('site-id'))
+        if site_id:
+            params['site-id'] = site_id
+        # Optional timeframe passthrough (e.g., 1h, 1d, 7d)
+        if request.args.get('timeframe'):
+            params['timeframe'] = request.args.get('timeframe')
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
         response = aruba_client.get('/network-monitoring/v1alpha1/switches', params=params)
         return jsonify(response)
     except Exception as e:
+        # Gracefully handle 400/404 as empty list
+        try:
+            from requests.exceptions import HTTPError
+            if isinstance(e, HTTPError) and getattr(e, 'response', None) is not None and e.response.status_code in (400, 404):
+                logger.warning(f"Switches monitoring returned {e.response.status_code}; returning empty result")
+                return jsonify({"count": 0, "items": []})
+        except Exception:
+            pass
         logger.error(f"Error fetching switches monitoring: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -3555,14 +4221,33 @@ def get_applications_monitoring():
     """Get application visibility data from network monitoring API."""
     try:
         params = {}
-        if request.args.get('site_id'):
-            params['site_id'] = request.args.get('site_id')
+        # Normalize site id key expected by upstream API
+        site_id = request.args.get('site_id', request.args.get('site-id'))
+        if site_id:
+            params['site-id'] = site_id
+        # Optional timeframe passthrough (e.g., 1h, 1d, 7d)
+        if request.args.get('timeframe'):
+            params['timeframe'] = request.args.get('timeframe')
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
         response = aruba_client.get('/network-monitoring/v1alpha1/applications', params=params)
         return jsonify(response)
     except Exception as e:
+        # If upstream provided HTTP details, pass through status and message for easier debugging
+        try:
+            import requests
+            if isinstance(e, requests.HTTPError) and e.response is not None:
+                status = e.response.status_code
+                text = e.response.text or ''
+                logger.error(f"Upstream error applications: {status} {text[:300]}")
+                # Try to forward JSON if present
+                try:
+                    return jsonify(e.response.json()), status
+                except Exception:
+                    return jsonify({"error": text}), status
+        except Exception:
+            pass
         logger.error(f"Error fetching application visibility: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -3573,14 +4258,74 @@ def get_top_applications():
     """Get top applications by bandwidth usage."""
     try:
         params = {}
-        if request.args.get('site_id'):
-            params['site_id'] = request.args.get('site_id')
+        # Normalize site id key expected by upstream API
+        site_id = request.args.get('site_id', request.args.get('site-id'))
+        if site_id:
+            params['site-id'] = site_id
+        # Optional timeframe passthrough (e.g., 1h, 1d, 7d)
+        if request.args.get('timeframe'):
+            params['timeframe'] = request.args.get('timeframe')
+        limit = 10
         if request.args.get('limit'):
-            params['limit'] = request.args.get('limit', 10)
+            try:
+                limit = int(request.args.get('limit', 10))
+            except Exception:
+                limit = 10
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/applications/top', params=params)
-        return jsonify(response)
+        # Derive top applications from the generic applications API
+
+        # Fallback logic
+        try:
+            apps_response = aruba_client.get('/network-monitoring/v1alpha1/applications', params=params)
+        except Exception as apps_err:
+            try:
+                from requests.exceptions import HTTPError
+                if isinstance(apps_err, HTTPError) and getattr(apps_err, 'response', None) is not None and apps_err.response.status_code in (400, 404):
+                    logger.warning(f"Applications endpoint unavailable/invalid params (status {apps_err.response.status_code}); returning empty list")
+                    return jsonify({"count": 0, "items": []})
+            except Exception:
+                pass
+            raise apps_err
+
+        # Extract list safely
+        if isinstance(apps_response, dict):
+            app_list = apps_response.get('applications') or apps_response.get('items') or []
+        elif isinstance(apps_response, list):
+            app_list = apps_response
+        else:
+            app_list = []
+
+        def app_metric(app: dict) -> float:
+            # Try common fields; default to 0 if missing or non-numeric
+            candidates = [
+                app.get('total_bytes'),
+                app.get('bytes'),
+                app.get('usage_bytes'),
+                app.get('bandwidth_bps'),
+            ]
+            numeric = [c for c in candidates if isinstance(c, (int, float))]
+            return max(numeric) if numeric else 0.0
+
+        # Sort and slice
+        sorted_apps = sorted(app_list, key=app_metric, reverse=True)[:limit]
+        return jsonify({
+            "count": len(sorted_apps),
+            "items": sorted_apps
+        })
     except Exception as e:
+        # If upstream provided HTTP details, pass through status and message for easier debugging
+        try:
+            import requests
+            if isinstance(e, requests.HTTPError) and e.response is not None:
+                status = e.response.status_code
+                text = e.response.text or ''
+                logger.error(f"Upstream error applications/top: {status} {text[:300]}")
+                try:
+                    return jsonify(e.response.json()), status
+                except Exception:
+                    return jsonify({"error": text}), status
+        except Exception:
+            pass
         logger.error(f"Error fetching top applications: {e}")
         return jsonify({"error": str(e)}), 500
 

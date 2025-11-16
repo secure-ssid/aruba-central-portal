@@ -87,3 +87,16 @@ temp/
 *.temp
 .cache/
 *.cache
+
+# Docker
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+*.dockerfile.local
+build-docker.sh
+
+# Docker volumes and data
+data/
+*.db
+*.sqlite
+*.sqlite3

@@ -28,6 +28,11 @@ import AlertsPage from './pages/AlertsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import FirmwarePage from './pages/FirmwarePage';
 import NetworkMonitorPage from './pages/NetworkMonitorPage';
+import GLDevicesPage from './pages/GLDevicesPage';
+import GLLocationsPage from './pages/GLLocationsPage';
+import GLTagsPage from './pages/GLTagsPage';
+import GLSubscriptionsPage from './pages/GLSubscriptionsPage';
+import GLWorkspacesPage from './pages/GLWorkspacesPage';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -247,6 +252,9 @@ function App() {
                   <Route path="/sites" element={<SitesPage />} />
                   <Route path="/wlans" element={<WLANsPage />} />
                   <Route path="/configuration" element={<ConfigurationPage />} />
+                  {/* GreenLake Users (MSP) */}
+                  <Route path="/gl/users" element={<UsersPage />} />
+                  {/* Legacy path (optional) */}
                   <Route path="/users" element={<UsersPage />} />
                   <Route path="/nac" element={<NACPage />} />
                   <Route path="/alerts" element={<AlertsPage />} />
@@ -256,6 +264,12 @@ function App() {
                   <Route path="/network-monitor" element={<NetworkMonitorPage />} />
                   <Route path="/api-explorer" element={<APIExplorerPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  {/* GreenLake Admin routes */}
+                  <Route path="/gl/devices" element={<GLDevicesPage />} />
+                  <Route path="/gl/locations" element={<GLLocationsPage />} />
+                  <Route path="/gl/tags" element={<GLTagsPage />} />
+                  <Route path="/gl/subscriptions" element={<GLSubscriptionsPage />} />
+                  <Route path="/gl/workspaces" element={<GLWorkspacesPage />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </Box>

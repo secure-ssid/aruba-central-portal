@@ -57,12 +57,6 @@ const menuItems = [
   { text: 'Alerts', icon: <NotificationsIcon />, path: '/alerts' },
   { text: 'Analytics', icon: <AssessmentIcon />, path: '/analytics' },
   { text: 'Reporting', icon: <DescriptionIcon />, path: '/reporting' },
-  { text: 'Services', icon: <CloudIcon />, path: '/services' },
-  { text: 'Firmware', icon: <SystemUpdateIcon />, path: '/firmware' },
-  { text: 'Troubleshoot', icon: <BugReportIcon />, path: '/troubleshoot' },
-  { text: 'Users', icon: <PeopleIcon />, path: '/users' },
-  { text: 'API Explorer', icon: <ApiIcon />, path: '/api-explorer' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
 
 const menuGroups = [
@@ -72,11 +66,42 @@ const menuGroups = [
     icon: <DashboardIcon />,
     items: menuItems,
   },
+  {
+    id: 'admin',
+    title: 'Administration',
+    icon: <SettingsIcon />,
+    items: [
+      { text: 'Firmware', icon: <SystemUpdateIcon />, path: '/firmware' },
+      { text: 'Troubleshoot', icon: <BugReportIcon />, path: '/troubleshoot' },
+      { text: 'API Explorer', icon: <ApiIcon />, path: '/api-explorer' },
+      { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+    ],
+  },
+  {
+    id: 'gl',
+    title: 'GreenLake',
+    icon: <CloudIcon />,
+    items: [
+      { text: 'Devices', icon: <DevicesIcon />, path: '/gl/devices' },
+      { text: 'Locations', icon: <LocationOnIcon />, path: '/gl/locations' },
+      { text: 'Tags', icon: <DescriptionIcon />, path: '/gl/tags' },
+      { text: 'Subscriptions', icon: <AssessmentIcon />, path: '/gl/subscriptions' },
+      { text: 'Users', icon: <PeopleIcon />, path: '/gl/users' },
+    ],
+  },
+  {
+    id: 'msp',
+    title: 'MSP',
+    icon: <GroupsIcon />,
+    items: [
+      { text: 'Workspaces', icon: <GroupsIcon />, path: '/gl/workspaces' },
+    ],
+  },
 ];
 
 function Sidebar({ open, onToggle, onSearchOpen }) {
   const location = useLocation();
-  const [expandedGroups, setExpandedGroups] = useState(['main', 'inventory']);
+  const [expandedGroups, setExpandedGroups] = useState(['main']); // keep Administration collapsed by default
   const [favorites, setFavorites] = useState([]);
   const [recentPages, setRecentPages] = useState([]);
 
@@ -88,22 +113,7 @@ function Sidebar({ open, onToggle, onSearchOpen }) {
     setRecentPages(savedRecent);
   }, []);
 
-  // Track visited pages
-  useEffect(() => {
-    if (location.pathname !== '/login') {
-      const pageInfo = {
-        path: location.pathname,
-        timestamp: Date.now(),
-      };
-
-      setRecentPages((prev) => {
-        const filtered = prev.filter((p) => p.path !== location.pathname);
-        const updated = [pageInfo, ...filtered].slice(0, 5);
-        localStorage.setItem('recentPages', JSON.stringify(updated));
-        return updated;
-      });
-    }
-  }, [location.pathname]);
+  // Disable tracking of recent pages; section removed for a cleaner UI
 
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
@@ -281,38 +291,7 @@ function Sidebar({ open, onToggle, onSearchOpen }) {
 
         <Divider sx={{ mx: 2, mb: 2 }} />
 
-        {/* Favorites Section */}
-        {favorites.length > 0 && (
-          <>
-            <Box sx={{ px: 2, mb: 1 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                }}
-              >
-                <StarIcon fontSize="small" sx={{ color: 'warning.main' }} />
-                Favorites
-              </Typography>
-            </Box>
-            <List sx={{ py: 0 }}>
-              {favorites.map((path) => {
-                const item = {
-                  text: getPageLabel(path),
-                  icon: getPageIcon(path),
-                  path,
-                };
-                return renderMenuItem(item);
-              })}
-            </List>
-            <Divider sx={{ mx: 2, my: 2 }} />
-          </>
-        )}
+        {/* Favorites Section removed for cleaner navigation */}
 
         {/* Main Navigation with Nested Groups */}
         <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
@@ -362,38 +341,7 @@ function Sidebar({ open, onToggle, onSearchOpen }) {
           </List>
         </Box>
 
-        {/* Recent Pages Section */}
-        {recentPages.length > 0 && (
-          <>
-            <Divider sx={{ mx: 2, my: 2 }} />
-            <Box sx={{ px: 2, mb: 1 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                }}
-              >
-                <HistoryIcon fontSize="small" />
-                Recent
-              </Typography>
-            </Box>
-            <List sx={{ py: 0 }}>
-              {recentPages.slice(0, 3).map((page) => {
-                const item = {
-                  text: getPageLabel(page.path),
-                  icon: getPageIcon(page.path),
-                  path: page.path,
-                };
-                return renderMenuItem(item);
-              })}
-            </List>
-          </>
-        )}
+        {/* Recent section removed */}
 
         {/* Footer */}
         <Box sx={{ p: 2 }}>
@@ -411,7 +359,7 @@ function Sidebar({ open, onToggle, onSearchOpen }) {
             align="center"
             display="block"
           >
-            Powered by HPE Aruba Networking
+            Powered by HPE Aruba Networking APIs
           </Typography>
         </Box>
       </Box>

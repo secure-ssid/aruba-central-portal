@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,17 @@ class TokenManager:
         self.client_id = client_id
         self.client_secret = client_secret
         self.token_url = token_url
-        self.cache_file = Path(cache_file)
+        # Resolve cache location, prefer TOKEN_CACHE_DIR if provided (e.g., /app/data)
+        token_cache_dir = os.environ.get("TOKEN_CACHE_DIR")
+        if token_cache_dir:
+            try:
+                Path(token_cache_dir).mkdir(parents=True, exist_ok=True)
+                self.cache_file = Path(token_cache_dir) / Path(cache_file).name
+            except Exception:
+                # Fall back to current working directory
+                self.cache_file = Path(cache_file)
+        else:
+            self.cache_file = Path(cache_file)
         self.access_token: Optional[str] = None
         self.token_expires_at: Optional[float] = None
 

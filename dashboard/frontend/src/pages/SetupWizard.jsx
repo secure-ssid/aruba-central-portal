@@ -53,6 +53,10 @@ function SetupWizard({ onComplete }) {
   const [clientSecret, setClientSecret] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [baseUrl, setBaseUrl] = useState('https://internal.api.central.arubanetworks.com');
+  // Optional: GreenLake RBAC (HPE GreenLake Platform) configuration
+  const [enableRbac, setEnableRbac] = useState(false);
+  const [rbacClientId, setRbacClientId] = useState('');
+  const [rbacClientSecret, setRbacClientSecret] = useState('');
 
   const steps = ['Welcome', 'Enter Credentials', 'Verify & Save'];
 
@@ -134,7 +138,7 @@ function SetupWizard({ onComplete }) {
 
   const handleSave = async () => {
     if (!clientId || !clientSecret || !customerId) {
-      setError('All fields are required');
+      setError('All Aruba Central fields are required');
       return;
     }
 
@@ -147,12 +151,24 @@ function SetupWizard({ onComplete }) {
         client_secret: clientSecret,
         customer_id: customerId,
         base_url: baseUrl,
+        // Optional RBAC block is included only when enabled
+        rbac: enableRbac
+          ? {
+              client_id: rbacClientId,
+              client_secret: rbacClientSecret,
+              api_base: 'https://global.api.greenlake.hpe.com',
+            }
+          : null,
       });
 
       if (response.data.success) {
-        // Store session ID if provided
+        // Store session ID if provided (use localStorage to align with api client)
         if (response.data.session_id) {
-          sessionStorage.setItem('aruba_session_id', response.data.session_id);
+          try {
+            localStorage.setItem('aruba_session_id', response.data.session_id);
+          } catch (_) {
+            // ignore storage errors and continue
+          }
         }
 
         // Wait a moment then complete
@@ -275,6 +291,19 @@ function SetupWizard({ onComplete }) {
               </Alert>
             )}
 
+            {/* Optional GreenLake RBAC section toggle */}
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                <Typography variant="body2">
+                  Optionally add <strong>HPE GreenLake RBAC</strong> credentials to enable
+                  tenant management (MSP), workspace creation and user access provisioning.
+                </Typography>
+                <Button size="small" onClick={() => setEnableRbac(!enableRbac)}>
+                  {enableRbac ? 'Remove RBAC' : 'Add RBAC'}
+                </Button>
+              </Box>
+            </Alert>
+
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>Region / Cluster</InputLabel>
               <Select
@@ -334,6 +363,35 @@ function SetupWizard({ onComplete }) {
               placeholder="a1b2c3d4e5f6g7h8..."
               helperText="Your Customer ID / Workspace ID / Tenant ID"
             />
+
+            {enableRbac && (
+              <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+                <Typography variant="subtitle1" gutterBottom fontWeight={600}>
+                  HPE GreenLake RBAC (Optional)
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Provide GreenLake Platform credentials used for RBAC, MSP tenant creation and user management.
+                  Requests will be sent to <code>https://global.api.greenlake.hpe.com</code>.
+                </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="RBAC Client ID"
+                    value={rbacClientId}
+                    onChange={(e) => setRbacClientId(e.target.value)}
+                    placeholder="rbac-abc123..."
+                  />
+                  <TextField
+                    fullWidth
+                    label="RBAC Client Secret"
+                    type="password"
+                    value={rbacClientSecret}
+                    onChange={(e) => setRbacClientSecret(e.target.value)}
+                    placeholder="rbac-secret..."
+                  />
+                </Box>
+              </Box>
+            )}
 
             <Alert severity="warning" sx={{ mb: 3 }}>
               <Typography variant="body2">
