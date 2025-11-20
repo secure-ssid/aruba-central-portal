@@ -42,7 +42,7 @@ function ClientsPage() {
   const [loading, setLoading] = useState(false); // Don't block initial render
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('connected'); // Only show connected clients
+  const [selectedStatus, setSelectedStatus] = useState(null); // null = all statuses
   const [selectedTypes, setSelectedTypes] = useState(['wireless', 'wired']);
   const [viewMode, setViewMode] = useState('list');
   const [sites, setSites] = useState([]);
@@ -311,9 +311,12 @@ function ClientsPage() {
     }
   };
 
-  // Calculate count for connected clients (only status we show)
+  // Calculate counts for all statuses
   const statusCounts = {
     connected: clients.filter((c) => c.status?.toLowerCase() === 'connected').length,
+    failed: clients.filter((c) => c.status?.toLowerCase() === 'failed').length,
+    connecting: clients.filter((c) => c.status?.toLowerCase() === 'connecting').length,
+    disconnected: clients.filter((c) => c.status?.toLowerCase() === 'disconnected').length,
   };
 
   // Calculate counts for type filters - filtered by selected status if one is selected
@@ -379,6 +382,10 @@ function ClientsPage() {
         aValue = a.vlanId || a.network || '';
         bValue = b.vlanId || b.network || '';
         break;
+      case 'role':
+        aValue = (a.role || '').toLowerCase();
+        bValue = (b.role || '').toLowerCase();
+        break;
       case 'site':
         aValue = (a.siteName || '').toLowerCase();
         bValue = (b.siteName || '').toLowerCase();
@@ -415,6 +422,16 @@ function ClientsPage() {
     });
   };
 
+  const handleStatusClick = (status) => {
+    setSelectedStatus((prev) => {
+      // If clicking the same status, deselect it (show all)
+      if (prev === status) {
+        return null;
+      }
+      return status;
+    });
+  };
+
   // Don't block the entire page on loading - show content with loading indicators
   // The loading state should only apply to the data loading, not the initial page render
 
@@ -429,20 +446,63 @@ function ClientsPage() {
 
       {/* Filters Row */}
       <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        {/* Status Filters Group - Only show Connected */}
+        {/* Status Filters Group */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.75rem' }}>
             Status
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             <Button
-              variant="contained"
+              variant={selectedStatus === 'connected' ? 'contained' : 'outlined'}
               color="success"
               size="small"
-              startIcon={<CheckCircleIcon />}
-              disabled
+              startIcon={selectedStatus === 'connected' && <CheckCircleIcon />}
+              onClick={() => handleStatusClick('connected')}
             >
               Connected ({statusCounts.connected})
+            </Button>
+            <Button
+              variant={selectedStatus === 'failed' ? 'contained' : 'outlined'}
+              color="error"
+              size="small"
+              startIcon={selectedStatus === 'failed' && <CheckCircleIcon />}
+              onClick={() => handleStatusClick('failed')}
+            >
+              Failed ({statusCounts.failed})
+            </Button>
+            <Button
+              variant={selectedStatus === 'connecting' ? 'contained' : 'outlined'}
+              color="info"
+              size="small"
+              startIcon={selectedStatus === 'connecting' && <CheckCircleIcon />}
+              onClick={() => handleStatusClick('connecting')}
+            >
+              Connecting ({statusCounts.connecting})
+            </Button>
+            <Button
+              variant={selectedStatus === 'disconnected' ? 'contained' : 'outlined'}
+              size="small"
+              startIcon={selectedStatus === 'disconnected' && <CheckCircleIcon />}
+              onClick={() => handleStatusClick('disconnected')}
+              sx={{
+                ...(selectedStatus === 'disconnected' && {
+                  backgroundColor: '#ffc107',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: '#ffb300',
+                  },
+                }),
+                ...(selectedStatus !== 'disconnected' && {
+                  borderColor: '#ffc107',
+                  color: '#ffc107',
+                  '&:hover': {
+                    borderColor: '#ffb300',
+                    backgroundColor: 'rgba(255, 193, 7, 0.04)',
+                  },
+                }),
+              }}
+            >
+              Disconnected ({statusCounts.disconnected})
             </Button>
           </Box>
         </Box>
@@ -718,6 +778,23 @@ function ClientsPage() {
                       cursor: 'pointer',
                       userSelect: 'none',
                     }}
+                    onClick={() => handleSort('role')}
+                  >
+                    Role
+                    {sortColumn === 'role' && (
+                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
+                    )}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
                     onClick={() => handleSort('ssid')}
                   >
                     SSID
@@ -748,7 +825,7 @@ function ClientsPage() {
             <TableBody>
               {sortedClients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="textSecondary">
                       {selectedSites.length === 0
                         ? 'Please select one or more sites to view clients'
@@ -878,6 +955,11 @@ function ClientsPage() {
                           -
                         </Typography>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {client.role || '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       {clientType === 'wireless' ? (
