@@ -49,20 +49,17 @@ csvContent = 'serial,site_id\nCN12345678,YOUR_SITE_ID\nCN87654321,YOUR_SITE_ID';
 {"filter": "status eq 'Up' and siteId eq 'YOUR_SITE_ID'"}
 ```
 
-**Line 1022:** Hardcoded example serial numbers:
+**Line 1022:** Example serial numbers:
 ```javascript
-{"filter": "serialNumber in ('SERIAL_1', 'SERIAL_2')"}
+{"filter": "serialNumber in ('ABC123', 'DEF456')"}
 ```
 
-**Line 1016:** Hardcoded example model:
+**Line 1016:** Example model:
 ```javascript
-{"filter": "model eq 'MODEL_NAME'"}
+{"filter": "model eq '505'"}
 ```
 
-**Recommendation:** ✅ Fixed - Replaced with generic placeholders:
-- `'YOUR_SITE_ID'` instead of `'12345'`
-- `'SERIAL_1', 'SERIAL_2'` instead of `'ABC123', 'DEF456'`
-- `'MODEL_NAME'` instead of `'505'`
+**Status:** ✅ These are acceptable example values (serial numbers and model numbers are examples, not sensitive data)
 
 ---
 

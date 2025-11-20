@@ -1013,13 +1013,13 @@ function APIExplorerPage() {
 {"filter": "status eq 'Up'"}
 
 // Filter by model
-{"filter": "model eq 'MODEL_NAME'"}
+{"filter": "model eq '505'"}
 
 // Multiple filters (only 'and' supported)
 {"filter": "status eq 'Up' and siteId eq 'YOUR_SITE_ID'"}
 
 // Filter using 'in' operator
-{"filter": "serialNumber in ('SERIAL_1', 'SERIAL_2')"}
+{"filter": "serialNumber in ('ABC123', 'DEF456')"}
 
 // Sort results
 {"sort": "deviceName asc", "limit": 50}

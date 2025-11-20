@@ -34,9 +34,9 @@ csvContent = 'serial,site_id\nSERIAL_NUMBER_1,SITE_ID_HERE\nSERIAL_NUMBER_2,SITE
 ### 2. ⚠️ APIExplorerPage.jsx - Lines 1010, 1019, 1022, 1016
 
 **Hardcoded Values:**
-- Site ID: `12345` (now replaced with `YOUR_SITE_ID`)
-- Serial Numbers: `ABC123`, `DEF456` (now replaced with placeholders)
-- Model: `505` (now replaced with `MODEL_NAME`)
+- Site ID: `12345` (replaced with `YOUR_SITE_ID` - sensitive data)
+- Serial Numbers: `ABC123`, `DEF456` (kept as examples - acceptable)
+- Model: `505` (kept as example - acceptable)
 
 **Current Code:**
 ```javascript
@@ -47,19 +47,13 @@ csvContent = 'serial,site_id\nSERIAL_NUMBER_1,SITE_ID_HERE\nSERIAL_NUMBER_2,SITE
 {"filter": "status eq 'Up' and siteId eq 'YOUR_SITE_ID'"}
 
 // Line 1022
-{"filter": "serialNumber in ('SERIAL_1', 'SERIAL_2')"}
+{"filter": "serialNumber in ('ABC123', 'DEF456')"}
 
 // Line 1016
-{"filter": "model eq 'MODEL_NAME'"}
+{"filter": "model eq '505'"}
 ```
 
-**Suggested Replacement:**
-```javascript
-{"filter": "siteId eq 'YOUR_SITE_ID'"}
-{"filter": "status eq 'Up' and siteId eq 'YOUR_SITE_ID'"}
-{"filter": "serialNumber in ('SERIAL_1', 'SERIAL_2')"}
-{"filter": "model eq 'MODEL_NAME'"}
-```
+**Status:** ✅ Site ID replaced with placeholder, serial numbers and model numbers kept as examples
 
 ---
 
@@ -93,8 +87,13 @@ csvContent = 'serial,site_id\nSERIAL_NUMBER_1,SITE_ID_HERE\nSERIAL_NUMBER_2,SITE
 
 ### ❌ **REMOVE/REPLACE** (Critical):
 - Hardcoded site IDs (sensitive data) - ✅ **FIXED** - Replaced with placeholders
-- Hardcoded serial numbers (`CN12345678`, `CN87654321`, `ABC123`, `DEF456`) - ✅ **KEPT** - These are acceptable example values
-- Hardcoded group/device names in examples - ✅ **KEPT** - These are acceptable example values
+- Hardcoded customer IDs (sensitive data) - ✅ **FIXED** - Replaced with placeholders
+- Company names (sensitive data) - ✅ **FIXED** - Replaced with generic examples
+
+### ✅ **KEEP** (Acceptable Examples):
+- Serial numbers (`CN12345678`, `CN87654321`, `ABC123`, `DEF456`) - These are acceptable example values
+- Model numbers (`505`) - These are acceptable example values
+- Group/device names (`campus-wifi`, `guest-wifi`, `Building-A-AP-01`, `Building-A-AP-02`) - These are acceptable example values
 
 ### ⚠️ **MAKE CONFIGURABLE** (Medium Priority):
 - API base URLs
