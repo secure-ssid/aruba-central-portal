@@ -907,7 +907,7 @@ def get_tenant_device_health(): pass
 
 @app.route('/api/sites/config', methods=['GET'])
 @require_session
-@api_proxy('/network-config/v1alpha1/sites', error_msg="Sites config")
+@api_proxy('/network-config/v1alpha1/sites', error_msg="Sites config", fallback_data=[])
 def get_sites_config(): pass
 
 @app.route('/api/sites/config', methods=['POST'])
@@ -1074,6 +1074,10 @@ def api_explorer():
         # Execute request based on method
         try:
             if method == 'GET':
+                # Log params for debugging filter issues
+                if 'filter' in params:
+                    logger.info(f"🔍 API Explorer: Filter parameter: {params.get('filter')}")
+                logger.info(f"🔍 API Explorer: Endpoint={endpoint}, Params={params}")
                 response = aruba_client.get(endpoint, params=params)
             elif method == 'POST':
                 response = aruba_client.post(endpoint, json=body)

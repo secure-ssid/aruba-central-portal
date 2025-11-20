@@ -236,7 +236,7 @@ function SitesPage() {
       let deviceHealthData = [];
       try {
         // Fetch general sites health
-        const healthParams = { limit: 1000, offset: 0 };
+        const healthParams = { limit: 100, offset: 0 };
         console.log('🔍 Calling getSitesHealth with params:', healthParams);
         let healthResponse;
         try {
@@ -256,7 +256,7 @@ function SitesPage() {
         // Fetch device health data using dedicated endpoint
         console.log('🔍 Calling getSitesDeviceHealth for device health data');
         try {
-          const deviceHealthResponse = await monitoringAPIv2.getSitesDeviceHealth({ limit: 1000, offset: 0 });
+          const deviceHealthResponse = await monitoringAPIv2.getSitesDeviceHealth({ limit: 100, offset: 0 });
           console.log('✅ getSitesDeviceHealth returned:', deviceHealthResponse);
           if (deviceHealthResponse) {
             const extracted = extractSitesHealthItems(deviceHealthResponse);

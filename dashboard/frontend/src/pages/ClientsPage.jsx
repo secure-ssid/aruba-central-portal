@@ -33,7 +33,7 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
-import { getClients, getClientTrends, getTopClients, sitesConfigAPI } from '../services/api';
+import { getClients, getClientTrends, getTopClients, sitesConfigAPI, monitoringAPIv2, configAPI } from '../services/api';
 
 function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -67,37 +67,143 @@ function ClientsPage() {
     try {
       setLoadingSites(true);
       console.log('🔍 Loading sites in ClientsPage...');
-      // Try without params first, then fallback to limit/offset if needed
-      let sitesData;
-      try {
-        sitesData = await sitesConfigAPI.getSites({ limit: 100, offset: 0 });
-        console.log('🔍 Sites API response (with params):', sitesData);
-      } catch (firstErr) {
-        console.warn('⚠️ Failed with limit/offset, trying without params:', firstErr);
-        sitesData = await sitesConfigAPI.getSites({});
-        console.log('🔍 Sites API response (without params):', sitesData);
-      }
-      
-      // Handle different response formats
       let sitesList = [];
-      if (Array.isArray(sitesData)) {
-        // Response is directly an array
-        sitesList = sitesData;
-      } else if (sitesData && typeof sitesData === 'object') {
-        // Response is an object - check various possible keys
-        sitesList = sitesData.items || sitesData.data || sitesData.sites || [];
+      
+      // Try Configuration API first (best choice - faster, returns site names/IDs)
+      let lastError = null;
+      
+      try {
+        console.log('🔍 [1/3] Trying Configuration API (/network-config/v1alpha1/sites)...');
+        let sitesData;
+        try {
+          sitesData = await sitesConfigAPI.getSites({ limit: 100, offset: 0 });
+          console.log('✅ Configuration API response (with params):', sitesData);
+        } catch (firstErr) {
+          console.warn('⚠️ Failed with limit/offset, trying without params:', firstErr);
+          sitesData = await sitesConfigAPI.getSites({});
+          console.log('✅ Configuration API response (without params):', sitesData);
+        }
+        
+        // Handle different response formats
+        if (Array.isArray(sitesData)) {
+          sitesList = sitesData;
+        } else if (sitesData && typeof sitesData === 'object') {
+          sitesList = sitesData.items || sitesData.data || sitesData.sites || sitesData.results || [];
+        }
+        
+        if (sitesList.length > 0) {
+          console.log(`✅ Loaded ${sitesList.length} sites from Configuration API`);
+          setSites(sitesList);
+          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
+          setSelectedSites(siteIds);
+          setError(null);
+          setSitesLoaded(true);
+          return;
+        } else {
+          console.warn('⚠️ Configuration API returned empty result');
+          lastError = new Error('Configuration API returned empty result');
+        }
+      } catch (configErr) {
+        console.warn('⚠️ Configuration API failed:', configErr);
+        lastError = configErr;
       }
       
-      console.log('🔍 Extracted sites list:', sitesList.length, 'sites');
-      console.log('🔍 First site sample:', sitesList[0]);
+      // Fallback 1: Try Central v2 Sites API
+      try {
+        console.log('🔍 [2/3] Trying Central v2 Sites API (/central/v2/sites)...');
+        const v2SitesData = await configAPI.getSites();
+        console.log('✅ Central v2 API response:', v2SitesData);
+        
+        if (Array.isArray(v2SitesData)) {
+          sitesList = v2SitesData;
+        } else if (v2SitesData && typeof v2SitesData === 'object') {
+          sitesList = v2SitesData.sites || v2SitesData.items || v2SitesData.data || [];
+        }
+        
+        if (sitesList.length > 0) {
+          // Map v2 format to expected format
+          sitesList = sitesList.map(site => ({
+            scopeId: site.site_id || site.id || site.scopeId,
+            name: site.site_name || site.name || site.display_name,
+            siteName: site.site_name || site.name || site.display_name,
+            ...site
+          })).filter(site => site.scopeId);
+          
+          console.log(`✅ Loaded ${sitesList.length} sites from Central v2 API`);
+          setSites(sitesList);
+          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
+          setSelectedSites(siteIds);
+          setError(null);
+          setSitesLoaded(true);
+          return;
+        } else {
+          console.warn('⚠️ Central v2 API returned empty result');
+        }
+      } catch (v2Err) {
+        console.warn('⚠️ Central v2 API failed:', v2Err);
+        lastError = v2Err;
+      }
       
-      setSites(sitesList);
-      // Select all sites by default
-      const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
-      console.log('🔍 Setting selected sites:', siteIds.length, 'site IDs');
-      setSelectedSites(siteIds);
-      setError(null);
-      setSitesLoaded(true);
+      // Fallback 2: Try Monitoring API (sites-health endpoint)
+      try {
+          console.log('🔍 [3/3] Trying Monitoring API (/network-monitoring/v1alpha1/sites-health)...');
+          const healthData = await monitoringAPIv2.getSitesHealth({ limit: 100, offset: 0 });
+        console.log('✅ Monitoring API response:', healthData);
+        
+        // Extract sites from health data
+        if (Array.isArray(healthData)) {
+          sitesList = healthData;
+        } else if (healthData && typeof healthData === 'object') {
+          const items = healthData.items || healthData.data || healthData.sites || [];
+          // Extract site info from health items
+          sitesList = items.map(item => ({
+            scopeId: item.scopeId || item.siteId || item.id,
+            name: item.scopeName || item.siteName || item.name || item.displayName,
+            siteName: item.scopeName || item.siteName || item.name || item.displayName,
+            ...item
+          })).filter(site => site.scopeId); // Filter out items without IDs
+        }
+        
+        if (sitesList.length > 0) {
+          console.log(`✅ Loaded ${sitesList.length} sites from Monitoring API fallback`);
+          setSites(sitesList);
+          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
+          setSelectedSites(siteIds);
+          setError(null);
+          setSitesLoaded(true);
+          return;
+        } else {
+          console.warn('⚠️ Monitoring API returned empty result');
+        }
+      } catch (monitoringErr) {
+        console.error('❌ Monitoring API also failed:', monitoringErr);
+        lastError = monitoringErr;
+      }
+      
+      // All APIs failed
+      console.error('❌ All site APIs failed. Last error:', lastError);
+      console.error('❌ Setting empty sites list');
+      
+      // Extract error message from last error
+      let errorMessage = 'Failed to load sites from all available APIs';
+      if (lastError) {
+        if (lastError.response?.data) {
+          if (typeof lastError.response.data === 'string') {
+            errorMessage = lastError.response.data;
+          } else if (lastError.response.data.error) {
+            errorMessage = lastError.response.data.error;
+          } else if (lastError.response.data.message) {
+            errorMessage = lastError.response.data.message;
+          }
+        } else if (lastError.message) {
+          errorMessage = lastError.message;
+        }
+      }
+      
+      setSites([]);
+      setSelectedSites([]);
+      setError(errorMessage);
+      setSitesLoaded(true); // Mark as loaded even on error so loadData can run
     } catch (err) {
       console.error('❌ Error loading sites:', err);
       console.error('❌ Error response:', err.response);
@@ -339,6 +445,14 @@ function ClientsPage() {
       client.ipv4?.toLowerCase().includes(search) ||
       client.network?.toLowerCase().includes(search) ||
       client.connectedTo?.toLowerCase().includes(search) ||
+      client.connected_to?.toLowerCase().includes(search) ||
+      client.device?.toLowerCase().includes(search) ||
+      client.associatedDevice?.toLowerCase().includes(search) ||
+      client.port?.toLowerCase().includes(search) ||
+      client.portId?.toLowerCase().includes(search) ||
+      client.port_id?.toLowerCase().includes(search) ||
+      client.interface?.toLowerCase().includes(search) ||
+      client.portName?.toLowerCase().includes(search) ||
       client.essid?.toLowerCase().includes(search) ||
       client.ssid?.toLowerCase().includes(search);
 
@@ -381,6 +495,14 @@ function ClientsPage() {
       case 'vlan':
         aValue = a.vlanId || a.network || '';
         bValue = b.vlanId || b.network || '';
+        break;
+      case 'connectedTo':
+        aValue = (a.connectedTo || a.connected_to || a.device || a.associatedDevice || '').toLowerCase();
+        bValue = (b.connectedTo || b.connected_to || b.device || b.associatedDevice || '').toLowerCase();
+        break;
+      case 'port':
+        aValue = (a.port || a.portId || a.port_id || a.interface || a.portName || '').toLowerCase();
+        bValue = (b.port || b.portId || b.port_id || b.interface || b.portName || '').toLowerCase();
         break;
       case 'role':
         aValue = (a.role || '').toLowerCase();
@@ -778,6 +900,40 @@ function ClientsPage() {
                       cursor: 'pointer',
                       userSelect: 'none',
                     }}
+                    onClick={() => handleSort('connectedTo')}
+                  >
+                    Connected To
+                    {sortColumn === 'connectedTo' && (
+                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
+                    )}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
+                    onClick={() => handleSort('port')}
+                  >
+                    Port
+                    {sortColumn === 'port' && (
+                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
+                    )}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
                     onClick={() => handleSort('role')}
                   >
                     Role
@@ -825,7 +981,7 @@ function ClientsPage() {
             <TableBody>
               {sortedClients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="textSecondary">
                       {selectedSites.length === 0
                         ? 'Please select one or more sites to view clients'
@@ -955,6 +1111,16 @@ function ClientsPage() {
                           -
                         </Typography>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {client.connectedTo || client.connected_to || client.device || client.associatedDevice || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                        {client.port || client.portId || client.port_id || client.interface || client.portName || '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
