@@ -108,3 +108,4 @@ output/
 # Backup files
 *.bak
 .env.bak
+backups/
