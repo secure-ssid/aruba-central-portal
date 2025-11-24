@@ -762,6 +762,377 @@ def delete_wlan(ssid_name):
         return jsonify({"error": str(e)}), 500
 
 
+# ============= Network Configuration Endpoints (v1alpha1) =============
+# These endpoints proxy to the network-config/v1alpha1 API for WLAN wizard functionality
+
+# WLAN Configuration Endpoints
+@app.route('/api/config/wlan', methods=['GET'])
+@require_session
+def get_wlans_config():
+    """Get all WLANs via network-config API."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/wlan-ssids', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching WLANs config: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/wlan/<ssid_name>', methods=['GET'])
+@require_session
+def get_wlan_config(ssid_name):
+    """Get specific WLAN configuration."""
+    try:
+        response = aruba_client.get(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}')
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching WLAN {ssid_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/wlan/<ssid_name>', methods=['POST'])
+@require_session
+def create_wlan_config(ssid_name):
+    """Create new WLAN."""
+    try:
+        wlan_data = request.get_json()
+        params = request.args.to_dict()  # Get query parameters
+        logger.info(f"Creating WLAN {ssid_name} with data: {wlan_data}")
+        logger.info(f"Query parameters: {params}")
+        response = aruba_client.post(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}', data=wlan_data, params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating WLAN {ssid_name}: {e}")
+        # Try to get more details from the error
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+            logger.error(f"API response: {e.response.text}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/wlan/<ssid_name>', methods=['PATCH'])
+@require_session
+def update_wlan_config(ssid_name):
+    """Update existing WLAN."""
+    try:
+        wlan_data = request.get_json()
+        response = aruba_client.patch(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}', json=wlan_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error updating WLAN {ssid_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# VLAN Configuration Endpoints
+@app.route('/api/config/vlan', methods=['GET'])
+@require_session
+def get_vlans_config():
+    """Get all Layer2 VLANs."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/layer2-vlan', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching VLANs: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/vlan/<int:vlan_id>', methods=['GET'])
+@require_session
+def get_vlan_config(vlan_id):
+    """Get specific VLAN."""
+    try:
+        response = aruba_client.get(f'/network-config/v1alpha1/layer2-vlan/{vlan_id}')
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching VLAN {vlan_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/vlan/<int:vlan_id>', methods=['POST'])
+@require_session
+def create_vlan_config(vlan_id):
+    """Create new Layer2 VLAN."""
+    try:
+        vlan_data = request.get_json()
+        response = aruba_client.post(f'/network-config/v1alpha1/layer2-vlan/{vlan_id}', data=vlan_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating VLAN {vlan_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Named VLAN Endpoints
+@app.route('/api/config/named-vlan', methods=['GET'])
+@require_session
+def get_named_vlans_config():
+    """Get all Named VLANs."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/named-vlan', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching Named VLANs: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/named-vlan/<name>', methods=['GET'])
+@require_session
+def get_named_vlan_config(name):
+    """Get specific Named VLAN."""
+    try:
+        response = aruba_client.get(f'/network-config/v1alpha1/named-vlan/{name}')
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching Named VLAN {name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/named-vlan/<name>', methods=['POST'])
+@require_session
+def create_named_vlan_config(name):
+    """Create new Named VLAN."""
+    try:
+        vlan_data = request.get_json()
+        response = aruba_client.post(f'/network-config/v1alpha1/named-vlan/{name}', data=vlan_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating Named VLAN {name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Role Configuration Endpoints
+@app.route('/api/config/roles', methods=['GET'])
+@require_session
+def get_roles_config():
+    """Get all roles."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/roles', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching roles: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/roles/<role_name>', methods=['GET'])
+@require_session
+def get_role_config(role_name):
+    """Get specific role."""
+    try:
+        response = aruba_client.get(f'/network-config/v1alpha1/roles/{role_name}')
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching role {role_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/roles/<role_name>', methods=['POST'])
+@require_session
+def create_role_config(role_name):
+    """Create new role."""
+    try:
+        role_data = request.get_json()
+        params = request.args.to_dict()  # Get query parameters
+        logger.info(f"Creating role {role_name} with data: {role_data}")
+        logger.info(f"Query parameters: {params}")
+        response = aruba_client.post(f'/network-config/v1alpha1/roles/{role_name}', data=role_data, params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating role {role_name}: {e}")
+        # Try to get more details from the error
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+            logger.error(f"API response: {e.response.text}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Role-GPID Configuration Endpoints
+@app.route('/api/config/role-gpids/<role_name>', methods=['POST'])
+@require_session
+def create_role_gpid_config(role_name):
+    """Create new role-gpid."""
+    try:
+        gpid_data = request.get_json()
+        logger.info(f"Creating role-gpid {role_name} with data: {gpid_data}")
+        response = aruba_client.post(f'/network-config/v1alpha1/role-gpids/{role_name}', data=gpid_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating role-gpid {role_name}: {e}")
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+            logger.error(f"API response: {e.response.text}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Policy Configuration Endpoints
+@app.route('/api/config/policies', methods=['GET'])
+@require_session
+def get_policies_config():
+    """Get all policies."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/policies', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching policies: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/policies/<policy_name>', methods=['GET'])
+@require_session
+def get_policy_config(policy_name):
+    """Get specific policy."""
+    try:
+        response = aruba_client.get(f'/network-config/v1alpha1/policies/{policy_name}')
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching policy {policy_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/policies/<policy_name>', methods=['POST'])
+@require_session
+def create_policy_config(policy_name):
+    """Create new policy."""
+    try:
+        policy_data = request.get_json()
+        response = aruba_client.post(f'/network-config/v1alpha1/policies/{policy_name}', data=policy_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating policy {policy_name}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Scope Map Endpoints (for assigning profiles to scopes)
+@app.route('/api/config/scope-maps', methods=['GET', 'POST'])
+@require_session
+def scope_maps():
+    """Get all scope maps or create scope map assignments."""
+    try:
+        if request.method == 'GET':
+            params = request.args.to_dict()
+            response = aruba_client.get('/network-config/v1alpha1/scope-maps', params=params)
+            return jsonify(response)
+        else:  # POST
+            # Create scope map with JSON body containing scope-map array
+            # Expected format: {"scope-map": [{"scope-id": ..., "persona": ..., "resource": ...}]}
+            scope_map_data = request.get_json()
+            logger.info(f"Creating scope maps with data: {scope_map_data}")
+            response = aruba_client.post('/network-config/v1alpha1/scope-maps', data=scope_map_data)
+            return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error with scope maps: {e}")
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+            logger.error(f"API response: {e.response.text}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/scope-maps/<path:scope_resource>', methods=['POST'])
+@require_session
+def create_scope_map(scope_resource):
+    """
+    Create scope map assignment.
+    Path format: {scopeName}/{persona}/{resource}
+    Example: HQ-Site/CAMPUS_AP/wlan-ssids~2FCorp-WiFi
+    """
+    try:
+        # The scope_resource contains: scopeName/persona/resource
+        # We forward the entire path AND query parameters to the API
+        assignment_data = request.get_json()
+        params = request.args.to_dict()  # Get query parameters
+        logger.info(f"Creating scope map {scope_resource} with data: {assignment_data}")
+        logger.info(f"Query parameters: {params}")
+        response = aruba_client.post(f'/network-config/v1alpha1/scope-maps/{scope_resource}', data=assignment_data, params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating scope map {scope_resource}: {e}")
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+            logger.error(f"API response: {e.response.text}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Sites Configuration Endpoints
+@app.route('/api/config/sites', methods=['GET'])
+@require_session
+def get_sites_config():
+    """Get all sites."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/sites', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching sites: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Device Groups Endpoints
+@app.route('/api/config/device-groups', methods=['GET'])
+@require_session
+def get_device_groups_config():
+    """Get all device groups."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/device-groups', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching device groups: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# MPSK (Multi-Pre-Shared-Key) Endpoints
+@app.route('/api/config/nac/mpsk-registration', methods=['GET'])
+@require_session
+def get_mpsk_registrations():
+    """Get all MPSK registrations."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/nac/mpsk-registration', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching MPSK registrations: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/config/nac/mpsk-registration', methods=['POST'])
+@require_session
+def create_mpsk_registration():
+    """Create new MPSK registration."""
+    try:
+        mpsk_data = request.get_json()
+        response = aruba_client.post('/network-config/v1alpha1/nac/mpsk-registration', data=mpsk_data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating MPSK registration: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Authentication Server Endpoints (for future use)
+@app.route('/api/config/auth-servers', methods=['GET'])
+@require_session
+def get_auth_servers():
+    """Get all authentication servers."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/auth-servers', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching auth servers: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Captive Portal Endpoints (for future use)
+@app.route('/api/config/captive-portal-profiles', methods=['GET'])
+@require_session
+def get_captive_portal_profiles():
+    """Get all captive portal profiles."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-config/v1alpha1/captive-portal-profiles', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching captive portal profiles: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 # ============= Client Endpoints =============
 
 @app.route('/api/clients', methods=['GET'])
@@ -956,55 +1327,39 @@ def get_tenant_device_health(): pass
 
 # ============= Network Config Sites Endpoints =============
 
-@app.route('/api/sites/config', methods=['GET'])
+@app.route('/api/sites/config', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @require_session
-@api_proxy('/network-config/v1alpha1/sites', error_msg="Sites config", fallback_data=[])
-def get_sites_config(): pass
-
-@app.route('/api/sites/config', methods=['POST'])
-@require_session
-def create_site_config():
-    """Create a new site using network-config API."""
+def sites_config():
+    """Handle site configuration operations using network-config API."""
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
-        
-        data = request.get_json()
-        response = aruba_client.post('/network-config/v1alpha1/sites', data=data)
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Error creating site: {e}")
-        return jsonify({"error": str(e)}), 500
 
-@app.route('/api/sites/config', methods=['PUT'])
-@require_session
-def update_site_config():
-    """Update an existing site using network-config API."""
-    try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        
-        data = request.get_json()
-        response = aruba_client.put('/network-config/v1alpha1/sites', data=data)
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Error updating site: {e}")
-        return jsonify({"error": str(e)}), 500
+        if request.method == 'GET':
+            # GET sites
+            response = aruba_client.get('/network-config/v1alpha1/sites')
+            return jsonify(response if response else [])
 
-@app.route('/api/sites/config', methods=['DELETE'])
-@require_session
-def delete_site_config():
-    """Delete a site using network-config API (deprecated endpoint)."""
-    try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        
-        scope_id = request.args.get('scope-id')
-        if not scope_id:
-            return jsonify({"error": "scope-id query parameter is required"}), 400
-        
-        params = {'scope-id': scope_id}
-        response = aruba_client.delete('/network-config/v1alpha1/sites', params=params)
+        elif request.method == 'POST':
+            # Create new site
+            data = request.get_json()
+            response = aruba_client.post('/network-config/v1alpha1/sites', data=data)
+            return jsonify(response)
+
+        elif request.method == 'PUT':
+            # Update existing site
+            data = request.get_json()
+            response = aruba_client.put('/network-config/v1alpha1/sites', data=data)
+            return jsonify(response)
+
+        elif request.method == 'DELETE':
+            # Delete site
+            scope_id = request.args.get('scope-id')
+            if not scope_id:
+                return jsonify({"error": "scope-id query parameter is required"}), 400
+
+            params = {'scope-id': scope_id}
+            response = aruba_client.delete('/network-config/v1alpha1/sites', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error deleting site: {e}")
@@ -3573,7 +3928,8 @@ def greenlake_modify_devices():
             data = client.post('/devices/v1/devices', data=payload)
             return jsonify(data), 201
         if request.method == 'PATCH':
-            data = client.put('/devices/v1/devices', data=payload) if False else client.post('/devices/v1/devices', data=payload)  # placeholder if API expects PATCH; central client supports put/post
+            # Use PUT for device updates (GreenLake API standard)
+            data = client.put('/devices/v1/devices', data=payload)
             return jsonify(data)
     except Exception as e:
         logger.error(f"GreenLake devices modify error: {e}")
@@ -3695,6 +4051,92 @@ def greenlake_list_workspaces():
     except Exception as e:
         logger.error(f"GreenLake workspaces fetch error: {e}")
         return jsonify({"items": [], "count": 0})
+
+@app.route('/api/greenlake/workspaces', methods=['POST'])
+@require_session
+def greenlake_create_workspace():
+    """Create a new workspace/tenant in GreenLake."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        if not payload.get('name'):
+            return jsonify({"error": "Workspace name is required"}), 400
+        # Call GreenLake Workspace API to create workspace
+        data = client.post('/workspace/v1/workspaces', data=payload)
+        return jsonify(data), 201
+    except Exception as e:
+        logger.error(f"GreenLake workspace create error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/workspaces/<workspace_id>', methods=['PATCH'])
+@require_session
+def greenlake_update_workspace(workspace_id):
+    """Update a workspace/tenant in GreenLake."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json() or {}
+        # Call GreenLake Workspace API to update workspace
+        data = client.patch(f'/workspace/v1/workspaces/{workspace_id}', data=payload)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake workspace update error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/workspaces/<workspace_id>', methods=['DELETE'])
+@require_session
+def greenlake_delete_workspace(workspace_id):
+    """Delete a workspace/tenant from GreenLake."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        # Call GreenLake Workspace API to delete workspace
+        data = client.delete(f'/workspace/v1/workspaces/{workspace_id}')
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake workspace delete error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# ─────────────────────────────────────────────────────────────────────────
+# MSP Token Transfer
+# ─────────────────────────────────────────────────────────────────────────
+
+@app.route('/api/greenlake/msp/token-transfer', methods=['POST'])
+@require_session
+def greenlake_msp_token_transfer():
+    """Transfer subscription tokens between MSP customer workspaces."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+
+        payload = request.get_json() or {}
+        required_fields = ['sourceWorkspaceId', 'targetWorkspaceId', 'subscriptionId']
+        missing = [f for f in required_fields if not payload.get(f)]
+        if missing:
+            return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
+
+        # Build transfer request
+        transfer_data = {
+            "source_workspace_id": payload['sourceWorkspaceId'],
+            "target_workspace_id": payload['targetWorkspaceId'],
+            "subscription_id": payload['subscriptionId'],
+        }
+
+        # Optional: specific devices to transfer
+        if payload.get('deviceSerials'):
+            transfer_data['device_serials'] = payload['deviceSerials']
+
+        # Call GreenLake MSP API to transfer tokens
+        data = client.post('/msp/v1/token-transfers', data=transfer_data)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake MSP token transfer error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/greenlake/locations', methods=['GET'])
 @require_session
@@ -3870,6 +4312,59 @@ def greenlake_scim_user_groups(user_id):
         return jsonify(data)
     except Exception as e:
         logger.error(f"GreenLake SCIM user groups error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# ─────────────────────────────────────────────────────────────────────────
+# GreenLake Role Management (Platform Roles)
+# ─────────────────────────────────────────────────────────────────────────
+
+@app.route('/api/greenlake/role-assignments', methods=['GET'])
+@require_session
+def greenlake_list_role_assignments():
+    """List all platform role assignments."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"assignments": []}), 200
+        # Call GreenLake Authorization API to get role assignments
+        data = client.get('/authorization/v1/role-assignments')
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake role assignments list error: {e}")
+        # Graceful fallback
+        return jsonify({"assignments": []}), 200
+
+@app.route('/api/greenlake/role-assignments', methods=['POST'])
+@require_session
+def greenlake_assign_role():
+    """Assign a platform role to a user."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        payload = request.get_json()
+        if not payload or 'userId' not in payload or 'roleId' not in payload:
+            return jsonify({"error": "userId and roleId required"}), 400
+        # Call GreenLake Authorization API to assign role
+        data = client.post('/authorization/v1/role-assignments', data=payload)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake role assignment error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/greenlake/role-assignments/<assignment_id>', methods=['DELETE'])
+@require_session
+def greenlake_unassign_role(assignment_id):
+    """Remove a platform role assignment."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        # Call GreenLake Authorization API to delete role assignment
+        data = client.delete(f'/authorization/v1/role-assignments/{assignment_id}')
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"GreenLake role unassignment error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/reporting/top-aps-by-wireless-usage', methods=['GET'])
@@ -4244,6 +4739,11 @@ def switch_workspace():
         new_customer_id = data.get('customer_id')
         base_url = data.get('base_url', config["aruba_central"]["base_url"])
 
+        # Optional: GreenLake RBAC credentials for MSP workspace switching
+        gl_client_id = data.get('gl_client_id')
+        gl_client_secret = data.get('gl_client_secret')
+        gl_api_base = data.get('gl_api_base', 'https://global.api.greenlake.hpe.com')
+
         if not all([new_client_id, new_client_secret, new_customer_id]):
             return jsonify({"error": "client_id, client_secret, and customer_id are required"}), 400
 
@@ -4253,7 +4753,7 @@ def switch_workspace():
         config["aruba_central"]["customer_id"] = new_customer_id
         config["aruba_central"]["base_url"] = base_url
 
-        # Reinitialize token manager and client
+        # Reinitialize token manager and client for Aruba Central
         token_manager = TokenManager(
             client_id=new_client_id,
             client_secret=new_client_secret
@@ -4264,13 +4764,22 @@ def switch_workspace():
             token_manager=token_manager
         )
 
+        # Update GreenLake credentials if provided (for MSP workspace switching)
+        if gl_client_id and gl_client_secret:
+            import os
+            os.environ['GL_RBAC_CLIENT_ID'] = gl_client_id
+            os.environ['GL_RBAC_CLIENT_SECRET'] = gl_client_secret
+            os.environ['GL_API_BASE'] = gl_api_base
+            logger.info("GreenLake RBAC credentials updated for workspace switch")
+
         logger.info(f"Workspace switched to customer_id: {new_customer_id[:16]}...")
 
         return jsonify({
             "success": True,
             "message": "Workspace switched successfully",
             "customer_id": new_customer_id[:16] + "...",
-            "base_url": base_url
+            "base_url": base_url,
+            "greenlake_updated": bool(gl_client_id and gl_client_secret)
         })
     except Exception as e:
         logger.error(f"Workspace switch error: {e}")
@@ -6545,12 +7054,6 @@ def import_mac_registration():
         logger.error(f"Error importing MAC registrations: {e}")
         return jsonify({"error": str(e)}), 500
 
-# MPSK Registration endpoints (similar pattern)
-@app.route('/api/config/nac/mpsk-registration', methods=['GET'])
-@require_session
-@api_proxy('/network-config/v1alpha1/mpsk-registration', error_msg="Get MPSK registrations", fallback_data={"items": [], "count": 0})
-def get_mpsk_registrations(): pass
-
 @app.route('/api/config/nac/visitor', methods=['GET'])
 @require_session
 @api_proxy('/network-config/v1alpha1/visitor', error_msg="Get visitors", fallback_data={"items": [], "count": 0})
@@ -6732,56 +7235,58 @@ def get_loopback_interfaces(): pass
 @api_proxy('/network-config/v1alpha1/interface-management', error_msg="Get management interfaces", fallback_data={"items": [], "count": 0})
 def get_management_interfaces(): pass
 
-@app.route('/api/config/wlan', methods=['GET'])
-@require_session
-@api_proxy('/network-config/v1alpha1/wlan', error_msg="Get WLANs", fallback_data={"items": [], "count": 0})
-def get_config_wlans(): pass
-
-@app.route('/api/config/wlan/<name>', methods=['GET'])
-@require_session
-@api_proxy(lambda name: f'/network-config/v1alpha1/wlan/{name}', error_msg="Get WLAN profile", fallback_data={})
-def get_config_wlan(name): pass
-
-@app.route('/api/config/wlan/<name>', methods=['POST'])
-@require_session
-def create_config_wlan(name):
-    """Create WLAN profile."""
-    try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        data = request.get_json()
-        response = aruba_client.post(f'/network-config/v1alpha1/wlan/{name}', data=data)
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Error creating WLAN: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/config/wlan/<name>', methods=['PATCH'])
-@require_session
-def update_config_wlan(name):
-    """Update WLAN profile."""
-    try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        data = request.get_json()
-        response = aruba_client.patch(f'/network-config/v1alpha1/wlan/{name}', data=data)
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Error updating WLAN: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/config/wlan/<name>', methods=['DELETE'])
-@require_session
-def delete_config_wlan(name):
-    """Delete WLAN profile."""
-    try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        response = aruba_client.delete(f'/network-config/v1alpha1/wlan/{name}')
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Error deleting WLAN: {e}")
-        return jsonify({"error": str(e)}), 500
+# DUPLICATE WLAN ROUTES COMMENTED OUT - Using routes at lines 769-831 instead
+# These routes use incorrect API endpoint: /wlan/{name} instead of /wlan-ssids/{name}
+# @app.route('/api/config/wlan', methods=['GET'])
+# @require_session
+# @api_proxy('/network-config/v1alpha1/wlan', error_msg="Get WLANs", fallback_data={"items": [], "count": 0})
+# def get_config_wlans(): pass
+#
+# @app.route('/api/config/wlan/<name>', methods=['GET'])
+# @require_session
+# @api_proxy(lambda name: f'/network-config/v1alpha1/wlan/{name}', error_msg="Get WLAN profile", fallback_data={})
+# def get_config_wlan(name): pass
+#
+# @app.route('/api/config/wlan/<name>', methods=['POST'])
+# @require_session
+# def create_config_wlan(name):
+#     """Create WLAN profile."""
+#     try:
+#         if not aruba_client:
+#             return jsonify({"error": "Server not configured"}), 500
+#         data = request.get_json()
+#         response = aruba_client.post(f'/network-config/v1alpha1/wlan/{name}', data=data)
+#         return jsonify(response)
+#     except Exception as e:
+#         logger.error(f"Error creating WLAN: {e}")
+#         return jsonify({"error": str(e)}), 500
+#
+# @app.route('/api/config/wlan/<name>', methods=['PATCH'])
+# @require_session
+# def update_config_wlan(name):
+#     """Update WLAN profile."""
+#     try:
+#         if not aruba_client:
+#             return jsonify({"error": "Server not configured"}), 500
+#         data = request.get_json()
+#         response = aruba_client.patch(f'/network-config/v1alpha1/wlan/{name}', data=data)
+#         return jsonify(response)
+#     except Exception as e:
+#         logger.error(f"Error updating WLAN: {e}")
+#         return jsonify({"error": str(e)}), 500
+#
+# @app.route('/api/config/wlan/<name>', methods=['DELETE'])
+# @require_session
+# def delete_config_wlan(name):
+#     """Delete WLAN profile."""
+#     try:
+#         if not aruba_client:
+#             return jsonify({"error": "Server not configured"}), 500
+#         response = aruba_client.delete(f'/network-config/v1alpha1/wlan/{name}')
+#         return jsonify(response)
+#     except Exception as e:
+#         logger.error(f"Error deleting WLAN: {e}")
+#         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/config/radio/<name>', methods=['GET'])
 @require_session
@@ -6886,4 +7391,4 @@ def get_wireless_system(serial): pass
 
 if __name__ == '__main__':
     # Run Flask app
-    app.run(host='0.0.0.0', port=1344, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

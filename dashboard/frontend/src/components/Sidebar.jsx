@@ -43,6 +43,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ShieldIcon from '@mui/icons-material/Shield';
 
 const DRAWER_WIDTH = 240;
 
@@ -106,6 +107,7 @@ const menuGroups = [
       { text: 'Tags', icon: <DescriptionIcon />, path: '/gl/tags' },
       { text: 'Subscriptions', icon: <AssessmentIcon />, path: '/gl/subscriptions' },
       { text: 'Users', icon: <PeopleIcon />, path: '/gl/users' },
+      { text: 'Roles', icon: <ShieldIcon />, path: '/gl/roles' },
     ],
   },
   {

@@ -119,7 +119,7 @@ function GLLocationsPage() {
     try {
       await apiClient.delete(`/greenlake/locations/${form.id}`);
       setEditOpen(false);
-      setForm({ id:'', name:'', addressLine1:'', city:'', country:'' });
+      setForm({ id:'', name:'', addressLine1:'', city:'', countryCode:'' });
       fetchLocations();
     } catch (e) {
       setError(e.response?.data?.error || 'Failed to delete location');

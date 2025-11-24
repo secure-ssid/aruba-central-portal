@@ -622,8 +622,11 @@ export const configAPI = {
       const response = await apiClient.get(`/config/wlan/${name}`);
       return response.data;
     },
-    createWLAN: async (name, wlanData) => {
-      const response = await apiClient.post(`/config/wlan/${name}`, wlanData);
+    createWLAN: async (name, wlanData, queryParams = {}) => {
+      const queryString = Object.keys(queryParams).length > 0
+        ? '?' + new URLSearchParams(queryParams).toString()
+        : '';
+      const response = await apiClient.post(`/config/wlan/${name}${queryString}`, wlanData);
       return response.data;
     },
     updateWLAN: async (name, wlanData) => {
@@ -648,6 +651,113 @@ export const configAPI = {
     },
     getVLAN: async (vlanId) => {
       const response = await apiClient.get(`/config/vlan/${vlanId}`);
+      return response.data;
+    },
+    createVLAN: async (vlanId, vlanData) => {
+      const response = await apiClient.post(`/config/vlan/${vlanId}`, vlanData);
+      return response.data;
+    },
+    // Named VLAN operations
+    getNamedVLANs: async (params = {}) => {
+      const response = await apiClient.get('/config/named-vlan', { params });
+      return response.data;
+    },
+    getNamedVLAN: async (name) => {
+      const response = await apiClient.get(`/config/named-vlan/${name}`);
+      return response.data;
+    },
+    createNamedVLAN: async (name, vlanData) => {
+      const response = await apiClient.post(`/config/named-vlan/${name}`, vlanData);
+      return response.data;
+    },
+    // Helper to check if VLAN exists
+    vlanExists: async (vlanId) => {
+      try {
+        await apiClient.get(`/config/vlan/${vlanId}`);
+        return true;
+      } catch (error) {
+        if (error.response?.status === 404) {
+          return false;
+        }
+        throw error;
+      }
+    },
+  },
+
+  // Roles & Policies
+  rolesPolicies: {
+    // Roles
+    getRoles: async (params = {}) => {
+      const response = await apiClient.get('/config/roles', { params });
+      return response.data;
+    },
+    getRole: async (roleName) => {
+      const response = await apiClient.get(`/config/roles/${roleName}`);
+      return response.data;
+    },
+    createRole: async (roleName, roleData, queryParams = {}) => {
+      const queryString = Object.keys(queryParams).length > 0
+        ? '?' + new URLSearchParams(queryParams).toString()
+        : '';
+      const response = await apiClient.post(`/config/roles/${roleName}${queryString}`, roleData);
+      return response.data;
+    },
+    // Role-GPIDs
+    createRoleGpid: async (roleName, gpidData) => {
+      const response = await apiClient.post(`/config/role-gpids/${roleName}`, gpidData);
+      return response.data;
+    },
+    // Policies
+    getPolicies: async (params = {}) => {
+      const response = await apiClient.get('/config/policies', { params });
+      return response.data;
+    },
+    getPolicy: async (policyName) => {
+      const response = await apiClient.get(`/config/policies/${policyName}`);
+      return response.data;
+    },
+    createPolicy: async (policyName, policyData) => {
+      const response = await apiClient.post(`/config/policies/${policyName}`, policyData);
+      return response.data;
+    },
+  },
+
+  // Scope Management
+  scopeMaps: {
+    getScopeMaps: async (params = {}) => {
+      const response = await apiClient.get('/config/scope-maps', { params });
+      return response.data;
+    },
+    /**
+     * Create scope map assignment
+     * @param {object} scopeMapData - Scope map data in format: { "scope-map": [{ scope-id, persona, resource }] }
+     *
+     * Example:
+     * {
+     *   "scope-map": [{
+     *     "scope-name": "54819475093",
+     *     "scope-id": 54819475093,
+     *     "persona": "CAMPUS_AP",
+     *     "resource": "wlan-ssids/MyWLAN"
+     *   }]
+     * }
+     */
+    createScopeMap: async (scopeMapData) => {
+      // POST with JSON body containing scope-map array
+      // This automatically assigns related resources (roles, role-gpids)
+      const response = await apiClient.post('/config/scope-maps', scopeMapData);
+      return response.data;
+    },
+  },
+
+  // Authentication & Security
+  authSecurity: {
+    getAuthServers: async (params = {}) => {
+      const response = await apiClient.get('/config/auth-servers', { params });
+      return response.data;
+    },
+    getCaptivePortalProfiles: async (params = {}) => {
+      const response = await apiClient.get('/config/captive-portal-profiles', { params });
       return response.data;
     },
   },
@@ -810,6 +920,34 @@ export const greenlakeUserAPI = {
       email,
       sendWelcomeEmail: !!sendWelcomeEmail,
     });
+    return response.data;
+  },
+};
+
+/**
+ * GreenLake Role API - Platform role management
+ */
+export const greenlakeRoleAPI = {
+  listAssignments: async () => {
+    const response = await apiClient.get('/greenlake/role-assignments');
+    return response.data;
+  },
+
+  listUsers: async () => {
+    const response = await apiClient.get('/greenlake/users', { params: { limit: 1000 } });
+    return response.data;
+  },
+
+  assignRole: async ({ userId, roleId }) => {
+    const response = await apiClient.post('/greenlake/role-assignments', {
+      userId,
+      roleId,
+    });
+    return response.data;
+  },
+
+  unassignRole: async (assignmentId) => {
+    const response = await apiClient.delete(`/greenlake/role-assignments/${encodeURIComponent(assignmentId)}`);
     return response.data;
   },
 };

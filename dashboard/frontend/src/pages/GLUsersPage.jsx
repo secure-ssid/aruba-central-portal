@@ -22,11 +22,15 @@ import {
   Tooltip,
   Pagination,
   Chip,
+  Alert,
+  Divider,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchIcon from '@mui/icons-material/Search';
+import ShieldIcon from '@mui/icons-material/Shield';
+import InfoIcon from '@mui/icons-material/Info';
 import { greenlakeUserAPI } from '../services/api';
 
 function StatusChip({ status }) {
@@ -115,9 +119,14 @@ export default function GLUsersPage() {
   return (
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h5" fontWeight={700}>
-          GreenLake Users
-        </Typography>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>
+            GreenLake Users
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage users and view role assignments
+          </Typography>
+        </Box>
         <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
@@ -155,10 +164,18 @@ export default function GLUsersPage() {
         </CardContent>
       </Card>
 
+      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 2 }}>
+        <Typography variant="body2">
+          <strong>Two-Tier Role System:</strong> Users need both Platform roles (managed here)
+          and Service roles (Aruba Central) for full access. Visit{' '}
+          <strong>/gl/roles</strong> to manage platform role assignments.
+        </Typography>
+      </Alert>
+
       {error && (
-        <Box mb={2}>
-          <Typography color="error">{error}</Typography>
-        </Box>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
       )}
 
       <TableContainer component={Paper}>
@@ -168,6 +185,7 @@ export default function GLUsersPage() {
               <TableCell>Username</TableCell>
               <TableCell>Display Name</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Platform Roles</TableCell>
               <TableCell>Last Login</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -178,6 +196,26 @@ export default function GLUsersPage() {
                 <TableCell>{u.username || '-'}</TableCell>
                 <TableCell>{u.displayName || '-'}</TableCell>
                 <TableCell><StatusChip status={u.userStatus} /></TableCell>
+                <TableCell>
+                  {u.roles && u.roles.length > 0 ? (
+                    <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                      {u.roles.map((role, idx) => (
+                        <Chip
+                          key={idx}
+                          size="small"
+                          icon={<ShieldIcon />}
+                          label={role.name || role}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Tooltip title="No platform roles assigned. Visit /gl/roles to assign roles.">
+                      <Chip size="small" label="None" color="default" />
+                    </Tooltip>
+                  )}
+                </TableCell>
                 <TableCell>{u.lastLogin || '-'}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="Delete">
@@ -197,7 +235,7 @@ export default function GLUsersPage() {
             ))}
             {users.length === 0 && !loading && (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   <Typography variant="body2" color="text.secondary">
                     No users found.
                   </Typography>

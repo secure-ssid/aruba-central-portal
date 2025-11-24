@@ -27,13 +27,16 @@ import {
   Refresh as RefreshIcon,
   Security as SecurityIcon,
   SignalWifi4Bar as SignalIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import { wlanAPI } from '../services/api';
+import WLANWizard from './wlans/WLANWizard';
 
 function WLANsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [wlans, setWlans] = useState([]);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     fetchWLANs();
@@ -62,6 +65,11 @@ function WLANsPage() {
     return 'default';
   };
 
+  const handleWizardSuccess = () => {
+    setWizardOpen(false);
+    fetchWLANs(); // Refresh the WLAN list
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -81,12 +89,22 @@ function WLANsPage() {
             View and manage wireless networks
           </Typography>
         </Box>
-        <Button
-          startIcon={<RefreshIcon />}
-          onClick={fetchWLANs}
-        >
-          Refresh
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={fetchWLANs}
+            variant="outlined"
+          >
+            Refresh
+          </Button>
+          <Button
+            startIcon={<AddIcon />}
+            onClick={() => setWizardOpen(true)}
+            variant="contained"
+          >
+            Create WLAN
+          </Button>
+        </Box>
       </Box>
 
       {error && (
@@ -213,6 +231,13 @@ function WLANsPage() {
           </TableContainer>
         </CardContent>
       </Card>
+
+      {/* WLAN Creation Wizard */}
+      <WLANWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onSuccess={handleWizardSuccess}
+      />
     </Box>
   );
 }
