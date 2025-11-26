@@ -1,0 +1,3828 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-switch-system API generated from aruba-switch-system.yang",
+    "version": "1.0.0",
+    "title": "switch-system",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "switch-system"
+    }
+  ],
+  "paths": {
+    "/switch-system": {
+      "get": {
+        "summary": "Read switch-system",
+        "description": "System Configurations",
+        "operationId": "readSwitchSystem",
+        "x-cliParam": {
+          "commandName": "readSwitchSystemCmd",
+          "summary": "Read operation for switch-system",
+          "commandUse": "switch-system",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/switch-system/"
+        },
+        "tags": [
+          "switch-system"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_SwitchSystemSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/switch-system/{name}": {
+      "post": {
+        "summary": "Create profile by {name}",
+        "description": "List containing system profile attributes.",
+        "operationId": "createSwitchSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "createSwitchSystemProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createSwitchSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-system/profile/%s/"
+        },
+        "tags": [
+          "switch-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "User defined system profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSwitchSystem_SwitchSystemprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read profile by {name}",
+        "description": "List containing system profile attributes.",
+        "operationId": "readSwitchSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "readSwitchSystemProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readSwitchSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-system/profile/%s/"
+        },
+        "tags": [
+          "switch-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "User defined system profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_SwitchSystemprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "List containing system profile attributes.",
+        "operationId": "updateSwitchSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "updateSwitchSystemProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateSwitchSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-system/profile/%s/"
+        },
+        "tags": [
+          "switch-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "User defined system profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSwitchSystem_SwitchSystemprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete profile by {name}",
+        "description": "List containing system profile attributes.",
+        "operationId": "deleteSwitchSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteSwitchSystemProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteSwitchSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-system/profile/%s/"
+        },
+        "tags": [
+          "switch-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "User defined system profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaSwitchSystem_SwitchSystemprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaSwitchSystem_SwitchSystemprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaSwitchSystem_SwitchSystemSchema": {
+        "description": "System Configurations",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "List containing system profile attributes.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_RedundantManagementConfiguration"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_PowerConfiguration"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_IpIcmp"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchSystem_IpTcp"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "User defined system profile name."
+                    },
+                    "contact": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "Device contact information, often an email."
+                    },
+                    "location": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "Device location information."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Description of the user defined system profile."
+                    },
+                    "gbp": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "GBP configuration container.",
+                      "properties": {
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable Group Based Policy (GBP)."
+                        }
+                      }
+                    },
+                    "timezone": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Timezone configuration container.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaSwitchSystem_DaylightTime"
+                        }
+                      ],
+                      "properties": {
+                        "timezone-name": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS",
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 2,
+                          "maxLength": 32,
+                          "default": "none",
+                          "description": "Timezone name to be configured."
+                        },
+                        "hour-offset": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": -12,
+                          "maximum": 14,
+                          "default": "0",
+                          "description": "Hours offset from the UTC"
+                        },
+                        "minute-offset": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 59,
+                          "default": "0",
+                          "description": "Minutes offset from the UTC"
+                        }
+                      }
+                    },
+                    "virtual-mac": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "unicast-mac-address",
+                      "x-patterns": "'[0-9a-fA-F][02468aceACE](:[0-9a-fA-F]{2}){5}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A unicast MAC address",
+                      "description": "Global virtual MAC configuration. An example usage would be EVPN\nSymmetric IRB where EVPN advertises this MAC as the Router's\nMAC for all the EVPN Symmetric Routes."
+                    },
+                    "disable-factory-reset": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Prevent the manual hard reset to factory default by pressing down\nand holding the reset button."
+                    },
+                    "usb-port-disable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable the USB port."
+                    },
+                    "internal-vlan-range": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "internal-vlan-range",
+                      "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[2-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[2-9]))))'",
+                      "maxLength": 9999,
+                      "description": "Specifies the starting and ending VLAN number for the range."
+                    },
+                    "mac-age-time": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 60,
+                      "maximum": 999960,
+                      "description": "MAC age time or how long the MAC address remains in the MAC table."
+                    },
+                    "mac-address-delimiter": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "NONE",
+                        "COLON",
+                        "DASH",
+                        "OUI_NIC",
+                        "PERCENT",
+                        "COMMA",
+                        "SLASH"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "NONE": "XXXXXXXXXXXX",
+                        "COLON": " XX:XX:XX:XX:XX:XX",
+                        "DASH": "XX-XX-XX-XX-XX-XX",
+                        "OUI_NIC": "XXXXXX-XXXXXX",
+                        "PERCENT": "XX%XX%XX%XX%XX%XX",
+                        "COMMA": "XX,XX,XX,XX,XX,XX",
+                        "SLASH": "XX/XX/XX/XX/XX/XX"
+                      },
+                      "x-typeDescription": "MAC address format.",
+                      "description": "The character used to separate the digits of the MAC address."
+                    },
+                    "enable-unsupported-transceiver": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Allow or Disallow transceivers that are recognized as unsupported to be operational."
+                    },
+                    "unsupported-transceiver-logging-interval": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1440,
+                      "maximum": 10080,
+                      "default": "1440",
+                      "description": "Configure the logging interval for allowed unsupported transceivers feature."
+                    },
+                    "unsupported-transceiver-logging": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable or Disable unsupported transceiver logging."
+                    },
+                    "max-vlan": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 16,
+                      "maximum": 4094,
+                      "description": "Configure the maximum number of VLANs allowed on the device."
+                    },
+                    "management-vlan-id": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4094,
+                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                      "description": "Configure the management VLAN."
+                    },
+                    "primary-vlan": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4094,
+                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                      "description": "Configure the primary VLAN."
+                    },
+                    "ip-routing": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable IP routing"
+                    },
+                    "ipv6-unicast-routing": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable unicast IPv6 routing"
+                    },
+                    "ip-multicast-routing": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable/disable IP multicast routing."
+                    },
+                    "access-list": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaSwitchSystem_AccessList"
+                        }
+                      ],
+                      "description": "access-list attributes"
+                    },
+                    "loop-protect": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaLoopProtect_LoopProtectSwitchSystemConfig"
+                        }
+                      ],
+                      "description": "Loop protect profile to be applied."
+                    },
+                    "fault-monitor": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemConfiguration"
+                        }
+                      ],
+                      "description": "Fault monitoring configuration."
+                    },
+                    "aaa": {
+                      "description": "AAA attributes.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationSystemSwitchConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaAaaProfile_AccountingSystemSwitchConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaAuthServerGlobal_CppmIdentity"
+                        }
+                      ],
+                      "properties": {
+                        "dot1x-auth": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS"
+                          ],
+                          "description": "Container for 802.1X authentication attributes, used to enable or disable 802.1X features.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ArubaAaaDot1xauth_Dot1xauthSystemSwitchConfig"
+                            }
+                          ]
+                        },
+                        "dot1x-supp": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS"
+                          ],
+                          "description": "Container for 802.1X supplicant attributes.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ArubaAaaDot1xsupp_Dot1xsuppSystemSwitchConfig"
+                            }
+                          ]
+                        },
+                        "mac-auth": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS"
+                          ],
+                          "description": "Container for MAC authentication attributes, used to enable or disable MAC authentication.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ArubaAaaMacauth_MacauthSystemSwitchConfig"
+                            }
+                          ]
+                        },
+                        "web-auth": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "description": "Container for Web authentication attributes, used to enable or disable Web based authentication.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ArubaAaaWebauth_WebauthSystemConfig"
+                            }
+                          ]
+                        },
+                        "user-role": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "description": "Container for aaa authorization user-role global attributes.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ArubaSwitchSystem_UserRole"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "macsec": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "MACsec configurations.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaMacsec_MacsecSystemConfig"
+                        }
+                      ]
+                    },
+                    "dynamic-arp-inspection": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "Configuration of Dynamic ARP Inspection.\nDynamic ARP Inspection is defense mechanism can be put in place on a switch to protect\nagainst various possible attacks using ARP. This can limit the amount of ARP activity\nallowed from a host or on a port and can also ensure all ARP packets are consistent\nwith one or more binding database which can be created via various means.\nIt can also enforce integrity checks on the ARP packets to check against using\ndifferent MAC or IP in the Ethernet or IP header and the ARP header.",
+                      "properties": {
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable Dynamic ARP Protection globally"
+                        },
+                        "validate-destination-mac": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Validate destination MAC address in ARP request"
+                        },
+                        "validate-ip": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Validate source IP address in ARP request"
+                        },
+                        "validate-source-mac": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Validate source MAC address in ARP request"
+                        }
+                      }
+                    },
+                    "port-security": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Container for the port security configurations.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaPortSecurity_PortSecuritySystemConfig"
+                        }
+                      ]
+                    },
+                    "fastboot": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable/Disable fastboot for the system. When fastboot is enabled,\nMost of the test under POST will be skipped. POST (Power On Self Test)\nverifies the hardware functionality of various modules (subsystem/\nline modules/ fabric module / interfaces) during boot-up."
+                    },
+                    "captive-portal-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable the Captive Portal profile."
+                    },
+                    "policy-in": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 144,
+                      "description": "The policy name for inbound (Ingress) traffic."
+                    },
+                    "private-vlan": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Private VLAN related global configurations",
+                      "properties": {
+                        "hw-resource-share-enable": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "boolean",
+                          "default": "true",
+                          "description": "Enable hardware resource sharing for private VLAN secondary ports.\nThis configuration is applicable for certain AOS-CX switches only.\nThis configuration is available from 10.14 switch firmware version\nand it is enabled by default. This configuration helps to get more\nprivate VLAN secondary ports."
+                        }
+                      }
+                    },
+                    "qinq": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Global level configuration for QinQ",
+                      "properties": {
+                        "ethertype": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "ETHERTYPE_8100",
+                            "ETHERTYPE_88A8"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "ETHERTYPE_8100": "Ethertype 8100.",
+                            "ETHERTYPE_88A8": "Ethertype 88A8."
+                          },
+                          "x-typeDescription": "QinQ ether types either Ethertype 8100 or Ethertype 88A8.",
+                          "description": "The QinQ ethertype configuration. This is supported only in certain CX switches"
+                        },
+                        "vlan-mode": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "MODE_SVLAN",
+                            "MODE_MIXED_VLAN"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "MODE_SVLAN": "S-VLAN (service provider VLAN) mode.",
+                            "MODE_MIXED_VLAN": "Mixed VLAN mode."
+                          },
+                          "x-typeDescription": "The QinQ (802.1Q-in-802.1Q) VLAN modes either S-VLAN or mixed VLAN mode.",
+                          "description": "The QinQ VLAN mode configuration."
+                        },
+                        "tag-type": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "tag-type",
+                          "x-patterns": "'([6-9a-fA-F][0-9a-fA-F][0-9a-fA-F])|([1-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])'",
+                          "maxLength": 9999,
+                          "description": "The QinQ tag type in hexadecimal, must have QinQ VLAN mode configuration."
+                        }
+                      }
+                    },
+                    "dfp-cppm-timer": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 60,
+                      "maximum": 300,
+                      "default": "120",
+                      "description": "Configures the timer for AOS-S switch to send the client data to ClearPass."
+                    },
+                    "default-device-type-associations": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "List of supported device types configuration for switch system",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "supported-device-type": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "ARUBA_AP",
+                              "ARUBA_SWITCH",
+                              "SCS_WAN_CPE"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "ARUBA_AP": "Aruba Access Point device type",
+                              "ARUBA_SWITCH": "Aruba routing/switching device",
+                              "SCS_WAN_CPE": "SCS WAN CPE device type"
+                            },
+                            "x-typeDescription": "Default Device types for device profile association",
+                            "description": "Specify an approved device-type in order to configure and attach a profile to it."
+                          },
+                          "device-profile-ref": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "x-path": "/ac-device-profile:device-profile/ac-device-profile:profile/ac-device-profile:name",
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "Associate a profile with this device-type."
+                          },
+                          "enable": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "boolean",
+                            "default": "false",
+                            "description": "Enable automatic profile association."
+                          }
+                        }
+                      },
+                      "x-key": [
+                        "supportedDeviceType"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaSwitchSystem_SwitchSystemSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSwitchSystem_SwitchSystemSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSwitchSystem_SwitchSystemprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSwitchSystem_RedundantManagementConfiguration"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaSwitchSystem_PowerConfiguration"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaSwitchSystem_IpIcmp"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaSwitchSystem_IpTcp"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "User defined system profile name."
+              },
+              "contact": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Device contact information, often an email."
+              },
+              "location": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Device location information."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Description of the user defined system profile."
+              },
+              "gbp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "GBP configuration container.",
+                "properties": {
+                  "enable": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable Group Based Policy (GBP)."
+                  }
+                }
+              },
+              "timezone": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "description": "Timezone configuration container.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaSwitchSystem_DaylightTime"
+                  }
+                ],
+                "properties": {
+                  "timezone-name": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS",
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 2,
+                    "maxLength": 32,
+                    "default": "none",
+                    "description": "Timezone name to be configured."
+                  },
+                  "hour-offset": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": -12,
+                    "maximum": 14,
+                    "default": "0",
+                    "description": "Hours offset from the UTC"
+                  },
+                  "minute-offset": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 59,
+                    "default": "0",
+                    "description": "Minutes offset from the UTC"
+                  }
+                }
+              },
+              "virtual-mac": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "unicast-mac-address",
+                "x-patterns": "'[0-9a-fA-F][02468aceACE](:[0-9a-fA-F]{2}){5}'",
+                "maxLength": 9999,
+                "x-typeDescription": "A unicast MAC address",
+                "description": "Global virtual MAC configuration. An example usage would be EVPN\nSymmetric IRB where EVPN advertises this MAC as the Router's\nMAC for all the EVPN Symmetric Routes."
+              },
+              "disable-factory-reset": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Prevent the manual hard reset to factory default by pressing down\nand holding the reset button."
+              },
+              "usb-port-disable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable the USB port."
+              },
+              "internal-vlan-range": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "internal-vlan-range",
+                "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[2-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[2-9]))))'",
+                "maxLength": 9999,
+                "description": "Specifies the starting and ending VLAN number for the range."
+              },
+              "mac-age-time": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 60,
+                "maximum": 999960,
+                "description": "MAC age time or how long the MAC address remains in the MAC table."
+              },
+              "mac-address-delimiter": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "COLON",
+                  "DASH",
+                  "OUI_NIC",
+                  "PERCENT",
+                  "COMMA",
+                  "SLASH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "XXXXXXXXXXXX",
+                  "COLON": " XX:XX:XX:XX:XX:XX",
+                  "DASH": "XX-XX-XX-XX-XX-XX",
+                  "OUI_NIC": "XXXXXX-XXXXXX",
+                  "PERCENT": "XX%XX%XX%XX%XX%XX",
+                  "COMMA": "XX,XX,XX,XX,XX,XX",
+                  "SLASH": "XX/XX/XX/XX/XX/XX"
+                },
+                "x-typeDescription": "MAC address format.",
+                "description": "The character used to separate the digits of the MAC address."
+              },
+              "enable-unsupported-transceiver": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Allow or Disallow transceivers that are recognized as unsupported to be operational."
+              },
+              "unsupported-transceiver-logging-interval": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1440,
+                "maximum": 10080,
+                "default": "1440",
+                "description": "Configure the logging interval for allowed unsupported transceivers feature."
+              },
+              "unsupported-transceiver-logging": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Enable or Disable unsupported transceiver logging."
+              },
+              "max-vlan": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 16,
+                "maximum": 4094,
+                "description": "Configure the maximum number of VLANs allowed on the device."
+              },
+              "management-vlan-id": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "Configure the management VLAN."
+              },
+              "primary-vlan": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "Configure the primary VLAN."
+              },
+              "ip-routing": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable IP routing"
+              },
+              "ipv6-unicast-routing": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable unicast IPv6 routing"
+              },
+              "ip-multicast-routing": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable/disable IP multicast routing."
+              },
+              "access-list": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaSwitchSystem_AccessList"
+                  }
+                ],
+                "description": "access-list attributes"
+              },
+              "loop-protect": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaLoopProtect_LoopProtectSwitchSystemConfig"
+                  }
+                ],
+                "description": "Loop protect profile to be applied."
+              },
+              "fault-monitor": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemConfiguration"
+                  }
+                ],
+                "description": "Fault monitoring configuration."
+              },
+              "aaa": {
+                "description": "AAA attributes.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationSystemSwitchConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaAaaProfile_AccountingSystemSwitchConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaAuthServerGlobal_CppmIdentity"
+                  }
+                ],
+                "properties": {
+                  "dot1x-auth": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "description": "Container for 802.1X authentication attributes, used to enable or disable 802.1X features.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaAaaDot1xauth_Dot1xauthSystemSwitchConfig"
+                      }
+                    ]
+                  },
+                  "dot1x-supp": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "description": "Container for 802.1X supplicant attributes.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaAaaDot1xsupp_Dot1xsuppSystemSwitchConfig"
+                      }
+                    ]
+                  },
+                  "mac-auth": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "description": "Container for MAC authentication attributes, used to enable or disable MAC authentication.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaAaaMacauth_MacauthSystemSwitchConfig"
+                      }
+                    ]
+                  },
+                  "web-auth": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "description": "Container for Web authentication attributes, used to enable or disable Web based authentication.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaAaaWebauth_WebauthSystemConfig"
+                      }
+                    ]
+                  },
+                  "user-role": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "description": "Container for aaa authorization user-role global attributes.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaSwitchSystem_UserRole"
+                      }
+                    ]
+                  }
+                }
+              },
+              "macsec": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "MACsec configurations.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaMacsec_MacsecSystemConfig"
+                  }
+                ]
+              },
+              "dynamic-arp-inspection": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "description": "Configuration of Dynamic ARP Inspection.\nDynamic ARP Inspection is defense mechanism can be put in place on a switch to protect\nagainst various possible attacks using ARP. This can limit the amount of ARP activity\nallowed from a host or on a port and can also ensure all ARP packets are consistent\nwith one or more binding database which can be created via various means.\nIt can also enforce integrity checks on the ARP packets to check against using\ndifferent MAC or IP in the Ethernet or IP header and the ARP header.",
+                "properties": {
+                  "enable": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable Dynamic ARP Protection globally"
+                  },
+                  "validate-destination-mac": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Validate destination MAC address in ARP request"
+                  },
+                  "validate-ip": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Validate source IP address in ARP request"
+                  },
+                  "validate-source-mac": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Validate source MAC address in ARP request"
+                  }
+                }
+              },
+              "port-security": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "description": "Container for the port security configurations.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaPortSecurity_PortSecuritySystemConfig"
+                  }
+                ]
+              },
+              "fastboot": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Enable/Disable fastboot for the system. When fastboot is enabled,\nMost of the test under POST will be skipped. POST (Power On Self Test)\nverifies the hardware functionality of various modules (subsystem/\nline modules/ fabric module / interfaces) during boot-up."
+              },
+              "captive-portal-enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable the Captive Portal profile."
+              },
+              "policy-in": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "The policy name for inbound (Ingress) traffic."
+              },
+              "private-vlan": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "description": "Private VLAN related global configurations",
+                "properties": {
+                  "hw-resource-share-enable": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "boolean",
+                    "default": "true",
+                    "description": "Enable hardware resource sharing for private VLAN secondary ports.\nThis configuration is applicable for certain AOS-CX switches only.\nThis configuration is available from 10.14 switch firmware version\nand it is enabled by default. This configuration helps to get more\nprivate VLAN secondary ports."
+                  }
+                }
+              },
+              "qinq": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "description": "Global level configuration for QinQ",
+                "properties": {
+                  "ethertype": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "ETHERTYPE_8100",
+                      "ETHERTYPE_88A8"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "ETHERTYPE_8100": "Ethertype 8100.",
+                      "ETHERTYPE_88A8": "Ethertype 88A8."
+                    },
+                    "x-typeDescription": "QinQ ether types either Ethertype 8100 or Ethertype 88A8.",
+                    "description": "The QinQ ethertype configuration. This is supported only in certain CX switches"
+                  },
+                  "vlan-mode": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "MODE_SVLAN",
+                      "MODE_MIXED_VLAN"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "MODE_SVLAN": "S-VLAN (service provider VLAN) mode.",
+                      "MODE_MIXED_VLAN": "Mixed VLAN mode."
+                    },
+                    "x-typeDescription": "The QinQ (802.1Q-in-802.1Q) VLAN modes either S-VLAN or mixed VLAN mode.",
+                    "description": "The QinQ VLAN mode configuration."
+                  },
+                  "tag-type": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "tag-type",
+                    "x-patterns": "'([6-9a-fA-F][0-9a-fA-F][0-9a-fA-F])|([1-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])'",
+                    "maxLength": 9999,
+                    "description": "The QinQ tag type in hexadecimal, must have QinQ VLAN mode configuration."
+                  }
+                }
+              },
+              "dfp-cppm-timer": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 60,
+                "maximum": 300,
+                "default": "120",
+                "description": "Configures the timer for AOS-S switch to send the client data to ClearPass."
+              },
+              "default-device-type-associations": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "description": "List of supported device types configuration for switch system",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "supported-device-type": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ARUBA_AP",
+                        "ARUBA_SWITCH",
+                        "SCS_WAN_CPE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ARUBA_AP": "Aruba Access Point device type",
+                        "ARUBA_SWITCH": "Aruba routing/switching device",
+                        "SCS_WAN_CPE": "SCS WAN CPE device type"
+                      },
+                      "x-typeDescription": "Default Device types for device profile association",
+                      "description": "Specify an approved device-type in order to configure and attach a profile to it."
+                    },
+                    "device-profile-ref": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-device-profile:device-profile/ac-device-profile:profile/ac-device-profile:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "Associate a profile with this device-type."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable automatic profile association."
+                    }
+                  }
+                },
+                "x-key": [
+                  "supportedDeviceType"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSwitchSystem_IpIcmp": {
+        "description": "Grouping for ICMP Configurations",
+        "properties": {
+          "icmp": {
+            "description": "ICMP Configurations.\nThe Internet Control Message Protocol (ICMP) is used\nby network devices, including routers, to send error\nmessages and operational information indicating,\nfor example, that a requested service is not available\nor that a host or router could not be reached.",
+            "properties": {
+              "redirect": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable sending ICMPv4 and ICMPv6 redirect messages."
+              },
+              "unreachable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable sending ICMPv4 and ICMPv6 destination unreachable messages."
+              },
+              "throttle": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 86400,
+                "default": "1",
+                "description": "ICMP throttle (in seconds) is used to configure the packet\ninterval to send ICMPv4/v6 error and redirect messages."
+              },
+              "burst-normal": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "default": "1000",
+                "description": "Maximum number of ICMP replies to send per second."
+              },
+              "address-mask": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables address mask replies."
+              },
+              "echo-reply": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables echo replies to broadcast\necho requests."
+              },
+              "reply-limit": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable ICMP reply rate limiting."
+              },
+              "ipv6-icmp-error-interval": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "default": "0",
+                "description": "Interval at which to send\nIPv6 ICMP error messages."
+              },
+              "ipv6-icmp-bucket-size": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 200,
+                "description": "Bucket-size to send\nICMP error message."
+              }
+            }
+          }
+        }
+      },
+      "ArubaSwitchSystem_IpTcp": {
+        "description": "Grouping for global TCP configurations",
+        "properties": {
+          "tcp": {
+            "description": "TCP Configurations.\nIn TCP 3-way handshake, the switch may respond back with\nSYN-ACK which might never reach the intended destination.\nThese unestablished connections queue up, they can prevent\nnew, legitimate requests from being handled. Hence there\nis a need to handle these half-open requests with a timeout\nthreshold which can be user tunable.",
+            "properties": {
+              "syn-ack-retry": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 255,
+                "default": "5",
+                "description": "Number of times TCP SYN-ACK packets are\nresent in response to a TCP SYN request."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable TCP configurations."
+              },
+              "randomize-timestamp": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable TCP timestamp randomization."
+              }
+            }
+          }
+        }
+      },
+      "ArubaSwitchSystem_DaylightTime": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Grouping for daylight time commands",
+        "properties": {
+          "daylight-time-rule": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "ALASKA",
+              "CONTINENTAL_US_AND_CANADA",
+              "MIDDLE_EUROPE_AND_PORTUGAL",
+              "SOUTHERN_HEMISPHERE",
+              "WESTERN_EUROPE",
+              "USER_DEFINED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "Time rule none, time will be in UTC.",
+              "ALASKA": "Daylight time rule Alaska.",
+              "CONTINENTAL_US_AND_CANADA": "Daylight time rule US and Canada.",
+              "MIDDLE_EUROPE_AND_PORTUGAL": "Daylight time rule Europe and Portugal.",
+              "SOUTHERN_HEMISPHERE": "Daylight time rule Southern Hemisphere.",
+              "WESTERN_EUROPE": "Daylight time rule Western Europe.",
+              "USER_DEFINED": "Daylight time rule as defined by the user."
+            },
+            "x-typeDescription": "Daylight time rule list.",
+            "default": "NONE",
+            "description": "System daylight time rules enum."
+          },
+          "begin-date": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "begin-date",
+            "x-patterns": "'(0[1-9]|1[1,2])/(0[1-9]|[12][0-9]|3[01])'",
+            "maxLength": 9999,
+            "description": "System daylight time begin date when the daylight time rule is user defined."
+          },
+          "end-date": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "end-date",
+            "x-patterns": "'(0[1-9]|1[1,2])/(0[1-9]|[12][0-9]|3[01])'",
+            "maxLength": 9999,
+            "description": "System daylight time end date when the daylight time rule is user defined."
+          }
+        }
+      },
+      "ArubaSwitchSystem_AccessList": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Grouping for global access-list configurations",
+        "properties": {
+          "log-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable ACL logging. Enabled by default"
+          },
+          "log-timer": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 5,
+            "maximum": 300,
+            "description": "Sets the log timer interval for all ACEs that have the log parameter configured."
+          },
+          "secure-update": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Secure update determines if access lists are updated using the secure-update feature. Secure-update is enabled by default."
+          },
+          "deny-fragmented-tcp-header": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Configure the switch to drop all IPv4 and IPv6 packets containing a fragmented TCP header."
+          },
+          "deny-non-classifiable-layer4-header": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Configure the switch to drop all IPv6 packets for which the Layer 4 header cannot be processed by ACL hardware."
+          }
+        }
+      },
+      "ArubaSwitchSystem_UserRole": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Grouping for aaa authorization user-role global attributes configurations",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables authorization using user roles."
+          },
+          "download": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "description": "Enables the downloadable user role feature."
+          }
+        }
+      },
+      "ArubaSwitchSystem_RedundantManagementConfiguration": {
+        "description": "Top level redundant management configuration",
+        "properties": {
+          "redundant-management": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Redundant management configuration",
+            "properties": {
+              "redundancy-mode": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "MGMT_REDUNDANCY_NONE",
+                  "MGMT_REDUNDANCY_WARM_STANDBY",
+                  "MGMT_REDUNDANCY_NONSTOP_SWITCHING"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MGMT_REDUNDANCY_NONE": "Allows to shut down a redundant management module that is not functioning\ncorrectly without physically removing the module.",
+                  "MGMT_REDUNDANCY_WARM_STANDBY": "Enable warm-standby redundancy switch mode.",
+                  "MGMT_REDUNDANCY_NONSTOP_SWITCHING": "Nonstop switching redundancy mode."
+                },
+                "x-typeDescription": "Redundant management redundancy type.",
+                "description": "Redundant management redundancy mode when the platform is a 5406 or 5412."
+              },
+              "preferred-active-module": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2,
+                "description": "Active management module preferred across reboot when the platform is a 5406 or 5412."
+              },
+              "rapid-switchover": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 36000,
+                "description": "Used when the platform is a 5406 or 5412 the time interval before route and\nneighbor table entries are re-added to the Forwarding Information Base\non the active management module after a failover has occurred."
+              }
+            }
+          }
+        }
+      },
+      "ArubaSwitchSystem_PowerConfiguration": {
+        "description": "Top level system power configuration"
+      },
+      "ArubaAaaDot1xauth_Dot1xauthSystemSwitchConfig": {
+        "description": "Group for 802.1X authenticator switch specific system configurations",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.1X authentication."
+          },
+          "eap-tls-fragment-size-towards-server": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 576,
+            "maximum": 3072,
+            "description": "Maximum size in bytes of an EAP-TLS fragment encoded in a single\nRADIUS request packet."
+          },
+          "radius-auth-method": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "LOCAL",
+              "EAP",
+              "PAP",
+              "CHAP",
+              "PEAP_MSCHAPV2"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LOCAL": "Use local switch user/password database.",
+              "EAP": "Use EAP capable RADIUS server.",
+              "PAP": "Password Authentication Protocol",
+              "CHAP": "Challenge Handshake Authentication Protocol",
+              "PEAP_MSCHAPV2": "Challenge Handshake Authentication Protocol"
+            },
+            "x-typeDescription": "RADIUS authentication methods.",
+            "default": "LOCAL",
+            "description": "The type of authentication method to use for authentication."
+          },
+          "secondary-auth-method": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CACHED",
+              "AUTHORIZED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "Do not use backup authentication methods.",
+              "CACHED": "Retain current session attributes during reauthentication.",
+              "AUTHORIZED": "Allow access without authentication."
+            },
+            "x-typeDescription": "Backup authentication methods.",
+            "default": "NONE",
+            "description": "Secondary authentication method."
+          },
+          "cached-reauth-authorized": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow access after cached reauthentication."
+          },
+          "radius-server-group": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "RADIUS server group to use for authentication."
+          },
+          "cached-reauth-delay": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "description": "Period of time, in seconds, during which authenticator will not initiate reauthentications after a cached reauthentication."
+          }
+        }
+      },
+      "ArubaAaaDot1xsupp_Dot1xsuppSystemSwitchConfig": {
+        "description": "Group for 802.1X supplicant switch specific system configurations.",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.1X supplicant."
+          },
+          "eap-tls-cert-type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "USER",
+              "DEVICE",
+              "EST"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "USER": "User defined certificate",
+              "DEVICE": "Device certificate stored in the Trusted Platform Module (TPM)",
+              "EST": "EST(Enrollment over Secure Transport protocol) certificate."
+            },
+            "x-typeDescription": "Certificate type.",
+            "description": "The type of certificate to use for EAP-TLS authentication."
+          },
+          "eap-tls-cert": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 65,
+            "x-typeDescription": "Certificate name string.",
+            "description": "The certificate to use for EAP-TLS authentication."
+          }
+        }
+      },
+      "ArubaAaaMacauth_PasswordInfo": {
+        "description": "Group for  password to be used for authentication.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure plaintext key",
+              "CIPHER_TEXT": "Configure ciphertext key"
+            },
+            "x-typeDescription": "Password type",
+            "default": "PLAIN_TEXT",
+            "description": "Password type [ciphertext | plaintext]."
+          },
+          "password": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "The plaintext password to be used for authentication in the\nRADIUS request messages. This is applicable only when password\ntype is PLAIN_TEXT."
+          },
+          "ciphertext-password": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "The ciphertext password to be used for authentication in the\nRADIUS request messages. This is applicable only when password\ntype is CIPHER_TEXT."
+          }
+        }
+      },
+      "ArubaAaaMacauth_MacauthSystemSwitchConfig": {
+        "description": "Group for MAC authentication switch specific system configurations.",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable MAC authentication."
+          },
+          "address-format": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "NO_DELIMITER",
+              "SINGLE_DASH",
+              "MULTI_DASH",
+              "MULTI_COLON",
+              "MULTI_PERCENT",
+              "MULTI_COMMA",
+              "MULTI_SLASH",
+              "NO_DELIMITER_UPPERCASE",
+              "SINGLE_DASH_UPPERCASE",
+              "MULTI_DASH_UPPERCASE",
+              "MULTI_COLON_UPPERCASE",
+              "MULTI_PERCENT_UPPERCASE",
+              "MULTI_COMMA_UPPERCASE",
+              "MULTI_SLASH_UPPERCASE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NO_DELIMITER": "aabbccddeeff",
+              "SINGLE_DASH": "aabbcc-ddeeff",
+              "MULTI_DASH": "aa-bb-cc-dd-ee-ff",
+              "MULTI_COLON": "aa:bb:cc:dd:ee:ff",
+              "MULTI_PERCENT": "aa%bb%cc%dd%ee%ff",
+              "MULTI_COMMA": "aa,bb,cc,dd,ee,ff",
+              "MULTI_SLASH": "aa/bb/cc/dd/ee/ff",
+              "NO_DELIMITER_UPPERCASE": "AABBCCDDEEFF",
+              "SINGLE_DASH_UPPERCASE": "AABBCC-DDEEFF",
+              "MULTI_DASH_UPPERCASE": "AA-BB-CC-DD-EE-FF",
+              "MULTI_COLON_UPPERCASE": "AA:BB:CC:DD:EE:FF",
+              "MULTI_PERCENT_UPPERCASE": "AA%BB%CC%DD%EE%FF",
+              "MULTI_COMMA_UPPERCASE": "AA,BB,CC,DD,EE,FF",
+              "MULTI_SLASH_UPPERCASE": "AA/BB/CC/DD/EE/FF"
+            },
+            "x-typeDescription": "MAC address format.",
+            "default": "NO_DELIMITER",
+            "description": "The MAC address format to be used in the RADIUS request messages\nfor authentication."
+          },
+          "macauth-password": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaAaaMacauth_PasswordInfo"
+              }
+            ],
+            "description": "Enables and configures the global password that is used\nfor MAC authentication. The password can be either in\nciphertext or plaintext format."
+          },
+          "radius-auth-method": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "LOCAL",
+              "EAP",
+              "PAP",
+              "CHAP",
+              "PEAP_MSCHAPV2"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LOCAL": "Use local switch user/password database.",
+              "EAP": "Use EAP capable RADIUS server.",
+              "PAP": "Password Authentication Protocol",
+              "CHAP": "Challenge Handshake Authentication Protocol",
+              "PEAP_MSCHAPV2": "Challenge Handshake Authentication Protocol"
+            },
+            "x-typeDescription": "RADIUS authentication methods.",
+            "default": "CHAP",
+            "description": "The type of RADIUS authentication method to use for authentication."
+          },
+          "secondary-auth-method": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CACHED",
+              "AUTHORIZED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "Do not use backup authentication methods.",
+              "CACHED": "Retain current session attributes during reauthentication.",
+              "AUTHORIZED": "Allow access without authentication."
+            },
+            "x-typeDescription": "Backup authentication methods.",
+            "default": "NONE",
+            "description": "Secondary authentication method."
+          },
+          "cached-reauth-authorized": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow access after cached reauthentication."
+          },
+          "radius-server-group": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "RADIUS server group to use for authentication."
+          }
+        }
+      },
+      "ArubaAaaWebauth_WebauthSystemConfig": {
+        "description": "Group for Web authentication system-wide configuration.",
+        "properties": {
+          "dhcp-addr": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-prefix",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-prefix",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+              }
+            ],
+            "description": "Configure DHCP address range for web authentication."
+          },
+          "dhcp-lease": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 5,
+            "maximum": 25,
+            "description": "Configure DHCP lease time for web authentication."
+          },
+          "ewa-server": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "External Web Authentication server configuration.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "ewa-server-address": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 253,
+                      "x-patternSources": "domain-name",
+                      "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                      "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                    }
+                  ],
+                  "description": "IP address or FQDN of the Ewa server."
+                },
+                "page-path": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 127,
+                  "description": "Path to the authentication page on the external web authentication server."
+                }
+              }
+            },
+            "x-key": [
+              "ewaServerAddress"
+            ],
+            "maxItems": 2147483647
+          },
+          "access-denied-message": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Access denied message configuration.",
+            "properties": {
+              "message": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 254,
+                "description": "Custom access denied message."
+              },
+              "radius-response": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Use RADIUS server response as access denied message."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAaaProfile_AccountingSystemSwitchConfig": {
+        "description": "Group for system level accounting configurations.",
+        "properties": {
+          "accounting": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Portaccess accounting configuration.",
+            "properties": {
+              "accounting-mode": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "START_STOP",
+                  "STOP_ONLY"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "START_STOP": "Send start and stop accounting record",
+                  "STOP_ONLY": "Send stop accounting record"
+                },
+                "x-typeDescription": "Accounting record types",
+                "default": "START_STOP",
+                "description": "Accounting record type"
+              },
+              "local-accounting": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "default": "false",
+                "type": "boolean",
+                "description": "Enables local accounting for port-access clients in the system\nwhen accounting-mode is START_STOP or STOP_ONLY."
+              },
+              "interim-update-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "default": "false",
+                "type": "boolean",
+                "description": "Enables the device to send interim network accounting updates\nto the configured accounting server when accounting-mode is\nSTART_STOP."
+              },
+              "interim-update-interval": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 525600,
+                "default": "60",
+                "description": "Specifies the time interval(in minutes) between two successive\naccounting updates sent to the server when interim update is\nenabled."
+              },
+              "interim-update-onreauth-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "default": "false",
+                "type": "boolean",
+                "description": "Enables the device to send interim network accounting updates\nto the configured accounting server on successful client\nreauthentication when accounting-mode is START_STOP."
+              },
+              "acct-server-group": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "RADIUS server group to which accounting updates will be sent\nwhen accounting-mode is START_STOP or STOP_ONLY."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAaaProfile_AuthenticationSystemSwitchConfig": {
+        "description": "Group for switch specific system level authentication configurations.",
+        "properties": {
+          "client-move": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "DISABLED",
+              "ENABLED",
+              "SECURE_ENABLED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DISABLED": "Client cannot move between interfaces.",
+              "ENABLED": "Client can move between interfaces without authentication itself\non the new interface.",
+              "SECURE_ENABLED": "Client can move between interfaces but only after authenticating\nitself on the new interface."
+            },
+            "x-typeDescription": "Client move types.",
+            "default": "SECURE_ENABLED",
+            "description": "The client move configuration."
+          },
+          "auto-vlan-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable automatic creation of a VLAN for authenticated clients if the\nVLAN is not already available on the device."
+          },
+          "client-event-log-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable event logs for clients."
+          },
+          "cached-critical-role": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Cached-critical role configuration.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables caching authenticated clients and their associated\nrole information. Clients are assigned to their previously\nauthenticated role."
+              },
+              "cache-replace-mode": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "FIFO"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "Specifies cache entry can't be overwritten till expiry.",
+                  "FIFO": "Specifies oldest cache entry can be replaced with new entry."
+                },
+                "x-typeDescription": "Cached replace mode.",
+                "default": "NONE",
+                "description": "Replacement mode to be applied when cache limit is reached\nand more clients have to be added to the cache."
+              },
+              "cache-timeout": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 168,
+                "default": "96",
+                "description": "The period of time in hours for which an authenticated\nclient's information will be cached."
+              },
+              "persistent-storage-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables writing cached client information to the device's\npersistent storage unit."
+              },
+              "persistent-storage-write-interval": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 900,
+                "maximum": 86400,
+                "default": "3600",
+                "description": "Interval between consecutive cached client information\nwrites to persistent storage file in seconds.\nFlash write occurs only if there is a change in cached\nclient's information."
+              }
+            }
+          },
+          "use-lldp-data": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Authenticate clients using information from their LLDP packets."
+          },
+          "allow-vlan-tagged": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Configure authenticator ports to apply VLAN changes immediately and\napply tagged VLAN membership changes immediately on AAA enabled ports."
+          }
+        }
+      },
+      "ArubaMacsec_MacsecSystemConfig": {
+        "description": "Grouping for system level MACsec configurations.",
+        "properties": {
+          "selftest-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable MACsec selftest on the device."
+          }
+        }
+      },
+      "ArubaPortSecurity_PortSecuritySystemConfig": {
+        "description": "Port security policy configurations.",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable port-security on the system."
+          },
+          "traps-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable port-security violation traps on the system."
+          }
+        }
+      },
+      "ArubaFaultMonitor_FaultMonitorSwitchSystemAction": {
+        "description": "Grouping reusable leaves to single group.",
+        "properties": {
+          "sensitivity": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LOW": "Low sensitivity.",
+              "MEDIUM": "Medium sensitivity.",
+              "HIGH": "High sensitivity."
+            },
+            "x-typeDescription": "Fault sensitivity type.",
+            "description": "Fault sensitivity level."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "NOTIFY",
+              "NOTIFY_AND_DISABLE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NOTIFY": "NOTIFY - log an event.",
+              "NOTIFY_AND_DISABLE": "NOTIFY_AND_DISABLE - log an event and shutdown the port."
+            },
+            "x-typeDescription": "Notify Mode type.",
+            "description": "Action to be performed when the faulty frame count\nexceeds the configured threshold in a 30 second sampling interval."
+          }
+        }
+      },
+      "ArubaFaultMonitor_FaultMonitorSwitchSystemConfiguration": {
+        "description": "Fault-monitor switch system config",
+        "properties": {
+          "excessive-oversize-packets": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive oversize packets configuration."
+          },
+          "excessive-crc-errors": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive CRC errors configuration."
+          },
+          "excessive-late-collisions": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive late collisions configuration."
+          },
+          "excessive-broadcasts": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive broadcasts configuration."
+          },
+          "excessive-multicasts": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive multicasts configuration."
+          },
+          "link-flap": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Link flap monitor configuration."
+          },
+          "bad-transceiver": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive jabbers or fragments configuration."
+          },
+          "over-bandwidth": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Excessive collisions or drops configuration."
+          },
+          "link-loss": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Link loss configuration."
+          },
+          "half-duplex-mismatch": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Half-duplex mismatch."
+          },
+          "full-duplex-mismatch": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaFaultMonitor_FaultMonitorSwitchSystemAction"
+              }
+            ],
+            "description": "Full-duplex mismatch."
+          }
+        }
+      },
+      "ArubaLoopProtect_LoopProtectSwitchSystemConfig": {
+        "description": "Loop protect configuration.Loop protection can find loops in\nuntagged layer 2 links as well as tagged VLAN.",
+        "properties": {
+          "transmit-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10,
+            "default": "5",
+            "description": "Loop-protect packet transmission time interval."
+          },
+          "re-enable-timer": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 604800,
+            "description": "Time interval for enabling port blocked by loop-protect."
+          },
+          "trap": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable SNMP traps when a loop is detected by loop-protect."
+          },
+          "mode": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "PORT_MODE",
+              "VLAN_MODE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PORT_MODE": "Set loop protection to work on a port basis.",
+              "VLAN_MODE": "Set loop protection to work on a VLAN basis."
+            },
+            "x-typeDescription": "Loop protect mode.",
+            "default": "PORT_MODE",
+            "description": "Sets whether loop-protect mode is either port based or vlan based."
+          },
+          "vlans": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 4094,
+              "x-typeDescription": "Type definition representing a single-tagged VLAN",
+              "description": "List of VLANs for sending loop-protect pdus(Protocol Data Unit)\nfor a port."
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAuthServerGlobal_CppmIdentity": {
+        "description": "Group for configuring username and password combination of ClearPass which\nis used to login to ClearPass to download user roles",
+        "properties": {
+          "cppm-user-name": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "CPPM User Name."
+          },
+          "cppm-password": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "CPPM Password."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

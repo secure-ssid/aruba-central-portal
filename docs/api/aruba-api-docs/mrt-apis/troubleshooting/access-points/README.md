@@ -1,0 +1,32 @@
+# Access Points
+
+Troubleshooting operations on Access Points (APs)
+
+## Contents
+
+- [Initiate a Ping test on a AP](./initiate-a-ping-test-on-a-ap.md)
+- [Get AP Ping test status and results](./get-ap-ping-test-status-and-results.md)
+- [Initiate a Traceroute test on a AP](./initiate-a-traceroute-test-on-a-ap.md)
+- [Get AP Traceroute test status and results](./get-ap-traceroute-test-status-and-results.md)
+- [Initiate a Speedtest on a AP](./initiate-a-speedtest-on-a-ap.md)
+- [Get AP Speedtest status and results](./get-ap-speedtest-status-and-results.md)
+- [Initiate a Http test on a AP](./initiate-a-http-test-on-a-ap.md)
+- [Get AP Http test status and results](./get-ap-http-test-status-and-results.md)
+- [Initiate a Https test on a AP](./initiate-a-https-test-on-a-ap.md)
+- [Get AP Https test status and results](./get-ap-https-test-status-and-results.md)
+- [Initiate a Tcp test on a AP](./initiate-a-tcp-test-on-a-ap.md)
+- [Get AP Tcp test status and results](./get-ap-tcp-test-status-and-results.md)
+- [Initiate a Get Arp Table test on a AP](./initiate-a-get-arp-table-test-on-a-ap.md)
+- [Get AP Get Arp Table test status and results](./get-ap-get-arp-table-test-status-and-results.md)
+- [Initiate an Nslookup test on a AP](./initiate-an-nslookup-test-on-a-ap.md)
+- [Get AP Nslookup test status and results](./get-ap-nslookup-test-status-and-results.md)
+- [Initiate an AAA test on an AP](./initiate-an-aaa-test-on-an-ap.md)
+- [Get AP AAA test status and results](./get-ap-aaa-test-status-and-results.md)
+- [List 'show' commands (AP - top commands)](./list-show-commands-ap-top-commands.md)
+- [Run a 'show' command (AP)](./run-a-show-command-ap.md)
+- [Get 'show' command status/result (AP)](./get-show-command-statusresult-ap.md)
+- [Reboot an Access Point](./reboot-an-access-point.md)
+- [Locate an Access Point](./locate-an-access-point.md)
+- [Disconnect all users from an Access Point](./disconnect-all-users-from-an-access-point.md)
+- [Disconnect a specific user by MAC address from an Access Point](./disconnect-a-specific-user-by-mac-address-from-an-access-point.md)
+- [Disconnect all users from a specific network (SSID) on an Access Point](./disconnect-all-users-from-a-specific-network-ssid-on-an-access-point.md)

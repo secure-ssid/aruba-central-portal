@@ -1,0 +1,1921 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-device-certificate API generated from aruba-device-certificate.yang",
+    "version": "1.0.0",
+    "title": "device-certificate"
+  },
+  "tags": [
+    {
+      "name": "device-certificates"
+    }
+  ],
+  "paths": {
+    "/device-certificates": {
+      "get": {
+        "summary": "Read Device Certificate configuration.",
+        "description": "Configuration of Device Certificate Attributes.",
+        "operationId": "readDeviceCertificates",
+        "x-cliParam": {
+          "commandName": "readDeviceCertificatesCmd",
+          "summary": "Read operation for device-certificates",
+          "commandUse": "device-certificates",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/device-certificates/"
+        },
+        "tags": [
+          "device-certificates"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDeviceCertificate_DeviceCertificatesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/device-certificates/{name}": {
+      "post": {
+        "summary": "Create Device Certificate by certificate name.",
+        "description": "List of device certificate parameters.",
+        "operationId": "createDeviceCertificatesDeviceCertificateByID",
+        "x-cliParam": {
+          "commandName": "createDeviceCertificatesDeviceCertificateCmd",
+          "summary": "Create operation for device-certificate",
+          "commandUse": "device-certificate",
+          "parentCommand": "createDeviceCertificatesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-certificates/device-certificate/%s/"
+        },
+        "tags": [
+          "device-certificates"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of Device Certificate to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read Device Certificate by certificate name.",
+        "description": "List of device certificate parameters.",
+        "operationId": "readDeviceCertificatesDeviceCertificateByID",
+        "x-cliParam": {
+          "commandName": "readDeviceCertificatesDeviceCertificateCmd",
+          "summary": "Read operation for device-certificate",
+          "commandUse": "device-certificate",
+          "parentCommand": "readDeviceCertificatesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-certificates/device-certificate/%s/"
+        },
+        "tags": [
+          "device-certificates"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of Device Certificate to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Device Certificate by certificate name.",
+        "description": "List of device certificate parameters.",
+        "operationId": "updateDeviceCertificatesDeviceCertificateByID",
+        "x-cliParam": {
+          "commandName": "updateDeviceCertificatesDeviceCertificateCmd",
+          "summary": "Update operation for device-certificate",
+          "commandUse": "device-certificate",
+          "parentCommand": "updateDeviceCertificatesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-certificates/device-certificate/%s/"
+        },
+        "tags": [
+          "device-certificates"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of Device Certificate to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Device Certificate by certificate name.",
+        "description": "List of device certificate parameters.",
+        "operationId": "deleteDeviceCertificatesDeviceCertificateByID",
+        "x-cliParam": {
+          "commandName": "deleteDeviceCertificatesDeviceCertificateCmd",
+          "summary": "Delete operation for device-certificate",
+          "commandUse": "device-certificate",
+          "parentCommand": "deleteDeviceCertificatesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-certificates/device-certificate/%s/"
+        },
+        "tags": [
+          "device-certificates"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of Device Certificate to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema"
+            }
+          }
+        },
+        "description": "device-certificatebody object"
+      }
+    },
+    "schemas": {
+      "ArubaDeviceCertificate_DeviceCertificatesSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Configuration of Device Certificate Attributes.",
+        "properties": {
+          "device-certificate": {
+            "description": "List of device certificate parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceCertificate_CertificateSubject"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "Name of Device Certificate to be configured."
+                    },
+                    "cert-key-type": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "RSA",
+                        "ECDSA"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "RSA": "RSA Key Type",
+                        "ECDSA": "ECDSA Key Type"
+                      },
+                      "x-typeDescription": "Key Type.",
+                      "description": "Configuration of certificate key type to RSA or ECDSA."
+                    },
+                    "rsa-key-length": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "KEY_LEN_1024",
+                        "KEY_LEN_2048",
+                        "KEY_LEN_3072",
+                        "KEY_LEN_4096"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "KEY_LEN_1024": "RSA Key Length of 1024 bits",
+                        "KEY_LEN_2048": "RSA Key Length of 2048 bits",
+                        "KEY_LEN_3072": "RSA Key Length of 3072 bits",
+                        "KEY_LEN_4096": "RSA Key Length of 4096 bits"
+                      },
+                      "x-typeDescription": "RSA Key length",
+                      "description": "RSA Key Length when certificate key type is RSA."
+                    },
+                    "ecdsa-curve-size": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CURVE_SIZE_256",
+                        "CURVE_SIZE_384",
+                        "CURVE_SIZE_521"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CURVE_SIZE_256": "ECDSA Curve Size of 256 bits",
+                        "CURVE_SIZE_384": "ECDSA Curve Size of 384 bits",
+                        "CURVE_SIZE_521": "ECDSA Curve Size of 521 bits"
+                      },
+                      "x-typeDescription": "Elliptic Curve Size of ECDSA key.",
+                      "description": "ECDSA Curve Size when certificate key type is ECDSA."
+                    },
+                    "app-usage": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "ALL",
+                          "OPENFLOW",
+                          "WEB",
+                          "CAPTIVE_PORTAL",
+                          "SSH_CLIENT",
+                          "SSH_SERVER",
+                          "SYSLOG",
+                          "RADSEC_CLIENT",
+                          "DOT1X_SUPPLICANT",
+                          "EST_CLIENT",
+                          "HSC"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "ALL": "Certificate is assigned for use by all applications.",
+                          "OPENFLOW": "Certificate is assigned for use by openflow application.",
+                          "WEB": "Certificate is assigned for use by web application.",
+                          "CAPTIVE_PORTAL": "Certificate is assigned for use by captive-portal application",
+                          "SSH_CLIENT": "Certificate is assigned for use by ssh-client application.",
+                          "SSH_SERVER": "Certificate is assigned for use by ssh-server application.",
+                          "SYSLOG": "Certificate is assigned for use by syslog application.",
+                          "RADSEC_CLIENT": "Certificate is assigned for use by RADsec client application.",
+                          "DOT1X_SUPPLICANT": "Certificate is assigned for use by Dot1x supplicant application.",
+                          "EST_CLIENT": "Certificate is assigned for use by EST client application.",
+                          "HSC": "Certificate is assigned for use by hardware switch controller application."
+                        },
+                        "x-typeDescription": "The intended application type for the certificate.",
+                        "description": "The application(s) that use the Device Certificate."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "validity-start": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "validity-start",
+                      "x-patterns": "'^((04|06|09|11)/(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)/(0[1-9]|[12][0-9]|3[01])|(02)/(0[1-9]|[12][0-9]))/[0-9]{4}$'",
+                      "maxLength": 9999,
+                      "description": "Certificate Validity start date (MM/DD/YYYY)."
+                    },
+                    "validity-end": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "validity-end",
+                      "x-patterns": "'^((04|06|09|11)/(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)/(0[1-9]|[12][0-9]|3[01])|(02)/(0[1-9]|[12][0-9]))/[0-9]{4}$'",
+                      "maxLength": 9999,
+                      "description": "Certificate Validity end date (MM/DD/YYYY)."
+                    },
+                    "subject-alt-name-dns": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 253,
+                      "x-patternSources": "subject-alt-name-dns",
+                      "x-patterns": "'([a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}'",
+                      "description": "Subject Alternative Name entry containing a DNS name."
+                    },
+                    "subject-alt-name-ip": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{N}\\p{L}]+)?'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "The ipv4-address type represents an IPv4 address in\ndotted-quad notation.  The IPv4 address may include a zone\nindex, separated by a % sign.\nThe zone index is used to disambiguate identical address\nvalues.  For link-local addresses, the zone index will\ntypically be the interface index number or the name of an\ninterface.  If the zone index is not present, the default\nzone of the device will be used.\nThe canonical format for the zone index is the numerical\nformat"
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "['((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{N}\\p{L}]+)?', '(([^:]+:){6}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?']",
+                          "maxLength": 9999,
+                          "x-typeDescription": "The ipv6-address type represents an IPv6 address in full,\nmixed, shortened, and shortened-mixed notation.  The IPv6\naddress may include a zone index, separated by a % sign.\nThe zone index is used to disambiguate identical address\nvalues.  For link-local addresses, the zone index will\ntypically be the interface index number or the name of an\ninterface.  If the zone index is not present, the default\nzone of the device will be used.\nThe canonical format of IPv6 addresses uses the textual\nrepresentation defined in Section 4 of RFC 5952.  The\ncanonical format for the zone index is the numerical\nformat as described in Section 11.2 of RFC 4007."
+                        }
+                      ],
+                      "description": "Subject Alternative Name entry containing an IP Address."
+                    },
+                    "key-usage": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "DATA_ENCIPHERMENT",
+                          "DIGITAL_SIGNATURE",
+                          "KEY_AGREEMENT",
+                          "KEY_ENCIPHERMENT",
+                          "NON_REPUDIATION"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "DATA_ENCIPHERMENT": "Key Usage for Data Encipherment.",
+                          "DIGITAL_SIGNATURE": "Key Usage for Digital Signature.",
+                          "KEY_AGREEMENT": "Key Usage for Key Agreement.",
+                          "KEY_ENCIPHERMENT": "Key Usage for Key Encipherment.",
+                          "NON_REPUDIATION": "Key Usage for Non-Repudiation."
+                        },
+                        "x-typeDescription": "The permitted uses of the certificate.",
+                        "description": "Key usage options of the certificate."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "key-usage-restriction": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "KEY_RESTRICTION_ENCIPHER",
+                        "KEY_RESTRICTION_DECIPHER"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "KEY_RESTRICTION_ENCIPHER": "Restriction of key as encipher only.",
+                        "KEY_RESTRICTION_DECIPHER": "Restriction of key as decipher only."
+                      },
+                      "x-typeDescription": "The key usage for the certificate.",
+                      "description": "Restriction of key on key-agreement usage."
+                    },
+                    "ext-key-usage": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "CLIENT_AUTH",
+                          "SERVER_AUTH"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "CLIENT_AUTH": "Extended Key Usage for Client Authentication.",
+                          "SERVER_AUTH": "Extended Key Usage for Server Authentication."
+                        },
+                        "x-typeDescription": "The extensions to key usage.",
+                        "description": "Extended key usage options of the certificate."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "est-profile": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "EST profile to use for Device Certificate enrollment."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDeviceCertificate_DeviceCertificatesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDeviceCertificate_DeviceCertificatesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDeviceCertificate_DeviceCertificatesdeviceCertificateSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDeviceCertificate_CertificateSubject"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Name of Device Certificate to be configured."
+              },
+              "cert-key-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "RSA",
+                  "ECDSA"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RSA": "RSA Key Type",
+                  "ECDSA": "ECDSA Key Type"
+                },
+                "x-typeDescription": "Key Type.",
+                "description": "Configuration of certificate key type to RSA or ECDSA."
+              },
+              "rsa-key-length": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "KEY_LEN_1024",
+                  "KEY_LEN_2048",
+                  "KEY_LEN_3072",
+                  "KEY_LEN_4096"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "KEY_LEN_1024": "RSA Key Length of 1024 bits",
+                  "KEY_LEN_2048": "RSA Key Length of 2048 bits",
+                  "KEY_LEN_3072": "RSA Key Length of 3072 bits",
+                  "KEY_LEN_4096": "RSA Key Length of 4096 bits"
+                },
+                "x-typeDescription": "RSA Key length",
+                "description": "RSA Key Length when certificate key type is RSA."
+              },
+              "ecdsa-curve-size": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "CURVE_SIZE_256",
+                  "CURVE_SIZE_384",
+                  "CURVE_SIZE_521"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "CURVE_SIZE_256": "ECDSA Curve Size of 256 bits",
+                  "CURVE_SIZE_384": "ECDSA Curve Size of 384 bits",
+                  "CURVE_SIZE_521": "ECDSA Curve Size of 521 bits"
+                },
+                "x-typeDescription": "Elliptic Curve Size of ECDSA key.",
+                "description": "ECDSA Curve Size when certificate key type is ECDSA."
+              },
+              "app-usage": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "ALL",
+                    "OPENFLOW",
+                    "WEB",
+                    "CAPTIVE_PORTAL",
+                    "SSH_CLIENT",
+                    "SSH_SERVER",
+                    "SYSLOG",
+                    "RADSEC_CLIENT",
+                    "DOT1X_SUPPLICANT",
+                    "EST_CLIENT",
+                    "HSC"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ALL": "Certificate is assigned for use by all applications.",
+                    "OPENFLOW": "Certificate is assigned for use by openflow application.",
+                    "WEB": "Certificate is assigned for use by web application.",
+                    "CAPTIVE_PORTAL": "Certificate is assigned for use by captive-portal application",
+                    "SSH_CLIENT": "Certificate is assigned for use by ssh-client application.",
+                    "SSH_SERVER": "Certificate is assigned for use by ssh-server application.",
+                    "SYSLOG": "Certificate is assigned for use by syslog application.",
+                    "RADSEC_CLIENT": "Certificate is assigned for use by RADsec client application.",
+                    "DOT1X_SUPPLICANT": "Certificate is assigned for use by Dot1x supplicant application.",
+                    "EST_CLIENT": "Certificate is assigned for use by EST client application.",
+                    "HSC": "Certificate is assigned for use by hardware switch controller application."
+                  },
+                  "x-typeDescription": "The intended application type for the certificate.",
+                  "description": "The application(s) that use the Device Certificate."
+                },
+                "maxItems": 2147483647
+              },
+              "validity-start": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "validity-start",
+                "x-patterns": "'^((04|06|09|11)/(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)/(0[1-9]|[12][0-9]|3[01])|(02)/(0[1-9]|[12][0-9]))/[0-9]{4}$'",
+                "maxLength": 9999,
+                "description": "Certificate Validity start date (MM/DD/YYYY)."
+              },
+              "validity-end": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "validity-end",
+                "x-patterns": "'^((04|06|09|11)/(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)/(0[1-9]|[12][0-9]|3[01])|(02)/(0[1-9]|[12][0-9]))/[0-9]{4}$'",
+                "maxLength": 9999,
+                "description": "Certificate Validity end date (MM/DD/YYYY)."
+              },
+              "subject-alt-name-dns": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 253,
+                "x-patternSources": "subject-alt-name-dns",
+                "x-patterns": "'([a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}'",
+                "description": "Subject Alternative Name entry containing a DNS name."
+              },
+              "subject-alt-name-ip": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{N}\\p{L}]+)?'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "The ipv4-address type represents an IPv4 address in\ndotted-quad notation.  The IPv4 address may include a zone\nindex, separated by a % sign.\nThe zone index is used to disambiguate identical address\nvalues.  For link-local addresses, the zone index will\ntypically be the interface index number or the name of an\ninterface.  If the zone index is not present, the default\nzone of the device will be used.\nThe canonical format for the zone index is the numerical\nformat"
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "['((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{N}\\p{L}]+)?', '(([^:]+:){6}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?']",
+                    "maxLength": 9999,
+                    "x-typeDescription": "The ipv6-address type represents an IPv6 address in full,\nmixed, shortened, and shortened-mixed notation.  The IPv6\naddress may include a zone index, separated by a % sign.\nThe zone index is used to disambiguate identical address\nvalues.  For link-local addresses, the zone index will\ntypically be the interface index number or the name of an\ninterface.  If the zone index is not present, the default\nzone of the device will be used.\nThe canonical format of IPv6 addresses uses the textual\nrepresentation defined in Section 4 of RFC 5952.  The\ncanonical format for the zone index is the numerical\nformat as described in Section 11.2 of RFC 4007."
+                  }
+                ],
+                "description": "Subject Alternative Name entry containing an IP Address."
+              },
+              "key-usage": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "DATA_ENCIPHERMENT",
+                    "DIGITAL_SIGNATURE",
+                    "KEY_AGREEMENT",
+                    "KEY_ENCIPHERMENT",
+                    "NON_REPUDIATION"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "DATA_ENCIPHERMENT": "Key Usage for Data Encipherment.",
+                    "DIGITAL_SIGNATURE": "Key Usage for Digital Signature.",
+                    "KEY_AGREEMENT": "Key Usage for Key Agreement.",
+                    "KEY_ENCIPHERMENT": "Key Usage for Key Encipherment.",
+                    "NON_REPUDIATION": "Key Usage for Non-Repudiation."
+                  },
+                  "x-typeDescription": "The permitted uses of the certificate.",
+                  "description": "Key usage options of the certificate."
+                },
+                "maxItems": 2147483647
+              },
+              "key-usage-restriction": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "KEY_RESTRICTION_ENCIPHER",
+                  "KEY_RESTRICTION_DECIPHER"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "KEY_RESTRICTION_ENCIPHER": "Restriction of key as encipher only.",
+                  "KEY_RESTRICTION_DECIPHER": "Restriction of key as decipher only."
+                },
+                "x-typeDescription": "The key usage for the certificate.",
+                "description": "Restriction of key on key-agreement usage."
+              },
+              "ext-key-usage": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CLIENT_AUTH",
+                    "SERVER_AUTH"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CLIENT_AUTH": "Extended Key Usage for Client Authentication.",
+                    "SERVER_AUTH": "Extended Key Usage for Server Authentication."
+                  },
+                  "x-typeDescription": "The extensions to key usage.",
+                  "description": "Extended key usage options of the certificate."
+                },
+                "maxItems": 2147483647
+              },
+              "est-profile": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "description": "EST profile to use for Device Certificate enrollment."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDeviceCertificate_CertificateSubject": {
+        "description": "Device certificate subject grouping.",
+        "properties": {
+          "subject": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Configuration of Certificate subject parameters.",
+            "properties": {
+              "common-name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "Common Name for the certificate.\nFor CX device, a multi word Common Name in quotes may be specified.\nFor CX device, valid length: 1-64 characters."
+              },
+              "org": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "Organization Name for the certificate.\nFor CX device, a multi word Organization Name in quotes may be specified.\nFor CX device, valid length: 1-64 characters."
+              },
+              "org-unit": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "Organization Unit Name for the certificate.\nFor CX device, a multi word Organization Unit Name in quotes may be specified.\nFor CX device, valid length: 1-64 characters."
+              },
+              "locality": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "Locality Name for the certificate.\nFor CX device, a multi word Locality Name in quotes may be specified."
+              },
+              "state": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "State or Povince Name for the certificate.\nFor CX device, a multi word State or Province Name in quotes may be specified."
+              },
+              "country": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 2,
+                "description": "A two letter ISO 3166-1 Country code for the certificate."
+              },
+              "include-serial-number": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Specifiy device serial number and base mac address."
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

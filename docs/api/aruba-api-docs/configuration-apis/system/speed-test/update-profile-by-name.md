@@ -1,0 +1,271 @@
+# Update profile by {name}
+
+## Request
+
+**Method:** `PATCH`
+
+**URL:** `{{baseUrl}}/network-config/v1alpha1/speed-test/:name`
+
+### Query Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+
+### Headers
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| Content-Type | application/json |  |
+| Accept | application/json |  |
+
+### Request Body
+
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "server-ip": "<string>",
+  "protocol": "TCP",
+  "on-boot": "false",
+  "include-reverse": "false",
+  "time-interval": "<long>",
+  "test-duration": "10",
+  "bandwidth": "<long>",
+  "server-port": "5201",
+  "parallel": "<long>",
+  "omit": "<long>",
+  "window": "<long>"
+}
+```
+### Response Examples
+
+#### Successful Operation
+
+**Status:** 200 OK
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Bad Request
+
+**Status:** 400 Bad Request
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Unauthorized Access
+
+**Status:** 401 Unauthorized
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Forbidden
+
+**Status:** 403 Forbidden
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Found
+
+**Status:** 404 Not Found
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Acceptable
+
+**Status:** 406 Not Acceptable
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Request Timeout
+
+**Status:** 408 Request Timeout
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Precondition Failed
+
+**Status:** 412 Precondition Failed
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Rate limit exceeded
+
+**Status:** 429 Too Many Requests
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Internal Server Error
+
+**Status:** 500 Internal Server Error
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+

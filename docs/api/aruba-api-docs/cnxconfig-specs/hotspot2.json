@@ -1,0 +1,2618 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-hotspot2 API generated from aruba-hotspot2.yang",
+    "version": "1.0.0",
+    "title": "hotspot2",
+    "x-tag-group": "Wireless"
+  },
+  "tags": [
+    {
+      "name": "hotspot2"
+    }
+  ],
+  "paths": {
+    "/hotspot2": {
+      "get": {
+        "summary": "Read existing Hotspot2 related settings.",
+        "description": "Hotspot 2.0 is a WFA specification based upon the 802.11u protocol that provides wireless clients\nwith a streamlined mechanism to discover and authenticate to suitable networks, and allows\nmobile users the ability to roam between partner networks without additional authentication.\nMobility Conductor supports Hotspot 2.0 with enhanced network discovery and selection. Clients\ncan receive general information about the network identity, venue and type via management\nframes from the Aruba AP. Clients can also query APs for information about the network's\navailable IP address type (IPv4 or IPv6), roaming partners, and supported authentication\nmethods, and receive that information in Information Elements from the AP.",
+        "operationId": "readHotspot2",
+        "x-cliParam": {
+          "commandName": "readHotspot2Cmd",
+          "summary": "Read operation for hotspot2",
+          "commandUse": "hotspot2",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/hotspot2/"
+        },
+        "tags": [
+          "hotspot2"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2_Hotspot2SchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotspot2/{name}": {
+      "post": {
+        "summary": "Create new Hotspot2 profile.",
+        "description": "List of Hotspot2 profile 802.11u public access service providers.",
+        "operationId": "createHotspot2HsProfileByID",
+        "x-cliParam": {
+          "commandName": "createHotspot2HsProfileCmd",
+          "summary": "Create operation for hs-profile",
+          "commandUse": "hs-profile",
+          "parentCommand": "createHotspot2Cmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/hotspot2/hs-profile/%s/"
+        },
+        "tags": [
+          "hotspot2"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2_Hotspot2hsProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing Hotspot2 profile.",
+        "description": "List of Hotspot2 profile 802.11u public access service providers.",
+        "operationId": "readHotspot2HsProfileByID",
+        "x-cliParam": {
+          "commandName": "readHotspot2HsProfileCmd",
+          "summary": "Read operation for hs-profile",
+          "commandUse": "hs-profile",
+          "parentCommand": "readHotspot2Cmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/hotspot2/hs-profile/%s/"
+        },
+        "tags": [
+          "hotspot2"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2_Hotspot2hsProfileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update hs-profile by {name}",
+        "description": "List of Hotspot2 profile 802.11u public access service providers.",
+        "operationId": "updateHotspot2HsProfileByID",
+        "x-cliParam": {
+          "commandName": "updateHotspot2HsProfileCmd",
+          "summary": "Update operation for hs-profile",
+          "commandUse": "hs-profile",
+          "parentCommand": "updateHotspot2Cmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/hotspot2/hs-profile/%s/"
+        },
+        "tags": [
+          "hotspot2"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2_Hotspot2hsProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Hotspot2 profile.",
+        "description": "List of Hotspot2 profile 802.11u public access service providers.",
+        "operationId": "deleteHotspot2HsProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteHotspot2HsProfileCmd",
+          "summary": "Delete operation for hs-profile",
+          "commandUse": "hs-profile",
+          "parentCommand": "deleteHotspot2Cmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/hotspot2/hs-profile/%s/"
+        },
+        "tags": [
+          "hotspot2"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaHotspot2_Hotspot2hsProfileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaHotspot2_Hotspot2hsProfileSchema"
+            }
+          }
+        },
+        "description": "hs-profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaHotspot2_Hotspot2Schema": {
+        "description": "Hotspot 2.0 is a WFA specification based upon the 802.11u protocol that provides wireless clients\nwith a streamlined mechanism to discover and authenticate to suitable networks, and allows\nmobile users the ability to roam between partner networks without additional authentication.\nMobility Conductor supports Hotspot 2.0 with enhanced network discovery and selection. Clients\ncan receive general information about the network identity, venue and type via management\nframes from the Aruba AP. Clients can also query APs for information about the network's\navailable IP address type (IPv4 or IPv6), roaming partners, and supported authentication\nmethods, and receive that information in Information Elements from the AP.",
+        "properties": {
+          "hs-profile": {
+            "description": "List of Hotspot2 profile 802.11u public access service providers.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Profile name."
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enable this profile"
+                },
+                "release-number": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 2,
+                  "default": "2",
+                  "description": "Hotspot 2.0 Release Number."
+                },
+                "access-network-type": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "PRIVATE",
+                    "PRIVATE_WITH_GUEST",
+                    "CHARGEABLE_PUBLIC",
+                    "FREE_PUBLIC",
+                    "PERSONAL_DEVICE",
+                    "EMERGENCY_SERVICES",
+                    "TEST",
+                    "WILDCARD"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "PRIVATE": "hs-access-nw-type type is Private",
+                    "PRIVATE_WITH_GUEST": "hs-access-nw-type type is Private-with-guest",
+                    "CHARGEABLE_PUBLIC": "hs-access-nw-type type is Chargeable-public",
+                    "FREE_PUBLIC": "hs-access-nw-type type is Free-public",
+                    "PERSONAL_DEVICE": "hs-access-nw-type type is Personal-device",
+                    "EMERGENCY_SERVICES": "hs-access-nw-type type is Emergency-services",
+                    "TEST": "hs-access-nw-type type is Test",
+                    "WILDCARD": "hs-access-nw-type type is Wildcard"
+                  },
+                  "x-typeDescription": "The enum define of hotspot Hs_access_nw_type.",
+                  "default": "PRIVATE",
+                  "description": "Specifies the 802.11u network type."
+                },
+                "addtl-roam-cons-ois": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 255,
+                  "description": "Additional roaming consortium organization identifiers."
+                },
+                "anqp-domain-id": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 65535,
+                  "description": "Number representing the ANQP Domain Id.  Zero means no domain."
+                },
+                "additional-access-steps": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Additional Steps required for Access."
+                },
+                "comeback-mode": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "By default, ANQP information is obtained from a GAS(Generic advertisement service) Request and Response.\nIf you enable the comebackmode option, advertisement information is obtained\nusing a GAS Request and Response. as well as a Comeback-Request and Comeback-Response.\nThis option is disabled by default."
+                },
+                "gas-comeback-delay": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 100,
+                  "maximum": 6000,
+                  "default": "500",
+                  "description": "GAS Comeback Delay in milliseconds."
+                },
+                "group-frame-block": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Downstream Group Addressed Frames Forwarding(DGAF)."
+                },
+                "homogeneous-essid": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "mac-address",
+                  "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "The mac-address type represents an IEEE 802 MAC address.\nThe canonical representation uses lowercase characters.\n\nIn the value set and its semantics, this type is equivalent\nto the MacAddress textual convention of the SMIv2.",
+                  "description": "This optional parameter devices an AP's homogenous ESS identifier, which is that device's MAC address in colonseparated hexadecimal format."
+                },
+                "enable-internet-access": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Network Internet Access enabled."
+                },
+                "osen": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enable OSU Server-only authenticated layer 2 Encryption Network (OSEN)."
+                },
+                "osu-nai": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "OSU NAI for OSEN."
+                },
+                "osu-ssid": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "OSU SSID."
+                },
+                "p2p-cross-connect": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "P2P Cross Connect."
+                },
+                "p2p-dev-mgmt": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "P2P Device Management."
+                },
+                "pame-bi": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Pre Association Message Exchange BSSID Independent."
+                },
+                "qos-map-excp": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "qos-map-excp",
+                  "x-patterns": "'(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-7]),){0,20}(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-7]))'",
+                  "maxLength": 9999,
+                  "description": "Qos Map DSCP Exception fields (upto 21 sets)."
+                },
+                "qos-map-range": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "qos-map-range",
+                  "x-patterns": "'(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-3][0-9A-Fa-f]|[Ff][Ff]),){7}(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-3][0-9A-Fa-f]|[Ff][Ff])){1}'",
+                  "maxLength": 9999,
+                  "description": "Qos Map DSCP Ranges (total 8 sets <low>:<high>, <low> cannot be greater than <high>)."
+                },
+                "query-response-length-limit": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 6,
+                  "default": "4",
+                  "description": "GAS Query Response Length Limit(1-6)."
+                },
+                "radius-cui-disable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Disable RADUIS Chargeable-User Identity (CUI) attribute defined by RFC 4372. Home\nnetworks can use this attribute to identify a user for the\nroaming transactions that take place outside of that home network."
+                },
+                "radius-loc-data-disable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Disable RADIUS Location Data attribute defined by RFC 5580. Enabling this\nparameter allows the RADIUS server to use location data."
+                },
+                "roam-cons-oi-1": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Roaming Consortium OI 1 value."
+                },
+                "roam-cons-oi-2": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Roaming Consortium OI 2 value."
+                },
+                "roam-cons-oi-3": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Roaming Consortium OI 3 value."
+                },
+                "venue-group-type": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "UNSPECIFIED_UNSPECIFIED",
+                    "ASSEMBLY_UNSPECIFIED",
+                    "ASSEMBLY_ARENA",
+                    "ASSEMBLY_STADIUM",
+                    "ASSEMBLY_PASSENGER_TERMINAL",
+                    "ASSEMBLY_AMPHITHEATER",
+                    "ASSEMBLY_AMUSEMENT_PARK",
+                    "ASSEMBLY_PLACE_OF_WORSHIP",
+                    "ASSEMBLY_CONVENTION_CENTER",
+                    "ASSEMBLY_LIBRARY",
+                    "ASSEMBLY_MUSEUM",
+                    "ASSEMBLY_RESTAURANT",
+                    "ASSEMBLY_THEATER",
+                    "ASSEMBLY_BAR",
+                    "ASSEMBLY_COFFEE_SHOP",
+                    "ASSEMBLY_ZOO_OR_AQUARIUM",
+                    "ASSEMBLY_EMERGENCY_CORD_CENTER",
+                    "BUSINESS_UNSPECIFIED",
+                    "BUSINESS_DOCTOR",
+                    "BUSINESS_BANK",
+                    "BUSINESS_FIRE_STATION",
+                    "BUSINESS_POLICE_STATION",
+                    "BUSINESS_POST_OFFICE",
+                    "BUSINESS_PROFESSIONAL_OFFICE",
+                    "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+                    "BUSINESS_ATTORNEY_OFFICE",
+                    "EDUCATIONAL_UNSPECIFIED",
+                    "EDUCATIONAL_SCHOOL_PRIMARY",
+                    "EDUCATIONAL_SCHOOL_SECONDARY",
+                    "EDUCATIONAL_UNIV_OR_COLLEGE",
+                    "FACTORY_AND_INDUSTRIAL_UNSPECIFIED",
+                    "FACTORY_AND_INDUSTRIAL_FACTORY",
+                    "INSTITUTIONAL_UNSPECIFIED",
+                    "INSTITUTIONAL_HOSPITAL",
+                    "INSTITUTIONAL_LONG_TERM_CARE",
+                    "INSTITUTIONAL_ALC_DRUG_REHAB",
+                    "INSTITUTIONAL_GROUP_HOME",
+                    "INSTITUTIONAL_PRISON_OR_JAIL",
+                    "MERCANTILE_UNSPECIFIED",
+                    "MERCANTILE_RETAIL_STORE",
+                    "MERCANTILE_GROCERY_MARKET",
+                    "MERCANTILE_AUTO_SERVICE_STATION",
+                    "MERCANTILE_SHOPPING_MALL",
+                    "MERCANTILE_GAS_STATION",
+                    "RESIDENTIAL_UNSPECIFIED",
+                    "RESIDENTIAL_PRIVATE_RESIDENCE",
+                    "RESIDENTIAL_HOTEL",
+                    "RESIDENTIAL_DORMITORY",
+                    "RESIDENTIAL_BOARDING_HOUSE",
+                    "STORAGE_UNSPECIFIED",
+                    "UTILITY_AND_MISC_UNSPECIFIED",
+                    "VEHICULAR_UNSPECIFIED",
+                    "VEHICULAR_AUTOMOBILE_OR_TRUCK",
+                    "VEHICULAR_AIRPLANE",
+                    "VEHICULAR_BUS",
+                    "VEHICULAR_FERRY",
+                    "VEHICULAR_SHIP",
+                    "VEHICULAR_TRAIN",
+                    "VEHICULAR_MOTOR_BIKE",
+                    "OUTDOOR_UNSPECIFIED",
+                    "OUTDOOR_MUNI_MESH_NETWORK",
+                    "OUTDOOR_CITY_PARK",
+                    "OUTDOOR_REST_AREA",
+                    "OUTDOOR_TRAFFIC_CONTROL",
+                    "OUTDOOR_BUS_STOP",
+                    "OUTDOOR_KIOSK"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "UNSPECIFIED_UNSPECIFIED": "venue-group is Unspecified, venue-type is Unspecified",
+                    "ASSEMBLY_UNSPECIFIED": "venue-group is Assembly, venue-type is Unspecified",
+                    "ASSEMBLY_ARENA": "venue-group is Assembly, venue-type is Arena",
+                    "ASSEMBLY_STADIUM": "venue-group is Assembly, venue-type is Stadium",
+                    "ASSEMBLY_PASSENGER_TERMINAL": "venue-group is Assembly, venue-type is Passenger-terminal",
+                    "ASSEMBLY_AMPHITHEATER": "venue-group is Assembly, venue-type is Amphitheater",
+                    "ASSEMBLY_AMUSEMENT_PARK": "venue-group is Assembly, venue-type is Amusement-park",
+                    "ASSEMBLY_PLACE_OF_WORSHIP": "venue-group is Assembly, venue-type is Place-of-worship",
+                    "ASSEMBLY_CONVENTION_CENTER": "venue-group is Assembly, venue-type is Convention-center",
+                    "ASSEMBLY_LIBRARY": "venue-group is Assembly, venue-type is Library",
+                    "ASSEMBLY_MUSEUM": "venue-group is Assembly, venue-type is Museum",
+                    "ASSEMBLY_RESTAURANT": "venue-group is Assembly, venue-type is Restaurant",
+                    "ASSEMBLY_THEATER": "venue-group is Assembly, venue-type is Theater",
+                    "ASSEMBLY_BAR": "venue-group is Assembly, venue-type is Bar",
+                    "ASSEMBLY_COFFEE_SHOP": "venue-group is Assembly, venue-type is Coffee-shop",
+                    "ASSEMBLY_ZOO_OR_AQUARIUM": "venue-group is Assembly, venue-type is Zoo-or-aquarium",
+                    "ASSEMBLY_EMERGENCY_CORD_CENTER": "venue-group is Assembly, venue-type is Emergency-cord-center",
+                    "BUSINESS_UNSPECIFIED": "venue-group is Business, venue-type is Unspecified",
+                    "BUSINESS_DOCTOR": "venue-group is Business, venue-type is Doctor",
+                    "BUSINESS_BANK": "venue-group is Business, venue-type is Bank",
+                    "BUSINESS_FIRE_STATION": "venue-group is Business, venue-type is Fire-station",
+                    "BUSINESS_POLICE_STATION": "venue-group is Business, venue-type is Police-station",
+                    "BUSINESS_POST_OFFICE": "venue-group is Business, venue-type is Post-office",
+                    "BUSINESS_PROFESSIONAL_OFFICE": "venue-group is Business, venue-type is Professional-office",
+                    "BUSINESS_RESEARCH_AND_DEV_FACILITY": "venue-group is Business, venue-type is Research-and-dev-facility",
+                    "BUSINESS_ATTORNEY_OFFICE": "venue-group is Business, venue-type is Attorney-office",
+                    "EDUCATIONAL_UNSPECIFIED": "venue-group is Educational, venue-type is Unspecified",
+                    "EDUCATIONAL_SCHOOL_PRIMARY": "venue-group is Educational, venue-type is School-primary",
+                    "EDUCATIONAL_SCHOOL_SECONDARY": "venue-group is Educational, venue-type is School-secondary",
+                    "EDUCATIONAL_UNIV_OR_COLLEGE": "venue-group is Educational, venue-type is Univ-or-college",
+                    "FACTORY_AND_INDUSTRIAL_UNSPECIFIED": "venue-group is Factory-and-industrial, venue-type is Unspecified",
+                    "FACTORY_AND_INDUSTRIAL_FACTORY": "venue-group is Factory-and-industrial, venue-type is Factory",
+                    "INSTITUTIONAL_UNSPECIFIED": "venue-group is Institutional, venue-type is Unspecified",
+                    "INSTITUTIONAL_HOSPITAL": "venue-group is Institutional, venue-type is Hospital",
+                    "INSTITUTIONAL_LONG_TERM_CARE": "venue-group is Institutional, venue-type is Long-term-care",
+                    "INSTITUTIONAL_ALC_DRUG_REHAB": "venue-group is Institutional, venue-type is Alc-drug-rehab",
+                    "INSTITUTIONAL_GROUP_HOME": "venue-group is Institutional, venue-type is Group-home",
+                    "INSTITUTIONAL_PRISON_OR_JAIL": "venue-group is Institutional, venue-type is Prison-or-jail",
+                    "MERCANTILE_UNSPECIFIED": "venue-group is Mercantile, venue-type is Unspecified",
+                    "MERCANTILE_RETAIL_STORE": "venue-group is Mercantile, venue-type is Retail-store",
+                    "MERCANTILE_GROCERY_MARKET": "venue-group is Mercantile, venue-type is Grocery-market",
+                    "MERCANTILE_AUTO_SERVICE_STATION": "venue-group is Mercantile, venue-type is Auto-service-station",
+                    "MERCANTILE_SHOPPING_MALL": "venue-group is Mercantile, venue-type is Shopping-mall",
+                    "MERCANTILE_GAS_STATION": "venue-group is Mercantile, venue-type is Gas-station",
+                    "RESIDENTIAL_UNSPECIFIED": "venue-group is Residential, venue-type is Unspecified",
+                    "RESIDENTIAL_PRIVATE_RESIDENCE": "venue-group is Residential, venue-type is Private-residence",
+                    "RESIDENTIAL_HOTEL": "venue-group is Residential, venue-type is Hotel",
+                    "RESIDENTIAL_DORMITORY": "venue-group is Residential, venue-type is Dormitory",
+                    "RESIDENTIAL_BOARDING_HOUSE": "venue-group is Residential, venue-type is Boarding-house",
+                    "STORAGE_UNSPECIFIED": "venue-group is Storage, venue-type is Unspecified",
+                    "UTILITY_AND_MISC_UNSPECIFIED": "venue-group is Utility-and-misc, venue-type is Unspecified",
+                    "VEHICULAR_UNSPECIFIED": "venue-group is Vehicular, venue-type is Unspecified",
+                    "VEHICULAR_AUTOMOBILE_OR_TRUCK": "venue-group is Vehicular, venue-type is Automobile-or-truck",
+                    "VEHICULAR_AIRPLANE": "venue-group is Vehicular, venue-type is Airplane",
+                    "VEHICULAR_BUS": "venue-group is Vehicular, venue-type is Bus",
+                    "VEHICULAR_FERRY": "venue-group is Vehicular, venue-type is Ferry",
+                    "VEHICULAR_SHIP": "venue-group is Vehicular, venue-type is Ship",
+                    "VEHICULAR_TRAIN": "venue-group is Vehicular, venue-type is Train",
+                    "VEHICULAR_MOTOR_BIKE": "venue-group is Vehicular, venue-type is Motor-bike",
+                    "OUTDOOR_UNSPECIFIED": "venue-group is Outdoor, venue-type is Unspecified",
+                    "OUTDOOR_MUNI_MESH_NETWORK": "venue-group is Outdoor, venue-type is Muni-mesh-network",
+                    "OUTDOOR_CITY_PARK": "venue-group is Outdoor, venue-type is City-park",
+                    "OUTDOOR_REST_AREA": "venue-group is Outdoor, venue-type is Rest-area",
+                    "OUTDOOR_TRAFFIC_CONTROL": "venue-group is Outdoor, venue-type is Traffic-control",
+                    "OUTDOOR_BUS_STOP": "venue-group is Outdoor, venue-type is Bus-stop",
+                    "OUTDOOR_KIOSK": "venue-group is Outdoor, venue-type is Kiosk"
+                  },
+                  "x-typeDescription": "The enum define of hotspot venue group and venue type.",
+                  "default": "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+                  "description": "Network Venue Group."
+                },
+                "advertisement-profile": {
+                  "description": "Hotspot2.0 advertisement-profile configuration.",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "profile-type": {
+                        "type": "string",
+                        "enum": [
+                          "ANQP_3GPP",
+                          "ANQP_IP_ADDR_AVAIL",
+                          "ANQP_DOMAIN_NAME",
+                          "ANQP_NAI_REALM",
+                          "ANQP_NWK_AUTH",
+                          "ANQP_ROAM_CONS",
+                          "ANQP_VENUE_NAME",
+                          "H2QP_CONN_CAP",
+                          "H2QP_OPER_CLASS",
+                          "H2QP_OPER_NAME",
+                          "H2QP_OSU_PROVIDER",
+                          "H2QP_WAN_METRICS"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "ANQP_3GPP": "Assign advertisement-profile to anqp-3gpp in hs-profile.",
+                          "ANQP_IP_ADDR_AVAIL": "Assign advertisement-profile to anqp-ip-addr-avail in hs-profile.",
+                          "ANQP_DOMAIN_NAME": "Assign advertisement-profile to anqp-domain-name in hs-profile.",
+                          "ANQP_NAI_REALM": "Assign advertisement-profile to anqp-nai-realm in hs-profile.",
+                          "ANQP_NWK_AUTH": "Assign advertisement-profile to anqp-nwk-auth in hs-profile.",
+                          "ANQP_ROAM_CONS": "Assign advertisement-profile to anqp-roam-cons in hs-profile.",
+                          "ANQP_VENUE_NAME": "Assign advertisement-profile to anqp-venue-name in hs-profile.",
+                          "H2QP_CONN_CAP": "Assign advertisement-profile to h2qp-conn-cap in hs-profile.",
+                          "H2QP_OPER_CLASS": "Assign advertisement-profile to h2qp-oper-class in hs-profile.",
+                          "H2QP_OPER_NAME": "Assign advertisement-profile to h2qp-oper-name in hs-profile.",
+                          "H2QP_OSU_PROVIDER": "Assign advertisement-profile to h2qp-osu-provider in hs-profile.",
+                          "H2QP_WAN_METRICS": "Assign advertisement-profile to h2qp-wan-metrics in hs-profile."
+                        },
+                        "x-typeDescription": "The enum define of hotspot advertisement-profile type.",
+                        "description": "Associates advertisement profile with the hotspot profile.\nYou can associate any of the following advertisement profiles:\n anqp-3gpp\n anqp-domain-name\n anqp-ip-addr\n anqp-nai-realm\n anqp-nwk-auth\n anqp-roam-cons\n anqp-venue-name\n h2qp-conn-cap\n h2qp-oper-class\n h2qp-osu-provider\n h2qp-oper-name\n h2qp-wan-metrics"
+                      },
+                      "anqp-3gpp": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-3g:anqp-3gpp/hs2-anqp-3g:anqp-3gpp-profile/hs2-anqp-3g:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates anqp-3gpp profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-domain-name": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-dn:anqp-domain-name/hs2-anqp-dn:anqp-domain-name-profile/hs2-anqp-dn:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates anqp-domain-name profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-ip-addr-avail": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-ip:anqp-ip-addr-avail/hs2-anqp-ip:anqp-ip-addr-avail-profile/hs2-anqp-ip:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates anqp-ip-addr-avail profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-nai-realm": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-nr:anqp-nai-realm/hs2-anqp-nr:anqp-nai-realm-profile/hs2-anqp-nr:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates anqp-nai-realm profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-nwk-auth": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-na:anqp-nwk-auth/hs2-anqp-na:anqp-nwk-auth-profile/hs2-anqp-na:name",
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "Associates anqp-nwk-auth profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-roam-cons": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-rc:anqp-roam-cons/hs2-anqp-rc:anqp-roam-cons-profile/hs2-anqp-rc:name",
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "Associates anqp-roam-cons profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "anqp-venue-name": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-anqp-vn:anqp-venue-name/hs2-anqp-vn:anqp-venue-name-profile/hs2-anqp-vn:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates anqp-venue-name profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "h2qp-conn-cap": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-h2qp-cc:h2qp-conn-cap/hs2-h2qp-cc:h2qp-conn-cap-profile/hs2-h2qp-cc:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates h2qp-conn-cap profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "h2qp-oper-class": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-h2qp-oc:h2qp-oper-class/hs2-h2qp-oc:h2qp-oper-class-profile/hs2-h2qp-oc:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates h2qp-oper-class profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "h2qp-oper-name": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-h2qp-on:h2qp-oper-name/hs2-h2qp-on:h2qp-oper-name-profile/hs2-h2qp-on:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates h2qp-oper-name profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "h2qp-osu-provider": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-h2qp-op:h2qp-osu-provider/hs2-h2qp-op:h2qp-osu-provider-profile/hs2-h2qp-op:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates h2qp-osu-provider profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "h2qp-wan-metrics": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "x-path": "/hs2-h2qp-wm:h2qp-wan-metrics/hs2-h2qp-wm:h2qp-wan-metrics-profile/hs2-h2qp-wm:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Associates h2qp-wan-metrics profile with the hotspot profile."
+                        },
+                        "maxItems": 2147483647
+                      }
+                    }
+                  },
+                  "x-key": [
+                    "profileType"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaHotspot2_Hotspot2SchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaHotspot2_Hotspot2Schema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaHotspot2_Hotspot2hsProfileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Profile name."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable this profile"
+          },
+          "release-number": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2,
+            "default": "2",
+            "description": "Hotspot 2.0 Release Number."
+          },
+          "access-network-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "PRIVATE",
+              "PRIVATE_WITH_GUEST",
+              "CHARGEABLE_PUBLIC",
+              "FREE_PUBLIC",
+              "PERSONAL_DEVICE",
+              "EMERGENCY_SERVICES",
+              "TEST",
+              "WILDCARD"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PRIVATE": "hs-access-nw-type type is Private",
+              "PRIVATE_WITH_GUEST": "hs-access-nw-type type is Private-with-guest",
+              "CHARGEABLE_PUBLIC": "hs-access-nw-type type is Chargeable-public",
+              "FREE_PUBLIC": "hs-access-nw-type type is Free-public",
+              "PERSONAL_DEVICE": "hs-access-nw-type type is Personal-device",
+              "EMERGENCY_SERVICES": "hs-access-nw-type type is Emergency-services",
+              "TEST": "hs-access-nw-type type is Test",
+              "WILDCARD": "hs-access-nw-type type is Wildcard"
+            },
+            "x-typeDescription": "The enum define of hotspot Hs_access_nw_type.",
+            "default": "PRIVATE",
+            "description": "Specifies the 802.11u network type."
+          },
+          "addtl-roam-cons-ois": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Additional roaming consortium organization identifiers."
+          },
+          "anqp-domain-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Number representing the ANQP Domain Id.  Zero means no domain."
+          },
+          "additional-access-steps": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Additional Steps required for Access."
+          },
+          "comeback-mode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "By default, ANQP information is obtained from a GAS(Generic advertisement service) Request and Response.\nIf you enable the comebackmode option, advertisement information is obtained\nusing a GAS Request and Response. as well as a Comeback-Request and Comeback-Response.\nThis option is disabled by default."
+          },
+          "gas-comeback-delay": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 100,
+            "maximum": 6000,
+            "default": "500",
+            "description": "GAS Comeback Delay in milliseconds."
+          },
+          "group-frame-block": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Downstream Group Addressed Frames Forwarding(DGAF)."
+          },
+          "homogeneous-essid": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "mac-address",
+            "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+            "maxLength": 9999,
+            "x-typeDescription": "The mac-address type represents an IEEE 802 MAC address.\nThe canonical representation uses lowercase characters.\n\nIn the value set and its semantics, this type is equivalent\nto the MacAddress textual convention of the SMIv2.",
+            "description": "This optional parameter devices an AP's homogenous ESS identifier, which is that device's MAC address in colonseparated hexadecimal format."
+          },
+          "enable-internet-access": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Network Internet Access enabled."
+          },
+          "osen": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable OSU Server-only authenticated layer 2 Encryption Network (OSEN)."
+          },
+          "osu-nai": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "OSU NAI for OSEN."
+          },
+          "osu-ssid": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "OSU SSID."
+          },
+          "p2p-cross-connect": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "P2P Cross Connect."
+          },
+          "p2p-dev-mgmt": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "P2P Device Management."
+          },
+          "pame-bi": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Pre Association Message Exchange BSSID Independent."
+          },
+          "qos-map-excp": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "qos-map-excp",
+            "x-patterns": "'(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-7]),){0,20}(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-7]))'",
+            "maxLength": 9999,
+            "description": "Qos Map DSCP Exception fields (upto 21 sets)."
+          },
+          "qos-map-range": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "qos-map-range",
+            "x-patterns": "'(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-3][0-9A-Fa-f]|[Ff][Ff]),){7}(([0-3][0-9A-Fa-f]|[Ff][Ff])-([0-3][0-9A-Fa-f]|[Ff][Ff])){1}'",
+            "maxLength": 9999,
+            "description": "Qos Map DSCP Ranges (total 8 sets <low>:<high>, <low> cannot be greater than <high>)."
+          },
+          "query-response-length-limit": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 6,
+            "default": "4",
+            "description": "GAS Query Response Length Limit(1-6)."
+          },
+          "radius-cui-disable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Disable RADUIS Chargeable-User Identity (CUI) attribute defined by RFC 4372. Home\nnetworks can use this attribute to identify a user for the\nroaming transactions that take place outside of that home network."
+          },
+          "radius-loc-data-disable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Disable RADIUS Location Data attribute defined by RFC 5580. Enabling this\nparameter allows the RADIUS server to use location data."
+          },
+          "roam-cons-oi-1": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Roaming Consortium OI 1 value."
+          },
+          "roam-cons-oi-2": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Roaming Consortium OI 2 value."
+          },
+          "roam-cons-oi-3": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Roaming Consortium OI 3 value."
+          },
+          "venue-group-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "UNSPECIFIED_UNSPECIFIED",
+              "ASSEMBLY_UNSPECIFIED",
+              "ASSEMBLY_ARENA",
+              "ASSEMBLY_STADIUM",
+              "ASSEMBLY_PASSENGER_TERMINAL",
+              "ASSEMBLY_AMPHITHEATER",
+              "ASSEMBLY_AMUSEMENT_PARK",
+              "ASSEMBLY_PLACE_OF_WORSHIP",
+              "ASSEMBLY_CONVENTION_CENTER",
+              "ASSEMBLY_LIBRARY",
+              "ASSEMBLY_MUSEUM",
+              "ASSEMBLY_RESTAURANT",
+              "ASSEMBLY_THEATER",
+              "ASSEMBLY_BAR",
+              "ASSEMBLY_COFFEE_SHOP",
+              "ASSEMBLY_ZOO_OR_AQUARIUM",
+              "ASSEMBLY_EMERGENCY_CORD_CENTER",
+              "BUSINESS_UNSPECIFIED",
+              "BUSINESS_DOCTOR",
+              "BUSINESS_BANK",
+              "BUSINESS_FIRE_STATION",
+              "BUSINESS_POLICE_STATION",
+              "BUSINESS_POST_OFFICE",
+              "BUSINESS_PROFESSIONAL_OFFICE",
+              "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+              "BUSINESS_ATTORNEY_OFFICE",
+              "EDUCATIONAL_UNSPECIFIED",
+              "EDUCATIONAL_SCHOOL_PRIMARY",
+              "EDUCATIONAL_SCHOOL_SECONDARY",
+              "EDUCATIONAL_UNIV_OR_COLLEGE",
+              "FACTORY_AND_INDUSTRIAL_UNSPECIFIED",
+              "FACTORY_AND_INDUSTRIAL_FACTORY",
+              "INSTITUTIONAL_UNSPECIFIED",
+              "INSTITUTIONAL_HOSPITAL",
+              "INSTITUTIONAL_LONG_TERM_CARE",
+              "INSTITUTIONAL_ALC_DRUG_REHAB",
+              "INSTITUTIONAL_GROUP_HOME",
+              "INSTITUTIONAL_PRISON_OR_JAIL",
+              "MERCANTILE_UNSPECIFIED",
+              "MERCANTILE_RETAIL_STORE",
+              "MERCANTILE_GROCERY_MARKET",
+              "MERCANTILE_AUTO_SERVICE_STATION",
+              "MERCANTILE_SHOPPING_MALL",
+              "MERCANTILE_GAS_STATION",
+              "RESIDENTIAL_UNSPECIFIED",
+              "RESIDENTIAL_PRIVATE_RESIDENCE",
+              "RESIDENTIAL_HOTEL",
+              "RESIDENTIAL_DORMITORY",
+              "RESIDENTIAL_BOARDING_HOUSE",
+              "STORAGE_UNSPECIFIED",
+              "UTILITY_AND_MISC_UNSPECIFIED",
+              "VEHICULAR_UNSPECIFIED",
+              "VEHICULAR_AUTOMOBILE_OR_TRUCK",
+              "VEHICULAR_AIRPLANE",
+              "VEHICULAR_BUS",
+              "VEHICULAR_FERRY",
+              "VEHICULAR_SHIP",
+              "VEHICULAR_TRAIN",
+              "VEHICULAR_MOTOR_BIKE",
+              "OUTDOOR_UNSPECIFIED",
+              "OUTDOOR_MUNI_MESH_NETWORK",
+              "OUTDOOR_CITY_PARK",
+              "OUTDOOR_REST_AREA",
+              "OUTDOOR_TRAFFIC_CONTROL",
+              "OUTDOOR_BUS_STOP",
+              "OUTDOOR_KIOSK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "UNSPECIFIED_UNSPECIFIED": "venue-group is Unspecified, venue-type is Unspecified",
+              "ASSEMBLY_UNSPECIFIED": "venue-group is Assembly, venue-type is Unspecified",
+              "ASSEMBLY_ARENA": "venue-group is Assembly, venue-type is Arena",
+              "ASSEMBLY_STADIUM": "venue-group is Assembly, venue-type is Stadium",
+              "ASSEMBLY_PASSENGER_TERMINAL": "venue-group is Assembly, venue-type is Passenger-terminal",
+              "ASSEMBLY_AMPHITHEATER": "venue-group is Assembly, venue-type is Amphitheater",
+              "ASSEMBLY_AMUSEMENT_PARK": "venue-group is Assembly, venue-type is Amusement-park",
+              "ASSEMBLY_PLACE_OF_WORSHIP": "venue-group is Assembly, venue-type is Place-of-worship",
+              "ASSEMBLY_CONVENTION_CENTER": "venue-group is Assembly, venue-type is Convention-center",
+              "ASSEMBLY_LIBRARY": "venue-group is Assembly, venue-type is Library",
+              "ASSEMBLY_MUSEUM": "venue-group is Assembly, venue-type is Museum",
+              "ASSEMBLY_RESTAURANT": "venue-group is Assembly, venue-type is Restaurant",
+              "ASSEMBLY_THEATER": "venue-group is Assembly, venue-type is Theater",
+              "ASSEMBLY_BAR": "venue-group is Assembly, venue-type is Bar",
+              "ASSEMBLY_COFFEE_SHOP": "venue-group is Assembly, venue-type is Coffee-shop",
+              "ASSEMBLY_ZOO_OR_AQUARIUM": "venue-group is Assembly, venue-type is Zoo-or-aquarium",
+              "ASSEMBLY_EMERGENCY_CORD_CENTER": "venue-group is Assembly, venue-type is Emergency-cord-center",
+              "BUSINESS_UNSPECIFIED": "venue-group is Business, venue-type is Unspecified",
+              "BUSINESS_DOCTOR": "venue-group is Business, venue-type is Doctor",
+              "BUSINESS_BANK": "venue-group is Business, venue-type is Bank",
+              "BUSINESS_FIRE_STATION": "venue-group is Business, venue-type is Fire-station",
+              "BUSINESS_POLICE_STATION": "venue-group is Business, venue-type is Police-station",
+              "BUSINESS_POST_OFFICE": "venue-group is Business, venue-type is Post-office",
+              "BUSINESS_PROFESSIONAL_OFFICE": "venue-group is Business, venue-type is Professional-office",
+              "BUSINESS_RESEARCH_AND_DEV_FACILITY": "venue-group is Business, venue-type is Research-and-dev-facility",
+              "BUSINESS_ATTORNEY_OFFICE": "venue-group is Business, venue-type is Attorney-office",
+              "EDUCATIONAL_UNSPECIFIED": "venue-group is Educational, venue-type is Unspecified",
+              "EDUCATIONAL_SCHOOL_PRIMARY": "venue-group is Educational, venue-type is School-primary",
+              "EDUCATIONAL_SCHOOL_SECONDARY": "venue-group is Educational, venue-type is School-secondary",
+              "EDUCATIONAL_UNIV_OR_COLLEGE": "venue-group is Educational, venue-type is Univ-or-college",
+              "FACTORY_AND_INDUSTRIAL_UNSPECIFIED": "venue-group is Factory-and-industrial, venue-type is Unspecified",
+              "FACTORY_AND_INDUSTRIAL_FACTORY": "venue-group is Factory-and-industrial, venue-type is Factory",
+              "INSTITUTIONAL_UNSPECIFIED": "venue-group is Institutional, venue-type is Unspecified",
+              "INSTITUTIONAL_HOSPITAL": "venue-group is Institutional, venue-type is Hospital",
+              "INSTITUTIONAL_LONG_TERM_CARE": "venue-group is Institutional, venue-type is Long-term-care",
+              "INSTITUTIONAL_ALC_DRUG_REHAB": "venue-group is Institutional, venue-type is Alc-drug-rehab",
+              "INSTITUTIONAL_GROUP_HOME": "venue-group is Institutional, venue-type is Group-home",
+              "INSTITUTIONAL_PRISON_OR_JAIL": "venue-group is Institutional, venue-type is Prison-or-jail",
+              "MERCANTILE_UNSPECIFIED": "venue-group is Mercantile, venue-type is Unspecified",
+              "MERCANTILE_RETAIL_STORE": "venue-group is Mercantile, venue-type is Retail-store",
+              "MERCANTILE_GROCERY_MARKET": "venue-group is Mercantile, venue-type is Grocery-market",
+              "MERCANTILE_AUTO_SERVICE_STATION": "venue-group is Mercantile, venue-type is Auto-service-station",
+              "MERCANTILE_SHOPPING_MALL": "venue-group is Mercantile, venue-type is Shopping-mall",
+              "MERCANTILE_GAS_STATION": "venue-group is Mercantile, venue-type is Gas-station",
+              "RESIDENTIAL_UNSPECIFIED": "venue-group is Residential, venue-type is Unspecified",
+              "RESIDENTIAL_PRIVATE_RESIDENCE": "venue-group is Residential, venue-type is Private-residence",
+              "RESIDENTIAL_HOTEL": "venue-group is Residential, venue-type is Hotel",
+              "RESIDENTIAL_DORMITORY": "venue-group is Residential, venue-type is Dormitory",
+              "RESIDENTIAL_BOARDING_HOUSE": "venue-group is Residential, venue-type is Boarding-house",
+              "STORAGE_UNSPECIFIED": "venue-group is Storage, venue-type is Unspecified",
+              "UTILITY_AND_MISC_UNSPECIFIED": "venue-group is Utility-and-misc, venue-type is Unspecified",
+              "VEHICULAR_UNSPECIFIED": "venue-group is Vehicular, venue-type is Unspecified",
+              "VEHICULAR_AUTOMOBILE_OR_TRUCK": "venue-group is Vehicular, venue-type is Automobile-or-truck",
+              "VEHICULAR_AIRPLANE": "venue-group is Vehicular, venue-type is Airplane",
+              "VEHICULAR_BUS": "venue-group is Vehicular, venue-type is Bus",
+              "VEHICULAR_FERRY": "venue-group is Vehicular, venue-type is Ferry",
+              "VEHICULAR_SHIP": "venue-group is Vehicular, venue-type is Ship",
+              "VEHICULAR_TRAIN": "venue-group is Vehicular, venue-type is Train",
+              "VEHICULAR_MOTOR_BIKE": "venue-group is Vehicular, venue-type is Motor-bike",
+              "OUTDOOR_UNSPECIFIED": "venue-group is Outdoor, venue-type is Unspecified",
+              "OUTDOOR_MUNI_MESH_NETWORK": "venue-group is Outdoor, venue-type is Muni-mesh-network",
+              "OUTDOOR_CITY_PARK": "venue-group is Outdoor, venue-type is City-park",
+              "OUTDOOR_REST_AREA": "venue-group is Outdoor, venue-type is Rest-area",
+              "OUTDOOR_TRAFFIC_CONTROL": "venue-group is Outdoor, venue-type is Traffic-control",
+              "OUTDOOR_BUS_STOP": "venue-group is Outdoor, venue-type is Bus-stop",
+              "OUTDOOR_KIOSK": "venue-group is Outdoor, venue-type is Kiosk"
+            },
+            "x-typeDescription": "The enum define of hotspot venue group and venue type.",
+            "default": "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+            "description": "Network Venue Group."
+          },
+          "advertisement-profile": {
+            "description": "Hotspot2.0 advertisement-profile configuration.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "profile-type": {
+                  "type": "string",
+                  "enum": [
+                    "ANQP_3GPP",
+                    "ANQP_IP_ADDR_AVAIL",
+                    "ANQP_DOMAIN_NAME",
+                    "ANQP_NAI_REALM",
+                    "ANQP_NWK_AUTH",
+                    "ANQP_ROAM_CONS",
+                    "ANQP_VENUE_NAME",
+                    "H2QP_CONN_CAP",
+                    "H2QP_OPER_CLASS",
+                    "H2QP_OPER_NAME",
+                    "H2QP_OSU_PROVIDER",
+                    "H2QP_WAN_METRICS"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ANQP_3GPP": "Assign advertisement-profile to anqp-3gpp in hs-profile.",
+                    "ANQP_IP_ADDR_AVAIL": "Assign advertisement-profile to anqp-ip-addr-avail in hs-profile.",
+                    "ANQP_DOMAIN_NAME": "Assign advertisement-profile to anqp-domain-name in hs-profile.",
+                    "ANQP_NAI_REALM": "Assign advertisement-profile to anqp-nai-realm in hs-profile.",
+                    "ANQP_NWK_AUTH": "Assign advertisement-profile to anqp-nwk-auth in hs-profile.",
+                    "ANQP_ROAM_CONS": "Assign advertisement-profile to anqp-roam-cons in hs-profile.",
+                    "ANQP_VENUE_NAME": "Assign advertisement-profile to anqp-venue-name in hs-profile.",
+                    "H2QP_CONN_CAP": "Assign advertisement-profile to h2qp-conn-cap in hs-profile.",
+                    "H2QP_OPER_CLASS": "Assign advertisement-profile to h2qp-oper-class in hs-profile.",
+                    "H2QP_OPER_NAME": "Assign advertisement-profile to h2qp-oper-name in hs-profile.",
+                    "H2QP_OSU_PROVIDER": "Assign advertisement-profile to h2qp-osu-provider in hs-profile.",
+                    "H2QP_WAN_METRICS": "Assign advertisement-profile to h2qp-wan-metrics in hs-profile."
+                  },
+                  "x-typeDescription": "The enum define of hotspot advertisement-profile type.",
+                  "description": "Associates advertisement profile with the hotspot profile.\nYou can associate any of the following advertisement profiles:\n anqp-3gpp\n anqp-domain-name\n anqp-ip-addr\n anqp-nai-realm\n anqp-nwk-auth\n anqp-roam-cons\n anqp-venue-name\n h2qp-conn-cap\n h2qp-oper-class\n h2qp-osu-provider\n h2qp-oper-name\n h2qp-wan-metrics"
+                },
+                "anqp-3gpp": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-3g:anqp-3gpp/hs2-anqp-3g:anqp-3gpp-profile/hs2-anqp-3g:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates anqp-3gpp profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-domain-name": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-dn:anqp-domain-name/hs2-anqp-dn:anqp-domain-name-profile/hs2-anqp-dn:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates anqp-domain-name profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-ip-addr-avail": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-ip:anqp-ip-addr-avail/hs2-anqp-ip:anqp-ip-addr-avail-profile/hs2-anqp-ip:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates anqp-ip-addr-avail profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-nai-realm": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-nr:anqp-nai-realm/hs2-anqp-nr:anqp-nai-realm-profile/hs2-anqp-nr:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates anqp-nai-realm profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-nwk-auth": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-na:anqp-nwk-auth/hs2-anqp-na:anqp-nwk-auth-profile/hs2-anqp-na:name",
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "description": "Associates anqp-nwk-auth profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-roam-cons": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-rc:anqp-roam-cons/hs2-anqp-rc:anqp-roam-cons-profile/hs2-anqp-rc:name",
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "description": "Associates anqp-roam-cons profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "anqp-venue-name": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-anqp-vn:anqp-venue-name/hs2-anqp-vn:anqp-venue-name-profile/hs2-anqp-vn:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates anqp-venue-name profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "h2qp-conn-cap": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-h2qp-cc:h2qp-conn-cap/hs2-h2qp-cc:h2qp-conn-cap-profile/hs2-h2qp-cc:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates h2qp-conn-cap profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "h2qp-oper-class": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-h2qp-oc:h2qp-oper-class/hs2-h2qp-oc:h2qp-oper-class-profile/hs2-h2qp-oc:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates h2qp-oper-class profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "h2qp-oper-name": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-h2qp-on:h2qp-oper-name/hs2-h2qp-on:h2qp-oper-name-profile/hs2-h2qp-on:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates h2qp-oper-name profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "h2qp-osu-provider": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-h2qp-op:h2qp-osu-provider/hs2-h2qp-op:h2qp-osu-provider-profile/hs2-h2qp-op:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates h2qp-osu-provider profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                },
+                "h2qp-wan-metrics": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "x-path": "/hs2-h2qp-wm:h2qp-wan-metrics/hs2-h2qp-wm:h2qp-wan-metrics-profile/hs2-h2qp-wm:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Associates h2qp-wan-metrics profile with the hotspot profile."
+                  },
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "profileType"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

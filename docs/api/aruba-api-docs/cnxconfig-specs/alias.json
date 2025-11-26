@@ -1,0 +1,3555 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-alias API generated from aruba-alias.yang",
+    "version": "1.0.0",
+    "title": "alias",
+    "x-tag-group": "Named Object"
+  },
+  "tags": [
+    {
+      "name": "aliases"
+    }
+  ],
+  "paths": {
+    "/aliases": {
+      "get": {
+        "summary": "Read aliases",
+        "description": "Top level container for Aliases.",
+        "operationId": "readAliases",
+        "x-cliParam": {
+          "commandName": "readAliasesCmd",
+          "summary": "Read operation for aliases",
+          "commandUse": "aliases",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/aliases/"
+        },
+        "tags": [
+          "aliases"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAlias_AliasesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aliases/{name}": {
+      "post": {
+        "summary": "Create alias by {name}",
+        "description": "List of Aliases.",
+        "operationId": "createAliasesAliasByID",
+        "x-cliParam": {
+          "commandName": "createAliasesAliasCmd",
+          "summary": "Create operation for alias",
+          "commandUse": "alias",
+          "parentCommand": "createAliasesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aliases/alias/%s/"
+        },
+        "tags": [
+          "aliases"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Alias.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAlias_AliasesaliasSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read alias by {name}",
+        "description": "List of Aliases.",
+        "operationId": "readAliasesAliasByID",
+        "x-cliParam": {
+          "commandName": "readAliasesAliasCmd",
+          "summary": "Read operation for alias",
+          "commandUse": "alias",
+          "parentCommand": "readAliasesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aliases/alias/%s/"
+        },
+        "tags": [
+          "aliases"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Alias.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAlias_AliasesaliasSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update alias by {name}",
+        "description": "List of Aliases.",
+        "operationId": "updateAliasesAliasByID",
+        "x-cliParam": {
+          "commandName": "updateAliasesAliasCmd",
+          "summary": "Update operation for alias",
+          "commandUse": "alias",
+          "parentCommand": "updateAliasesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aliases/alias/%s/"
+        },
+        "tags": [
+          "aliases"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Alias.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAlias_AliasesaliasSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete alias by {name}",
+        "description": "List of Aliases.",
+        "operationId": "deleteAliasesAliasByID",
+        "x-cliParam": {
+          "commandName": "deleteAliasesAliasCmd",
+          "summary": "Delete operation for alias",
+          "commandUse": "alias",
+          "parentCommand": "deleteAliasesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aliases/alias/%s/"
+        },
+        "tags": [
+          "aliases"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Alias.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaAlias_AliasesaliasSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaAlias_AliasesaliasSchema"
+            }
+          }
+        },
+        "description": "aliasbody object"
+      }
+    },
+    "schemas": {
+      "ArubaAlias_AliasesSchema": {
+        "description": "Top level container for Aliases.",
+        "properties": {
+          "alias": {
+            "description": "List of Aliases.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "x-patternSources": "name",
+                  "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                  "description": "The name of the Alias."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Description of the Alias."
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ALIAS_HOST",
+                    "ALIAS_NETWORK",
+                    "ALIAS_NETWORK_GROUP",
+                    "ALIAS_SERVICE_GROUP",
+                    "ALIAS_VLAN",
+                    "ALIAS_ESSID",
+                    "ALIAS_ECHO_SOURCE_ADDRESS",
+                    "ALIAS_HOSTNAME",
+                    "ALIAS_NETWORK_DESTINATION",
+                    "ALIAS_IPV4_SYSTEM_VLAN",
+                    "ALIAS_IPV4_PREFIX",
+                    "ALIAS_IPV6_PREFIX",
+                    "ALIAS_IPV4_ADDRESS_TYPE",
+                    "ALIAS_IPV6_ADDRESS_TYPE",
+                    "ALIAS_IPV6_LINK_LOCAL_ADDRESS",
+                    "ALIAS_RSSI_REPORT_TYPE",
+                    "ALIAS_FEATURE_CONTROL",
+                    "ALIAS_IPV4_ADDRESS",
+                    "ALIAS_NEXT_HOP",
+                    "ALIAS_NEXT_HOP_V6",
+                    "ALIAS_IDENTITY_PROFILE",
+                    "ALIAS_IPV4_ADDRESSES",
+                    "ALIAS_NTP_SERVER_LIST",
+                    "ALIAS_NTP_AUTH_LIST",
+                    "ALIAS_NTP_AUTH_GLOBAL",
+                    "ALIAS_DNS_RESOLVER",
+                    "ALIAS_NAMED_CONDITION",
+                    "ALIAS_IPV6_ADDRESS",
+                    "ALIAS_VLAN_DESCRIPTION",
+                    "ALIAS_VC_COUNTRY_CODE",
+                    "ALIAS_VC_NAME",
+                    "ALIAS_VC_IP",
+                    "ALIAS_VC_IPV6",
+                    "ALIAS_VC_VLAN",
+                    "ALIAS_VC_DNSIP",
+                    "ALIAS_ALLOW_NEW_APS",
+                    "ALIAS_SW_PORT_PROFILE_SWITCHPORT",
+                    "ALIAS_VRRP_PRIORITY",
+                    "ALIAS_AUTH_SERVER_ADDRESS",
+                    "ALIAS_VLAN_VOICE_ENABLE",
+                    "ALIAS_IPV4_ADDRESSES_WITH_VRF",
+                    "ALIAS_IPV6_ADDRESSES",
+                    "ALIAS_SECRET_VALUE",
+                    "ALIAS_IP_ADDRESS",
+                    "ALIAS_VLAN_ACTIVE_GATEWAY",
+                    "ALIAS_GW_PORT_PROFILE_SWITCHPORT"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ALIAS_HOST": "Host address.",
+                    "ALIAS_NETWORK": "Network prefix.",
+                    "ALIAS_NETWORK_GROUP": "Network IP prefix group.",
+                    "ALIAS_SERVICE_GROUP": "Service group.",
+                    "ALIAS_VLAN": "VLAN Alias",
+                    "ALIAS_ESSID": "ESSID.",
+                    "ALIAS_ECHO_SOURCE_ADDRESS": "Echo source address alias.",
+                    "ALIAS_HOSTNAME": "Hostname",
+                    "ALIAS_NETWORK_DESTINATION": "Network Destination/Net-Group",
+                    "ALIAS_IPV4_SYSTEM_VLAN": "IPv4 system VLAN identifier.",
+                    "ALIAS_IPV4_PREFIX": "IPv4 Prefix in format X.X.X.X/M.",
+                    "ALIAS_IPV6_PREFIX": "IPv6 Prefix in format X:X::X:X/M.",
+                    "ALIAS_IPV4_ADDRESS_TYPE": "IPv4 address, static or dynamic.",
+                    "ALIAS_IPV6_ADDRESS_TYPE": "IPv6 address, static or dynamic.",
+                    "ALIAS_IPV6_LINK_LOCAL_ADDRESS": "IPv6 link local address.",
+                    "ALIAS_RSSI_REPORT_TYPE": "Report wireless client RSSI values for associated and/or unassociated clients..",
+                    "ALIAS_FEATURE_CONTROL": "Alias to Enable or Disable feature",
+                    "ALIAS_IPV4_ADDRESS": "IPv4 Address in format X.X.X.X.",
+                    "ALIAS_NEXT_HOP": "alias for ipv4 next-hop",
+                    "ALIAS_NEXT_HOP_V6": "alias for ipv6 next-hop",
+                    "ALIAS_IDENTITY_PROFILE": "alias for identity-profile enable",
+                    "ALIAS_IPV4_ADDRESSES": "list of IPv4 addresses",
+                    "ALIAS_NTP_SERVER_LIST": "NTP server list configuration.",
+                    "ALIAS_NTP_AUTH_LIST": "NTP authentication list configuration.",
+                    "ALIAS_NTP_AUTH_GLOBAL": "NTP authentication enable/disable configuration.",
+                    "ALIAS_DNS_RESOLVER": "List of IPv4 & IPv6 DNS servers used for name resolution.",
+                    "ALIAS_NAMED_CONDITION": "Named-Condition for Policy.",
+                    "ALIAS_IPV6_ADDRESS": "IPv6 Address in format X:X::X:X.",
+                    "ALIAS_VLAN_DESCRIPTION": "Description of the VLAN profile.",
+                    "ALIAS_VC_COUNTRY_CODE": "Country code for the virtual controller.",
+                    "ALIAS_VC_NAME": "Name for the virtual controller.",
+                    "ALIAS_VC_IP": "IP address for the virtual controller.",
+                    "ALIAS_VC_IPV6": "IPv6 address for the virtual controller.",
+                    "ALIAS_VC_VLAN": "Vlan for the virtual controller.",
+                    "ALIAS_VC_DNSIP": "Dnsip for the virtual controller.",
+                    "ALIAS_ALLOW_NEW_APS": "Allows the new access points to join the AP cluster.",
+                    "ALIAS_SW_PORT_PROFILE_SWITCHPORT": "alias for switchport",
+                    "ALIAS_VRRP_PRIORITY": "Router priority level.",
+                    "ALIAS_AUTH_SERVER_ADDRESS": "Authentication server address (IP or FQDN).",
+                    "ALIAS_VLAN_VOICE_ENABLE": "Alias to set Vlan type to voice",
+                    "ALIAS_IPV4_ADDRESSES_WITH_VRF": "IPv4 Addresses in format X.X.X.X with VRF",
+                    "ALIAS_IPV6_ADDRESSES": "IPv6 Address leaf list in format X:X::X:X",
+                    "ALIAS_SECRET_VALUE": "Auth server secret value configuration.",
+                    "ALIAS_IP_ADDRESS": "IPv4 or IPv6 Address.",
+                    "ALIAS_VLAN_ACTIVE_GATEWAY": "Alias for interface vlan active gateway",
+                    "ALIAS_GW_PORT_PROFILE_SWITCHPORT": "alias for gw-port-profile switchport"
+                  },
+                  "x-typeDescription": "Alias type.",
+                  "description": "Alias type."
+                },
+                "default-value": {
+                  "description": "Default value for alias.",
+                  "properties": {
+                    "host-address-value": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaDualip_DualIpAddress"
+                        }
+                      ],
+                      "description": "Host IP address."
+                    },
+                    "hostname-value": {
+                      "properties": {
+                        "hostname": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "description": "The hostname is used as a default prompt. The alias name must be 'sys_host_name'."
+                        }
+                      }
+                    },
+                    "network-address-value": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaDualip_DualIpPrefix"
+                        }
+                      ],
+                      "description": "Network prefix."
+                    },
+                    "vlan-value": {
+                      "description": "L2 VLAN range.",
+                      "properties": {
+                        "vlan-id-ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "vlan-range",
+                            "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                            "description": "List of VLAN ranges under vlan name"
+                          },
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "essid-value": {
+                      "description": "ESSID value defined",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32,
+                          "description": "ESSID."
+                        }
+                      }
+                    },
+                    "bfd-echo-source-address": {
+                      "description": "BFD echo source address defined",
+                      "properties": {
+                        "name": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv4-address",
+                              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                            },
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv6-address",
+                              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                            }
+                          ],
+                          "description": "BFD echo source address."
+                        }
+                      }
+                    },
+                    "ipv4-system-vlan-value": {
+                      "description": "IPv4 system VLAN configuration.",
+                      "properties": {
+                        "vlan-id": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "IPv4 system VLAN identifier."
+                        }
+                      }
+                    },
+                    "ipv4-prefix-value": {
+                      "description": "IPv4 Prefix in format X.X.X.X/M.",
+                      "properties": {
+                        "prefix": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-prefix",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                          "description": "IPv4 Prefix in format X.X.X.X/M."
+                        }
+                      }
+                    },
+                    "ipv6-prefix-value": {
+                      "description": "IPv6 Prefix in format X:X::X:X/M.",
+                      "properties": {
+                        "prefix": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-prefix",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                          "description": "IPv6 Prefix in format X:X::X:X/M."
+                        }
+                      }
+                    },
+                    "ipv4-address-type-value": {
+                      "description": "IPv4 address, static or dynamic.",
+                      "properties": {
+                        "ipv4-address": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv4-prefix",
+                              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "DHCP",
+                                "PPPOE",
+                                "NO_DHCP",
+                                "NONE"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "DHCP": "Dynamic Host Configuration Protocol.",
+                                "PPPOE": "Point-to-point Protocol over Ethernet.",
+                                "NO_DHCP": "Dynamic Host Configuration Protocol.",
+                                "NONE": "Client/address is not configured."
+                              },
+                              "x-typeDescription": "Dynamic client type to obtain IPv4 address."
+                            }
+                          ],
+                          "description": "IPv4 address."
+                        }
+                      }
+                    },
+                    "ipv6-address-type-value": {
+                      "description": "IPv6 addresses, static or dynamic.",
+                      "properties": {
+                        "ipv6-addresses": {
+                          "description": "List of IPv6 addresses, static or dynamic.",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "address": {
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "x-patternSources": "ipv6-prefix",
+                                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                                    "maxLength": 9999,
+                                    "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "DHCP",
+                                      "DHCP_FULL",
+                                      "DHCP_FULL_RAPID_COMMIT",
+                                      "NO_DHCP"
+                                    ],
+                                    "format": "enum",
+                                    "x-enumDescriptions": {
+                                      "DHCP": "Dynamic Host Configuration Protocol.",
+                                      "DHCP_FULL": "Obtain IPv6 address & Configuration information from DHCPv6 server.",
+                                      "DHCP_FULL_RAPID_COMMIT": "Obtain IPv6 address quickly from DHCPv6 server.",
+                                      "NO_DHCP": "Dynamic Host Configuration Protocol."
+                                    },
+                                    "x-typeDescription": "Dynamic client type to obtain IPv6 address."
+                                  }
+                                ],
+                                "description": "The IPv6 address, static or dynamic."
+                              },
+                              "eui64": {
+                                "x-supportedDeviceType": [
+                                  "Switch CX",
+                                  "Switch PVOS",
+                                  "Gateway"
+                                ],
+                                "type": "boolean",
+                                "default": "false",
+                                "description": "IPv6 address in the EUI-64 bit format.\nThis config cannot be set when IPv6 DHCP client is enabled."
+                              },
+                              "tag": {
+                                "x-supportedDeviceType": [
+                                  "Switch CX"
+                                ],
+                                "type": "integer",
+                                "format": "int64",
+                                "minimum": 0,
+                                "maximum": 4294967295,
+                                "default": "0",
+                                "description": "Route tag for connected routes."
+                              }
+                            }
+                          },
+                          "x-key": [
+                            "address"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "ipv6-link-local-address-value": {
+                      "description": "IPv6 link local address.",
+                      "properties": {
+                        "ipv6-link-local-address": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                          "description": "IPv6 link local address."
+                        }
+                      }
+                    },
+                    "report-rssi-type-value": {
+                      "description": "Set which client RSSI data will be reported to Central.\nTwo options: UNASSOCIATED_CLIENTS_ONLY and UNASSOCIATED_AND_ASSOCIATED_CLIENTS.",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "UNASSOCIATED_CLIENTS_ONLY",
+                            "UNASSOCIATED_AND_ASSOCIATED_CLIENTS"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "UNASSOCIATED_CLIENTS_ONLY": "Only unassociated clients will be reported.",
+                            "UNASSOCIATED_AND_ASSOCIATED_CLIENTS": "Both associated and unassociated clients will be reported."
+                          },
+                          "x-typeDescription": "It defines different types of client, that will be involved in\nRSSI (Received Signal Strength Indicator) report.",
+                          "description": "Set which client RSSI data will be reported to Central.\nTwo options: UNASSOCIATED_CLIENTS_ONLY and UNASSOCIATED_AND_ASSOCIATED_CLIENTS."
+                        }
+                      }
+                    },
+                    "feature-control": {
+                      "description": "Enable/Disable feature.",
+                      "properties": {
+                        "enable": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable/Disable configuration."
+                        }
+                      }
+                    },
+                    "ipv4-address-value": {
+                      "description": "IPv4 address in format X.X.X.X.",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "IPv4 address in format X.X.X.X."
+                        }
+                      }
+                    },
+                    "ipv6-address-value": {
+                      "description": "IPv6 address in format X:X::X:X.",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                          "description": "IPv6 address in format X:X::X:X."
+                        }
+                      }
+                    },
+                    "next-hop-ipv4": {
+                      "description": "Alias for ipv4 next-hop.",
+                      "properties": {
+                        "hop-address": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-nexthop-address-prefix",
+                          "x-patterns": "'((([1-9]|[1-9][0-9]|1[0-1][0-9]|12[0-6]|12[8-9]|1[3-9][0-9]|2[0-1][0-9]|22[0-3]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "Valid IPv4 address type for interface",
+                          "description": "Alias for ipv4 next-hop."
+                        }
+                      }
+                    },
+                    "next-hop-ipv6": {
+                      "description": "Alias for ipv6 next-hop.",
+                      "properties": {
+                        "hop-address": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                          "description": "Alias for ipv6 next-hop."
+                        }
+                      }
+                    },
+                    "identity-profile-control": {
+                      "description": "Enable/Disable identity-profile.",
+                      "properties": {
+                        "enable": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable/Disable configuration."
+                        }
+                      }
+                    },
+                    "ipv4-addresses-value": {
+                      "description": "list of IPv4 addresses",
+                      "properties": {
+                        "ip-addresses": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-prefix",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                            "description": "List of IPv4 addresses with netmask specified."
+                          },
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "ntp-server-list-value": {
+                      "description": "NTP server configuration alias value.",
+                      "properties": {
+                        "servers": {
+                          "description": "NTP server entries.",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "address": {
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "x-patternSources": "ipv4-address",
+                                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                                    "maxLength": 9999,
+                                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                                  },
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "x-patternSources": "ipv6-address",
+                                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                                    "maxLength": 9999,
+                                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                                  },
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "minLength": 1,
+                                    "maxLength": 253,
+                                    "x-patternSources": "domain-name",
+                                    "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                                    "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                                  }
+                                ],
+                                "description": "Supported server entries are FQDN,\nIPv4 and IPv6 addresses."
+                              },
+                              "tx-mode": {
+                                "type": "string",
+                                "enum": [
+                                  "BURST",
+                                  "IBURST"
+                                ],
+                                "format": "enum",
+                                "x-enumDescriptions": {
+                                  "BURST": "Transmission burst mode when the server(s) are reachable.",
+                                  "IBURST": "Transmission burst mode when the server(s) are unreachable."
+                                },
+                                "x-typeDescription": "NTP packet transmission mode types.",
+                                "description": "Packet transmission mode to select the burst functionality."
+                              },
+                              "burst": {
+                                "type": "string",
+                                "enum": [
+                                  "INITIAL",
+                                  "ALWAYS",
+                                  "SINGLE"
+                                ],
+                                "format": "enum",
+                                "x-enumDescriptions": {
+                                  "INITIAL": "Sends a burst of packets initially to\nthe server to synchronize time.",
+                                  "ALWAYS": "Sends a burst of packets to the server\nto synchronize time.",
+                                  "SINGLE": "Sends a single packet to the server\nto synchronize time."
+                                },
+                                "x-typeDescription": "NTP packet burst mode types.",
+                                "default": "SINGLE",
+                                "description": "Packet transmission mode when server(s) are reachable,\nonly valid when the transmission mode is set to BURST."
+                              },
+                              "iburst": {
+                                "type": "string",
+                                "enum": [
+                                  "INITIAL",
+                                  "ALWAYS",
+                                  "SINGLE"
+                                ],
+                                "format": "enum",
+                                "x-enumDescriptions": {
+                                  "INITIAL": "Sends a burst of packets initially to\nthe server to synchronize time.",
+                                  "ALWAYS": "Sends a burst of packets to the server\nto synchronize time.",
+                                  "SINGLE": "Sends a single packet to the server\nto synchronize time."
+                                },
+                                "x-typeDescription": "NTP packet burst mode types.",
+                                "default": "ALWAYS",
+                                "description": "Packet transmission mode when server(s) are unreachable,\nonly valid when the transmission mode is set to iBURST."
+                              },
+                              "key-identifier": {
+                                "type": "integer",
+                                "format": "int64",
+                                "minimum": 1,
+                                "maximum": 4294967295,
+                                "description": "Link authentication key identifier to server entry.\nEnsure corresponding authentication key entry with identifier\nexist."
+                              },
+                              "max-poll": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 4,
+                                "maximum": 17,
+                                "default": "10",
+                                "description": "Maximum poll interval in 2^n seconds."
+                              },
+                              "min-poll": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 4,
+                                "maximum": 17,
+                                "default": "6",
+                                "description": "Minimum poll interval in 2^n seconds, must be less than maximum\npoll interval."
+                              },
+                              "mgmt-interface": {
+                                "type": "boolean",
+                                "default": "false",
+                                "description": "Management interface used by client to connect to the server."
+                              },
+                              "prefer": {
+                                "type": "boolean",
+                                "default": "false",
+                                "description": "The primary server preference for the client association."
+                              },
+                              "version": {
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 3,
+                                "maximum": 4,
+                                "description": "Protocol version used by the client."
+                              }
+                            }
+                          },
+                          "x-key": [
+                            "address"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "ntp-auth-global-value": {
+                      "description": "Enable/disable NTP authentication feature alias value.",
+                      "properties": {
+                        "authenticate": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable authentication on outgoing packets generated by\nclient to the server."
+                        }
+                      }
+                    },
+                    "ntp-auth-list-value": {
+                      "description": "NTP authentication list alias value.",
+                      "properties": {
+                        "authentication-profile": {
+                          "description": "Authentication profile entries.",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "key-identifier": {
+                                "type": "integer",
+                                "format": "int64",
+                                "minimum": 1,
+                                "maximum": 4294967295,
+                                "description": "Authentication key identifier, must specify\nkey hashing algorithm and value."
+                              },
+                              "key-hash": {
+                                "type": "string",
+                                "enum": [
+                                  "MD5",
+                                  "SHA1"
+                                ],
+                                "format": "enum",
+                                "x-enumDescriptions": {
+                                  "MD5": "Message-Digest Algorithm 5.",
+                                  "SHA1": "Secure Hash Algorithm 1."
+                                },
+                                "x-typeDescription": "NTP key hashing algorithm.",
+                                "description": "Keyed hashing algorithm."
+                              },
+                              "key-value": {
+                                "type": "string",
+                                "format": "const",
+                                "maxLength": 9999,
+                                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                                "description": "Keyed hashing secret."
+                              },
+                              "key-trusted": {
+                                "type": "boolean",
+                                "default": "false",
+                                "description": "Mark authentication key as trusted."
+                              },
+                              "ciphertext": {
+                                "description": "Authentication key in ciphertext form.",
+                                "properties": {
+                                  "key-value": {
+                                    "type": "string",
+                                    "format": "const",
+                                    "minLength": 64,
+                                    "maxLength": 108,
+                                    "description": "Authentication ciphertext key value."
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "x-key": [
+                            "keyIdentifier"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "dns-resolver-value": {
+                      "description": "List of DNS servers used for name resolution functionality.\nBoth Ipv4 and IPv6 servers can be configured",
+                      "properties": {
+                        "resolver": {
+                          "x-supportedDeviceType": [
+                            "Gateway",
+                            "Switch CX",
+                            "Switch PVOS",
+                            "Access Point"
+                          ],
+                          "description": "List of DNS servers used for name resolution",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "vrf": {
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "name-type",
+                                "x-patterns": "'([^\\\\/ ]+)'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                                "description": "VRF for DNS resolver operation"
+                              },
+                              "name-server": {
+                                "description": "List of IPv4 & IPv6 DNS servers used for name resolution.",
+                                "type": "array",
+                                "items": {
+                                  "properties": {
+                                    "ip": {
+                                      "oneOf": [
+                                        {
+                                          "type": "string",
+                                          "format": "pattern",
+                                          "x-patternSources": "ipv4-address",
+                                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                                          "maxLength": 9999,
+                                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                                        },
+                                        {
+                                          "type": "string",
+                                          "format": "pattern",
+                                          "x-patternSources": "ipv6-address",
+                                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                                          "maxLength": 9999,
+                                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                                        }
+                                      ],
+                                      "description": "DNS server IP address to be used by resolver."
+                                    },
+                                    "priority": {
+                                      "x-supportedDeviceType": [
+                                        "Gateway",
+                                        "Switch CX",
+                                        "Switch PVOS"
+                                      ],
+                                      "type": "integer",
+                                      "format": "int32",
+                                      "minimum": 1,
+                                      "maximum": 8,
+                                      "x-mandatory": true,
+                                      "description": "Priority of the DNS server."
+                                    },
+                                    "vlan": {
+                                      "x-supportedDeviceType": [
+                                        "Gateway"
+                                      ],
+                                      "type": "integer",
+                                      "format": "int32",
+                                      "minimum": 1,
+                                      "maximum": 4094,
+                                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                                      "description": "VLAN Id for source interface"
+                                    },
+                                    "management-interface": {
+                                      "x-supportedDeviceType": [
+                                        "Switch PVOS"
+                                      ],
+                                      "type": "boolean",
+                                      "default": "false",
+                                      "description": "Name server for Out-of-band Management (OOBM) interface"
+                                    }
+                                  },
+                                  "required": [
+                                    "priority"
+                                  ]
+                                },
+                                "x-key": [
+                                  "ip"
+                                ],
+                                "maxItems": 2147483647
+                              }
+                            }
+                          },
+                          "x-key": [
+                            "vrf"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "priority-value": {
+                      "description": "Router priority level.",
+                      "properties": {
+                        "priority": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 255,
+                          "description": "Router priority level."
+                        }
+                      }
+                    },
+                    "vlan-description-value": {
+                      "description": "Description of the VLAN profile.",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Limit on description length for AP,GW:32 and for CX:64 characters."
+                        }
+                      }
+                    },
+                    "vc-country-code-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines the country code alias value.",
+                      "properties": {
+                        "country-code": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 4,
+                          "description": "Defines the country of operation of an AP."
+                        }
+                      }
+                    },
+                    "vc-name-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines virtual controller name alias value.",
+                      "properties": {
+                        "virtual-controller-name": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "description": "Defines a unique name for the virtual controller."
+                        }
+                      }
+                    },
+                    "vc-ip-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines virtual controller ip address alias value.",
+                      "properties": {
+                        "virtual-controller-ip": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Assigns an IP address for the virtual controller."
+                        }
+                      }
+                    },
+                    "vc-ipv6-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines virtual controller ipv6 address alias value.",
+                      "properties": {
+                        "virtual-controller-ipv6": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                          "description": "Assigns an IPv6 address for the virtual controller."
+                        }
+                      }
+                    },
+                    "vc-vlan-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Configures the virtual controller settings.",
+                      "properties": {
+                        "vlan": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "Associates a VLAN ID with the virtual controller."
+                        },
+                        "mask": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Configures a subnet mask for the virtual controller."
+                        },
+                        "gateway": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Configures a gateway for the virtual controller."
+                        }
+                      }
+                    },
+                    "vc-dnsip-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines virtual controller ipv6 address alias value.",
+                      "properties": {
+                        "virtual-controller-dnsip": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Configures the DNS IP address for the virtual controller."
+                        }
+                      }
+                    },
+                    "allow-new-aps-value": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Defines virtual controller ipv6 address alias value.",
+                      "properties": {
+                        "allow-new-aps": {
+                          "type": "boolean",
+                          "description": "Allows the new access points to join the AP cluster."
+                        }
+                      }
+                    },
+                    "voice-enable-value": {
+                      "description": "Defines voice-enable alias value for the VLAN.",
+                      "properties": {
+                        "voice-enable": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Assigns voice-enable value to the VLAN."
+                        }
+                      }
+                    },
+                    "ipv4-relay-value": {
+                      "description": "DHCPv4 Relay server Alias value",
+                      "properties": {
+                        "server": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "description": "List of DHCPv4 servers.",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "ip-vrf": {
+                                "type": "string",
+                                "format": "const",
+                                "maxLength": 9999,
+                                "description": "Key combination of ip and vrf separated by ~"
+                              }
+                            }
+                          },
+                          "x-key": [
+                            "ipVrf"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "ipv6-relay-value": {
+                      "description": "DHCPv6 Relay ucast-server Alias value",
+                      "properties": {
+                        "ucast-server": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv6-address",
+                            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                            "description": "List of IPv6 addresses in format X:X::X:X"
+                          },
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "ip-address-value": {
+                      "description": "IPv4 or IPv6 address.",
+                      "properties": {
+                        "address": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv4-address",
+                              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                            },
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv6-address",
+                              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                            }
+                          ],
+                          "description": "IPv4 or IPv6 address."
+                        }
+                      }
+                    },
+                    "gw-switchport-value": {
+                      "description": "Defines switchport configuration alias value for gw-port-profile.",
+                      "properties": {
+                        "switchport": {
+                          "description": "Switchport configuration. This configuration is valid only on a layer2 interface.",
+                          "properties": {
+                            "interface-mode": {
+                              "type": "string",
+                              "enum": [
+                                "ACCESS",
+                                "TRUNK"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "ACCESS": "Access mode VLAN interface (No 802.1q header)",
+                                "TRUNK": "Trunk mode VLAN interface"
+                              },
+                              "x-typeDescription": "VLAN interface mode (trunk or access)",
+                              "description": "Interface access or trunk mode for VLANs.\nThe access-vlan should be set to null for configuring trunk mode and\nnative-vlan and trunk-vlan-ranges should be set to null while configuring access mode\nEg: switchport: {interface-mode: ACCESS, access-vlan: 600, native-vlan: null,\ntrunk-vlan-ranges: null}\nswitchport: {interface-mode: TRUNK, access-vlan: null, native-vlan: NATIVE_VLAN,\ntrunk-vlan-ranges: [ 1000 ]}"
+                            },
+                            "native-vlan": {
+                              "type": "integer",
+                              "format": "int32",
+                              "minimum": 1,
+                              "maximum": 4094,
+                              "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                              "description": "Native VLAN id for untagged frames arriving on\na trunk interface.  Tagged frames sent on an interface\nconfigured with a native VLAN should have their tags\nstripped prior to transmission. This configuration is only\nvalid on a trunk interface."
+                            },
+                            "access-vlan": {
+                              "type": "integer",
+                              "format": "int32",
+                              "minimum": 1,
+                              "maximum": 4094,
+                              "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                              "description": "Assign the access VLAN to the access port."
+                            },
+                            "trunk-vlan-ranges": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "vlan-range",
+                                "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                                "description": "VLAN ranges that the interface may carry when in trunk mode."
+                              },
+                              "maxItems": 2147483647
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAlias_AliasesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAlias_AliasesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAlias_AliasesaliasSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 256,
+            "x-patternSources": "name",
+            "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+            "description": "The name of the Alias."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Description of the Alias."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ALIAS_HOST",
+              "ALIAS_NETWORK",
+              "ALIAS_NETWORK_GROUP",
+              "ALIAS_SERVICE_GROUP",
+              "ALIAS_VLAN",
+              "ALIAS_ESSID",
+              "ALIAS_ECHO_SOURCE_ADDRESS",
+              "ALIAS_HOSTNAME",
+              "ALIAS_NETWORK_DESTINATION",
+              "ALIAS_IPV4_SYSTEM_VLAN",
+              "ALIAS_IPV4_PREFIX",
+              "ALIAS_IPV6_PREFIX",
+              "ALIAS_IPV4_ADDRESS_TYPE",
+              "ALIAS_IPV6_ADDRESS_TYPE",
+              "ALIAS_IPV6_LINK_LOCAL_ADDRESS",
+              "ALIAS_RSSI_REPORT_TYPE",
+              "ALIAS_FEATURE_CONTROL",
+              "ALIAS_IPV4_ADDRESS",
+              "ALIAS_NEXT_HOP",
+              "ALIAS_NEXT_HOP_V6",
+              "ALIAS_IDENTITY_PROFILE",
+              "ALIAS_IPV4_ADDRESSES",
+              "ALIAS_NTP_SERVER_LIST",
+              "ALIAS_NTP_AUTH_LIST",
+              "ALIAS_NTP_AUTH_GLOBAL",
+              "ALIAS_DNS_RESOLVER",
+              "ALIAS_NAMED_CONDITION",
+              "ALIAS_IPV6_ADDRESS",
+              "ALIAS_VLAN_DESCRIPTION",
+              "ALIAS_VC_COUNTRY_CODE",
+              "ALIAS_VC_NAME",
+              "ALIAS_VC_IP",
+              "ALIAS_VC_IPV6",
+              "ALIAS_VC_VLAN",
+              "ALIAS_VC_DNSIP",
+              "ALIAS_ALLOW_NEW_APS",
+              "ALIAS_SW_PORT_PROFILE_SWITCHPORT",
+              "ALIAS_VRRP_PRIORITY",
+              "ALIAS_AUTH_SERVER_ADDRESS",
+              "ALIAS_VLAN_VOICE_ENABLE",
+              "ALIAS_IPV4_ADDRESSES_WITH_VRF",
+              "ALIAS_IPV6_ADDRESSES",
+              "ALIAS_SECRET_VALUE",
+              "ALIAS_IP_ADDRESS",
+              "ALIAS_VLAN_ACTIVE_GATEWAY",
+              "ALIAS_GW_PORT_PROFILE_SWITCHPORT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALIAS_HOST": "Host address.",
+              "ALIAS_NETWORK": "Network prefix.",
+              "ALIAS_NETWORK_GROUP": "Network IP prefix group.",
+              "ALIAS_SERVICE_GROUP": "Service group.",
+              "ALIAS_VLAN": "VLAN Alias",
+              "ALIAS_ESSID": "ESSID.",
+              "ALIAS_ECHO_SOURCE_ADDRESS": "Echo source address alias.",
+              "ALIAS_HOSTNAME": "Hostname",
+              "ALIAS_NETWORK_DESTINATION": "Network Destination/Net-Group",
+              "ALIAS_IPV4_SYSTEM_VLAN": "IPv4 system VLAN identifier.",
+              "ALIAS_IPV4_PREFIX": "IPv4 Prefix in format X.X.X.X/M.",
+              "ALIAS_IPV6_PREFIX": "IPv6 Prefix in format X:X::X:X/M.",
+              "ALIAS_IPV4_ADDRESS_TYPE": "IPv4 address, static or dynamic.",
+              "ALIAS_IPV6_ADDRESS_TYPE": "IPv6 address, static or dynamic.",
+              "ALIAS_IPV6_LINK_LOCAL_ADDRESS": "IPv6 link local address.",
+              "ALIAS_RSSI_REPORT_TYPE": "Report wireless client RSSI values for associated and/or unassociated clients..",
+              "ALIAS_FEATURE_CONTROL": "Alias to Enable or Disable feature",
+              "ALIAS_IPV4_ADDRESS": "IPv4 Address in format X.X.X.X.",
+              "ALIAS_NEXT_HOP": "alias for ipv4 next-hop",
+              "ALIAS_NEXT_HOP_V6": "alias for ipv6 next-hop",
+              "ALIAS_IDENTITY_PROFILE": "alias for identity-profile enable",
+              "ALIAS_IPV4_ADDRESSES": "list of IPv4 addresses",
+              "ALIAS_NTP_SERVER_LIST": "NTP server list configuration.",
+              "ALIAS_NTP_AUTH_LIST": "NTP authentication list configuration.",
+              "ALIAS_NTP_AUTH_GLOBAL": "NTP authentication enable/disable configuration.",
+              "ALIAS_DNS_RESOLVER": "List of IPv4 & IPv6 DNS servers used for name resolution.",
+              "ALIAS_NAMED_CONDITION": "Named-Condition for Policy.",
+              "ALIAS_IPV6_ADDRESS": "IPv6 Address in format X:X::X:X.",
+              "ALIAS_VLAN_DESCRIPTION": "Description of the VLAN profile.",
+              "ALIAS_VC_COUNTRY_CODE": "Country code for the virtual controller.",
+              "ALIAS_VC_NAME": "Name for the virtual controller.",
+              "ALIAS_VC_IP": "IP address for the virtual controller.",
+              "ALIAS_VC_IPV6": "IPv6 address for the virtual controller.",
+              "ALIAS_VC_VLAN": "Vlan for the virtual controller.",
+              "ALIAS_VC_DNSIP": "Dnsip for the virtual controller.",
+              "ALIAS_ALLOW_NEW_APS": "Allows the new access points to join the AP cluster.",
+              "ALIAS_SW_PORT_PROFILE_SWITCHPORT": "alias for switchport",
+              "ALIAS_VRRP_PRIORITY": "Router priority level.",
+              "ALIAS_AUTH_SERVER_ADDRESS": "Authentication server address (IP or FQDN).",
+              "ALIAS_VLAN_VOICE_ENABLE": "Alias to set Vlan type to voice",
+              "ALIAS_IPV4_ADDRESSES_WITH_VRF": "IPv4 Addresses in format X.X.X.X with VRF",
+              "ALIAS_IPV6_ADDRESSES": "IPv6 Address leaf list in format X:X::X:X",
+              "ALIAS_SECRET_VALUE": "Auth server secret value configuration.",
+              "ALIAS_IP_ADDRESS": "IPv4 or IPv6 Address.",
+              "ALIAS_VLAN_ACTIVE_GATEWAY": "Alias for interface vlan active gateway",
+              "ALIAS_GW_PORT_PROFILE_SWITCHPORT": "alias for gw-port-profile switchport"
+            },
+            "x-typeDescription": "Alias type.",
+            "description": "Alias type."
+          },
+          "default-value": {
+            "description": "Default value for alias.",
+            "properties": {
+              "host-address-value": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaDualip_DualIpAddress"
+                  }
+                ],
+                "description": "Host IP address."
+              },
+              "hostname-value": {
+                "properties": {
+                  "hostname": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "description": "The hostname is used as a default prompt. The alias name must be 'sys_host_name'."
+                  }
+                }
+              },
+              "network-address-value": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaDualip_DualIpPrefix"
+                  }
+                ],
+                "description": "Network prefix."
+              },
+              "vlan-value": {
+                "description": "L2 VLAN range.",
+                "properties": {
+                  "vlan-id-ranges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "vlan-range",
+                      "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                      "description": "List of VLAN ranges under vlan name"
+                    },
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "essid-value": {
+                "description": "ESSID value defined",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "description": "ESSID."
+                  }
+                }
+              },
+              "bfd-echo-source-address": {
+                "description": "BFD echo source address defined",
+                "properties": {
+                  "name": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                      },
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv6-address",
+                        "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                      }
+                    ],
+                    "description": "BFD echo source address."
+                  }
+                }
+              },
+              "ipv4-system-vlan-value": {
+                "description": "IPv4 system VLAN configuration.",
+                "properties": {
+                  "vlan-id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "IPv4 system VLAN identifier."
+                  }
+                }
+              },
+              "ipv4-prefix-value": {
+                "description": "IPv4 Prefix in format X.X.X.X/M.",
+                "properties": {
+                  "prefix": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-prefix",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                    "description": "IPv4 Prefix in format X.X.X.X/M."
+                  }
+                }
+              },
+              "ipv6-prefix-value": {
+                "description": "IPv6 Prefix in format X:X::X:X/M.",
+                "properties": {
+                  "prefix": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-prefix",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                    "description": "IPv6 Prefix in format X:X::X:X/M."
+                  }
+                }
+              },
+              "ipv4-address-type-value": {
+                "description": "IPv4 address, static or dynamic.",
+                "properties": {
+                  "ipv4-address": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-prefix",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "DHCP",
+                          "PPPOE",
+                          "NO_DHCP",
+                          "NONE"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "DHCP": "Dynamic Host Configuration Protocol.",
+                          "PPPOE": "Point-to-point Protocol over Ethernet.",
+                          "NO_DHCP": "Dynamic Host Configuration Protocol.",
+                          "NONE": "Client/address is not configured."
+                        },
+                        "x-typeDescription": "Dynamic client type to obtain IPv4 address."
+                      }
+                    ],
+                    "description": "IPv4 address."
+                  }
+                }
+              },
+              "ipv6-address-type-value": {
+                "description": "IPv6 addresses, static or dynamic.",
+                "properties": {
+                  "ipv6-addresses": {
+                    "description": "List of IPv6 addresses, static or dynamic.",
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "address": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv6-prefix",
+                              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "DHCP",
+                                "DHCP_FULL",
+                                "DHCP_FULL_RAPID_COMMIT",
+                                "NO_DHCP"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "DHCP": "Dynamic Host Configuration Protocol.",
+                                "DHCP_FULL": "Obtain IPv6 address & Configuration information from DHCPv6 server.",
+                                "DHCP_FULL_RAPID_COMMIT": "Obtain IPv6 address quickly from DHCPv6 server.",
+                                "NO_DHCP": "Dynamic Host Configuration Protocol."
+                              },
+                              "x-typeDescription": "Dynamic client type to obtain IPv6 address."
+                            }
+                          ],
+                          "description": "The IPv6 address, static or dynamic."
+                        },
+                        "eui64": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS",
+                            "Gateway"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "IPv6 address in the EUI-64 bit format.\nThis config cannot be set when IPv6 DHCP client is enabled."
+                        },
+                        "tag": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 0,
+                          "maximum": 4294967295,
+                          "default": "0",
+                          "description": "Route tag for connected routes."
+                        }
+                      }
+                    },
+                    "x-key": [
+                      "address"
+                    ],
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "ipv6-link-local-address-value": {
+                "description": "IPv6 link local address.",
+                "properties": {
+                  "ipv6-link-local-address": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                    "description": "IPv6 link local address."
+                  }
+                }
+              },
+              "report-rssi-type-value": {
+                "description": "Set which client RSSI data will be reported to Central.\nTwo options: UNASSOCIATED_CLIENTS_ONLY and UNASSOCIATED_AND_ASSOCIATED_CLIENTS.",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "UNASSOCIATED_CLIENTS_ONLY",
+                      "UNASSOCIATED_AND_ASSOCIATED_CLIENTS"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "UNASSOCIATED_CLIENTS_ONLY": "Only unassociated clients will be reported.",
+                      "UNASSOCIATED_AND_ASSOCIATED_CLIENTS": "Both associated and unassociated clients will be reported."
+                    },
+                    "x-typeDescription": "It defines different types of client, that will be involved in\nRSSI (Received Signal Strength Indicator) report.",
+                    "description": "Set which client RSSI data will be reported to Central.\nTwo options: UNASSOCIATED_CLIENTS_ONLY and UNASSOCIATED_AND_ASSOCIATED_CLIENTS."
+                  }
+                }
+              },
+              "feature-control": {
+                "description": "Enable/Disable feature.",
+                "properties": {
+                  "enable": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable/Disable configuration."
+                  }
+                }
+              },
+              "ipv4-address-value": {
+                "description": "IPv4 address in format X.X.X.X.",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "IPv4 address in format X.X.X.X."
+                  }
+                }
+              },
+              "ipv6-address-value": {
+                "description": "IPv6 address in format X:X::X:X.",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                    "description": "IPv6 address in format X:X::X:X."
+                  }
+                }
+              },
+              "next-hop-ipv4": {
+                "description": "Alias for ipv4 next-hop.",
+                "properties": {
+                  "hop-address": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-nexthop-address-prefix",
+                    "x-patterns": "'((([1-9]|[1-9][0-9]|1[0-1][0-9]|12[0-6]|12[8-9]|1[3-9][0-9]|2[0-1][0-9]|22[0-3]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "Valid IPv4 address type for interface",
+                    "description": "Alias for ipv4 next-hop."
+                  }
+                }
+              },
+              "next-hop-ipv6": {
+                "description": "Alias for ipv6 next-hop.",
+                "properties": {
+                  "hop-address": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                    "description": "Alias for ipv6 next-hop."
+                  }
+                }
+              },
+              "identity-profile-control": {
+                "description": "Enable/Disable identity-profile.",
+                "properties": {
+                  "enable": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable/Disable configuration."
+                  }
+                }
+              },
+              "ipv4-addresses-value": {
+                "description": "list of IPv4 addresses",
+                "properties": {
+                  "ip-addresses": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-prefix",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                      "description": "List of IPv4 addresses with netmask specified."
+                    },
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "ntp-server-list-value": {
+                "description": "NTP server configuration alias value.",
+                "properties": {
+                  "servers": {
+                    "description": "NTP server entries.",
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "address": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv4-address",
+                              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                            },
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv6-address",
+                              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                            },
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "minLength": 1,
+                              "maxLength": 253,
+                              "x-patternSources": "domain-name",
+                              "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                              "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                            }
+                          ],
+                          "description": "Supported server entries are FQDN,\nIPv4 and IPv6 addresses."
+                        },
+                        "tx-mode": {
+                          "type": "string",
+                          "enum": [
+                            "BURST",
+                            "IBURST"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "BURST": "Transmission burst mode when the server(s) are reachable.",
+                            "IBURST": "Transmission burst mode when the server(s) are unreachable."
+                          },
+                          "x-typeDescription": "NTP packet transmission mode types.",
+                          "description": "Packet transmission mode to select the burst functionality."
+                        },
+                        "burst": {
+                          "type": "string",
+                          "enum": [
+                            "INITIAL",
+                            "ALWAYS",
+                            "SINGLE"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "INITIAL": "Sends a burst of packets initially to\nthe server to synchronize time.",
+                            "ALWAYS": "Sends a burst of packets to the server\nto synchronize time.",
+                            "SINGLE": "Sends a single packet to the server\nto synchronize time."
+                          },
+                          "x-typeDescription": "NTP packet burst mode types.",
+                          "default": "SINGLE",
+                          "description": "Packet transmission mode when server(s) are reachable,\nonly valid when the transmission mode is set to BURST."
+                        },
+                        "iburst": {
+                          "type": "string",
+                          "enum": [
+                            "INITIAL",
+                            "ALWAYS",
+                            "SINGLE"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "INITIAL": "Sends a burst of packets initially to\nthe server to synchronize time.",
+                            "ALWAYS": "Sends a burst of packets to the server\nto synchronize time.",
+                            "SINGLE": "Sends a single packet to the server\nto synchronize time."
+                          },
+                          "x-typeDescription": "NTP packet burst mode types.",
+                          "default": "ALWAYS",
+                          "description": "Packet transmission mode when server(s) are unreachable,\nonly valid when the transmission mode is set to iBURST."
+                        },
+                        "key-identifier": {
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 1,
+                          "maximum": 4294967295,
+                          "description": "Link authentication key identifier to server entry.\nEnsure corresponding authentication key entry with identifier\nexist."
+                        },
+                        "max-poll": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 4,
+                          "maximum": 17,
+                          "default": "10",
+                          "description": "Maximum poll interval in 2^n seconds."
+                        },
+                        "min-poll": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 4,
+                          "maximum": 17,
+                          "default": "6",
+                          "description": "Minimum poll interval in 2^n seconds, must be less than maximum\npoll interval."
+                        },
+                        "mgmt-interface": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Management interface used by client to connect to the server."
+                        },
+                        "prefer": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "The primary server preference for the client association."
+                        },
+                        "version": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 3,
+                          "maximum": 4,
+                          "description": "Protocol version used by the client."
+                        }
+                      }
+                    },
+                    "x-key": [
+                      "address"
+                    ],
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "ntp-auth-global-value": {
+                "description": "Enable/disable NTP authentication feature alias value.",
+                "properties": {
+                  "authenticate": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable authentication on outgoing packets generated by\nclient to the server."
+                  }
+                }
+              },
+              "ntp-auth-list-value": {
+                "description": "NTP authentication list alias value.",
+                "properties": {
+                  "authentication-profile": {
+                    "description": "Authentication profile entries.",
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "key-identifier": {
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 1,
+                          "maximum": 4294967295,
+                          "description": "Authentication key identifier, must specify\nkey hashing algorithm and value."
+                        },
+                        "key-hash": {
+                          "type": "string",
+                          "enum": [
+                            "MD5",
+                            "SHA1"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "MD5": "Message-Digest Algorithm 5.",
+                            "SHA1": "Secure Hash Algorithm 1."
+                          },
+                          "x-typeDescription": "NTP key hashing algorithm.",
+                          "description": "Keyed hashing algorithm."
+                        },
+                        "key-value": {
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                          "description": "Keyed hashing secret."
+                        },
+                        "key-trusted": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Mark authentication key as trusted."
+                        },
+                        "ciphertext": {
+                          "description": "Authentication key in ciphertext form.",
+                          "properties": {
+                            "key-value": {
+                              "type": "string",
+                              "format": "const",
+                              "minLength": 64,
+                              "maxLength": 108,
+                              "description": "Authentication ciphertext key value."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "x-key": [
+                      "keyIdentifier"
+                    ],
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "dns-resolver-value": {
+                "description": "List of DNS servers used for name resolution functionality.\nBoth Ipv4 and IPv6 servers can be configured",
+                "properties": {
+                  "resolver": {
+                    "x-supportedDeviceType": [
+                      "Gateway",
+                      "Switch CX",
+                      "Switch PVOS",
+                      "Access Point"
+                    ],
+                    "description": "List of DNS servers used for name resolution",
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "vrf": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "name-type",
+                          "x-patterns": "'([^\\\\/ ]+)'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                          "description": "VRF for DNS resolver operation"
+                        },
+                        "name-server": {
+                          "description": "List of IPv4 & IPv6 DNS servers used for name resolution.",
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "ip": {
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "x-patternSources": "ipv4-address",
+                                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                                    "maxLength": 9999,
+                                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                                  },
+                                  {
+                                    "type": "string",
+                                    "format": "pattern",
+                                    "x-patternSources": "ipv6-address",
+                                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                                    "maxLength": 9999,
+                                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                                  }
+                                ],
+                                "description": "DNS server IP address to be used by resolver."
+                              },
+                              "priority": {
+                                "x-supportedDeviceType": [
+                                  "Gateway",
+                                  "Switch CX",
+                                  "Switch PVOS"
+                                ],
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 1,
+                                "maximum": 8,
+                                "x-mandatory": true,
+                                "description": "Priority of the DNS server."
+                              },
+                              "vlan": {
+                                "x-supportedDeviceType": [
+                                  "Gateway"
+                                ],
+                                "type": "integer",
+                                "format": "int32",
+                                "minimum": 1,
+                                "maximum": 4094,
+                                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                                "description": "VLAN Id for source interface"
+                              },
+                              "management-interface": {
+                                "x-supportedDeviceType": [
+                                  "Switch PVOS"
+                                ],
+                                "type": "boolean",
+                                "default": "false",
+                                "description": "Name server for Out-of-band Management (OOBM) interface"
+                              }
+                            },
+                            "required": [
+                              "priority"
+                            ]
+                          },
+                          "x-key": [
+                            "ip"
+                          ],
+                          "maxItems": 2147483647
+                        }
+                      }
+                    },
+                    "x-key": [
+                      "vrf"
+                    ],
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "priority-value": {
+                "description": "Router priority level.",
+                "properties": {
+                  "priority": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 255,
+                    "description": "Router priority level."
+                  }
+                }
+              },
+              "vlan-description-value": {
+                "description": "Description of the VLAN profile.",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Limit on description length for AP,GW:32 and for CX:64 characters."
+                  }
+                }
+              },
+              "vc-country-code-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines the country code alias value.",
+                "properties": {
+                  "country-code": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 4,
+                    "description": "Defines the country of operation of an AP."
+                  }
+                }
+              },
+              "vc-name-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines virtual controller name alias value.",
+                "properties": {
+                  "virtual-controller-name": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Defines a unique name for the virtual controller."
+                  }
+                }
+              },
+              "vc-ip-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines virtual controller ip address alias value.",
+                "properties": {
+                  "virtual-controller-ip": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Assigns an IP address for the virtual controller."
+                  }
+                }
+              },
+              "vc-ipv6-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines virtual controller ipv6 address alias value.",
+                "properties": {
+                  "virtual-controller-ipv6": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                    "description": "Assigns an IPv6 address for the virtual controller."
+                  }
+                }
+              },
+              "vc-vlan-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the virtual controller settings.",
+                "properties": {
+                  "vlan": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "Associates a VLAN ID with the virtual controller."
+                  },
+                  "mask": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Configures a subnet mask for the virtual controller."
+                  },
+                  "gateway": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Configures a gateway for the virtual controller."
+                  }
+                }
+              },
+              "vc-dnsip-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines virtual controller ipv6 address alias value.",
+                "properties": {
+                  "virtual-controller-dnsip": {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Configures the DNS IP address for the virtual controller."
+                  }
+                }
+              },
+              "allow-new-aps-value": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Defines virtual controller ipv6 address alias value.",
+                "properties": {
+                  "allow-new-aps": {
+                    "type": "boolean",
+                    "description": "Allows the new access points to join the AP cluster."
+                  }
+                }
+              },
+              "voice-enable-value": {
+                "description": "Defines voice-enable alias value for the VLAN.",
+                "properties": {
+                  "voice-enable": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Assigns voice-enable value to the VLAN."
+                  }
+                }
+              },
+              "ipv4-relay-value": {
+                "description": "DHCPv4 Relay server Alias value",
+                "properties": {
+                  "server": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "description": "List of DHCPv4 servers.",
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "ip-vrf": {
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "Key combination of ip and vrf separated by ~"
+                        }
+                      }
+                    },
+                    "x-key": [
+                      "ipVrf"
+                    ],
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "ipv6-relay-value": {
+                "description": "DHCPv6 Relay ucast-server Alias value",
+                "properties": {
+                  "ucast-server": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "List of IPv6 addresses in format X:X::X:X"
+                    },
+                    "maxItems": 2147483647
+                  }
+                }
+              },
+              "ip-address-value": {
+                "description": "IPv4 or IPv6 address.",
+                "properties": {
+                  "address": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                      },
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv6-address",
+                        "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                      }
+                    ],
+                    "description": "IPv4 or IPv6 address."
+                  }
+                }
+              },
+              "gw-switchport-value": {
+                "description": "Defines switchport configuration alias value for gw-port-profile.",
+                "properties": {
+                  "switchport": {
+                    "description": "Switchport configuration. This configuration is valid only on a layer2 interface.",
+                    "properties": {
+                      "interface-mode": {
+                        "type": "string",
+                        "enum": [
+                          "ACCESS",
+                          "TRUNK"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "ACCESS": "Access mode VLAN interface (No 802.1q header)",
+                          "TRUNK": "Trunk mode VLAN interface"
+                        },
+                        "x-typeDescription": "VLAN interface mode (trunk or access)",
+                        "description": "Interface access or trunk mode for VLANs.\nThe access-vlan should be set to null for configuring trunk mode and\nnative-vlan and trunk-vlan-ranges should be set to null while configuring access mode\nEg: switchport: {interface-mode: ACCESS, access-vlan: 600, native-vlan: null,\ntrunk-vlan-ranges: null}\nswitchport: {interface-mode: TRUNK, access-vlan: null, native-vlan: NATIVE_VLAN,\ntrunk-vlan-ranges: [ 1000 ]}"
+                      },
+                      "native-vlan": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1,
+                        "maximum": 4094,
+                        "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                        "description": "Native VLAN id for untagged frames arriving on\na trunk interface.  Tagged frames sent on an interface\nconfigured with a native VLAN should have their tags\nstripped prior to transmission. This configuration is only\nvalid on a trunk interface."
+                      },
+                      "access-vlan": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1,
+                        "maximum": 4094,
+                        "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                        "description": "Assign the access VLAN to the access port."
+                      },
+                      "trunk-vlan-ranges": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "vlan-range",
+                          "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                          "description": "VLAN ranges that the interface may carry when in trunk mode."
+                        },
+                        "maxItems": 2147483647
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ArubaDualip_DualIpAddress": {
+        "description": "Dual IP address.",
+        "properties": {
+          "host-ipv4-address": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Host IPv4 address."
+          },
+          "host-ipv6-address": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "Host IPv6 address."
+          }
+        }
+      },
+      "ArubaDualip_DualIpPrefix": {
+        "description": "Dual IP prefix.",
+        "properties": {
+          "network-ipv4-address": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-prefix",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+            "description": "Network IPv4 prefix."
+          },
+          "network-ipv6-address": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-prefix",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+            "description": "Network IPv6 prefix."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

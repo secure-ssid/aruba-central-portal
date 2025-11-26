@@ -1,0 +1,1668 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-bfd API generated from aruba-bfd.yang",
+    "version": "1.0.0",
+    "title": "bfd",
+    "x-tag-group": "Routing & Overlays"
+  },
+  "tags": [
+    {
+      "name": "bfd"
+    }
+  ],
+  "paths": {
+    "/bfd": {
+      "get": {
+        "summary": "Read bfd",
+        "description": "BFD global configuration.\nBidirectional Forwarding Detection (BFD) is a protocol intended to detect\nfaults in the bidirectional path between two forwarding engines, including\ninterfaces, data link(s), and to the extent possible the forwarding engines\nthemselves, with potentially very low latency.  It operates independently of\nmedia, data protocols, and routing protocols.",
+        "operationId": "readBfd",
+        "x-cliParam": {
+          "commandName": "readBfdCmd",
+          "summary": "Read operation for bfd",
+          "commandUse": "bfd",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/bfd/"
+        },
+        "tags": [
+          "bfd"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaBfd_BfdSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bfd/{name}": {
+      "post": {
+        "summary": "Create profile by {name}",
+        "description": "L2TP profiles.",
+        "operationId": "createBfdProfileByID",
+        "x-cliParam": {
+          "commandName": "createBfdProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createBfdCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bfd/profile/%s/"
+        },
+        "tags": [
+          "bfd"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "BFD profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaBfd_BfdprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read profile by {name}",
+        "description": "L2TP profiles.",
+        "operationId": "readBfdProfileByID",
+        "x-cliParam": {
+          "commandName": "readBfdProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readBfdCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bfd/profile/%s/"
+        },
+        "tags": [
+          "bfd"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "BFD profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaBfd_BfdprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "L2TP profiles.",
+        "operationId": "updateBfdProfileByID",
+        "x-cliParam": {
+          "commandName": "updateBfdProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateBfdCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bfd/profile/%s/"
+        },
+        "tags": [
+          "bfd"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "BFD profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaBfd_BfdprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete profile by {name}",
+        "description": "L2TP profiles.",
+        "operationId": "deleteBfdProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteBfdProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteBfdCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bfd/profile/%s/"
+        },
+        "tags": [
+          "bfd"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "BFD profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaBfd_BfdprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaBfd_BfdprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaBfd_BfdSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "BFD global configuration.\nBidirectional Forwarding Detection (BFD) is a protocol intended to detect\nfaults in the bidirectional path between two forwarding engines, including\ninterfaces, data link(s), and to the extent possible the forwarding engines\nthemselves, with potentially very low latency.  It operates independently of\nmedia, data protocols, and routing protocols.",
+        "properties": {
+          "profile": {
+            "description": "L2TP profiles.",
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "BFD profile name"
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "BFD user description."
+                },
+                "timers": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBfd_BfdTimersCfg"
+                    }
+                  ],
+                  "description": "BFD global timer configuration"
+                },
+                "echo-source-address": {
+                  "description": "Echo source address container defined",
+                  "properties": {
+                    "use-alias": {
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Echo source address use alias or not"
+                    },
+                    "alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Echo source address use aliases"
+                    },
+                    "echo-source-address": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        }
+                      ],
+                      "description": "Configure the source IP address for BFD echo packets"
+                    }
+                  }
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enable BFD."
+                },
+                "disable-echo": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enable or disable BFD echo packets on the system.."
+                },
+                "min-echo-rx-interval": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "maximum": 1000,
+                  "description": "Sets or resets the minimum BFD echo packet reception interval.\nThe value 0 means that the host is not interested in receiving BFD echo packets.\nThe value itself is a request to the remote system that it might not be able to\nhonor (ex. we ask for echo packets faster than it can send them). In this scenario,\nthe remote system is expected to use its fastest/slowest setting (depending on\nwhat we asked) and the session might flap."
+                },
+                "authentication": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBfd_BfdAuthenticationCfg"
+                    }
+                  ],
+                  "description": "BFD authentication"
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBfd_BfdSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaBfd_BfdSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaBfd_BfdprofileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "BFD profile name"
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "BFD user description."
+          },
+          "timers": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBfd_BfdTimersCfg"
+              }
+            ],
+            "description": "BFD global timer configuration"
+          },
+          "echo-source-address": {
+            "description": "Echo source address container defined",
+            "properties": {
+              "use-alias": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Echo source address use alias or not"
+              },
+              "alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Echo source address use aliases"
+              },
+              "echo-source-address": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  }
+                ],
+                "description": "Configure the source IP address for BFD echo packets"
+              }
+            }
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BFD."
+          },
+          "disable-echo": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable or disable BFD echo packets on the system.."
+          },
+          "min-echo-rx-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 1000,
+            "description": "Sets or resets the minimum BFD echo packet reception interval.\nThe value 0 means that the host is not interested in receiving BFD echo packets.\nThe value itself is a request to the remote system that it might not be able to\nhonor (ex. we ask for echo packets faster than it can send them). In this scenario,\nthe remote system is expected to use its fastest/slowest setting (depending on\nwhat we asked) and the session might flap."
+          },
+          "authentication": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBfd_BfdAuthenticationCfg"
+              }
+            ],
+            "description": "BFD authentication"
+          }
+        }
+      },
+      "ArubaBfd_BfdAuthenticationCfg": {
+        "description": "BFD authentication configuration",
+        "properties": {
+          "bfd-authentication-type": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "KEYED_SHA1",
+              "METICULOUS_KEYED_SHA1"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "KEYED_SHA1": "authentication mode SHA-1 mode.",
+              "METICULOUS_KEYED_SHA1": "authentication mode meticulous SHA-1 mode."
+            },
+            "x-typeDescription": "authentication mode type",
+            "description": "BFD authentication type"
+          },
+          "key-id": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Specify the ID, in the range 0 to 255, to uniquely recognize a key."
+          },
+          "password": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Configure the authentication password using a plaintext string."
+          }
+        }
+      },
+      "ArubaBfd_BfdTimersCfg": {
+        "description": "BFD global timer configuration",
+        "properties": {
+          "min-rx-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 3600000,
+            "default": "1000",
+            "description": "Minimum receive interval of control packets.\nThis config is available globally and per-interface."
+          },
+          "min-tx-interval": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 3600000,
+            "default": "1000",
+            "description": "Minimum transmit interval of control packets.\nThis config is available globally and per-interface."
+          },
+          "min-echo-rx-interval": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 1000,
+            "default": "0",
+            "description": "Echo receive interval in use.\nThis config is available globally and per-interface."
+          },
+          "detect-multiplier": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 255,
+            "description": "Detect-multiplier for control packets.\nThis config is available globally and per-interface."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

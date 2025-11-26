@@ -1,0 +1,1987 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-dhcp-snooping API generated from aruba-dhcp-snooping.yang",
+    "version": "1.0.0",
+    "title": "dhcp-snooping",
+    "x-tag-group": "Network Services"
+  },
+  "tags": [
+    {
+      "name": "dhcp-snooping"
+    }
+  ],
+  "paths": {
+    "/dhcp-snooping": {
+      "get": {
+        "summary": "Read existing DHCP-Snooping configuration",
+        "description": "Configuration of DHCP-Snooping.\nDHCP-Snooping is a security feature to help avoid the \"Denial of\nService\"/\"man in the middle\" attacks that result from unauthorized users\nadding a DHCP server to the network that then provides invalid\nconfiguration data to other DHCP clients on the network.",
+        "operationId": "readDhcpSnooping",
+        "x-cliParam": {
+          "commandName": "readDhcpSnoopingCmd",
+          "summary": "Read operation for dhcp-snooping",
+          "commandUse": "dhcp-snooping",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/dhcp-snooping/"
+        },
+        "tags": [
+          "dhcp-snooping"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDhcpSnooping_DhcpSnoopingSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dhcp-snooping/{name}": {
+      "post": {
+        "summary": "Create new profile for DHCP-Snooping",
+        "description": "DHCP-Snooping profile",
+        "operationId": "createDhcpSnoopingProfileByID",
+        "x-cliParam": {
+          "commandName": "createDhcpSnoopingProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createDhcpSnoopingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/dhcp-snooping/profile/%s/"
+        },
+        "tags": [
+          "dhcp-snooping"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "DHCP-Snooping profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDhcpSnooping_DhcpSnoopingprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read configured profile for DHCP-Snooping",
+        "description": "DHCP-Snooping profile",
+        "operationId": "readDhcpSnoopingProfileByID",
+        "x-cliParam": {
+          "commandName": "readDhcpSnoopingProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readDhcpSnoopingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/dhcp-snooping/profile/%s/"
+        },
+        "tags": [
+          "dhcp-snooping"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "DHCP-Snooping profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDhcpSnooping_DhcpSnoopingprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing DHCP-Snooping profile configuration",
+        "description": "DHCP-Snooping profile",
+        "operationId": "updateDhcpSnoopingProfileByID",
+        "x-cliParam": {
+          "commandName": "updateDhcpSnoopingProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateDhcpSnoopingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/dhcp-snooping/profile/%s/"
+        },
+        "tags": [
+          "dhcp-snooping"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "DHCP-Snooping profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDhcpSnooping_DhcpSnoopingprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the profile for DHCP-Snooping",
+        "description": "DHCP-Snooping profile",
+        "operationId": "deleteDhcpSnoopingProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteDhcpSnoopingProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteDhcpSnoopingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/dhcp-snooping/profile/%s/"
+        },
+        "tags": [
+          "dhcp-snooping"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "DHCP-Snooping profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaDhcpSnooping_DhcpSnoopingprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaDhcpSnooping_DhcpSnoopingprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaDhcpSnooping_DhcpSnoopingSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Configuration of DHCP-Snooping.\nDHCP-Snooping is a security feature to help avoid the \"Denial of\nService\"/\"man in the middle\" attacks that result from unauthorized users\nadding a DHCP server to the network that then provides invalid\nconfiguration data to other DHCP clients on the network.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "DHCP-Snooping profile",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv4SnoopingTop"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv6SnoopingTop"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "DHCP-Snooping profile name"
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "DHCP-Snooping profile description"
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDhcpSnooping_DhcpSnoopingSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDhcpSnooping_DhcpSnoopingSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDhcpSnooping_DhcpSnoopingprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv4SnoopingTop"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv6SnoopingTop"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "DHCP-Snooping profile name"
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "DHCP-Snooping profile description"
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDhcpSnooping_Dhcpv6GuardPolicies": {
+        "x-supportedDeviceType": [
+          "Switch CX"
+        ],
+        "description": "Grouping of DHCPv6 guard policy parameters.\nA DHCPv6 guard policy may contain the following filters:\n* DHCPv6 server match criteria can make use of an access list.\n* Match criteria for IPv6 addresses/prefixes assigned by DHCPv6 servers.\n* Allowed DHCPv6 server preference range.\nIf there are no filters applied then all the server traffic on\nDHCPv6-Snooping trusted ports are allowed.",
+        "properties": {
+          "ipv6-guard-policy": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "List of DHCPv6 guard policies",
+            "type": "array",
+            "items": {
+              "properties": {
+                "policy-name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "Policy name"
+                },
+                "match-client": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "prefix-list-name-address-family",
+                  "x-patterns": "'[^\\s]*'",
+                  "maxLength": 9999,
+                  "description": "Prefix-list to match client IPv6 address"
+                },
+                "match-server": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 144,
+                  "description": "Access-list to match server detail"
+                },
+                "preference": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "Allowed preference value associated with the DHCPv6 server",
+                  "properties": {
+                    "min-preference": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "default": "0",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Minimum preference value allowed"
+                    },
+                    "max-preference": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "default": "255",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Maximum preference value allowed"
+                    }
+                  }
+                }
+              }
+            },
+            "x-key": [
+              "policyName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDhcpSnooping_IpBindingsStorageConfig": {
+        "description": "Grouping of storage parameters for IP bindings",
+        "properties": {
+          "external-storage": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "External-storage parameters for IP bindings",
+            "properties": {
+              "external-storage-profile-name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-es:external-storage/ac-es:profile/ac-es:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "External Storage volume profile name"
+              },
+              "external-storage-ref": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "External-storage reference"
+              },
+              "filename": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "File name to store IP bindings"
+              }
+            }
+          },
+          "flash-storage": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Flash-storage parameters for IP bindings",
+            "properties": {
+              "flash-storage-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable writing IP bindings to flash storage"
+              },
+              "delay": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 300,
+                "maximum": 86400,
+                "default": "900",
+                "description": "Delay between consecutive IP bindings write to flash storage"
+              }
+            }
+          },
+          "remote-storage": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "TFTP or SFTP storage parameters for IP bindings",
+            "properties": {
+              "mode": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "SFTP",
+                  "TFTP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "SFTP": "SFTP mode",
+                  "TFTP": "TFTP mode"
+                },
+                "x-typeDescription": "SFTP or TFTP mode",
+                "description": "TFTP or SFTP mode"
+              },
+              "username": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "SFTP username."
+              },
+              "password": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "SFTP password."
+              },
+              "enable-validate-sftp-server": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable validation of sftp server"
+              },
+              "server-address": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "SFTP or TFTP server address."
+              },
+              "file-name": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "SFTP or TFTP file name with path."
+              },
+              "delay": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 15,
+                "maximum": 86400,
+                "default": "300",
+                "description": "Delay between consecutive file transfers to remote location"
+              },
+              "port": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "default": "0",
+                "description": "Port of file transfer server"
+              },
+              "timeout": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 86400,
+                "default": "300",
+                "description": "Database file transfer timeout in seconds"
+              }
+            }
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv6AuthorizedServers": {
+        "description": "Grouping of authorized servers for DHCPv6 responses",
+        "properties": {
+          "authorized-server": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of DHCPv6 authorized servers",
+            "type": "array",
+            "items": {
+              "properties": {
+                "vrf": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "name-type",
+                  "x-patterns": "'([^\\\\/ ]+)'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                  "description": "VRF for DHCPv6 response packet validations"
+                },
+                "ip": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                    "description": "List of DHCP-Server IPv6 addresses"
+                  },
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "vrf"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv4AuthorizedServers": {
+        "description": "Grouping of authorized servers for DHCPv4 responses",
+        "properties": {
+          "authorized-server": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of DHCPv4 authorized servers",
+            "type": "array",
+            "items": {
+              "properties": {
+                "vrf": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "name-type",
+                  "x-patterns": "'([^\\\\/ ]+)'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                  "description": "VRF for DHCPv4 response packet validations"
+                },
+                "ip": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "List of DHCP-Server IPv4 addresses"
+                  },
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "vrf"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv4SnoopingTop": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "DHCPv4-Snooping global parameters grouping",
+        "properties": {
+          "ipv4": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "DHCPv4-Snooping global parameters",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaDhcpSnooping_IpBindingsStorageConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv4AuthorizedServers"
+              }
+            ],
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable DHCPv4-Snooping globally"
+              },
+              "enable-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias to Enable DHCPv4-Snooping globally"
+              },
+              "allow-overwrite-binding": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow binding to be overwritten for the same IP address"
+              },
+              "mac-verification": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable DHCP packet MAC address validation"
+              },
+              "client-attribute-caching": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable storing static attributes provided to DHCP-client"
+              },
+              "client-event-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable DHCPv4 client event logs"
+              },
+              "trust-vxlan-tunnel": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable DHCPv4-Snooping trust attribute on VxLAN tunnels"
+              },
+              "rate-limit": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 100,
+                "maximum": 500,
+                "default": "100",
+                "description": "Maximum DHCPv4 packet rate"
+              },
+              "option-82": {
+                "description": "DHCPv4-Snooping option-82 parameters",
+                "properties": {
+                  "option-82-enable": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "boolean",
+                    "default": "true",
+                    "description": "Enable DHCPv4-Snooping option-82 globally"
+                  },
+                  "remote-id": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "MAC",
+                      "SUBNET_IP",
+                      "MGMT_IP"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "MAC": "Switch MAC address",
+                      "SUBNET_IP": "Client connected VLAN IP address",
+                      "MGMT_IP": "Management interface IP address"
+                    },
+                    "x-typeDescription": "DHCPv4-Snooping option-82 remote-id types",
+                    "default": "MAC",
+                    "description": "DHCPv4-Snooping option-82 remote-id"
+                  },
+                  "untrust-policy": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "KEEP",
+                      "REPLACE",
+                      "DROP"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "KEEP": "Retain received option-82 value",
+                      "REPLACE": "Replace received option-82 value",
+                      "DROP": "Drop the packet with option-82"
+                    },
+                    "x-typeDescription": "DHCPv4-Snooping option-82 untrust policy types",
+                    "default": "DROP",
+                    "description": "DHCPv4-Snooping option-82 untrust policy"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv6SnoopingTop": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "DHCPv6-Snooping global parameters grouping",
+        "properties": {
+          "ipv6": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "DHCPv6-Snooping global parameters",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaDhcpSnooping_IpBindingsStorageConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv6AuthorizedServers"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv6GuardPolicies"
+              }
+            ],
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable DHCPv6-Snooping globally"
+              },
+              "client-event-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables DHCPv6 client event logs"
+              },
+              "trust-vxlan-tunnel": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable DHCPv6-Snooping trust attribute on VxLAN tunnels"
+              },
+              "rate-limit": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 100,
+                "maximum": 500,
+                "default": "100",
+                "description": "Maximum DHCPv6 packet rate"
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2082 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-switch-chassis API generated from aruba-switch-chassis.yang",
+    "version": "1.0.0",
+    "title": "switch-chassis",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "switch-chassis"
+    }
+  ],
+  "paths": {
+    "/switch-chassis": {
+      "get": {
+        "summary": "Read switch-chassis",
+        "description": "Switch chassis configuration.",
+        "operationId": "readSwitchChassis",
+        "x-cliParam": {
+          "commandName": "readSwitchChassisCmd",
+          "summary": "Read operation for switch-chassis",
+          "commandUse": "switch-chassis",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/switch-chassis/"
+        },
+        "tags": [
+          "switch-chassis"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_SwitchChassisSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/switch-chassis/{chassisName}": {
+      "post": {
+        "summary": "Create chassis by {chassisName}",
+        "description": "Chassis list.",
+        "operationId": "createSwitchChassisChassisByID",
+        "x-cliParam": {
+          "commandName": "createSwitchChassisChassisCmd",
+          "summary": "Create operation for chassis",
+          "commandUse": "chassis",
+          "parentCommand": "createSwitchChassisCmd",
+          "paramKeys": [
+            {
+              "key": "chassisName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-chassis/chassis/%s/"
+        },
+        "tags": [
+          "switch-chassis"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chassisName",
+            "description": "Name of the chassis.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSwitchChassis_SwitchChassischassisSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read chassis by {chassisName}",
+        "description": "Chassis list.",
+        "operationId": "readSwitchChassisChassisByID",
+        "x-cliParam": {
+          "commandName": "readSwitchChassisChassisCmd",
+          "summary": "Read operation for chassis",
+          "commandUse": "chassis",
+          "parentCommand": "readSwitchChassisCmd",
+          "paramKeys": [
+            {
+              "key": "chassisName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-chassis/chassis/%s/"
+        },
+        "tags": [
+          "switch-chassis"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chassisName",
+            "description": "Name of the chassis.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_SwitchChassischassisSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update chassis by {chassisName}",
+        "description": "Chassis list.",
+        "operationId": "updateSwitchChassisChassisByID",
+        "x-cliParam": {
+          "commandName": "updateSwitchChassisChassisCmd",
+          "summary": "Update operation for chassis",
+          "commandUse": "chassis",
+          "parentCommand": "updateSwitchChassisCmd",
+          "paramKeys": [
+            {
+              "key": "chassisName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-chassis/chassis/%s/"
+        },
+        "tags": [
+          "switch-chassis"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chassisName",
+            "description": "Name of the chassis.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSwitchChassis_SwitchChassischassisSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete chassis by {chassisName}",
+        "description": "Chassis list.",
+        "operationId": "deleteSwitchChassisChassisByID",
+        "x-cliParam": {
+          "commandName": "deleteSwitchChassisChassisCmd",
+          "summary": "Delete operation for chassis",
+          "commandUse": "chassis",
+          "parentCommand": "deleteSwitchChassisCmd",
+          "paramKeys": [
+            {
+              "key": "chassisName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/switch-chassis/chassis/%s/"
+        },
+        "tags": [
+          "switch-chassis"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chassisName",
+            "description": "Name of the chassis.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaSwitchChassis_SwitchChassischassisSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaSwitchChassis_SwitchChassischassisSchema"
+            }
+          }
+        },
+        "description": "chassisbody object"
+      }
+    },
+    "schemas": {
+      "ArubaSwitchChassis_SwitchChassisSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Switch chassis configuration.",
+        "properties": {
+          "chassis": {
+            "description": "Chassis list.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_ModuleConfiguration"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_FixedModuleConfiguration"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_FlexibleModuleConfiguration"
+                },
+                {
+                  "properties": {
+                    "chassis-name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "description": "Name of the chassis."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Description of the chassis."
+                    },
+                    "allow-v2-modules": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Enable support for V2 modules."
+                    },
+                    "platform": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PLATFORM_4100I",
+                            "PLATFORM_5420",
+                            "PLATFORM_6000",
+                            "PLATFORM_6100",
+                            "PLATFORM_6200",
+                            "PLATFORM_6300",
+                            "PLATFORM_6300L",
+                            "PLATFORM_6405",
+                            "PLATFORM_6410",
+                            "PLATFORM_8100",
+                            "PLATFORM_8320",
+                            "PLATFORM_8325",
+                            "PLATFORM_8325P",
+                            "PLATFORM_8360",
+                            "PLATFORM_8400X",
+                            "PLATFORM_9300",
+                            "PLATFORM_10000"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "PLATFORM_4100I": "4100i switch.",
+                            "PLATFORM_5420": "5420 switch.",
+                            "PLATFORM_6000": "6000 switch.",
+                            "PLATFORM_6100": "6100 switch.",
+                            "PLATFORM_6200": "6200 switch.",
+                            "PLATFORM_6300": "6300 switch.",
+                            "PLATFORM_6300L": "6300L switch.",
+                            "PLATFORM_6405": "6405 switch.",
+                            "PLATFORM_6410": "6410 switch.",
+                            "PLATFORM_8100": "8100 switch.",
+                            "PLATFORM_8320": "8320 switch.",
+                            "PLATFORM_8325": "8325 switch.",
+                            "PLATFORM_8325P": "8325P switch.",
+                            "PLATFORM_8360": "8360 switch.",
+                            "PLATFORM_8400X": "8400 switch.",
+                            "PLATFORM_9300": "9300 switch.",
+                            "PLATFORM_10000": "10000 switch."
+                          },
+                          "x-typeDescription": "AOS-CX Switch platform names."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PLATFORM_2530",
+                            "PLATFORM_2540",
+                            "PLATFORM_2930F",
+                            "PLATFORM_2930M",
+                            "PLATFORM_3810",
+                            "PLATFORM_5406",
+                            "PLATFORM_5412"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "PLATFORM_2530": "2530 switch.",
+                            "PLATFORM_2540": "2540 switch.",
+                            "PLATFORM_2930F": "2930F switch.",
+                            "PLATFORM_2930M": "2930M switch.",
+                            "PLATFORM_3810": "3810 switch.",
+                            "PLATFORM_5406": "5406 switch.",
+                            "PLATFORM_5412": "5412 switch."
+                          },
+                          "x-typeDescription": "AOS-S Switch platform names."
+                        }
+                      ],
+                      "description": "The chassis platform type."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "chassisName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaSwitchChassis_SwitchChassisSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSwitchChassis_SwitchChassisSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSwitchChassis_SwitchChassischassisSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSwitchChassis_ModuleConfiguration"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaSwitchChassis_FixedModuleConfiguration"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaSwitchChassis_FlexibleModuleConfiguration"
+          },
+          {
+            "properties": {
+              "chassis-name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "Name of the chassis."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Description of the chassis."
+              },
+              "allow-v2-modules": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable support for V2 modules."
+              },
+              "platform": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "PLATFORM_4100I",
+                      "PLATFORM_5420",
+                      "PLATFORM_6000",
+                      "PLATFORM_6100",
+                      "PLATFORM_6200",
+                      "PLATFORM_6300",
+                      "PLATFORM_6300L",
+                      "PLATFORM_6405",
+                      "PLATFORM_6410",
+                      "PLATFORM_8100",
+                      "PLATFORM_8320",
+                      "PLATFORM_8325",
+                      "PLATFORM_8325P",
+                      "PLATFORM_8360",
+                      "PLATFORM_8400X",
+                      "PLATFORM_9300",
+                      "PLATFORM_10000"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "PLATFORM_4100I": "4100i switch.",
+                      "PLATFORM_5420": "5420 switch.",
+                      "PLATFORM_6000": "6000 switch.",
+                      "PLATFORM_6100": "6100 switch.",
+                      "PLATFORM_6200": "6200 switch.",
+                      "PLATFORM_6300": "6300 switch.",
+                      "PLATFORM_6300L": "6300L switch.",
+                      "PLATFORM_6405": "6405 switch.",
+                      "PLATFORM_6410": "6410 switch.",
+                      "PLATFORM_8100": "8100 switch.",
+                      "PLATFORM_8320": "8320 switch.",
+                      "PLATFORM_8325": "8325 switch.",
+                      "PLATFORM_8325P": "8325P switch.",
+                      "PLATFORM_8360": "8360 switch.",
+                      "PLATFORM_8400X": "8400 switch.",
+                      "PLATFORM_9300": "9300 switch.",
+                      "PLATFORM_10000": "10000 switch."
+                    },
+                    "x-typeDescription": "AOS-CX Switch platform names."
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "PLATFORM_2530",
+                      "PLATFORM_2540",
+                      "PLATFORM_2930F",
+                      "PLATFORM_2930M",
+                      "PLATFORM_3810",
+                      "PLATFORM_5406",
+                      "PLATFORM_5412"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "PLATFORM_2530": "2530 switch.",
+                      "PLATFORM_2540": "2540 switch.",
+                      "PLATFORM_2930F": "2930F switch.",
+                      "PLATFORM_2930M": "2930M switch.",
+                      "PLATFORM_3810": "3810 switch.",
+                      "PLATFORM_5406": "5406 switch.",
+                      "PLATFORM_5412": "5412 switch."
+                    },
+                    "x-typeDescription": "AOS-S Switch platform names."
+                  }
+                ],
+                "description": "The chassis platform type."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSwitchChassis_ModuleAdminConfiguration": {
+        "description": "Module administration configuration",
+        "properties": {
+          "power-admin-state": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "POWER_ENABLED",
+              "POWER_DISABLED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "POWER_ENABLED": "Enable power on the component",
+              "POWER_DISABLED": "Disable power on the component"
+            },
+            "x-typeDescription": "A generic type reflecting whether a hardware component\nis powered on or off",
+            "default": "POWER_ENABLED",
+            "description": "Admin state of the module in the slot."
+          },
+          "power-priority": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 254,
+            "default": "128",
+            "description": "The priority within the chassis that this slot will be\npowered. A slot set to the lowest priority will be powered\nlast. If multiple slots have the same priority, they will\nbe powered in alphanumeric order of the slot name.\nApplicable to line_card and fabric_card slots only."
+          },
+          "hw-profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-hw-module-profile:hardware-modules/ac-hw-module-profile:hw-profile/ac-hw-module-profile:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "HW profile (if any) associated with the module [LC/chassis].\nThis leaf is deprecated and will be removed in a future release."
+          }
+        }
+      },
+      "ArubaSwitchChassis_ModuleConfiguration": {
+        "description": "Top level module configuration",
+        "properties": {
+          "line-modules": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Line module configuration for CX platforms 6405, 6410 and 8400X as well as platforms 5406 and 5412.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_ModuleAdminConfiguration"
+                },
+                {
+                  "properties": {
+                    "line-module-name": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "line-module-name",
+                      "x-patterns": "'\\w+(/\\w+)?'",
+                      "maxLength": 9999,
+                      "description": "Line module slot name for CX platforms 6405, 6410 and 8400X as well as platforms 5406 and 5412."
+                    },
+                    "sku": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "S0U61A",
+                            "S0U62A",
+                            "S0U63A",
+                            "S0U64A",
+                            "S0U65A",
+                            "S0U66A",
+                            "S0U67A",
+                            "S0U68A",
+                            "S0U71A",
+                            "S0U72A",
+                            "S0U73A",
+                            "S0U74A",
+                            "S0U75A",
+                            "S0U76A",
+                            "S0U77A",
+                            "S0U78A"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "S0U61A": "The 5420 24p 10M/100M/1G Module.",
+                            "S0U62A": "The 5420 24p 10M/100M/1G Class4 PoE Module.",
+                            "S0U63A": "The 5420 20p 10M/100M/1G Class4 PoE 4p SFP+ 1G/10G LRM Module.",
+                            "S0U64A": "The 5420 20p 10M/100M/1G Class4 PoE 2p SFP28 1G/10G/25G Module.",
+                            "S0U65A": "The 5420 8p Smart Rate 1G/2.5G/5G/10G Class8 PoE Module.",
+                            "S0U66A": "The 5420 16p Smart Rate 1G/2.5G/5G Class6 PoE Module.",
+                            "S0U67A": "The 5420 24p SFP 1G Module.",
+                            "S0U68A": "The 5420 8p SFP+ 1G/10G LRM Module.",
+                            "S0U71A": "The 5420 24p 10M/100M/1G TAA Module.",
+                            "S0U72A": "The 5420 24p 10M/100M/1G Class4 PoE TAA Module.",
+                            "S0U73A": "The 5420 20p 10M/100M/1G Class4 PoE 4p SFP+ 1G/10G LRM TAA Module.",
+                            "S0U74A": "The 5420 20p 10M/100M/1G Class4 PoE 2p SFP28 1G/10G/25G TAA Module.",
+                            "S0U75A": "The 5420 8p Smart Rate 1G/2.5G/5G/10G Class8 PoE TAA Module.",
+                            "S0U76A": "The 5420 16p Smart Rate 1G/2.5G/5G Class6 PoE TAA Module.",
+                            "S0U77A": "The 5420 24p SFP 1G TAA Module.",
+                            "S0U78A": "The 5420 8p SFP+ 1G/10G LRM TAA Module."
+                          }
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "R0X38A",
+                            "R0X38B",
+                            "R0X38C",
+                            "R0X39A",
+                            "R0X39B",
+                            "R0X39C",
+                            "R0X40A",
+                            "R0X40B",
+                            "R0X40C",
+                            "R0X41A",
+                            "R0X41C",
+                            "R0X42A",
+                            "R0X42C",
+                            "R0X43A",
+                            "R0X43C",
+                            "R0X44A",
+                            "R0X44C",
+                            "R0X45A",
+                            "R0X45C",
+                            "S0E48A",
+                            "S1T83A"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "R0X38A": "The 6400 48p 1GbE CL4 PoE Mod.",
+                            "R0X38B": "The 6400 48p 1G CL4 PoE v2 Mod.",
+                            "R0X38C": "The 6400 48p 1G CL4 PoE v2 Mod.",
+                            "R0X39A": "The 6400 48p 1GbE CL4 PoE 4SFP56 Mod.",
+                            "R0X39B": "The 6400 48p 1GbE CL4 PoE 4SFP56 Mod.",
+                            "R0X39C": "The 6400 48p 1G CL4 PoE 4SFP56 v2 Mod.",
+                            "R0X40A": "The 6400 48p 1GbE CL6 PoE 4SFP56 Mod.",
+                            "R0X40B": "The 6400 48p 1GbE CL6 PoE 4SFP56 Mod.",
+                            "R0X40C": "The 6400 48p 1G CL6 PoE 4SFP56 v2 Mod.",
+                            "R0X41A": "The 6400 48p SR5 CL6 PoE 4SFP56 Mod.",
+                            "R0X41C": "The 6400 48p SR5 CL6 PoE 4SFP56 v2 Mod.",
+                            "R0X42A": "The 6400 24p 10GT 4SFP56 Mod.",
+                            "R0X42C": "The 6400 24p 10GT 4SFP56 v2 Mod.",
+                            "R0X43A": "The 6400 24p SFP+ 4SFP56 Mod.",
+                            "R0X43C": "The 6400 24p SFP+ 4SFP56 v2 Mod.",
+                            "R0X44A": "The 6400 48p 10G/25G SFP28 Mod.",
+                            "R0X44C": "The 6400 48p 1G/10G/25G SFP28 v2 Mod.",
+                            "R0X45A": "The 6400 12p 40G/100G QSFP28 Mod.",
+                            "R0X45C": "The 6400 12p 40G/100G QSFP28 v2 Mod.",
+                            "S0E48A": "The 6400 32SFP28 4QSFP28 Msec v2 Mod.",
+                            "S1T83A": "The 6400 24SR10 CL8 4SFP56 v2 Mod."
+                          },
+                          "x-typeDescription": "The 6400 line module SKUs."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "JL363A",
+                            "JL365A",
+                            "JL366A",
+                            "JL687A"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "JL363A": "The 8400X 32P 10G SFP/SFP+ Msec Mod.",
+                            "JL365A": "The 8400X 8P 40G QSFP+ Adv Mod.",
+                            "JL366A": "The 8400X 6P 40G/100G QSFP28 Adv Mod.",
+                            "JL687A": "The 8400X-32Y 1G/10G/25G Module."
+                          },
+                          "x-typeDescription": "The 8400 line module SKUs."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "J9534A",
+                            "J9535A",
+                            "J9536A",
+                            "J9537A",
+                            "J9538A",
+                            "J9546A",
+                            "J9547A",
+                            "J9548A",
+                            "J9549A",
+                            "J9550A",
+                            "J9636A",
+                            "J9637A"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "J9534A": "The HPE 24-port Gig-T PoE +v2 zl Module.",
+                            "J9535A": "The HPE 20-Port Gig-T PoE+ / 4-Port SFP v2 zl Module.",
+                            "J9536A": "The HPE 20-Port Gig-T PoE+ / 2-Port 10GbE SFP+ v2 zl Module.",
+                            "J9537A": "The HPE 24-Port SFP v2 zl Module.",
+                            "J9538A": "The HPE 8-Port 10-GbE SFP+ v2 zl Module.",
+                            "J9546A": "The HPE 8-port 10GBase-T v2 zl Module.",
+                            "J9547A": "The HPE 24-port10/100 PoE+ v2 zl Module.",
+                            "J9548A": "The HPE 20-Port Gig-T / 2-Port 10GbE SFP+ v2 zl Module.",
+                            "J9549A": "The HPE 20-Port Gig-T / 4-Port SFP v2 zl Module.",
+                            "J9550A": "The HPE 24-Port Gig-T v2 zl Module.",
+                            "J9636A": "The HPE 12-port SFP v2 zl Module.",
+                            "J9637A": "The HPE 12-Port Gig-T PoE+/ 12-Port SFP v2 zl Module."
+                          },
+                          "x-typeDescription": "5400 V2 line module SKUs."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "J9986A",
+                            "J9987A",
+                            "J9988A",
+                            "J9989A",
+                            "J9990A",
+                            "J9991A",
+                            "J9992A",
+                            "J9993A",
+                            "J9995A",
+                            "J9996A"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "J9986A": "The Aruba 24-port 10/100/1000BASE-T PoE+ MACsec v3 zl2 Module.",
+                            "J9987A": "The Aruba 24-port 10/100/1000BASE-T MACsec v3 zl2 Module.",
+                            "J9988A": "The Aruba 24-port 1GbE SFP MACsec v3 zl2 Module.",
+                            "J9989A": "The Aruba 12-port 10/100/1000BASE-T PoE+ / 12-port 1GbE SFP MACsec v3 zl2 Module.",
+                            "J9990A": "The Aruba 20-port 10/100/1000BASE-T PoE+ / 4-port 1G/10GbE SFP+ MACsec v3 zl2 Module.",
+                            "J9991A": "The Aruba 20-port 10/100/1000BASE-T PoE+ / 4-port 1/2.5/5/10GBASE-T PoE+ MACsec v3 zl2 Module.",
+                            "J9992A": "The Aruba 20-port 10/100/1000BASE-T PoE+ MACsec / 1-port 40GbE QSFP+ v3 zl2 Module.",
+                            "J9993A": "The Aruba 8-port 1G/10GbE SFP+ MACsec v3 zl2 Module.",
+                            "J9995A": "The Aruba 8-port 1/2.5/5/10GBASE-T PoE+ MACsec v3 zl2 Module.",
+                            "J9996A": "The Aruba 2-port 40GbE QSFP+ v3 zl2 Module."
+                          },
+                          "x-typeDescription": "The 5400 V3 line module SKUs."
+                        }
+                      ],
+                      "description": "Configured part number for the line module for CX platforms 6405, 6410 and 8400X as well the 5406 and 5412."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "lineModuleName"
+            ],
+            "maxItems": 2147483647
+          },
+          "fabric-modules": {
+            "description": "Fabric module configuration for the 8400X platform.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaSwitchChassis_ModuleAdminConfiguration"
+                },
+                {
+                  "properties": {
+                    "fabric-module-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "fabric-module-name",
+                      "x-patterns": "'\\w+(/\\d+)?'",
+                      "maxLength": 9999,
+                      "description": "Fabric module slot name for the 8400X platform."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "fabricModuleName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaSwitchChassis_FixedModuleConfiguration": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Fixed module configuration for 2540, 2930F/M and 3810 platforms",
+        "properties": {
+          "fixed-modules": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Fixed module configuration for the platforms 2540, 2930F, 2930M or 3810.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "slot-num": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 3,
+                  "description": "Fixed module slot number for the platforms 2540, 2930F, 2930M or 3810."
+                },
+                "module-sku": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "JL354A",
+                        "JL355A",
+                        "JL356A",
+                        "JL357A"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "JL354A": "The Aruba 2540-24G-4SFP+ module.",
+                        "JL355A": "The Aruba 2540-48G-4SFP+ module.",
+                        "JL356A": "The Aruba 2540-24G-PoE+-4SFP+ module.",
+                        "JL357A": "The Aruba 2540-48G-PoE+-4SFP+ module."
+                      },
+                      "x-typeDescription": "The 2540 module SKUs."
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "JL253A",
+                        "JL254A",
+                        "JL255A",
+                        "JL256A",
+                        "JL258A",
+                        "JL259A",
+                        "JL260A",
+                        "JL261A",
+                        "JL262A",
+                        "JL263A",
+                        "JL264A",
+                        "JL557A",
+                        "JL558A",
+                        "JL559A",
+                        "JL692A",
+                        "JL693A"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "JL253A": "The Aruba 2930F-24G-4SFP+ module.",
+                        "JL254A": "The Aruba 2930F-48G-4SFP+ module.",
+                        "JL255A": "The Aruba 2930F-24G-PoE+-4SFP+ module.",
+                        "JL256A": "The Aruba 2930F-48G-PoE+-4SFP+ module.",
+                        "JL258A": "The Aruba 2930F-8G-PoE+-2SFP+ module.",
+                        "JL259A": "The Aruba 2930F-24G-4SFP module.",
+                        "JL260A": "The Aruba 2930F-48G-4SFP module.",
+                        "JL261A": "The Aruba 2930F-24G-PoE+-4SFP module.",
+                        "JL262A": "The Aruba 2930F-48G-PoE+-4SFP module.",
+                        "JL263A": "The Aruba 2930F-24G-PoE+-4SFP+-TAA module.",
+                        "JL264A": "The Aruba 2930F-48G-PoE+-4SFP+-TAA module.",
+                        "JL557A": "The Aruba 2930F 48G 740W PoE+ 4SPF module.",
+                        "JL558A": "The Aruba 2930F 48G 740W PoE+ 4SPF+ module.",
+                        "JL559A": "The Aruba 2930F 48G 740W PoE+ 4SPF+ TAA module.",
+                        "JL692A": "The Aruba 2930F-8G-PoE+-2SFP+-TAA module.",
+                        "JL693A": "The Aruba 2930F-12G-PoE+-2G-2SFP+ module."
+                      },
+                      "x-typeDescription": "The 2930F module SKUs."
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "JL319A",
+                        "JL320A",
+                        "JL321A",
+                        "JL322A",
+                        "JL323A",
+                        "JL324A",
+                        "R0M67A",
+                        "R0M68A"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "JL319A": "The Aruba 2930M-24G module.",
+                        "JL320A": "The Aruba 2930M-24G-PoE+ module.",
+                        "JL321A": "The Aruba 2930M-48G module.",
+                        "JL322A": "The Aruba 2930M-48G-PoE+ module.",
+                        "JL323A": "The Aruba 2930M-40G-8SR-PoE+ module.",
+                        "JL324A": "The Aruba 2930M-24SR-PoE+ module.",
+                        "R0M67A": "The Aruba 2930M-40G-8SR-PoE-Class6 module.",
+                        "R0M68A": "The Aruba 2930M-24SR-PoE-Class6 module."
+                      },
+                      "x-typeDescription": "The 2930M module SKUs."
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "JL071A",
+                        "JL071X",
+                        "JL072A",
+                        "JL072X",
+                        "JL072Y",
+                        "JL073A",
+                        "JL073X",
+                        "JL074A",
+                        "JL074X",
+                        "JL074Y",
+                        "JL075A",
+                        "JL075X",
+                        "JL075Y",
+                        "JL075Z",
+                        "JL076A",
+                        "JL076X",
+                        "JL076Y",
+                        "JL076Z"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "JL071A": "The Aruba 3810M 24G 1-slot Module.",
+                        "JL071X": "The Aruba 3810M 24G 1-slot Module.",
+                        "JL072A": "The Aruba 3810M 48G 1-slot Module.",
+                        "JL072X": "The Aruba 3810M 48G 1-slot Module.",
+                        "JL072Y": "The Aruba 3810M 48G 1-slot Module.",
+                        "JL073A": "The Aruba 3810M 24G PoE+ 1-slot Module.",
+                        "JL073X": "The Aruba 3810M 24G PoE+ 1-slot Module.",
+                        "JL074A": "The Aruba 3810M 48G PoE+ 1-slot Module.",
+                        "JL074X": "The Aruba 3810M 48G PoE+ 1-slot Module.",
+                        "JL074Y": "The Aruba 3810M 48G PoE+ 1-slot Module.",
+                        "JL075A": "The Aruba 3810M 16SFP+ 2-slot Module.",
+                        "JL075X": "The Aruba 3810M 16SFP+ 2-slot Module.",
+                        "JL075Y": "The Aruba 3810M 16SFP+ 2-slot Module.",
+                        "JL075Z": "The Aruba 3810M 16SFP+ 2-slot Module.",
+                        "JL076A": "The Aruba 3810M 20G 8 HPE Smart Rate PoE+ 1-slot Module.",
+                        "JL076X": "The Aruba 3810M 20G 8 HPE Smart Rate PoE+ 1-slot Module.",
+                        "JL076Y": "The Aruba 3810M 20G 8 HPE Smart Rate PoE+ 1-slot Module.",
+                        "JL076Z": "The Aruba 3810M 20G 8 HPE Smart Rate PoE+ 1-slot Module."
+                      },
+                      "x-typeDescription": "The 3810M module SKUs."
+                    }
+                  ],
+                  "description": "Part number for the fixed module slot."
+                }
+              }
+            },
+            "x-key": [
+              "slotNum"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaSwitchChassis_FlexibleModuleConfiguration": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Flexible module configuration for 2930M and 3810 platforms.",
+        "properties": {
+          "flexible-modules": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Flexible module configuration for the platforms 2930M or 3810.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "slot-name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "slot-name",
+                  "x-patterns": "'[A|B]'",
+                  "maxLength": 9999,
+                  "description": "Flexible module slot name."
+                },
+                "slot-sku": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "JL078A",
+                    "JL079A",
+                    "JL081A",
+                    "JL083A"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "JL078A": "The Aruba 1QSFP+ 40GbE Module.",
+                    "JL079A": "The Aruba 2QSFP+ 40GbE Module.",
+                    "JL081A": "The Aruba 4 HPE Smart Rate PoE+ Module.",
+                    "JL083A": "The Aruba 4SFP+ Module."
+                  },
+                  "x-typeDescription": "The flexible module SKUs.",
+                  "description": "Part number for the flexible module slot."
+                }
+              }
+            },
+            "x-key": [
+              "slotName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

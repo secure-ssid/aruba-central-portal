@@ -1,0 +1,1773 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-device-profile API generated from aruba-device-profile.yang",
+    "version": "1.0.0",
+    "title": "device-profile",
+    "x-tag-group": "Interfaces"
+  },
+  "tags": [
+    {
+      "name": "device-profile"
+    }
+  ],
+  "paths": {
+    "/device-profile": {
+      "get": {
+        "summary": "Read Device-Profile configuration.",
+        "description": "Device-Profile allows automatic discovery and configuration of other\ndevices such as APs, IP phones, Security cameras, Printers etc.. on the\nnetwork. The discovery is done via LLDP, CDP or MAC match.",
+        "operationId": "readDeviceProfile",
+        "x-cliParam": {
+          "commandName": "readDeviceProfileCmd",
+          "summary": "Read operation for device-profile",
+          "commandUse": "device-profile",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/device-profile/"
+        },
+        "tags": [
+          "device-profile"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_DeviceProfileSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/device-profile/{name}": {
+      "post": {
+        "summary": "Configure a new Device-Profile.",
+        "description": "List of device profiles.",
+        "operationId": "createDeviceProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "createDeviceProfileProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createDeviceProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-profile/profile/%s/"
+        },
+        "tags": [
+          "device-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Device-Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDeviceProfile_DeviceProfileprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing Device-Profile configuration.",
+        "description": "List of device profiles.",
+        "operationId": "readDeviceProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "readDeviceProfileProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readDeviceProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-profile/profile/%s/"
+        },
+        "tags": [
+          "device-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Device-Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_DeviceProfileprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing Device-Profile configuration.",
+        "description": "List of device profiles.",
+        "operationId": "updateDeviceProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "updateDeviceProfileProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateDeviceProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-profile/profile/%s/"
+        },
+        "tags": [
+          "device-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Device-Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaDeviceProfile_DeviceProfileprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete existing Device-Profile.",
+        "description": "List of device profiles.",
+        "operationId": "deleteDeviceProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteDeviceProfileProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteDeviceProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/device-profile/profile/%s/"
+        },
+        "tags": [
+          "device-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Device-Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaDeviceProfile_DeviceProfileprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaDeviceProfile_DeviceProfileprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaDeviceProfile_DeviceProfileSchema": {
+        "description": "Device-Profile allows automatic discovery and configuration of other\ndevices such as APs, IP phones, Security cameras, Printers etc.. on the\nnetwork. The discovery is done via LLDP, CDP or MAC match.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of device profiles.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_LldpGroupConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_CdpGroupConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_MacGroupConfig"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "The name of the Device-Profile."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Device-Profile description."
+                    },
+                    "role": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "The role to be applied when a device is identified based on the match\ncriteria specified in this profile."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDeviceProfile_DeviceProfileSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDeviceProfile_DeviceProfileSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDeviceProfile_DeviceProfileprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDeviceProfile_LldpGroupConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDeviceProfile_CdpGroupConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDeviceProfile_MacGroupConfig"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "The name of the Device-Profile."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Device-Profile description."
+              },
+              "role": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "The role to be applied when a device is identified based on the match\ncriteria specified in this profile."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaDeviceProfile_LldpGroupEntryConfig": {
+        "description": "Group for LLDP entry configuration.",
+        "properties": {
+          "action": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "MATCH",
+              "IGNORE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MATCH": "Match action criteria.",
+              "IGNORE": "Ignore action criteria."
+            },
+            "x-typeDescription": "Action type",
+            "default": "MATCH",
+            "description": "LLDP entry is matched when an associated action is provided."
+          },
+          "system-description": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Configure LLDP system description for device vendor."
+          },
+          "system-name": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Configure LLDP system name for device vendor."
+          },
+          "vendor-oui": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "vendor-oui",
+            "x-patterns": "'([0-9a-fA-F]{6})'",
+            "maxLength": 9999,
+            "description": "Configure LLDP vendor organization unique identifier (OUI)."
+          },
+          "vendor-oui-subtype": {
+            "description": "The OUI subtype of the device vendor to match.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 255,
+                  "description": "Configure LLDP vendor type."
+                },
+                "value": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "description": "Key associated with LLDP vendor type."
+                }
+              }
+            },
+            "x-key": [
+              "type"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDeviceProfile_LldpGroupConfig": {
+        "description": "Group for LLDP configurations.",
+        "properties": {
+          "lldp-group-entries": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of LLDP group entries.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_LldpGroupEntryConfig"
+                },
+                {
+                  "properties": {
+                    "sequence-number": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "LLDP entry sequence number."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDeviceProfile_CdpGroupEntryConfig": {
+        "description": "Group for CDP entry configuration.",
+        "properties": {
+          "action": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "MATCH",
+              "IGNORE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MATCH": "Match action criteria.",
+              "IGNORE": "Ignore action criteria."
+            },
+            "x-typeDescription": "Action type",
+            "default": "MATCH",
+            "description": "CDP entry is matched when an associated action is provided."
+          },
+          "platform": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Hardware or model details of the neighbor to match."
+          },
+          "software-version": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Software version of the neighbor to match."
+          },
+          "voice-vlan-query-value": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Voice VLAN query value of the neighbor."
+          }
+        }
+      },
+      "ArubaDeviceProfile_CdpGroupConfig": {
+        "description": "Group for CDP configurations.",
+        "properties": {
+          "cdp-group-entries": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of CDP group entries.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_CdpGroupEntryConfig"
+                },
+                {
+                  "properties": {
+                    "sequence-number": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "CDP entry sequence number."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaDeviceProfile_MacGroupEntryConfig": {
+        "description": "Group for MAC entry configuration.",
+        "properties": {
+          "action": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "MATCH",
+              "IGNORE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MATCH": "Match action criteria.",
+              "IGNORE": "Ignore action criteria."
+            },
+            "x-typeDescription": "Action type",
+            "default": "MATCH",
+            "description": "MAC entry is matched when an associated action is provided."
+          },
+          "type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "MAC",
+              "MAC_OUI",
+              "MAC_MASK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MAC": "MAC entries of the form AA:BB:CC:DD:EE:FF or aa:bb:cc:dd:ee:ff.",
+              "MAC_OUI": "MAC-OUI entries of the form AA:BB:CC or aa:bb:cc.",
+              "MAC_MASK": "MAC-Mask of the form AA:BB:CC:DD/32 or aa:bb:cc:dd/32."
+            },
+            "x-typeDescription": "MAC types",
+            "description": "The supported MAC types in IEEE 802 format"
+          },
+          "mac": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-address-type",
+                "x-patterns": "'([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}'",
+                "maxLength": 9999,
+                "x-typeDescription": "MAC entries of the form AA:BB:CC:DD:EE:FF or aa:bb:cc:dd:ee:ff."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-oui",
+                "x-patterns": "'([0-9a-fA-F]{2}:){2}[0-9a-fA-F]{2}'",
+                "maxLength": 9999,
+                "x-typeDescription": "MAC-OUI entries of the form AA:BB:CC or aa:bb:cc."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-mask-32",
+                "x-patterns": "'([0-9a-fA-F]{2}:){3}[0-9a-fA-F]{2}/32'",
+                "maxLength": 9999,
+                "x-typeDescription": "MAC-Mask of the form AA:BB:CC:DD/32 or aa:bb:cc:dd/32."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-mask-40",
+                "x-patterns": "'([0-9a-fA-F]{2}:){4}[0-9a-fA-F]{2}/40'",
+                "maxLength": 9999,
+                "x-typeDescription": "MAC-Mask of the form AA:BB:CC:DD:EE/40 or aa:bb:cc:dd:ee/40."
+              }
+            ],
+            "description": "The MAC address to match. The format should match the mac_type\nconfigured."
+          }
+        }
+      },
+      "ArubaDeviceProfile_MacGroupConfig": {
+        "description": "Group for MAC group configurations.",
+        "properties": {
+          "mac-group-entries": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "List of MAC group entries.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaDeviceProfile_MacGroupEntryConfig"
+                },
+                {
+                  "properties": {
+                    "sequence-number": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "MAC entry sequence number"
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

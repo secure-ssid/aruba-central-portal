@@ -1,43 +1,29 @@
 #!/usr/bin/env python3
 """
 Test Tunnel Mode WLAN Creation with VLAN Selection
-Tests the new gateway VLAN selection feature for tunnel mode WLANs
+
+Tests the gateway VLAN selection feature for tunnel mode WLANs.
+Validates that the dashboard correctly fetches and displays available VLANs
+from the gateway when creating tunnel mode WLANs.
+
+Usage:
+    python scripts/test_tunnel_vlan_selection.py
 """
 
-import requests
+import traceback
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from datetime import datetime
+from utils.test_helpers import (
+    login_to_dashboard,
+    get_gateways,
+    api_request,
+    TEST_WLAN_PASSWORD,
+    DASHBOARD_API
+)
 
 console = Console()
-
-DASHBOARD_API = "http://localhost:5000/api"
-
-def login_to_dashboard():
-    """Login to dashboard and get session"""
-    try:
-        response = requests.post(f"{DASHBOARD_API}/auth/login")
-        if response.status_code == 200:
-            data = response.json()
-            return data.get('session_id')
-    except Exception as e:
-        console.print(f"[red]Login failed:[/red] {str(e)}")
-    return None
-
-def get_gateways(session_id):
-    """Get list of available gateways"""
-    try:
-        headers = {'X-Session-ID': session_id}
-        response = requests.get(f"{DASHBOARD_API}/devices", headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            devices = data.get('items', [])
-            gateways = [d for d in devices if d.get('deviceType') == 'GATEWAY']
-            return gateways
-    except Exception as e:
-        console.print(f"[yellow]Warning:[/yellow] Could not fetch gateways: {str(e)}")
-    return []
 
 def get_gateway_vlans(gateway_serial, session_id):
     """Get VLANs configured on a specific gateway"""
@@ -88,20 +74,24 @@ def main():
 
     # Step 1: Login
     console.print("\n[cyan]Step 1: Authenticating...[/cyan]")
-    session_id = login_to_dashboard()
+    session_id, error = login_to_dashboard()
 
-    if not session_id:
-        console.print("[red]Failed to authenticate. Ensure dashboard backend is running.[/red]")
+    if error:
+        console.print(f"[red]Authentication failed:[/red] {error}")
         return
 
     console.print("[green]✓[/green] Authenticated\n")
 
     # Step 2: Get gateways
     console.print("[cyan]Step 2: Fetching available gateways...[/cyan]")
-    gateways = get_gateways(session_id)
+    gateways, error = get_gateways(session_id)
+
+    if error:
+        console.print(f"[red]Failed to fetch gateways:[/red] {error}")
+        return
 
     if not gateways:
-        console.print("[red]No gateways found. Tunnel mode requires a gateway.[/red]")
+        console.print("[yellow]No gateways found. Tunnel mode requires a gateway.[/yellow]")
         return
 
     console.print(f"[green]✓[/green] Found {len(gateways)} gateway(s)\n")
@@ -134,9 +124,12 @@ def main():
     vlans = get_gateway_vlans(gateway_serial, session_id)
 
     if not vlans:
-        console.print("[yellow]No VLANs found on gateway. The gateway may need VLAN configuration.[/yellow]")
-        console.print("[yellow]Attempting to use VLAN 2 (as mentioned by user)...[/yellow]")
-        vlans = [{'id': 2, 'name': 'VLAN 2'}]
+        console.print("[red]No VLANs found on gateway[/red]")
+        console.print("[yellow]Cannot create tunnel mode WLAN without configured VLANs.[/yellow]")
+        console.print("\n[dim]Next steps:[/dim]")
+        console.print("[dim]  1. Configure VLANs on the gateway[/dim]")
+        console.print("[dim]  2. Run this script again to verify VLAN discovery[/dim]")
+        return
 
     console.print(f"[green]✓[/green] Found {len(vlans)} VLAN(s)\n")
 
@@ -186,7 +179,7 @@ def main():
         "vlan-id-range": [str(target_vlan['id'])],
         "personal-security": {
             "passphrase-format": "STRING",
-            "wpa-passphrase": "TestPassword123!"
+            "wpa-passphrase": TEST_WLAN_PASSWORD
         }
     }
 
@@ -229,6 +222,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         console.print("\n\n[yellow]Test interrupted by user[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]Fatal error:[/red] {str(e)}")
-        import traceback
+        console.print(f"\n[red]Unexpected error:[/red] {str(e)}")
         console.print(f"[dim]{traceback.format_exc()}[/dim]")

@@ -1,0 +1,2447 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-cda-auth-profile API generated from aruba-cda-auth-profile.yang",
+    "version": "1.0.0",
+    "title": "cda-auth-profile",
+    "x-tag-group": "Central NAC"
+  },
+  "tags": [
+    {
+      "name": "auth-profiles"
+    }
+  ],
+  "paths": {
+    "/auth-profiles": {
+      "get": {
+        "summary": "Read authentication profile configuration(s).",
+        "description": "Authentication profiles to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "operationId": "readAuthProfiles",
+        "x-cliParam": {
+          "commandName": "readAuthProfilesCmd",
+          "summary": "Read operation for auth-profiles",
+          "commandUse": "auth-profiles",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/auth-profiles/"
+        },
+        "tags": [
+          "auth-profiles"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_AuthProfilesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth-profiles/{authProfileId}": {
+      "post": {
+        "summary": "Create authentication profile configuration.",
+        "description": "Authentication profile to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "operationId": "createAuthProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "createAuthProfilesProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createAuthProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "authProfileId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-profiles/profile/%s/"
+        },
+        "tags": [
+          "auth-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authProfileId",
+            "description": "Unique immutable identifier for auth profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaAuthProfile_AuthProfilesprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read authentication profile configuration.",
+        "description": "Authentication profile to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "operationId": "readAuthProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "readAuthProfilesProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readAuthProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "authProfileId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-profiles/profile/%s/"
+        },
+        "tags": [
+          "auth-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authProfileId",
+            "description": "Unique immutable identifier for auth profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_AuthProfilesprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update authentication profile configuration.",
+        "description": "Authentication profile to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "operationId": "updateAuthProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "updateAuthProfilesProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateAuthProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "authProfileId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-profiles/profile/%s/"
+        },
+        "tags": [
+          "auth-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authProfileId",
+            "description": "Unique immutable identifier for auth profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaAuthProfile_AuthProfilesprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete authentication profile configuration.",
+        "description": "Authentication profile to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "operationId": "deleteAuthProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteAuthProfilesProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteAuthProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "authProfileId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-profiles/profile/%s/"
+        },
+        "tags": [
+          "auth-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authProfileId",
+            "description": "Unique immutable identifier for auth profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaCdaAuthProfile_AuthProfilesprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaCdaAuthProfile_AuthProfilesprofileSchema"
+            },
+            "examples": {
+              "common-Wired_EAP_profile": {
+                "$ref": "#/components/examples/common-Wired_EAP_profile"
+              }
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaCdaAuthProfile_AuthProfilesSchema": {
+        "description": "Authentication profiles to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+        "properties": {
+          "profile": {
+            "description": "Authentication profile to be used for Central NAC.\n\nAuthentication profile defines the authentication method, authentication sources, and additional attributes used to authenticate users on the associated networks.\n\nAuthentication profiles must be configured with default query parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_WiredProfileConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaEapProfile_EapProfile"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_MpskProfile"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_MabProfile"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_CaptivePortalProfile"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAirpassProfile_CdaAirpassProfile"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthProfile_DefaultPolicyProfile"
+                },
+                {
+                  "properties": {
+                    "auth-profile-id": {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "auth-profile-id",
+                      "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                      "maxLength": 9999,
+                      "description": "Unique immutable identifier for auth profile."
+                    },
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-mandatory": true,
+                      "description": "Name of authentication profile."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 0,
+                      "maxLength": 255,
+                      "x-typeDescription": "Add Description to the entity."
+                    },
+                    "auth-type": {
+                      "type": "string",
+                      "enum": [
+                        "MPSK",
+                        "EAP",
+                        "CAPTIVE_PORTAL",
+                        "DPP",
+                        "MAB",
+                        "AIRPASS"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {},
+                      "x-typeDescription": "Network authentication methods.",
+                      "x-mandatory": true,
+                      "description": "Type of authentication method to determine profile configuration."
+                    },
+                    "identity-stores": {
+                      "type": "array",
+                      "items": {
+                        "x-path": "/ac-cda-is:identity-stores/ac-cda-is:store/ac-cda-is:id",
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "id",
+                        "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                        "maxLength": 9999,
+                        "description": "Reference to the identity store(s) to be used for authentication."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "networks": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "const",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "description": "Reference to the wired/wlan network to be used for authentication."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "wired": {
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Indicate if auth profile applies to wired profiles.\n\nWhen wired is true, and auth-type is CAPTIVE_PORTAL, a wired-profile must also be configured."
+                    },
+                    "organization-name": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Organization name used for provisioning in onboarding workflows."
+                    },
+                    "portal-profile": {
+                      "x-path": "/ac-cda-pp:portals/ac-cda-pp:portal/ac-cda-pp:portal-id",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "portal-id",
+                      "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                      "maxLength": 9999,
+                      "description": "Reference to the portal profile that defines the required web portal customizations."
+                    },
+                    "dpp": {
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Indicate if Wi-Fi Easy Connect (DPP) is supported on this network."
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "name",
+                    "auth-type"
+                  ]
+                }
+              ]
+            },
+            "x-key": [
+              "authProfileId"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaAuthProfile_AuthProfilesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthProfile_AuthProfilesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaCdaAuthProfile_AuthProfilesprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthProfile_WiredProfileConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaEapProfile_EapProfile"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthProfile_MpskProfile"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthProfile_MabProfile"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_CaptivePortalProfile"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaAirpassProfile_CdaAirpassProfile"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthProfile_DefaultPolicyProfile"
+          },
+          {
+            "properties": {
+              "auth-profile-id": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "auth-profile-id",
+                "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                "maxLength": 9999,
+                "description": "Unique immutable identifier for auth profile."
+              },
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-mandatory": true,
+                "description": "Name of authentication profile."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 0,
+                "maxLength": 255,
+                "x-typeDescription": "Add Description to the entity."
+              },
+              "auth-type": {
+                "type": "string",
+                "enum": [
+                  "MPSK",
+                  "EAP",
+                  "CAPTIVE_PORTAL",
+                  "DPP",
+                  "MAB",
+                  "AIRPASS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {},
+                "x-typeDescription": "Network authentication methods.",
+                "x-mandatory": true,
+                "description": "Type of authentication method to determine profile configuration."
+              },
+              "identity-stores": {
+                "type": "array",
+                "items": {
+                  "x-path": "/ac-cda-is:identity-stores/ac-cda-is:store/ac-cda-is:id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "Reference to the identity store(s) to be used for authentication."
+                },
+                "maxItems": 2147483647
+              },
+              "networks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "Reference to the wired/wlan network to be used for authentication."
+                },
+                "maxItems": 2147483647
+              },
+              "wired": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Indicate if auth profile applies to wired profiles.\n\nWhen wired is true, and auth-type is CAPTIVE_PORTAL, a wired-profile must also be configured."
+              },
+              "organization-name": {
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "description": "Organization name used for provisioning in onboarding workflows."
+              },
+              "portal-profile": {
+                "x-path": "/ac-cda-pp:portals/ac-cda-pp:portal/ac-cda-pp:portal-id",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "portal-id",
+                "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                "maxLength": 9999,
+                "description": "Reference to the portal profile that defines the required web portal customizations."
+              },
+              "dpp": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Indicate if Wi-Fi Easy Connect (DPP) is supported on this network."
+              }
+            }
+          },
+          {
+            "required": [
+              "name",
+              "auth-type"
+            ]
+          }
+        ]
+      },
+      "ArubaCdaAuthProfile_MpskProfile": {
+        "properties": {
+          "mpsk": {
+            "description": "MPSK profile.",
+            "properties": {
+              "password-policy": {
+                "type": "string",
+                "enum": [
+                  "WORDS",
+                  "ALPHANUMERIC"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "WORDS": "4 word password.",
+                  "ALPHANUMERIC": "alphanumeric password."
+                },
+                "description": "Policy for generating PSK passwords"
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaAuthProfile_MabProfile": {
+        "properties": {
+          "mab": {
+            "description": "MAC authentication bypass profile.",
+            "properties": {
+              "allow-all": {
+                "type": "boolean",
+                "default": "false",
+                "description": "All devices are allowed on the network if set to true."
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaAuthProfile_WiredProfileConfig": {
+        "description": "Configuration for an authentication profile when supporting a wired network.",
+        "properties": {
+          "wired-profile": {
+            "description": "Configuration for an authentication profile when supporting a wired network.\n\nThe wired field must be true, and the auth-type must be CAPTIVE_PORTAL, to configure a wired-profile.",
+            "properties": {
+              "ap-port-profiles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "The names of the Access Point (AP) port profiles with which this authentication profile will used.\n\nA port profile defines parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.\n\nFor a CAPTIVE_PORTAL authentication profile, only wired interfaces with one of these port profiles will be configured with the captive portal.\n\nAt least one port profile must be specified.\n\nAt most 100 port profiles may be specified."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaAuthProfile_DefaultPolicyProfile": {
+        "properties": {
+          "default-policy": {
+            "description": "Default policy to apply to Central NAC captive portal network sessions.\n\nThe auth-type must be CAPTIVE_PORTAL to configure a default-policy.",
+            "properties": {
+              "allow-mac-caching": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether users can resume a valid network session via MAC address caching and MAC authentication."
+              },
+              "session-timeout": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "default": "28800",
+                "description": "Maximum time allowed for the session before it should be terminated.\n\nNull for the default session timeout or a minimum of 1 (one).\n\nThe default session timeout is 28,800 seconds (i.e. 8 hours).\n\nUnits are in seconds."
+              },
+              "session-data-quota": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "description": "Maximum IO allowed for the session before it should be terminated.\n\nNull for no limit or a minimum of 1 (one).\n\nUnits are in MB (1,048,576 bytes)."
+              },
+              "periodic-quota-subject": {
+                "type": "string",
+                "enum": [
+                  "ACCOUNT",
+                  "DEVICE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ACCOUNT": "Daily time and IO quotas are enforced on a per-account basis.",
+                  "DEVICE": "Daily time and IO quotas are enforced on a per-device basis."
+                },
+                "x-typeDescription": "An enumeration that controls whether daily time and IO quotas are to be enforced on a per-account or per-device basis.",
+                "default": "ACCOUNT",
+                "description": "Controls whether daily time and IO quotas are to be enforced on a per-account or per-device basis."
+              },
+              "periodic-time-quota": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "description": "Maximum time per day allowed for the account, or device, before active sessions should be terminated.\n\nLimiting by account, or by device, is controlled by the periodic-quota-subject.\n\nNull for no limit or a minimum of 1 (one).\n\nUnits are in seconds."
+              },
+              "periodic-data-quota": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "description": "Maximum IO per day allowed for the account, or device, before active sessions should be terminated.\n\nLimiting by account, or by device, is controlled by the periodic-quota-subject.\n\nNull for no limit or a minimum of 1 (one).\n\nUnits are in MB (1,048,576 bytes)."
+              },
+              "simultaneous-use": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "description": "Maximum number of simultaneous network sessions allowed for each account.\n\nNull for no limit or a minimum of 1 (one).\n\nNote that this limit is per-account only."
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaEapProfile_EapProfile": {
+        "description": "EAP authentication profile top level grouping",
+        "properties": {
+          "eap": {
+            "description": "EAP profile configuration.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaEapProfile_OcspConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaCdaEapProfile_CustomCertificateConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaCdaUemProfile_CdaUemProfile"
+              }
+            ],
+            "properties": {
+              "cert-valid-days": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 730,
+                "description": "The number of days validity for server issued EAP-TLS client certificates."
+              },
+              "use-ocsp": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether to check EAP-TLS client certificate validity with OCSP."
+              },
+              "use-custom-server": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether to use a custom EAP server."
+              },
+              "use-custom-client-ca-chain": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether to use a custom EAP client CA chain."
+              },
+              "client-ca-chain": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 9999,
+                "x-typeDescription": "Certificate in string format",
+                "description": "Base64 encoded X.509 trust chain for the client certificates when using EAP-TLS."
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaEapProfile_CustomCertificateConfig": {
+        "description": "allows to add a custom certificate",
+        "properties": {
+          "server-cert": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 9999,
+            "x-typeDescription": "Certificate in string format",
+            "description": "Base64 encoded X.509 cert to use for custom EAP server."
+          },
+          "server-key": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Private key to use for custom EAP server."
+          },
+          "server-key-passphrase": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Passphrase associated with the server key."
+          }
+        }
+      },
+      "ArubaCdaEapProfile_OcspConfig": {
+        "description": "OCSP profile.",
+        "properties": {
+          "ocsp-url": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "Override ocsp URL"
+          },
+          "ocsp-fail-behavior": {
+            "type": "string",
+            "enum": [
+              "REJECT_ALL",
+              "ACCEPT_VALID_CERT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "REJECT_ALL": "Reject if failure",
+              "ACCEPT_VALID_CERT": "Accept if failure but cert is valid"
+            },
+            "description": "Behavior if ocsp server cannot be reached"
+          }
+        }
+      },
+      "ArubaCdaUemProfile_CdaUemProfile": {
+        "description": "Unified Endpoint Management(UEM) profile top level grouping",
+        "properties": {
+          "uem-providers": {
+            "description": "List of UEMs used for Onboarding.",
+            "properties": {
+              "uem": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaCdaUemProfile_ScepEnrollment"
+                    },
+                    {
+                      "properties": {
+                        "uem-id": {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "uem-id",
+                          "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                          "maxLength": 9999,
+                          "description": "Unique immutable identifier for UEM."
+                        },
+                        "name": {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 255,
+                          "x-mandatory": true,
+                          "description": "UEM name."
+                        },
+                        "enable": {
+                          "type": "boolean",
+                          "default": "true",
+                          "description": "Enable UEM."
+                        },
+                        "uem-type": {
+                          "type": "string",
+                          "enum": [
+                            "IVANTI_UEM",
+                            "VMWARE_WSONE_UEM",
+                            "MSINTUNE_UEM",
+                            "JAMF_SCHOOL_UEM",
+                            "JAMF_PRO_UEM",
+                            "GOOGLE_UEM"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "IVANTI_UEM": "Ivanti UEM",
+                            "VMWARE_WSONE_UEM": "VMware WorkspaceONE UEM",
+                            "MSINTUNE_UEM": "Microsoft Intune UEM",
+                            "JAMF_SCHOOL_UEM": "JAMF School UEM",
+                            "JAMF_PRO_UEM": "JAMF Pro UEM",
+                            "GOOGLE_UEM": "Google UEM"
+                          },
+                          "x-mandatory": true,
+                          "description": "The type of UEM provider to use for Onboarding."
+                        },
+                        "intune-extension": {
+                          "type": "string",
+                          "format": "pattern",
+                          "minLength": 1,
+                          "maxLength": 256,
+                          "x-patternSources": "printable-string",
+                          "x-patterns": "'[ -~]+'",
+                          "x-typeDescription": "String that only allows printable ASCII characters.",
+                          "description": "Name of the Intune extension to be used for Onboarding."
+                        }
+                      }
+                    },
+                    {
+                      "required": [
+                        "name",
+                        "uem-type"
+                      ]
+                    }
+                  ]
+                },
+                "x-key": [
+                  "uemId"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaUemProfile_ScepEnrollment": {
+        "description": "Configuration to be used for Simple Certificate Enrollment Protocol(SCEP) enrollment.",
+        "properties": {
+          "scep-url": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "Simple Certificate Enrollment Protocol(SCEP) URL."
+          },
+          "scep-dynamic-challenge-url": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "URL for Simple Certificate Enrollment Protocol(SCEP) dynamic challenge."
+          },
+          "bearer-token": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "bearer-token",
+            "x-patterns": "'[a-zA-Z0-9_\\-]+'",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Bearer token used for authenticating request to dynamic challenge url."
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_CaptivePortalProfile": {
+        "description": "Captive Portal authentication profile",
+        "properties": {
+          "captive-portal": {
+            "description": "Captive Portal authentication profile",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_AnonymousConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_AuthenticatedConfig"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_CaptiveNetworkConfig"
+              }
+            ],
+            "properties": {
+              "authentication-mode": {
+                "type": "string",
+                "enum": [
+                  "AUTHENTICATED",
+                  "ANONYMOUS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "AUTHENTICATED": "Authenticated (e.g. username/password) access",
+                  "ANONYMOUS": "Anonymous access"
+                },
+                "x-typeDescription": "User authentication modes",
+                "x-mandatory": true,
+                "description": "How users are to be authenticated.\n\nWhen the authentication mode is AUTHENTICATED, the authentication profile's\nidentity-stores must reference at least one identity store.\n\nWhen the authentication mode is ANONYMOUS, the authentication profile's\nidentity-stores must not reference any identity stores."
+              }
+            },
+            "required": [
+              "authentication-mode"
+            ]
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_AnonymousConfig": {
+        "description": "Anonymous-only fields",
+        "properties": {
+          "anonymous-password": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Password for the anonymous user sign in, if required.\n\nThe anonymous-password field can only be configured when authentication-mode is ANONYMOUS."
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_AuthenticatedConfig": {
+        "description": "Authenticated-only fields",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_RegistrationConfig"
+          }
+        ],
+        "properties": {
+          "enable-registration": {
+            "type": "boolean",
+            "description": "Allow users to register for an account.\n\nThe enable-registration field can only be configured when authentication-mode is AUTHENTICATED.\n\nAt least one of register-accept-email and register-accept-phone must be true when enable-registration is true.\n\nThe registration-identity-store must be configured when enable-registration is true."
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_RegistrationConfig": {
+        "description": "Self-registration configuration grouping",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaCaptivePortalProfile_SponsorConfig"
+          }
+        ],
+        "properties": {
+          "register-auto-expire": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "register-auto-expire",
+            "x-patterns": "'P(([0-9]+Y)?([0-9]+M)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?|[0-9]+W)'",
+            "maxLength": 9999,
+            "description": "Automatically set a registered account to expire after the specified duration (ISO 8601 duration).\n\nThe register-auto-expire field can only be configured when enable-registration is true."
+          },
+          "register-accept-email": {
+            "type": "boolean",
+            "description": "Allow users to register using an email address.\n\nThe register-accept-email field can only be configured when enable-registration is true.\n\nAt least one of register-accept-email and register-accept-phone must be true when enable-registration is true."
+          },
+          "register-accept-phone": {
+            "type": "boolean",
+            "description": "Allow users to register using a phone number.\n\nThe register-accept-phone field can only be configured when enable-registration is true.\n\nAt least one of register-accept-email and register-accept-phone must be true when enable-registration is true."
+          },
+          "require-sponsor-approval": {
+            "type": "boolean",
+            "description": "Require sponsor approval for self-registrations.\n\nIf enabled, when a user is registering an account, they must provide the email address of a valid sponsor.\nThe sponsor will receive an email with a link to then review and approve the registration request.\n\nThe require-sponsor-approval field can only be configured when enable-registration is true.\n\nAt least one sponsor domain (see sponsor-domains), or sponsor email (see sponsor-emails), must be configured when require-sponsor-approval is true."
+          },
+          "verify-registration": {
+            "type": "boolean",
+            "description": "Verify that the user actually owns the registered identity (e.g. email address or phone number) by sending an access code that must then be entered to complete registration.\n\nThe verify-registration field can only be configured when enable-registration is true."
+          },
+          "registration-identity-store": {
+            "x-path": "/ac-cda-is:identity-stores/ac-cda-is:store/ac-cda-is:id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "Reference to the identity store to be used for user registrations.\n\nThe registration-identity-store must be configured when enable-registration is true.\n\nThe registration-identity-store must be a member of the authentication profile's list of identity-stores when enable-registration is true.\n\nThe registration-identity-store must be a LOCAL identity store when enable-registration is true."
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_SponsorConfig": {
+        "description": "Self-registration sponsor approval configuration grouping",
+        "properties": {
+          "sponsor-domains": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "pattern",
+              "minLength": 1,
+              "maxLength": 512,
+              "x-patternSources": "cda-cg-domain-name",
+              "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+              "x-typeDescription": "A domain name (as supported by Cloud Guest) according to RFC 952 and RFC 1123.",
+              "description": "Allowed domain names for sponsor email addresses.\n\nThe maximum number of sponsor-domains allowed is 50.\n\nWhen a user is registering an account that requires sponsor approval (see require-sponsor-approval), they must provide the email address of a valid sponsor.\n\nAnyone who has an email address in one of these domains is a valid sponsor.\n\nThe sponsor-domains list can only be configured when require-sponsor-approval is true.\n\nAt least one sponsor domain (see sponsor-domains), or sponsor email (see sponsor-emails), must be configured when require-sponsor-approval is true.\n\nSee also the sponsor-emails field for configuring specific email addresses as valid sponsors.\n\nBoth the sponsor-domains and sponsor-emails lists define valid sponsors."
+            },
+            "maxItems": 2147483647
+          },
+          "sponsor-emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "pattern",
+              "minLength": 1,
+              "maxLength": 255,
+              "x-patternSources": "cda-cg-email-address",
+              "x-patterns": "'[-A-Za-z0-9!#$%&'*+/=?^_`{|}~]+([.][-A-Za-z0-9!#$%&'*+/=?^_`{|}~]+)*@([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+              "x-typeDescription": "An email address (as supported by Cloud Guest) according to RFC 5322, limited by RFC 952 and RFC 1123",
+              "description": "Allowed sponsor email addresses.\n\nThe maximum number of sponsor-emails allowed is 100.\n\nWhen a user is registering an account that requires sponsor approval (see require-sponsor-approval), they must provide the email address of a valid sponsor.\n\nAny one of these email addresses is a valid sponsor.\n\nThe sponsor-emails list can only be configured when require-sponsor-approval is true.\n\nAt least one sponsor domain (see sponsor-domains), or sponsor email (see sponsor-emails), must be configured when require-sponsor-approval is true.\n\nSee also the sponsor-domains field for configuring an entire domain as valid sponsors.\n\nBoth the sponsor-domains and sponsor-emails lists define valid sponsors."
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaCaptivePortalProfile_CaptiveNetworkConfig": {
+        "description": "Captive network configuration",
+        "properties": {
+          "allow-internet-on-service-unavailable": {
+            "type": "boolean",
+            "description": "Allow internet access when the authentication service (RADIUS/RadSec) is unavailable"
+          },
+          "cna-policy": {
+            "type": "string",
+            "enum": [
+              "AUTOMATIC",
+              "ALLOW_ALWAYS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "AUTOMATIC": "Automatically determine whether a CNA (Captive Network Assistant) should be allowed (shown) or bypassed (hidden)",
+              "ALLOW_ALWAYS": "Always allow a CNA (Captive Network Assistant) to be shown (i.e. NEVER bypass a CNA)"
+            },
+            "x-typeDescription": "CNA (Captive Network Assistant) accept/bypass policies",
+            "description": "CNA (Captive Network Assistant) accept/bypass policy"
+          },
+          "final-redirection-url": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "A URL to redirect the client to after they have completed the login workflow"
+          },
+          "network-login-host-override": {
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 512,
+            "x-patternSources": "cda-cg-domain-name",
+            "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+            "x-typeDescription": "A domain name (as supported by Cloud Guest) according to RFC 952 and RFC 1123.",
+            "description": "Override the expected host that the Central NAC captive portal should redirect back\nto after it has authenticated the user.\n\nThe network access device (e.g. an Access Point), at this domain name, will then\ncomplete the final phase of user authentication.\n\nIt is recommended to only set this override when using a custom server certificate\non the network access device. This is so that, when the user's web browser is\nredirected back to the network access device, the host matches one of the valid\ndomain names in the certificate (e.g. a subject-alt-name, or the common name).\n\nIf set, this value must be a valid domain name."
+          },
+          "pre-auth-access-rules": {
+            "description": "Additional access rules added to the captive portal pre-authentication role.\nUse these rules to provide the user with access to HTTP/HTTPS resources before\nthey have completed the authentication process.\n\nThe maximum number of pre-auth-access-rules allowed is 10.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "position": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 255,
+                  "x-mandatory": true,
+                  "description": "Position determines the order in which the rules are appended to the pre-authentication role."
+                },
+                "destination": {
+                  "description": "Destination domain and port to allow.",
+                  "properties": {
+                    "domain-name": {
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 512,
+                      "x-patternSources": "cda-cg-domain-name",
+                      "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+                      "x-typeDescription": "A domain name (as supported by Cloud Guest) according to RFC 952 and RFC 1123.",
+                      "x-mandatory": true,
+                      "description": "Destination domain name to allow."
+                    },
+                    "port": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "x-mandatory": true,
+                      "description": "Destination TCP port number to allow.\nPort numbers are currently restricted to 80 (HTTP) and 443 (HTTPS) only."
+                    }
+                  },
+                  "required": [
+                    "domain-name",
+                    "port"
+                  ]
+                }
+              },
+              "required": [
+                "position"
+              ]
+            },
+            "x-key": [
+              "position"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaAirpassProfile_CdaAirpassProfile": {
+        "description": "Air Pass profile top level grouping",
+        "properties": {
+          "airpass-profile": {
+            "description": "Air Pass enables seamless cellular roaming to enterprise networks.\nAir Pass profiles can be configured to use SIM based or OpenRoaming workflows for Central NAC.\n\nAir Pass profiles must be configured with default query parameters.",
+            "properties": {
+              "venue-category": {
+                "type": "string",
+                "enum": [
+                  "K_12",
+                  "STADIUM",
+                  "AIRPORT",
+                  "HIGHER_ED",
+                  "OFFICE",
+                  "MANUFACTURING",
+                  "MEDICAL",
+                  "RETAIL",
+                  "HOTEL",
+                  "OTHER"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "K_12": "K-12 primary school.",
+                  "STADIUM": "Stadium (LPV).",
+                  "AIRPORT": "Airport.",
+                  "HIGHER_ED": "Higher Education (University or college).",
+                  "OFFICE": "Office Building.",
+                  "MANUFACTURING": "Manufacturing.",
+                  "MEDICAL": "Medical office (Hospital).",
+                  "RETAIL": "Retail store.",
+                  "HOTEL": "Hotel.",
+                  "OTHER": "Unspecified."
+                },
+                "x-mandatory": true,
+                "description": "Venue category."
+              },
+              "approval-email": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 320,
+                "x-patternSources": "email-type",
+                "x-patterns": "'[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]+'",
+                "x-typeDescription": "Email format.",
+                "description": "Customer email for approval workflow."
+              },
+              "domain-name": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 512,
+                "x-patternSources": "cda-cg-domain-name",
+                "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+                "x-typeDescription": "A domain name (as supported by Cloud Guest) according to RFC 952 and RFC 1123.",
+                "x-mandatory": true,
+                "description": "Domain Name for Air Pass."
+              },
+              "operator-name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 252,
+                "x-mandatory": true,
+                "description": "Operator-friendly english name (max length:252)."
+              },
+              "provider": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "List of passpoint identities that will be used for Air Pass."
+                },
+                "maxItems": 2147483647
+              },
+              "site": {
+                "description": "List of site ids where Air Pass should be enabled.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "site-id": {
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-patternSources": "scope-id-type",
+                      "x-patterns": "'[0-9]*'",
+                      "x-typeDescription": "it is a unique ID given to a scope, it is unique across a particular construct",
+                      "x-mandatory": true,
+                      "description": "Site id."
+                    }
+                  },
+                  "required": [
+                    "site-id"
+                  ]
+                },
+                "x-key": [
+                  "siteId"
+                ],
+                "maxItems": 2147483647
+              }
+            },
+            "required": [
+              "venue-category",
+              "domain-name",
+              "operator-name"
+            ]
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    },
+    "examples": {
+      "common-Wired_EAP_profile": {
+        "value": {
+          "auth_profile_id": "string",
+          "name": "string",
+          "description": "string",
+          "auth_type": "EAP",
+          "identity_stores": [
+            "string"
+          ],
+          "networks": [
+            "string"
+          ],
+          "wired": true,
+          "organization_name": "string",
+          "eap": {
+            "cert_valid_days": 365,
+            "ocsp_fail_behavior": "REJECT_ALL",
+            "use_custom_client_ca_chain": false,
+            "use_custom_server": false,
+            "use_ocsp": true
+          }
+        }
+      },
+      "common-captive-portal_sponsor-emails": {
+        "value": [
+          "string"
+        ]
+      },
+      "common-captive-portal_authenticated_profile": {
+        "value": {
+          "authentication-mode": "AUTHENTICATED",
+          "enable-registration": true,
+          "registration-identity-store": "string",
+          "register-accept-email": true,
+          "register-accept-phone": true,
+          "register-auto-expire": "string",
+          "require-sponsor-approval": true,
+          "sponsor-domains": [
+            "string"
+          ],
+          "sponsor-emails": [
+            "string"
+          ],
+          "verify-registration": true,
+          "allow-internet-on-service-unavailable": true,
+          "cna-policy": "AUTOMATIC",
+          "final-redirection-url": "string",
+          "pre-auth-access-rules": [
+            {
+              "position": 1,
+              "destination": {
+                "domain-name": "string",
+                "port": 443
+              }
+            }
+          ]
+        }
+      },
+      "common-auth_profile_networks": {
+        "value": [
+          "string"
+        ]
+      },
+      "common-BYOC_EAP_profile": {
+        "value": {
+          "profile": [
+            {
+              "auth_profile_id": "string",
+              "name": "string",
+              "description": "string",
+              "auth_type": "EAP",
+              "identity_stores": [
+                "string"
+              ],
+              "networks": [
+                "string"
+              ],
+              "wired": false,
+              "organization_name": "string",
+              "eap": {
+                "cert_valid_days": 365,
+                "use_custom_client_ca_chain": false,
+                "use_custom_server": true,
+                "server-cert": "string",
+                "server-key": "string",
+                "server-key-passphrase": "string",
+                "use_ocsp": true,
+                "ocsp_fail_behavior": "REJECT_ALL"
+              }
+            }
+          ]
+        }
+      },
+      "common-captive-portal_pre-auth-access-rules_position": {
+        "value": {
+          "position": 1,
+          "destination": {
+            "domain-name": "string",
+            "port": 443
+          }
+        }
+      },
+      "common-Wired_EAP_profiles": {
+        "value": {
+          "profile": [
+            {
+              "auth_profile_id": "string",
+              "name": "string",
+              "description": "string",
+              "auth_type": "EAP",
+              "identity_stores": [
+                "string"
+              ],
+              "networks": [
+                "string"
+              ],
+              "wired": true,
+              "organization_name": "string",
+              "eap": {
+                "cert_valid_days": 365,
+                "ocsp_fail_behavior": "REJECT_ALL",
+                "use_custom_client_ca_chain": false,
+                "use_custom_server": false,
+                "use_ocsp": true
+              }
+            }
+          ]
+        }
+      },
+      "common-captive-portal_sponsor-domains": {
+        "value": [
+          "string"
+        ]
+      },
+      "common-Macauth_bypass_profile": {
+        "value": {
+          "allow-all": false
+        }
+      },
+      "common-EAP_default_certificate_profile": {
+        "value": {
+          "cert_valid_days": 365,
+          "ocsp_fail_behavior": "REJECT_ALL",
+          "use_custom_client_ca_chain": false,
+          "use_custom_server": false,
+          "use_ocsp": true
+        }
+      },
+      "common-EAP_BYOC_profile": {
+        "value": {
+          "cert_valid_days": 365,
+          "use_custom_client_ca_chain": false,
+          "use_custom_server": true,
+          "server-cert": "string",
+          "server-key": "string",
+          "server-key-passphrase": "string",
+          "use_ocsp": true,
+          "ocsp_fail_behavior": "REJECT_ALL"
+        }
+      },
+      "common-MPSK_profile": {
+        "value": {
+          "password-policy": "WORDS"
+        }
+      },
+      "common-auth_profile_idStores": {
+        "value": [
+          "string"
+        ]
+      }
+    }
+  }
+}

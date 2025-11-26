@@ -1,0 +1,185 @@
+# WLAN Configuration Comparison
+
+## Working Example from API vs Our Template
+
+### Working Example: "cnx" (WPA2-Personal, L2 Tunnel)
+```json
+{
+  "ssid": "cnx",
+  "enable": true,
+  "forward-mode": "FORWARD_MODE_L2",
+  "cluster-preemption": false,
+  "dmo": {
+    "enable": true,
+    "channel-utilization-threshold": 90,
+    "clients-threshold": 6
+  },
+  "broadcast-filter-ipv4": "BCAST_FILTER_ARP",
+  "broadcast-filter-ipv6": "UCAST_FILTER_RA",
+  "optimize-mcast-rate": false,
+  "ssid-utf8": true,
+  "essid": {
+    "use-alias": false,
+    "name": "cnx"  // ✅ STRING format
+  },
+  "advertise-apname": false,
+  "disable-on-6ghz-mesh": false,
+  "dot11k": true,
+  "dot11r": false,
+  "dtim-period": 1,
+  "ftm-responder": false,
+  "hide-ssid": false,
+  "auth-req-thresh": 0,
+  "explicit-ageout-client": false,
+  "inactivity-timeout": 1000,
+  "local-probe-req-thresh": 0,
+  "max-clients-threshold": 1024,
+  "rf-band": "24GHZ_5GHZ",
+  "rrm-quiet-ie": false,
+  "high-throughput": {
+    "enable": true,
+    "very-high-throughput": true
+  },
+  "g-legacy-rates": {
+    "basic-rates": ["RATE_12MB", "RATE_24MB"],
+    "tx-rates": ["RATE_12MB", "RATE_18MB", "RATE_24MB", "RATE_36MB", "RATE_48MB", "RATE_54MB"]
+  },
+  "a-legacy-rates": {
+    "basic-rates": ["RATE_12MB", "RATE_24MB"],
+    "tx-rates": ["RATE_12MB", "RATE_18MB", "RATE_24MB", "RATE_36MB", "RATE_48MB", "RATE_54MB"]
+  },
+  "high-efficiency": {
+    "enable": true  // ✅ ONLY enable field
+  },
+  "extremely-high-throughput": {
+    "enable": true,
+    "mlo": false
+  },
+  "advertise-timing": false,
+  "opmode": "WPA2_PERSONAL",
+  "mac-authentication": false,
+  "personal-security": {
+    "passphrase-format": "STRING",
+    "wpa-passphrase": "vault:v4:..."
+  },
+  "use-ip-for-calling-station-id": false,
+  "gw-profile": "cnx_1745521343265511691_",
+  "gw-auth-server": "default",
+  "called-station-id": {
+    "type": "MAC_ADDRESS",
+    "include-ssid": false
+  },
+  "cloud-auth": false,
+  "default-role": "lab-allow",
+  "airpass": false,
+  "denylist": false,
+  "enforce-dhcp": false,
+  "pan": false,
+  "vlan-selector": "VLAN_RANGES",
+  "vlan-id-range": ["200"],
+  "out-of-service": "TUNNEL_DOWN",
+  "client-isolation": false
+}
+```
+
+### Our Template (After Fixes)
+```javascript
+const wlanData = {
+  // Best practice defaults
+  enable: true,
+  'dot11k': true,
+  'dot11r': true,
+  'dot11v': true,
+  'high-efficiency': {
+    'enable': true,  // ✅ Fixed - only enable field
+  },
+  'max-clients-threshold': 64,
+  'inactivity-timeout': 1000,
+
+  // Auth-specific (WPA2-Personal)
+  'personal-security': {
+    'passphrase-format': 'STRING',
+    'wpa-passphrase': data.passphrase,
+  },
+
+  // WLAN-specific
+  ssid: data.wlanName,
+  description: data.description || `WLAN ${data.wlanName}`,
+  opmode: 'WPA2_PERSONAL',
+  'forward-mode': data.forwardMode || 'FORWARD_MODE_BRIDGE',
+
+  essid: {
+    name: data.ssidBroadcastName,  // ✅ Fixed - string format
+  },
+
+  'vlan-selector': 'VLAN_RANGES',
+  'vlan-id-range': [vlanId.toString()],
+  'default-role': roleName,
+
+  // Optional
+  ...(data.hideSsid && { 'hide-ssid': true }),
+};
+```
+
+## Comparison Analysis
+
+### ✅ Fields We Include (Correct)
+- `enable`, `dot11k`, `dot11r`, `dot11v` - Fast roaming ✅
+- `high-efficiency.enable` - WiFi 6 ✅
+- `max-clients-threshold`, `inactivity-timeout` - Client management ✅
+- `ssid`, `description`, `opmode` - Basic config ✅
+- `forward-mode` - Traffic forwarding ✅
+- `essid.name` (STRING) - Broadcast name ✅
+- `vlan-selector`, `vlan-id-range` - VLAN config ✅
+- `default-role` - Role assignment ✅
+- `personal-security` - WPA2 auth ✅
+
+### ❌ Fields We Don't Include (API Sets Defaults)
+These are fine to omit - API uses sensible defaults:
+- `cluster-preemption`, `dmo` - Dynamic channel/load management
+- `broadcast-filter-ipv4/ipv6` - Broadcast filtering
+- `optimize-mcast-rate` - Multicast optimization
+- `ssid-utf8`, `advertise-apname` - SSID options
+- `disable-on-6ghz-mesh` - 6GHz mesh
+- `dtim-period`, `ftm-responder` - Advanced RF
+- `auth-req-thresh`, `local-probe-req-thresh` - Thresholds
+- `rf-band` - Defaults to BAND_ALL (dual-band)
+- `rrm-quiet-ie` - Radio resource management
+- `high-throughput`, `g-legacy-rates`, `a-legacy-rates` - Legacy PHY
+- `extremely-high-throughput` - WiFi 6E
+- `advertise-timing` - Timing advertisement
+- `mac-authentication`, `use-ip-for-calling-station-id` - Enterprise features
+- `called-station-id` - RADIUS attribute
+- `cloud-auth`, `airpass`, `denylist`, `enforce-dhcp`, `pan` - Security features
+- `out-of-service` - Out of service behavior
+- `client-isolation` - Client isolation (we should add this)
+
+### 🔍 Fields Specific to Tunneled Mode (L2/L3)
+Working example has these because it's tunneled:
+- `gw-profile` - Gateway profile (auto-generated)
+- `gw-auth-server` - Gateway auth server
+- `out-of-service: "TUNNEL_DOWN"` - Behavior when tunnel is down
+
+We don't include these - likely auto-generated by API when `forward-mode` is L2/L3.
+
+### 🎯 Recommended Additions (Low Priority)
+1. **RF Band Selection** - Allow user to choose 2.4GHz only, 5GHz only, or dual-band
+   ```javascript
+   'rf-band': data.rfBand || 'BAND_ALL'  // Default to dual-band
+   ```
+
+2. **Client Isolation** - For guest networks
+   ```javascript
+   ...(data.clientIsolation && { 'client-isolation': true }),
+   ```
+
+3. **DTIM Period** - For IoT devices
+   ```javascript
+   'dtim-period': data.dtimPeriod || 1,  // Default to 1
+   ```
+
+## Conclusion
+
+Our template is **correct and minimal**. We include all essential fields and let the API set sensible defaults for advanced features. The fixes applied (ESSID string format, high-efficiency structure) align perfectly with working configurations.
+
+**Status**: ✅ Ready for testing

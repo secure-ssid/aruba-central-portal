@@ -1,0 +1,261 @@
+# Read existing MKA policy
+
+## Request
+
+**Method:** `GET`
+
+**URL:** `{{baseUrl}}/network-config/v1alpha1/mka/:name`
+
+### Query Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+
+### Headers
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| Accept | application/json |  |
+
+### Response Examples
+
+#### Successful operation
+
+**Status:** 200 OK
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "cak-info": {
+    "ckn": "<string>",
+    "key-type": "PLAIN_TEXT",
+    "cak": "<string>",
+    "cak-ciphertext": "<string>"
+  },
+  "keychain": "<string>",
+  "key-server-priority": "<integer>",
+  "transmit-interval": "2",
+  "eapol-destination-mac": "01:80:c2:00:00:03",
+  "eapol-eth-type": "888e",
+  "eapol-dot1q-tagged": "false",
+  "name": "<string>",
+  "description": "<string>"
+}
+```
+---
+
+#### Bad Request
+
+**Status:** 400 Bad Request
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Unauthorized Access
+
+**Status:** 401 Unauthorized
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Forbidden
+
+**Status:** 403 Forbidden
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Found
+
+**Status:** 404 Not Found
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Acceptable
+
+**Status:** 406 Not Acceptable
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Request Timeout
+
+**Status:** 408 Request Timeout
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Precondition Failed
+
+**Status:** 412 Precondition Failed
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Rate limit exceeded
+
+**Status:** 429 Too Many Requests
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Internal Server Error
+
+**Status:** 500 Internal Server Error
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+

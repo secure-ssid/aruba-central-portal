@@ -1,0 +1,1587 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ipm API generated from aruba-ipm.yang",
+    "version": "1.0.0",
+    "title": "ipm",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "ipm"
+    }
+  ],
+  "paths": {
+    "/ipm": {
+      "get": {
+        "summary": "Read configured Intelligent Power Monitoring(IPM)",
+        "description": "Configure Intelligent Power Monitoring (IPM) reduction steps and priorities. The reduction function with the highest priority is applied when the power\nbudget threshold or when the threshold temperature is exceeded.\nThis feature is only applicable for AP.",
+        "operationId": "readIpm",
+        "x-cliParam": {
+          "commandName": "readIpmCmd",
+          "summary": "Read operation for ipm",
+          "commandUse": "ipm",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ipm/"
+        },
+        "tags": [
+          "ipm"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaIpm_IpmSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ipm/{name}": {
+      "post": {
+        "summary": "Create profile for IPM",
+        "description": "IPM profile.",
+        "operationId": "createIpmProfileByID",
+        "x-cliParam": {
+          "commandName": "createIpmProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createIpmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipm/profile/%s/"
+        },
+        "tags": [
+          "ipm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPM profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaIpm_IpmprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read configured profile for IPM",
+        "description": "IPM profile.",
+        "operationId": "readIpmProfileByID",
+        "x-cliParam": {
+          "commandName": "readIpmProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readIpmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipm/profile/%s/"
+        },
+        "tags": [
+          "ipm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPM profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaIpm_IpmprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing IPM profile configurations",
+        "description": "IPM profile.",
+        "operationId": "updateIpmProfileByID",
+        "x-cliParam": {
+          "commandName": "updateIpmProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateIpmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipm/profile/%s/"
+        },
+        "tags": [
+          "ipm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPM profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaIpm_IpmprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the profile for IPM",
+        "description": "IPM profile.",
+        "operationId": "deleteIpmProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteIpmProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteIpmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipm/profile/%s/"
+        },
+        "tags": [
+          "ipm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPM profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaIpm_IpmprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaIpm_IpmprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaIpm_IpmSchema": {
+        "x-supportedDeviceType": [
+          "Access Point"
+        ],
+        "description": "Configure Intelligent Power Monitoring (IPM) reduction steps and priorities. The reduction function with the highest priority is applied when the power\nbudget threshold or when the threshold temperature is exceeded.\nThis feature is only applicable for AP.",
+        "properties": {
+          "profile": {
+            "description": "IPM profile.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "IPM profile name."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "IPM profile description."
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enables IPM(Intelligent Power Management) on the AP"
+                },
+                "steps": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "description": "IPM step list with priority",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "step": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "CPU_THROTTLE_25",
+                          "CPU_THROTTLE_50",
+                          "CPU_THROTTLE_75",
+                          "DISABLE_ALT_ETH",
+                          "DISABLE_PSE1",
+                          "DISABLE_PSE2",
+                          "DISABLE_USB",
+                          "RADIO_0_CHAIN_1X1",
+                          "RADIO_0_CHAIN_2X2",
+                          "RADIO_0_CHAIN_3X3",
+                          "RADIO_0_CHAIN_4X4",
+                          "RADIO_0_CHAIN_5X5",
+                          "RADIO_0_CHAIN_6X6",
+                          "RADIO_0_CHAIN_7X7",
+                          "RADIO_0_DISABLE",
+                          "RADIO_0_POWER_3DB",
+                          "RADIO_0_POWER_6DB",
+                          "RADIO_1_CHAIN_1X1",
+                          "RADIO_1_CHAIN_2X2",
+                          "RADIO_1_CHAIN_3X3",
+                          "RADIO_1_DISABLE",
+                          "RADIO_1_POWER_3DB",
+                          "RADIO_1_POWER_6DB",
+                          "RADIO_2_CHAIN_1X1",
+                          "RADIO_2_CHAIN_2X2",
+                          "RADIO_2_CHAIN_3X3",
+                          "RADIO_2_DISABLE",
+                          "RADIO_2_POWER_3DB",
+                          "RADIO_2_POWER_6DB"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "CPU_THROTTLE_25": "Reduce CPU frequency to 25%",
+                          "CPU_THROTTLE_50": "Reduce CPU frequency to 50%",
+                          "CPU_THROTTLE_75": "Reduce CPU frequency to 75%",
+                          "DISABLE_ALT_ETH": "Disable 2nd Ethernet port",
+                          "DISABLE_PSE1": "Disable PSE port 1",
+                          "DISABLE_PSE2": "Disable PSE port 2",
+                          "DISABLE_USB": "Disable USB port",
+                          "RADIO_0_CHAIN_1X1": "Reduce radio 0 chains to 1x1",
+                          "RADIO_0_CHAIN_2X2": "Reduce radio 0 chains to 2x2",
+                          "RADIO_0_CHAIN_3X3": "Reduce radio 0 chains to 3x3",
+                          "RADIO_0_CHAIN_4X4": "Reduce radio 0 chains to 4x4",
+                          "RADIO_0_CHAIN_5X5": "Reduce radio 0 chains to 5x5",
+                          "RADIO_0_CHAIN_6X6": "Reduce radio 0 chains to 6x6",
+                          "RADIO_0_CHAIN_7X7": "Reduce radio 0 chains to 7x7",
+                          "RADIO_0_DISABLE": "Disable radio 0",
+                          "RADIO_0_POWER_3DB": "Reduce radio 0 power by 3dB from maximum",
+                          "RADIO_0_POWER_6DB": "Reduce radio 0 power by 6dB from maximum",
+                          "RADIO_1_CHAIN_1X1": "Reduce radio 1 chains to 1x1",
+                          "RADIO_1_CHAIN_2X2": "Reduce radio 1 chains to 2x2",
+                          "RADIO_1_CHAIN_3X3": "Reduce radio 1 chains to 3x3",
+                          "RADIO_1_DISABLE": "Disable radio 1",
+                          "RADIO_1_POWER_3DB": "Reduce radio 1 power by 3dB from maximum",
+                          "RADIO_1_POWER_6DB": "Reduce radio 1 power by 6dB from maximum",
+                          "RADIO_2_CHAIN_1X1": "Reduce radio 2 chains to 1x1",
+                          "RADIO_2_CHAIN_2X2": "Reduce radio 2 chains to 2x2",
+                          "RADIO_2_CHAIN_3X3": "Reduce radio 2 chains to 3x3",
+                          "RADIO_2_DISABLE": "Disable radio 2",
+                          "RADIO_2_POWER_3DB": "Reduce radio 2 power by 3dB from maximum",
+                          "RADIO_2_POWER_6DB": "Reduce radio 2 power by 6dB from maximum"
+                        },
+                        "x-typeDescription": "IPM step name",
+                        "description": "IPM power reduction step.\nRange: CPU_THROTTLE_25, CPU_THROTTLE_50, CPU_THROTTLE_75, DISABLE_ALT_ETH, DISABLE_PSE1, DISABLE_PSE2, DISABLE_USB, RADIO_0_CHAIN_1X1,RADIO_0_CHAIN_2X2,\nRADIO_0_CHAIN_3X3, RADIO_0_CHAIN_4X4, RADIO_0_CHAIN_5X5, RADIO_0_CHAIN_6X6, RADIO_0_CHAIN_7X7, RADIO_0_DISABLE, RADIO_0_POWER_3DB, RADIO_0_POWER_6DB,\nRADIO_1_CHAIN_1X1, RADIO_1_CHAIN_2X2, RADIO_1_CHAIN_3X3, RADIO_1_DISABLE, RADIO_1_POWER_3DB, RADIO_1_POWER_6DB, RADIO_2_CHAIN_1X1, RADIO_2_CHAIN_2X2,\nRADIO_2_CHAIN_3X3, RADIO_2_DISABLE, RADIO_2_POWER_3DB, RADIO_2_POWER_6DB."
+                      },
+                      "priority": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 1,
+                        "maximum": 16,
+                        "description": "IPM power priority. A priority between 1-16 can be assigned to a reduction step."
+                      }
+                    }
+                  },
+                  "x-key": [
+                    "step"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaIpm_IpmSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaIpm_IpmSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaIpm_IpmprofileSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "IPM profile name."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "IPM profile description."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables IPM(Intelligent Power Management) on the AP"
+          },
+          "steps": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "IPM step list with priority",
+            "type": "array",
+            "items": {
+              "properties": {
+                "step": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CPU_THROTTLE_25",
+                    "CPU_THROTTLE_50",
+                    "CPU_THROTTLE_75",
+                    "DISABLE_ALT_ETH",
+                    "DISABLE_PSE1",
+                    "DISABLE_PSE2",
+                    "DISABLE_USB",
+                    "RADIO_0_CHAIN_1X1",
+                    "RADIO_0_CHAIN_2X2",
+                    "RADIO_0_CHAIN_3X3",
+                    "RADIO_0_CHAIN_4X4",
+                    "RADIO_0_CHAIN_5X5",
+                    "RADIO_0_CHAIN_6X6",
+                    "RADIO_0_CHAIN_7X7",
+                    "RADIO_0_DISABLE",
+                    "RADIO_0_POWER_3DB",
+                    "RADIO_0_POWER_6DB",
+                    "RADIO_1_CHAIN_1X1",
+                    "RADIO_1_CHAIN_2X2",
+                    "RADIO_1_CHAIN_3X3",
+                    "RADIO_1_DISABLE",
+                    "RADIO_1_POWER_3DB",
+                    "RADIO_1_POWER_6DB",
+                    "RADIO_2_CHAIN_1X1",
+                    "RADIO_2_CHAIN_2X2",
+                    "RADIO_2_CHAIN_3X3",
+                    "RADIO_2_DISABLE",
+                    "RADIO_2_POWER_3DB",
+                    "RADIO_2_POWER_6DB"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CPU_THROTTLE_25": "Reduce CPU frequency to 25%",
+                    "CPU_THROTTLE_50": "Reduce CPU frequency to 50%",
+                    "CPU_THROTTLE_75": "Reduce CPU frequency to 75%",
+                    "DISABLE_ALT_ETH": "Disable 2nd Ethernet port",
+                    "DISABLE_PSE1": "Disable PSE port 1",
+                    "DISABLE_PSE2": "Disable PSE port 2",
+                    "DISABLE_USB": "Disable USB port",
+                    "RADIO_0_CHAIN_1X1": "Reduce radio 0 chains to 1x1",
+                    "RADIO_0_CHAIN_2X2": "Reduce radio 0 chains to 2x2",
+                    "RADIO_0_CHAIN_3X3": "Reduce radio 0 chains to 3x3",
+                    "RADIO_0_CHAIN_4X4": "Reduce radio 0 chains to 4x4",
+                    "RADIO_0_CHAIN_5X5": "Reduce radio 0 chains to 5x5",
+                    "RADIO_0_CHAIN_6X6": "Reduce radio 0 chains to 6x6",
+                    "RADIO_0_CHAIN_7X7": "Reduce radio 0 chains to 7x7",
+                    "RADIO_0_DISABLE": "Disable radio 0",
+                    "RADIO_0_POWER_3DB": "Reduce radio 0 power by 3dB from maximum",
+                    "RADIO_0_POWER_6DB": "Reduce radio 0 power by 6dB from maximum",
+                    "RADIO_1_CHAIN_1X1": "Reduce radio 1 chains to 1x1",
+                    "RADIO_1_CHAIN_2X2": "Reduce radio 1 chains to 2x2",
+                    "RADIO_1_CHAIN_3X3": "Reduce radio 1 chains to 3x3",
+                    "RADIO_1_DISABLE": "Disable radio 1",
+                    "RADIO_1_POWER_3DB": "Reduce radio 1 power by 3dB from maximum",
+                    "RADIO_1_POWER_6DB": "Reduce radio 1 power by 6dB from maximum",
+                    "RADIO_2_CHAIN_1X1": "Reduce radio 2 chains to 1x1",
+                    "RADIO_2_CHAIN_2X2": "Reduce radio 2 chains to 2x2",
+                    "RADIO_2_CHAIN_3X3": "Reduce radio 2 chains to 3x3",
+                    "RADIO_2_DISABLE": "Disable radio 2",
+                    "RADIO_2_POWER_3DB": "Reduce radio 2 power by 3dB from maximum",
+                    "RADIO_2_POWER_6DB": "Reduce radio 2 power by 6dB from maximum"
+                  },
+                  "x-typeDescription": "IPM step name",
+                  "description": "IPM power reduction step.\nRange: CPU_THROTTLE_25, CPU_THROTTLE_50, CPU_THROTTLE_75, DISABLE_ALT_ETH, DISABLE_PSE1, DISABLE_PSE2, DISABLE_USB, RADIO_0_CHAIN_1X1,RADIO_0_CHAIN_2X2,\nRADIO_0_CHAIN_3X3, RADIO_0_CHAIN_4X4, RADIO_0_CHAIN_5X5, RADIO_0_CHAIN_6X6, RADIO_0_CHAIN_7X7, RADIO_0_DISABLE, RADIO_0_POWER_3DB, RADIO_0_POWER_6DB,\nRADIO_1_CHAIN_1X1, RADIO_1_CHAIN_2X2, RADIO_1_CHAIN_3X3, RADIO_1_DISABLE, RADIO_1_POWER_3DB, RADIO_1_POWER_6DB, RADIO_2_CHAIN_1X1, RADIO_2_CHAIN_2X2,\nRADIO_2_CHAIN_3X3, RADIO_2_DISABLE, RADIO_2_POWER_3DB, RADIO_2_POWER_6DB."
+                },
+                "priority": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 16,
+                  "description": "IPM power priority. A priority between 1-16 can be assigned to a reduction step."
+                }
+              }
+            },
+            "x-key": [
+              "step"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

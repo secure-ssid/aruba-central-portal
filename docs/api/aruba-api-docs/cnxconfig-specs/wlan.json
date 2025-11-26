@@ -1,0 +1,4776 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-wlan API generated from aruba-wlan.yang",
+    "version": "1.0.0",
+    "title": "wlan",
+    "x-tag-group": "Wireless"
+  },
+  "tags": [
+    {
+      "name": "wlan-ssids"
+    }
+  ],
+  "paths": {
+    "/wlan-ssids": {
+      "get": {
+        "summary": "Read configuration of WLAN SSID profile",
+        "description": "A WLAN SSID (Service Set Identifier) is a unique identifier that names a wireless local area network (WLAN). It is essentially\nthe network name that is broadcast by a wireless access point (AP) to allow devices to identify and connect to the network. The SSID name can be up to 32\ncharacters long and is case-sensitive. The SSID numbers can be up to 16 for per device. This feature is only applicable for AP.",
+        "operationId": "readWlanSsids",
+        "x-cliParam": {
+          "commandName": "readWlanSsidsCmd",
+          "summary": "Read operation for wlan-ssids",
+          "commandUse": "wlan-ssids",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/wlan-ssids/"
+        },
+        "tags": [
+          "wlan-ssids"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaWlan_WlanSsidsSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wlan-ssids/{ssid}": {
+      "post": {
+        "summary": "Create a new WLAN SSID profile by unique name",
+        "description": "WLAN SSID profile.",
+        "operationId": "createWlanSsidsWlanSsidByID",
+        "x-cliParam": {
+          "commandName": "createWlanSsidsWlanSsidCmd",
+          "summary": "Create operation for wlan-ssid",
+          "commandUse": "wlan-ssid",
+          "parentCommand": "createWlanSsidsCmd",
+          "paramKeys": [
+            {
+              "key": "ssid"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/wlan-ssids/wlan-ssid/%s/"
+        },
+        "tags": [
+          "wlan-ssids"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ssid",
+            "description": "WLAN SSID profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaWlan_WlanSsidswlanSsidSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing WLAN SSID profile configuration",
+        "description": "WLAN SSID profile.",
+        "operationId": "readWlanSsidsWlanSsidByID",
+        "x-cliParam": {
+          "commandName": "readWlanSsidsWlanSsidCmd",
+          "summary": "Read operation for wlan-ssid",
+          "commandUse": "wlan-ssid",
+          "parentCommand": "readWlanSsidsCmd",
+          "paramKeys": [
+            {
+              "key": "ssid"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/wlan-ssids/wlan-ssid/%s/"
+        },
+        "tags": [
+          "wlan-ssids"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ssid",
+            "description": "WLAN SSID profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaWlan_WlanSsidswlanSsidSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing WLAN SSID profile configuration",
+        "description": "WLAN SSID profile.",
+        "operationId": "updateWlanSsidsWlanSsidByID",
+        "x-cliParam": {
+          "commandName": "updateWlanSsidsWlanSsidCmd",
+          "summary": "Update operation for wlan-ssid",
+          "commandUse": "wlan-ssid",
+          "parentCommand": "updateWlanSsidsCmd",
+          "paramKeys": [
+            {
+              "key": "ssid"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/wlan-ssids/wlan-ssid/%s/"
+        },
+        "tags": [
+          "wlan-ssids"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ssid",
+            "description": "WLAN SSID profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaWlan_WlanSsidswlanSsidSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the WLAN SSID profile",
+        "description": "WLAN SSID profile.",
+        "operationId": "deleteWlanSsidsWlanSsidByID",
+        "x-cliParam": {
+          "commandName": "deleteWlanSsidsWlanSsidCmd",
+          "summary": "Delete operation for wlan-ssid",
+          "commandUse": "wlan-ssid",
+          "parentCommand": "deleteWlanSsidsCmd",
+          "paramKeys": [
+            {
+              "key": "ssid"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/wlan-ssids/wlan-ssid/%s/"
+        },
+        "tags": [
+          "wlan-ssids"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ssid",
+            "description": "WLAN SSID profile name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaWlan_WlanSsidswlanSsidSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaWlan_WlanSsidswlanSsidSchema"
+            }
+          }
+        },
+        "description": "wlan-ssidbody object"
+      }
+    },
+    "schemas": {
+      "ArubaWlan_WlanSsidsSchema": {
+        "x-supportedDeviceType": [
+          "Access Point"
+        ],
+        "description": "A WLAN SSID (Service Set Identifier) is a unique identifier that names a wireless local area network (WLAN). It is essentially\nthe network name that is broadcast by a wireless access point (AP) to allow devices to identify and connect to the network. The SSID name can be up to 32\ncharacters long and is case-sensitive. The SSID numbers can be up to 16 for per device. This feature is only applicable for AP.",
+        "properties": {
+          "wlan-ssid": {
+            "description": "WLAN SSID profile.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaWlan_WlanBcmcTop"
+                },
+                {
+                  "$ref": "#/components/schemas/Aruba802dot11_Wlan802dot11"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaWlanSecurity_WlanSecurityConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaWlan_WlanVlanConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaWlan_WlanMiscConfig"
+                },
+                {
+                  "properties": {
+                    "ssid": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "WLAN SSID profile name"
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "SSID profile description."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Enable SSID profile"
+                    },
+                    "forward-mode": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "FORWARD_MODE_BRIDGE",
+                        "FORWARD_MODE_L2",
+                        "FORWARD_MODE_L3",
+                        "FORWARD_MODE_MIXED"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "FORWARD_MODE_BRIDGE": "Bridge mode SSID",
+                        "FORWARD_MODE_L2": "L2 tunnel mode SSID",
+                        "FORWARD_MODE_L3": "L3 Routed/NATed mode SSID",
+                        "FORWARD_MODE_MIXED": "Mixed mode SSID"
+                      },
+                      "x-typeDescription": "SSID forward modes",
+                      "default": "FORWARD_MODE_BRIDGE",
+                      "description": "SSID forward mode"
+                    },
+                    "cluster-preemption": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Cluster preemption"
+                    },
+                    "bandwidth-limit": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 65535,
+                      "description": "Bandwidth limit in kbps"
+                    },
+                    "time-range": {
+                      "description": "Timerange Configuration.",
+                      "properties": {
+                        "name": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "x-path": "/ac-range:time-ranges/ac-range:time-range/ac-range:name",
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 256,
+                            "description": "Reference to named time range."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "enable": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable time-range profile."
+                        }
+                      }
+                    },
+                    "hotspot-profile": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "x-path": "/ac-hs2:hotspot2/ac-hs2:hs-profile/ac-hs2:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "Reference to hotspot2.0 profile."
+                    },
+                    "mbssid-group-profile": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "x-path": "/ac-mbssid-group:mbssid-group/ac-mbssid-group:profile/ac-mbssid-group:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Bind a MBSSID group to the SSID (Only affects 6GHz VAPs)."
+                    },
+                    "zone": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "format": "pattern",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "x-patternSources": "zone",
+                        "x-patterns": "'[^, ]+'",
+                        "description": "Specify the zone names for the SSID profile.\nWhen the zone is defined in SSID profile and if the same zone is defined on an AP,\nthe SSID is created on that AP."
+                      },
+                      "maxItems": 2147483647
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "ssid"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaWlan_WlanSsidsSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlan_WlanSsidsSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaWlan_WlanSsidswlanSsidSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlan_WlanBcmcTop"
+          },
+          {
+            "$ref": "#/components/schemas/Aruba802dot11_Wlan802dot11"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_WlanSecurityConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlan_WlanVlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlan_WlanMiscConfig"
+          },
+          {
+            "properties": {
+              "ssid": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "WLAN SSID profile name"
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "SSID profile description."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable SSID profile"
+              },
+              "forward-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "FORWARD_MODE_BRIDGE",
+                  "FORWARD_MODE_L2",
+                  "FORWARD_MODE_L3",
+                  "FORWARD_MODE_MIXED"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "FORWARD_MODE_BRIDGE": "Bridge mode SSID",
+                  "FORWARD_MODE_L2": "L2 tunnel mode SSID",
+                  "FORWARD_MODE_L3": "L3 Routed/NATed mode SSID",
+                  "FORWARD_MODE_MIXED": "Mixed mode SSID"
+                },
+                "x-typeDescription": "SSID forward modes",
+                "default": "FORWARD_MODE_BRIDGE",
+                "description": "SSID forward mode"
+              },
+              "cluster-preemption": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Cluster preemption"
+              },
+              "bandwidth-limit": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 65535,
+                "description": "Bandwidth limit in kbps"
+              },
+              "time-range": {
+                "description": "Timerange Configuration.",
+                "properties": {
+                  "name": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "x-path": "/ac-range:time-ranges/ac-range:time-range/ac-range:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Reference to named time range."
+                    },
+                    "maxItems": 2147483647
+                  },
+                  "enable": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable time-range profile."
+                  }
+                }
+              },
+              "hotspot-profile": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-hs2:hotspot2/ac-hs2:hs-profile/ac-hs2:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "Reference to hotspot2.0 profile."
+              },
+              "mbssid-group-profile": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-mbssid-group:mbssid-group/ac-mbssid-group:profile/ac-mbssid-group:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Bind a MBSSID group to the SSID (Only affects 6GHz VAPs)."
+              },
+              "zone": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-patternSources": "zone",
+                  "x-patterns": "'[^, ]+'",
+                  "description": "Specify the zone names for the SSID profile.\nWhen the zone is defined in SSID profile and if the same zone is defined on an AP,\nthe SSID is created on that AP."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          }
+        ]
+      },
+      "ArubaWlan_WlanBcmcTop": {
+        "description": "WLAN BCMC top config",
+        "properties": {
+          "dmo": {
+            "description": "DMO Configuration.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Dynamic Multicast Optimization (DMO) configuration."
+              },
+              "channel-utilization-threshold": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 100,
+                "default": "90",
+                "description": "DMO channel utilization parameter. Specifies threshold for multicast to unicast conversion"
+              },
+              "clients-threshold": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 2,
+                "maximum": 255,
+                "default": "6",
+                "description": "Maximum clients threshold for DMO conversion."
+              }
+            }
+          },
+          "broadcast-filter-ipv4": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "BCAST_FILTER_NONE",
+              "BCAST_FILTER_ALL",
+              "BCAST_FILTER_ARP",
+              "BCAST_FILTER_ARP_ONLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "BCAST_FILTER_NONE": "No broadcast filter",
+              "BCAST_FILTER_ALL": "Filter all broadcast",
+              "BCAST_FILTER_ARP": "Filter ARP broadcast",
+              "BCAST_FILTER_ARP_ONLY": "Filter ARP only"
+            },
+            "x-typeDescription": "Broadcast filter type",
+            "default": "BCAST_FILTER_ARP",
+            "description": "Broadcast filter for SSID."
+          },
+          "broadcast-filter-ipv6": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "UCAST_FILTER_RA",
+              "FILTER_NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "UCAST_FILTER_RA": "Convert to unicast RA",
+              "FILTER_NONE": "No filter"
+            },
+            "x-typeDescription": "IPv6 Broadcast filter type",
+            "default": "FILTER_NONE",
+            "description": "IPv6 broadcast filter for SSID."
+          },
+          "local-proxy-ns": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Respond to the IPv6 NDP on behalf of connected clients."
+          },
+          "optimize-mcast-rate": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Multicast rate optimization parameter."
+          }
+        }
+      },
+      "ArubaWlan_WlanVlanConfig": {
+        "description": "VLAN configuration for an SSID",
+        "properties": {
+          "vlan-selector": {
+            "type": "string",
+            "enum": [
+              "NAMED_VLAN",
+              "VLAN_RANGES"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NAMED_VLAN": "Configure the VLAN(s) using a named-VLAN",
+              "VLAN_RANGES": "Configure the VLAN(s) as a list of VLAN ranges"
+            },
+            "x-typeDescription": "VLAN ID configuration Types.",
+            "description": "Method to specify the VLAN(s) for this SSID:\nIf it is 'VLAN_RANGES', it can be a combination of\nlist of VLAN-ID-ranges and list of VLAN-IDs\nExample: 61-65,67,69,71-75"
+          },
+          "vlan-name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-named-vlan:named-vlan/ac-named-vlan:profile/ac-named-vlan:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Named-VLAN to map to this SSID"
+          },
+          "vlan-id-range": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Access Point"
+              ],
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "vlan-range",
+              "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+              "maxLength": 9999,
+              "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+              "description": "List of VLANs or VLAN ranges to map to this SSID"
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaWlan_WlanMiscConfig": {
+        "description": "WLAN miscellaneous configurations",
+        "properties": {
+          "out-of-service": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "TUNNEL_DOWN",
+              "UPLINK_DOWN",
+              "INTERNET_DOWN",
+              "NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TUNNEL_DOWN": "Tunnel Down",
+              "UPLINK_DOWN": "Uplink Down",
+              "INTERNET_DOWN": "Internet Down",
+              "NONE": "None."
+            },
+            "x-typeDescription": "Out of service types",
+            "description": "Out of service type for this SSID"
+          },
+          "deny-inter-user-bridging": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Deny inter user bridging."
+          },
+          "client-isolation": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Deny intra VLAN traffic.\nAllowed traffic to be added into the global intra-vlan-traffic profile"
+          },
+          "deny-local-routing": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Deny local routing configuration."
+          },
+          "max-ipv4-users": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 32,
+            "default": "1",
+            "description": "Maximum number of wired IPv4 users\nthat can connect to the wireless client bridge."
+          },
+          "content-filtering": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Content filtering configuration at WLAN SSID level.\nThis option control access to websites and applications based on their content, adding more security."
+          },
+          "work-without-uplink": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "This option allows ssid to work without uplink."
+          }
+        }
+      },
+      "Aruba802dot11_EdcaGroup": {
+        "description": "describe WMM related parameters",
+        "properties": {
+          "aifsn": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 15,
+            "default": "3",
+            "description": "Arbitration Inter-Frame Space Number (AIFSN) parameter."
+          },
+          "ecwmin": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 15,
+            "default": "4",
+            "description": "Exponent of Contention Window Minimum (ECWMIN) parameter."
+          },
+          "ecwmax": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 15,
+            "default": "6",
+            "description": "Exponent of Contention Window Maximum (ECWMAX) parameter."
+          },
+          "txop": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2047,
+            "default": "0",
+            "description": "Transmission Opportunity (TXOP) parameter."
+          },
+          "acm": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 1,
+            "default": "0",
+            "description": "Admission Control Mandatory (ACM) parameter."
+          }
+        }
+      },
+      "Aruba802dot11_Wlan802dot11": {
+        "description": "Aruba 802.11 related parameters",
+        "properties": {
+          "ssid-utf8": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Encodes the SSID. When enabled, the SSID name is displayed in the UTF-8 format.SSIDs are not encoded by default."
+          },
+          "essid": {
+            "description": "Name that uniquely identifies a wireless network.\nThe ESSID can be up to 32 characters.\nIf the ESSID includes spaces, you must enclose it in quotation marks.\nThis includes configuring use-alias, alias, name.",
+            "properties": {
+              "use-alias": {
+                "type": "boolean",
+                "default": "false",
+                "description": "ESSID use alias or not"
+              },
+              "alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "ESSID use aliases"
+              },
+              "name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "ESSID, The AP takes this parameter from its per-AP-ssid specific configuration."
+              }
+            }
+          },
+          "advertise-location": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable broadcast of the AP Location Co-ordinate Information by unicast messages in FTM responder frames\nand by broadcast messages in beacons frames and probe responses. Location Coordinate Information (LCI)\nconfiguration in aruba-lci.yang is needed."
+          },
+          "advertise-apname": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable broadcast of AP Name information in the beacons frames and probe responses."
+          },
+          "allowed-5ghz-radio": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ALL_5G",
+              "FIRST_5G",
+              "SECOND_5G"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALL_5G": "first and second 5GHz radio",
+              "FIRST_5G": "the first 5GHz radio",
+              "SECOND_5G": "the second 5GHz radio"
+            },
+            "x-typeDescription": "to control the 5GHz  upper/lowe band SSID creation.",
+            "default": "ALL_5G",
+            "description": "5GHz radio to which the SSID should be assigned."
+          },
+          "cdc": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Advertizes the Cellular Data Capability (CDC) attribute of an MBO."
+          },
+          "disable-on-6ghz-mesh": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "This is used when there are more than 3 6GHz SSIDs are created. It has to be set so that AP can know which SSID needs to be\ndisabled when mesh enabled. This might be no use later."
+          },
+          "dot11k": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables 802.11k roaming on the SSID profile.The 802.11k protocol enables APs and clients to\ndynamically measure the available radio resources."
+          },
+          "dot11k-profile-name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-dot11k:dot11k-profiles/ac-dot11k:profile/ac-dot11k:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "To set the bound dot11k profile name"
+          },
+          "dot11r": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables 802.11r on the SSID profile.802.11r or fast BSS FT is an IEEE standard that permits continuous\nconnectivity across wireless devices during client mobility. Fast BSS Transition mechanism minimizes\nthe delay in roaming when a client transitions from one BSS to another within the same cluster."
+          },
+          "auth-failure-code": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "WLAN_STATUS_FAILED_INVALID_PMKID",
+              "WLAN_STATUS_R0KH_UNREACHABLE",
+              "DYNAMIC"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "WLAN_STATUS_FAILED_INVALID_PMKID": "FT auth failure status code. AP shall reject the Authentication Request with status code 53 (i.e., Invalid PMKID) both ROKH UNREACHABLE and Invalid PMKID cases.",
+              "WLAN_STATUS_R0KH_UNREACHABLE": "FT auth failure status code. AP shall respond to the Authentication Request with status code 28 (i.e., R0KH unreachable) for both ROKH UNREACHABLE and Invalid PMKID cases.",
+              "DYNAMIC": "FT auth failure dafault status code. If the RSNIE in the Authentication Request frame contains an invalid PMKR0Name and the AP has determined\nthat it is an invalid PMKR0Name, the AP shall reject the Authentication Request with status code 53 (i.e., Invalid PMKID). If the requested\nR0KH is not reachable, the AP shall respond to the Authentication Request with status code 28 (i.e., R0KH unreachable)."
+            },
+            "x-typeDescription": "FT Auth failure status code.",
+            "default": "DYNAMIC",
+            "description": "When FT auth failure, AP send the corresponding reason code to client."
+          },
+          "dot11r-key-duration": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": "3600",
+            "description": "IEEE 802.11r R1 key duration."
+          },
+          "dot11r-ondemand-keyfetch": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enables 802.11r on demand key fetch from cloud key management service when the AP's local key cache lookup fails for\nclient matching pairwise key to complete fast roaming."
+          },
+          "dtim-period": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10,
+            "default": "1",
+            "description": "The DTIM interval determines how often the AP should deliver the buffered broadcast and multicast frames to associated clients in the powersaving mode.\nWhen configured, the client checks for buffered data on the AP at the specified number of beacons.\nYou can also configure a higher value for DTIM interval for power saving."
+          },
+          "ftm-responder": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables the AP to send responses to Fine Time Measurement (FTM) queries sent from clients. This feature is supported on 500 Series and 600 Series access points. "
+          },
+          "hide-ssid": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable hiding the SSID in beacons"
+          },
+          "short-preamble": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enables short preamble for 802.11b/g radios. Network performance may be higher when short preamble is enabled.\nIn mixed radio environments, some 802.11b wireless client stations may experience difficulty associating with the AP using\nshort preamble. To use only long preamble, disable short preamble. Legacy client devices that use only long preamble generally\ncan be updated to support short preamble."
+          },
+          "auth-req-thresh": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 100,
+            "default": "0",
+            "description": "SNR threshold below which incoming authentication requests are ignored.\nUse this parameter instead of the local probe request threshold parameter to filter out low SNR authentication request."
+          },
+          "explicit-ageout-client": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allows APs to send a deauthentication frame to the client and clear client entry."
+          },
+          "inactivity-timeout": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 60,
+            "maximum": 86400,
+            "default": "1000",
+            "description": "Configures a timeout value for the inactive client sessions.\nWhen a client session is inactive for the specified duration, the session expires and the clients are required to log in again."
+          },
+          "local-probe-req-thresh": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 100,
+            "default": "0",
+            "description": "RSSI (Received Signal Strength Indicator) threshold value to limit the number of incoming probe requests.\nWhen enabled, controls the system response to the broadcast probe requests\nsent by clients to search for the available SSIDs and ignores the probe request if required."
+          },
+          "max-clients-threshold": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 1024,
+            "default": "64",
+            "description": "Maximum number of wireless clients for the AP.\nThis parameter is limited to 1024 clients per radio. Default value for this parameter is the maximum number of clients supported by the AP."
+          },
+          "max-retries": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 15,
+            "default": "4",
+            "description": "Maximum number of retries allowed for the AP to send a frame."
+          },
+          "mbo": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables the Agile Multiband Operations (MBO). Enables the mfp-capable, 802.11k and 802.11u-interworking implicitly on the AP."
+          },
+          "mobility-domain-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Mobility Domain Identifier. An  AP uses this parameter to announce that it is a part of the AP group that\nconstitutes a mobility domain."
+          },
+          "mfp-capable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When enabled, the SSID supports management frame protection (MFP) capable clients and traditional clients."
+          },
+          "mfp-required": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When enabled, the SSID only supports MFP capable clients."
+          },
+          "qbss-load": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables the AP to advertise the QBSS load element."
+          },
+          "rf-band": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "BAND_NONE",
+              "24GHZ",
+              "5GHZ",
+              "6GHZ",
+              "24GHZ_5GHZ",
+              "24GHZ_6GHZ",
+              "5GHZ_6GHZ",
+              "BAND_ALL"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "BAND_NONE": "disable all bands",
+              "24GHZ": "2.4GHz only",
+              "5GHZ": "5GHz only",
+              "6GHZ": "6GHz only",
+              "24GHZ_5GHZ": "2.4GHz + 5GHz",
+              "24GHZ_6GHZ": "2.4GHz + 6GHz",
+              "5GHZ_6GHZ": "5GHz + 6GHz",
+              "BAND_ALL": "2.4GHz + 5GHz +6GHz"
+            },
+            "x-typeDescription": "describe different band types",
+            "default": "24GHZ_5GHZ",
+            "description": "Radio frequency band on which this SSID will be broadcast. You can select one of the following options:"
+          },
+          "refresh-direction": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "RX_TX",
+              "RX_ONLY",
+              "TX_ONLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "RX_TX": "idirectiona",
+              "RX_ONLY": "Received data frames that are used for station refresh.",
+              "TX_ONLY": "Transmitted data frames that are used for station refresh."
+            },
+            "x-typeDescription": "The refresh direction of WLAN SSID profile.",
+            "default": "RX_TX",
+            "description": "The refresh direction of WLAN SSID profile."
+          },
+          "rrm-quiet-ie": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable Radio Resource Management (RRM) IE profile to define the information elements advertised by an AP."
+          },
+          "rts-threshold": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2347,
+            "default": "2333",
+            "description": "Wireless clients transmitting frames larger than this threshold must issue RTS and wait for the AP to respond with CTS.\nThis helps prevent mid-air collisions for wireless clients that are not within wireless peer range and cannot detect when other wireless clients are transmitting."
+          },
+          "high-throughput": {
+            "description": "High Throughput (HT): Introduced in 802.11n (Wi-Fi 4), includes features like wider channels (up to 40 MHz),\n MIMO (up to 4 spatial streams), 64-QAM, short guard interval, and frame aggregation to increase data rates and performance.\nVery High Throughput (VHT): Introduced in 802.11ac (Wi-Fi 5), includes features like even wider channels (up to 160 MHz),\n higher modulation (256-QAM), more spatial streams (up to 8), MU-MIMO, and beamforming to further enhance data rates and network efficiency.\nThis configures high-throughput (HT) and very-high-throughput (VHT) related settings.\nThese features collectively enhance the data rates, capacity, and overall performance of wireless networks,\nmaking them capable of handling large amounts of data efficiently.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable high throughput support"
+              },
+              "ba-amsdu": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables Receive AMSDU in Block ACK (BA) negotiation. If disabled, AP denies clients from sending AMSDU using BA agreement."
+              },
+              "ldpc": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "If enabled, the AP will advertise LDPC support. LDPC improves data transmission over radio channels with high levels of background noise."
+              },
+              "mpdu-agg": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables MAC protocol data unit (MDPU) aggregation."
+              },
+              "rx-ampdu-agg": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables Receive AMPDU in Block ACK (BA) negotiation."
+              },
+              "short-guard-intvl-20MHz": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables use of short guard interval (400 ns) in 20 MHz mode."
+              },
+              "short-guard-intvl-40MHz": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables use of short guard interval (400 ns) in 40 MHz mode of operation."
+              },
+              "short-guard-intvl-80MHz": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables use of short guard interval (400 ns) in 80 MHz mode of operation."
+              },
+              "stbc-rx-streams": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 1,
+                "default": "1",
+                "description": "Maximum number of spatial streams usable for STBC reception."
+              },
+              "stbc-tx-streams": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 1,
+                "default": "1",
+                "description": "Maximum number of spatial streams usable for STBC transmission."
+              },
+              "supported-mcs-set": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 31,
+                  "description": "A list of Modulation Coding Scheme (MCS) values or ranges of values to be supported on this SSID.\nThe MCS you choose determines the channel width (20 MHz vs. 40 MHz) and the number of spatial streams used by the mesh node.\nTo specify a series of different values, separate each value with a comma."
+                },
+                "maxItems": 2147483647
+              },
+              "temporal-diversity": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable temporal diversity. When this setting is enabled and the client is not responding to 802.11 packets, the\nAP will launch two hardware retries; if the hardware retries are not successful then it attempts software retries."
+              },
+              "very-high-throughput": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable support for VHT (802.11ac ) on the SSID. "
+              },
+              "vht-mu-txbf": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable VHT Multi-User Transmit Beamforming. If this parameter is disabled,\nall other Multi-User Transmit Beamforming configuration parameters have no effect."
+              },
+              "vht-supported-mcs-map": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "vht-supported-mcs-map",
+                "x-patterns": "'(((7|9|8|-),){0,7}((7|9|8|-)){1})'",
+                "maxLength": 9999,
+                "description": "Comma separated list of maximum supported MCS for spatial streams 1 through 4.\nValid values for maximum MCS are 7, 8, 9, and '-' (if spatial stream is not supported).\nMaximum MCS of a spatial stream cannot be higher than the previous streams.\nIf an MCS is not valid for a particular combination of bandwidth and number of spatial streams,\nit will not be used for Tx and Rx. Only '-' is not supported."
+              },
+              "vht-txbf-explicit": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable VHT Explicit Transmit Beamforming for the 802.11ac-capable APs.\nWhen this feature is enabled, the AP requests information about the MIMO channel and\nuses that information to transmit data over multiple transmit streams using a calculated steering matrix.\nThe result is higher throughput due to improved signal at the beamformee (the receiving client).\nIf this parameter is disabled, all other transmit beamforming settings will not take effect."
+              }
+            }
+          },
+          "g-legacy-rates": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configures 802.11b/g rates related settings.\nThis includes configuring basic rates, beacon rate, transmit rates.",
+            "properties": {
+              "basic-rates": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RATE_1MB",
+                    "RATE_2MB",
+                    "RATE_5DOT5MB",
+                    "RATE_6MB",
+                    "RATE_9MB",
+                    "RATE_11MB",
+                    "RATE_12MB",
+                    "RATE_18MB",
+                    "RATE_24MB",
+                    "RATE_36MB",
+                    "RATE_48MB",
+                    "RATE_54MB"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RATE_1MB": "1 Mbps DSSS PHY",
+                    "RATE_2MB": "2 Mbps DSSS PHY",
+                    "RATE_5DOT5MB": "5.5 Mbps DSSS PHY",
+                    "RATE_6MB": "6 Mbps OFDM PHY",
+                    "RATE_9MB": "9 Mbps OFDM PHY",
+                    "RATE_11MB": "11 Mbps DSSS PHY",
+                    "RATE_12MB": "12 Mbps OFDM PHY",
+                    "RATE_18MB": "18 Mbps OFDM PHY",
+                    "RATE_24MB": "24 Mbps OFDM PHY",
+                    "RATE_36MB": "36 Mbps OFDM PHY",
+                    "RATE_48MB": "48 Mbps OFDM PHY",
+                    "RATE_54MB": "54 Mbps OFDM PHY"
+                  },
+                  "x-typeDescription": "Data Rate types.",
+                  "description": "Basic rates are the mandatory data rates that all devices must support to connect to the network.\nThese rates are used for essential network operations, such as management frames (beacons, probes) and control frames (ACKs, RTS/CTS).\nAllows you to define a set of modulation rates to use for the clients.\nRange: 1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54 Mbps."
+                },
+                "maxItems": 2147483647
+              },
+              "beacon-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_1MB",
+                  "RATE_2MB",
+                  "RATE_5DOT5MB",
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_11MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_1MB": "1 Mbps DSSS PHY",
+                  "RATE_2MB": "2 Mbps DSSS PHY",
+                  "RATE_5DOT5MB": "5.5 Mbps DSSS PHY",
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_11MB": "11 Mbps DSSS PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Configures the beacon rate for 802.11g (use for DAS only). Using this parameter in normal operation may cause connectivity problems."
+              },
+              "max-tx-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_1MB",
+                  "RATE_2MB",
+                  "RATE_5DOT5MB",
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_11MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_1MB": "1 Mbps DSSS PHY",
+                  "RATE_2MB": "2 Mbps DSSS PHY",
+                  "RATE_5DOT5MB": "5.5 Mbps DSSS PHY",
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_11MB": "11 Mbps DSSS PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Configures the specify the maximum transmission rate."
+              },
+              "min-tx-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_1MB",
+                  "RATE_2MB",
+                  "RATE_5DOT5MB",
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_11MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_1MB": "1 Mbps DSSS PHY",
+                  "RATE_2MB": "2 Mbps DSSS PHY",
+                  "RATE_5DOT5MB": "5.5 Mbps DSSS PHY",
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_11MB": "11 Mbps DSSS PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Configures the specify the minimum transmission rate."
+              },
+              "tx-rates": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RATE_1MB",
+                    "RATE_2MB",
+                    "RATE_5DOT5MB",
+                    "RATE_6MB",
+                    "RATE_9MB",
+                    "RATE_11MB",
+                    "RATE_12MB",
+                    "RATE_18MB",
+                    "RATE_24MB",
+                    "RATE_36MB",
+                    "RATE_48MB",
+                    "RATE_54MB"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RATE_1MB": "1 Mbps DSSS PHY",
+                    "RATE_2MB": "2 Mbps DSSS PHY",
+                    "RATE_5DOT5MB": "5.5 Mbps DSSS PHY",
+                    "RATE_6MB": "6 Mbps OFDM PHY",
+                    "RATE_9MB": "9 Mbps OFDM PHY",
+                    "RATE_11MB": "11 Mbps DSSS PHY",
+                    "RATE_12MB": "12 Mbps OFDM PHY",
+                    "RATE_18MB": "18 Mbps OFDM PHY",
+                    "RATE_24MB": "24 Mbps OFDM PHY",
+                    "RATE_36MB": "36 Mbps OFDM PHY",
+                    "RATE_48MB": "48 Mbps OFDM PHY",
+                    "RATE_54MB": "54 Mbps OFDM PHY"
+                  },
+                  "x-typeDescription": "Data Rate types.",
+                  "description": "Set of 802.11b/g rates at which the AP is allowed to send data. The actual transmit rate depends on what the client is able to handle,\nbased on information sent at the time of association and on the current error or loss rate of the client."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          },
+          "a-legacy-rates": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configures 802.11a rates related settings.\nThis includes configuring basic rates, beacon rate, transmit rates.",
+            "properties": {
+              "basic-rates": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RATE_6MB",
+                    "RATE_9MB",
+                    "RATE_12MB",
+                    "RATE_18MB",
+                    "RATE_24MB",
+                    "RATE_36MB",
+                    "RATE_48MB",
+                    "RATE_54MB"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RATE_6MB": "6 Mbps OFDM PHY",
+                    "RATE_9MB": "9 Mbps OFDM PHY",
+                    "RATE_12MB": "12 Mbps OFDM PHY",
+                    "RATE_18MB": "18 Mbps OFDM PHY",
+                    "RATE_24MB": "24 Mbps OFDM PHY",
+                    "RATE_36MB": "36 Mbps OFDM PHY",
+                    "RATE_48MB": "48 Mbps OFDM PHY",
+                    "RATE_54MB": "54 Mbps OFDM PHY"
+                  },
+                  "x-typeDescription": "Data Rate types.",
+                  "description": "Basic rates are the mandatory data rates that all devices must support to connect to the network.\nThese rates are used for essential network operations, such as management frames (beacons, probes) and control frames (ACKs, RTS/CTS).\nAllows you to define a set of modulation rates to use for the clients.\nRange: 6, 9, 12, 18, 24, 36, 48, 54 Mbps."
+                },
+                "maxItems": 2147483647
+              },
+              "beacon-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Beacon rate for 802.11a (use for DAS only). Using this parameter in normal operation may cause connectivity problems."
+              },
+              "max-tx-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Maximum transmission rate."
+              },
+              "min-tx-rate": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "RATE_6MB",
+                  "RATE_9MB",
+                  "RATE_12MB",
+                  "RATE_18MB",
+                  "RATE_24MB",
+                  "RATE_36MB",
+                  "RATE_48MB",
+                  "RATE_54MB"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RATE_6MB": "6 Mbps OFDM PHY",
+                  "RATE_9MB": "9 Mbps OFDM PHY",
+                  "RATE_12MB": "12 Mbps OFDM PHY",
+                  "RATE_18MB": "18 Mbps OFDM PHY",
+                  "RATE_24MB": "24 Mbps OFDM PHY",
+                  "RATE_36MB": "36 Mbps OFDM PHY",
+                  "RATE_48MB": "48 Mbps OFDM PHY",
+                  "RATE_54MB": "54 Mbps OFDM PHY"
+                },
+                "x-typeDescription": "Data Rate types.",
+                "description": "Minimum transmission rate."
+              },
+              "tx-rates": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RATE_6MB",
+                    "RATE_9MB",
+                    "RATE_12MB",
+                    "RATE_18MB",
+                    "RATE_24MB",
+                    "RATE_36MB",
+                    "RATE_48MB",
+                    "RATE_54MB"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RATE_6MB": "6 Mbps OFDM PHY",
+                    "RATE_9MB": "9 Mbps OFDM PHY",
+                    "RATE_12MB": "12 Mbps OFDM PHY",
+                    "RATE_18MB": "18 Mbps OFDM PHY",
+                    "RATE_24MB": "24 Mbps OFDM PHY",
+                    "RATE_36MB": "36 Mbps OFDM PHY",
+                    "RATE_48MB": "48 Mbps OFDM PHY",
+                    "RATE_54MB": "54 Mbps OFDM PHY"
+                  },
+                  "x-typeDescription": "Data Rate types.",
+                  "description": "Set of 802.11a rates at which the AP is allowed to send data. The actual transmit rate depends on what the client is able to handle,\nbased on information sent at the time of association and on the current error or loss rate of the client."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          },
+          "high-efficiency": {
+            "description": "High Efficiency (HE) is the core feature set introduced in Wi-Fi 6 (802.11ax) to improve wireless network efficiency, capacity, and performance in dense environments.\nThis includes configuring MU-MIMO/OFDMA, MCS map, etc.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaRadio_HighEfficiencyGroup"
+              }
+            ],
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable high-efficiency (802.11ax) features on SSID."
+              }
+            }
+          },
+          "extremely-high-throughput": {
+            "description": "Extremely High Throughput (EHT) is a feature set introduced in Wi-Fi 7 (802.11be) to enhance wireless performance,\nparticularly in high-density and high-throughput environments.\nThis includes configuring MLO, MCS map, beacon protection, etc.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable extremely-high-throughput (802.11be) features on SSID."
+              },
+              "mlo": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable Multi-Link Operation (MLO) features on SSID."
+              },
+              "supported-mcs-map": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "supported-mcs-map",
+                "x-patterns": "'(((7|9|11|13|-),){3}((7|9|11|13|-)){1})'",
+                "maxLength": 9999,
+                "description": "Comma-separated list of max supported MCS for spatial streams 1\nthrough 8. Valid values for max mcs are 7, 9, 11, 13 and\n'-' ('-' means spatial stream is not supported, and\nit's not supported at first spatial stream). Max mcs of\na spatial stream cannot be higher than the previous\nstream's. If a MCS is not valid for a particular\ncombination of bandwidth and number of spatial streams,\nit will not be used for Tx and Rx."
+              },
+              "beacon-protection": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable beacon protection on SSID."
+              },
+              "sae-sub-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "LEGACY_MODE",
+                  "GCM256_ONLY_MODE",
+                  "MIX_MODE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "LEGACY_MODE": "Use legacy mode for sae-sub-mode",
+                  "GCM256_ONLY_MODE": "Use gcm256-only mode for sae-sub-mode",
+                  "MIX_MODE": "Use mix mode for sae-sub-mode"
+                },
+                "x-typeDescription": "To control sae-sub-mode.",
+                "default": "LEGACY_MODE",
+                "description": "Change Simultaneous Authentication of Equals (SAE) sub mode to legacy/gcm256-only/mix."
+              }
+            }
+          },
+          "wmm-cfg": {
+            "description": "Wi-Fi Multimedia (WMM) refers to a Wi-Fi Alliance interoperability certification,\nbased on the IEEE 802.11e standard. It provides basic QoS features to IEEE 802.11 networks.\nWMM prioritizes traffic according to four Access Categories (ACs): voice (AC_VO), video (AC_VI), best effort (AC_BE), and background (AC_BK).\nThis includes configuring Enhanced Distributed Channel Access (EDCA) parameters for each AC of AP and Station (STA),\nmapping between WMM ACs and Differentiated Services Codepoint (DSCP) tags.",
+            "properties": {
+              "ap-best-effort": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_BE of AP.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "ap-background": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_BK of AP.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "ap-video": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_VI of AP.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "ap-voice": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_VO of AP.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "sta-best-effort": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_BE of STA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "sta-background": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_BK of STA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "sta-video": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_VI of STA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "sta-voice": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the EDCA parameters for AC_VO of STA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Aruba802dot11_EdcaGroup"
+                  }
+                ]
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables WiFi Multimedia (WMM), also known as IEEE 802.11e Enhanced Distribution Coordination Function.\nWMM provides prioritization of specific traffic relative to other traffic in the network."
+              },
+              "uapsd": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable WMM UAPSD powersave."
+              },
+              "background-dscp": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 63,
+                  "description": "DSCP mapping for the background traffic."
+                },
+                "maxItems": 2147483647
+              },
+              "best-effort-dscp": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 63,
+                  "description": "DSCP mapping for the best-effort traffic."
+                },
+                "maxItems": 2147483647
+              },
+              "video-dscp": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 63,
+                  "description": "DSCP mapping for the video traffic."
+                },
+                "maxItems": 2147483647
+              },
+              "voice-dscp": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 63,
+                  "description": "DSCP mapping for the voice traffic."
+                },
+                "maxItems": 2147483647
+              },
+              "tspec": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allows APs to prioritize time-sensitive traffic such as voice traffic initiated by the client."
+              },
+              "tspec-bandwidth": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 200,
+                "maximum": 600000,
+                "default": "2000",
+                "description": "Reserves the configured bandwidth for prioritizing voice traffic when TSPEC is enabled."
+              }
+            }
+          },
+          "qos-management": {
+            "description": "Wi-Fi Quality of Service (QoS) Management certification delivers a standardized approach to QoS for devices and\napplications to prioritize traffic flows for both client devices and APs.\nThis includes configuring QoS Management related configuration.",
+            "properties": {
+              "scs": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable/Disable Stream Classification Service (SCS) feature.\nSCS: enables classification and Wi-Fi QoS treatment of specific IP flows, including flows to and from 5G core networks,\nallowing sensitive traffic such as gaming, voice, and video to be prioritized over bulk data traffic"
+              }
+            }
+          },
+          "advertise-timing": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Broadcast time advertisement and time zone IEs in beacon and probe response frames."
+          },
+          "dot11v": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable/Disable BSS Transition Management features defined by the 802.11v standard."
+          },
+          "allowed-6ghz-radio": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ALL_6GHZ",
+              "FIRST_6GHZ",
+              "SECOND_6GHZ"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALL_6GHZ": "Allow a SSID to be up on all 6GHz radios.",
+              "FIRST_6GHZ": "Allow a SSID to be up on first 6GHz radio.",
+              "SECOND_6GHZ": "Allow a SSID to be up on second 6GHz radio."
+            },
+            "x-typeDescription": "Control the creation of SSIDs on the first, second, or all 6GHz radios.",
+            "default": "ALL_6GHZ",
+            "description": "Control the creation of SSIDs on the first, second, or all 6GHz radios."
+          },
+          "advertise-location-identifier": {
+            "description": "Configuration for a public location identifier. The location identifier is from IEEE Standard 802.11,\nit includes an indirect Uniform Resource Identifier (URI) or FQND to the location information for the\nlocation subject.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable broadcasting two kinds (HELD and SUPL) of links to client in Access Network Query Protocol (ANQP)\nelement 267. HELD means Hypertext Transfer Protocol (HTTP) enabled location delivery (HELD) and SUPL means\nSecure User Plane Location."
+              },
+              "http-enabled-location-delivery": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "A public identifier, like Uniform Resource Identifier (URI) or Fully Qualified Domain Name (FQDN), will supply AP\nlocation information."
+              },
+              "supl-server": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "SUPL means Secure User Plane Location, one Uniform Resource Identifier (URI) or Fully Qualified\nDomain Name (FQDN) should be configured to supply AP location information."
+              }
+            }
+          },
+          "advertise-location-civic": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "In IEEE Standard 802.11, enable sending programmed civic information in Access Network Query Protocol (ANQP)\nand neighbor report responses."
+          }
+        }
+      },
+      "ArubaRadio_HighEfficiencyGroup": {
+        "description": "a group of high effenciency related parameters, might be used both in rf profile and ssid profile.",
+        "properties": {
+          "duration-based-rts": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 1023,
+            "default": "1023",
+            "description": "Indicates HE duration-based RTS value.\nWhen the TXOP is greater than the configured HE duration based RTS value, RTS/CTS exchange should be used.\nRange: 0-1023(units: 32ms). Default 1023. 1023: HE duration-based RTS will be disabled."
+          },
+          "guard-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "INTERVAL_ALL",
+              "INTERVAL_800NS",
+              "INTERVAL_1600NS",
+              "INTERVAL_800NS_1600NS",
+              "INTERVAL_3200NS",
+              "INTERVAL_800NS_3200NS",
+              "INTERVAL_1600NS_3200NS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INTERVAL_ALL": "All intervals",
+              "INTERVAL_800NS": "800 ns",
+              "INTERVAL_1600NS": "1600 ns",
+              "INTERVAL_800NS_1600NS": "800 ns,1600 ns",
+              "INTERVAL_3200NS": "3200 ns",
+              "INTERVAL_800NS_3200NS": "800 ns,3200 ns",
+              "INTERVAL_1600NS_3200NS": "1600 ns,3200 ns"
+            },
+            "x-typeDescription": "Guard interval type.",
+            "default": "INTERVAL_ALL",
+            "description": "Enable supported HE guard intervals."
+          },
+          "mu-mimo": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable HE MU-MIMO."
+          },
+          "mu-ofdma": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable downlink HE MU-OFDMA(Multi-User Orthogonal Frequency Division Multiple Access)."
+          },
+          "ul-mu-mimo": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable uplink HE MU-OFDMA(Multi-User Orthogonal Frequency Division Multiple Access)."
+          },
+          "supported-mcs-map": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "supported-mcs-map",
+            "x-patterns": "'(((7|9|11|-),){7}((7|9|11|-)){1})'",
+            "maxLength": 9999,
+            "description": "Comma-separated list of max supported MCS for spatial streams 1\nthrough 8. Valid values for max mcs are 7, 9, 11 and\n'-' ('-' means spatial stream is not supported, and\nit's not supported at first spatial stream). Max mcs of\na spatial stream cannot be higher than the previous\nstream's. If a MCS is not valid for a particular\ncombination of bandwidth and number of spatial streams,\nit will not be used for Tx and Rx."
+          },
+          "txbf": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable/Disable HE TXBF(Transmit Beamforming)."
+          },
+          "individual-twt": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable/Disable Individual TWT support"
+          },
+          "dynamic-fragmentation-level": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "LEVEL_0",
+              "LEVEL_1",
+              "LEVEL_2",
+              "LEVEL_3"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LEVEL_0": "level-0",
+              "LEVEL_1": "level-1",
+              "LEVEL_2": "level-2",
+              "LEVEL_3": "level-3"
+            },
+            "x-typeDescription": "Dynamic fragmentation level is supported by AP.(only\nconfigurable in bridge/d-tunnel mode) Range: 0-3.\nDefault 0. level-0: not support dynamic fragmentation.\nlevel-1: for support for dynamic fragments that are\ncontained within a S-MPDU, no support for dynamic\nfragments within an A-MPDU that is not a S-MPDU.\nlevel-2: for support for dynamic fragments that are\ncontained within a S-MPDU and support for up to one\ndynamic fragment for each MSDU within an A-MPDU.\nlevel-3: for support for dynamic fragments that are\ncontained within a S-MPDU and support for up to four\ndynamic fragment for each MSDU within an A-MPDU. Note:\nFurther limited by each AP's radio HW capabilities",
+            "default": "LEVEL_0",
+            "description": "Dynamic fragmentation level is supported by AP.(only\nconfigurable in bridge/d-tunnel mode) Range: 0-3.\nDefault 0. level-0: not support dynamic fragmentation.\nlevel-1: for support for dynamic fragments that are\ncontained within a S-MPDU, no support for dynamic\nfragments within an A-MPDU that is not a S-MPDU.\nlevel-2: for support for dynamic fragments that are\ncontained within a S-MPDU and support for up to one\ndynamic fragment for each MSDU within an A-MPDU.\nlevel-3: for support for dynamic fragments that are\ncontained within a S-MPDU and support for up to four\ndynamic fragment for each MSDU within an A-MPDU. Note:\nFurther limited by each AP's radio HW capabilities"
+          }
+        }
+      },
+      "ArubaWlanSecurity_MacAuthConfig": {
+        "description": "Group for MAC authentication configurations.",
+        "properties": {
+          "mac-authentication": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable MAC authentication."
+          }
+        }
+      },
+      "ArubaWlanSecurity_WirelessDot1xAuthConfig": {
+        "description": "Group for wireless 802.1X authenticator configurations.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_Dot1xAuthConfig"
+          }
+        ],
+        "properties": {
+          "dot1x": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.1X authentication."
+          }
+        }
+      },
+      "ArubaWlanSecurity_Dot1xAuthConfig": {
+        "description": "Group for 802.1X authenticator configurations.",
+        "properties": {
+          "dot1x-timer-idrequest-period": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "5",
+            "description": "Time period (in seconds) to wait for a response from a client before retransmitting an EAPoL PDU."
+          },
+          "l2-auth-failthrough": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Continue with 802.1x authentication even if MAC auth fail."
+          }
+        }
+      },
+      "ArubaWlanSecurity_WlanSecurityConfig": {
+        "description": "WLAN Security Configuration.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_MacAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_WirelessDot1xAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPersonal_PersonalSecurityConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_CaptivePortalConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_SecurityCommonConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_WirelessSecurityAdvancedConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_MiscellaneousConfigGroup"
+          }
+        ],
+        "properties": {
+          "opmode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "WPA2_PERSONAL",
+              "WPA2_ENTERPRISE",
+              "ENHANCED_OPEN",
+              "WPA3_SAE",
+              "WPA3_ENTERPRISE_CCM_128",
+              "WPA3_ENTERPRISE_GCM_256",
+              "WPA3_ENTERPRISE_CNSA",
+              "WPA_ENTERPRISE",
+              "WPA_PERSONAL",
+              "WPA2_MPSK_AES",
+              "WPA2_MPSK_LOCAL",
+              "DPP",
+              "WPA2_PSK_AES_DPP",
+              "WPA2_AES_DPP",
+              "WPA3_SAE_DPP",
+              "WPA3_AES_CCM_128_DPP",
+              "WPA3_AES_GCM_256_DPP",
+              "BOTH_WPA_WPA2_PSK",
+              "BOTH_WPA_WPA2_DOT1X",
+              "STATIC_WEP",
+              "DYNAMIC_WEP"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "OPEN": "No authentication and encryption.",
+              "WPA2_PERSONAL": "WPA-2 with AES encryption using a preshared key.",
+              "WPA2_ENTERPRISE": "WPA-2 with AES encryption and dynamic keys using 802.1X.",
+              "ENHANCED_OPEN": "Improved data encryption in open Wi-Fi networks and protects data from sniffing. Enhanced open replaces open system as the default opmode.",
+              "WPA3_SAE": "WPA3 with AES encryption using Simultaneous Authentication of Equals.",
+              "WPA3_ENTERPRISE_CCM_128": "WPA3 with AES CCM-128 encryption and dynamic keys using 802.1X.",
+              "WPA3_ENTERPRISE_GCM_256": "WPA3 with AES GCM-256 encryption.",
+              "WPA3_ENTERPRISE_CNSA": "WPA3 with AES GCM-256 encryption using CNSA (192 bit).",
+              "WPA_ENTERPRISE": "WPA with TKIP encryption and dynamic keys using 802.1X.",
+              "WPA_PERSONAL": "WPA with TKIP and WPA with AES encryption using a PSK.",
+              "WPA2_MPSK_AES": "MPSK with AES encryption.",
+              "WPA2_MPSK_LOCAL": "Multiple Pre-Shared Keys(MPSK) local using the local database to do authentication.",
+              "DPP": "Device Provisioning Protocol. It is a Wi-Fi Alliance protocol designed to simplify the process of\nsecurely provisioning and onboarding devices onto a network without needing a pre-shared key (PSK).",
+              "WPA2_PSK_AES_DPP": "WPA-2 with AES and DPP encryption using a psk.",
+              "WPA2_AES_DPP": "WPA-2 with AES and dpp encryption using 802.1x.",
+              "WPA3_SAE_DPP": "WPA3 with AES and DPP encryption using Simultaneous Authentication of Equals.",
+              "WPA3_AES_CCM_128_DPP": "WPA3 with AES CCM-128 and DPP encryption and dynamic keys using 802.1X.",
+              "WPA3_AES_GCM_256_DPP": "WPA3 with AES GCM-256 and DPP encryption.",
+              "BOTH_WPA_WPA2_PSK": "WPA with TKIP and WPA with AES and WPA-2 with TKIP and WPA-2 with AES encryption using a PSK.",
+              "BOTH_WPA_WPA2_DOT1X": "WPA with TKIP and WPA with AES and WPA-2 with TKIP and WPA-2 with AES encryption using 802.1x.",
+              "STATIC_WEP": "WEP with static keys.",
+              "DYNAMIC_WEP": "WEP with dynamic keys."
+            },
+            "x-typeDescription": "Key management.",
+            "description": "Key management."
+          }
+        }
+      },
+      "ArubaWlanSecurity_SecurityCommonConfig": {
+        "description": "Wireless and wired common parameters for security.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAuthServer_CalledStationIdConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_AuthServerConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_RadiusAccountingConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_AuthorizationConfig"
+          }
+        ],
+        "properties": {
+          "radius-reauth-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 32768,
+            "description": "Radius reauth interval, when session timeout, device do reauth."
+          },
+          "type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "EMPLOYEE",
+              "GUEST",
+              "RECOVERY",
+              "VOICE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "EMPLOYEE": "Employee.",
+              "GUEST": "Guest",
+              "RECOVERY": "Recovery",
+              "VOICE": "Voice"
+            },
+            "x-typeDescription": "Network type.",
+            "description": "Network type."
+          },
+          "use-ip-for-calling-station-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Use IP as Calling Station Id."
+          },
+          "server-load-balancing": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable server load balancing."
+          },
+          "radius-loc-obj-in-access": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable location in radius access request."
+          },
+          "radius-loc-obj-in-accting": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable location in radius accounting request."
+          },
+          "radius-ip-based-acct-session": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable ip-based accounting."
+          },
+          "download-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "A user is assigned a role by ClearPass Policy Manager. If the role is not defined on the Instant AP, the role attributes can also be downloaded automatically."
+          }
+        }
+      },
+      "ArubaWlanSecurity_AuthServerConfig": {
+        "description": "Group for Radius accounting related configurations.",
+        "properties": {
+          "internal-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INTERNAL_SERVER": "Internal authentication server."
+            },
+            "x-typeDescription": "Authentication server type.",
+            "description": "Internal server for authentication."
+          },
+          "primary-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Primary server for authentication under SSID profile or wired port profile."
+          },
+          "backup-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Backup server for authentication under SSID profile or wired port profile."
+          },
+          "auth-server-group": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Server group to be used for authentication under the SSID profile or wired port profile."
+          },
+          "cloud-auth": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Using cloud auth server."
+          }
+        }
+      },
+      "ArubaWlanSecurity_RadiusAccountingConfig": {
+        "description": "Group for Radius accounting related configurations.",
+        "properties": {
+          "radius-accounting": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable radius accounting."
+          },
+          "radius-interim-accounting-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 60,
+            "description": "Radius accounting interval."
+          },
+          "primary-acct-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Primary accounting servers for radius accounting under the SSID profile or wired port profile."
+          },
+          "backup-acct-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Backup accounting servers for radius accounting under the SSID profile or wired port profile."
+          },
+          "acct-server-group": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Server group to be used for accounting under the SSID profile or wired port profile. The primary/backup accounting\nserver and accounting server group only support one configuration at a time. If both are configured simultaneously,\nthe accounting server group will be used during accounting."
+          },
+          "cp-accounting-mode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "USER_ASSOCIATION",
+              "USER_AUTHENTICATION"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "USER_ASSOCIATION": "When configured, the accounting starts when the client associates to the network successfully and stops when the client is disconnected.",
+              "USER_AUTHENTICATION": "when configured, the accounting starts only after client authentication is successful and stops when the client logs out of the network."
+            },
+            "x-typeDescription": "Configure an accounting mode for the captive portal users.",
+            "default": "USER_AUTHENTICATION",
+            "description": "Radius Accounting Mode just for captive portal."
+          }
+        }
+      },
+      "ArubaWlanSecurity_AuthorizationConfig": {
+        "description": "Group for authorization attributes.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDynamicAssignment_AssignmentRulesConfig"
+          }
+        ],
+        "properties": {
+          "pre-auth-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Configure a pre-authentication role to allow some access to the guest users before the client authentication."
+          },
+          "mac-auth-only-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Allow administrator to create a MAC Authentication only role for role-based access rule when MAC authentication is enabled for Captive Portal.\nIf MAC authentication is successful, the mac-auth-only role will be assigned to the client."
+          },
+          "machine-auth": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configure a machine authentication rule. When a Windows device boots, it logs onto the network domain using a machine account. Within the domain, the device is authenticated\nbefore computer group policies and software settings can be executed; this process is known as machine authentication. Machine authentication ensures that only authorized devices\nare allowed on the network. You can configure 802.1X for both user and machine authentication. This tightens the authentication process further, since both the device and user need\nto be authenticated. This feature is applicable for 802.1x authenticaion and it is only applicable for AP.",
+            "properties": {
+              "machine-only-role": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "Client can obtain machine auth role, when it only pass machine authentication. Assign different rights to clients based on whether their hardware device supports machine authentication."
+              },
+              "user-only-role": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "Client can obtain user only role, when using username and password pass authentication."
+              }
+            }
+          },
+          "default-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "When Default role is configured, default role is used. If default role isn't configured, use the role that the role name is same as SSID profile name."
+          }
+        }
+      },
+      "ArubaWlanSecurity_WirelessSecurityAdvancedConfig": {
+        "description": "Wireless security advanced config.",
+        "properties": {
+          "wpa3-transition-mode-enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable WPA3 transition mode."
+          },
+          "pmk-cache-delete-on-leave": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Delete key cache entry when user entry is deleted."
+          },
+          "opp-key-caching": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable Opportunistic Key Caching (WPA2/WPA3 Only)."
+          },
+          "wpa-key-period": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "1500",
+            "description": "Set the time period between each WPA/WPA2/WPA3 key exchange."
+          },
+          "wpa-key-retries": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "3",
+            "description": "Set the Number of times WPA/WPA2/WPA3 Key Messages are retried."
+          },
+          "denylist-sco-attack": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Denylist client when Security-Context-Override attack."
+          },
+          "captive-portal-landing-page-delay": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 5,
+            "default": "1",
+            "description": "The delay time of landing redirect-url page after captive-portal authentication is successful."
+          },
+          "captive-portal-proxy-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configure a Captive Portal proxy server to match your browser configuration by specifying the IP address and port number.",
+            "properties": {
+              "ip": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  }
+                ],
+                "description": "Specify a IP for Captive Portal proxy."
+              },
+              "port": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 65535,
+                "description": "Specify a port for Captive Portal proxy."
+              }
+            }
+          },
+          "airpass": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable Airpass under WLAN profile."
+          },
+          "passpoint": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-passpoint:passpoint/ac-passpoint:profile/ac-passpoint:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Passpoint is a WFA specification based upon the 802.11u protocol that provides wireless clients\nwith a streamlined mechanism to discover and authenticate to suitable networks, and allows\nmobile users the ability to roam between partner networks without additional authentication."
+          },
+          "wispr": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable wispr configuration."
+          }
+        }
+      },
+      "ArubaWlanSecurity_MiscellaneousConfigGroup": {
+        "description": "Group for miscellaneous configurations.",
+        "properties": {
+          "denylist": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable Deny-listing."
+          },
+          "mac-authentication-delimiter": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "COLON",
+              "DASH",
+              "OUI_NIC",
+              "PERCENT",
+              "COMMA",
+              "SLASH"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "XXXXXXXXXXXX",
+              "COLON": " XX:XX:XX:XX:XX:XX",
+              "DASH": "XX-XX-XX-XX-XX-XX",
+              "OUI_NIC": "XXXXXX-XXXXXX",
+              "PERCENT": "XX%XX%XX%XX%XX%XX",
+              "COMMA": "XX,XX,XX,XX,XX,XX",
+              "SLASH": "XX/XX/XX/XX/XX/XX"
+            },
+            "x-typeDescription": "MAC address format.",
+            "default": "NONE",
+            "description": "The MAC address format to be used in the RADIUS request messages for authentication."
+          },
+          "mac-authentication-upper-case": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "The case for MAC address format to be used in the RADIUS request messages for authentication."
+          },
+          "max-authentication-failures": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Number of consecutive authentication failures, before Station is denylisted."
+          },
+          "auth-survivability": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable auth survivability."
+          },
+          "priority-use-local-cache": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Local cache exist, local cache priority."
+          },
+          "external-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable external server."
+          },
+          "enforce-dhcp": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Require IP address to be obtained using DHCP."
+          },
+          "pan": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Personal Area Network."
+          },
+          "termination": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.1X Termination."
+          }
+        }
+      },
+      "ArubaWlanSecurity_CaptivePortalConfig": {
+        "description": "Group for Captive Portal configurations.",
+        "properties": {
+          "captive-portal-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "CENTRAL_NAC",
+              "EXTERNAL_CP",
+              "INTERNAL_CP"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "CENTRAL_NAC": "Using Central Network Access Control(NAC) as the Captive Portal Server.",
+              "EXTERNAL_CP": "Using External Captive Portal Server.",
+              "INTERNAL_CP": "Using Internal Captive Portal Server."
+            },
+            "x-typeDescription": "Captive Portal Server type.",
+            "description": "For Captive Portal Server, AP supports Central Network Access Control(NAC) and External Captive Portal."
+          },
+          "captive-portal": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-aaa-captive-portal:captive-portal/ac-aaa-captive-portal:profile/ac-aaa-captive-portal:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Associate one Captive Portal profile under SSID profile or wired port profile."
+          },
+          "exclude-uplink": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ETHERNET",
+                "MESH",
+                "WIFI",
+                "CELLULAR"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "ETHERNET": "Uplink is Ethernet.",
+                "MESH": "Uplink is Mesh.",
+                "WIFI": "Uplink is WIFI.",
+                "CELLULAR": "Uplink is Cellular."
+              },
+              "x-typeDescription": "Captive portal exclude Uplink type.",
+              "description": "For Captive Portal Server, customer can disable redirection to the captive portal based on the type of current uplink."
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaPersonal_PersonalSecurityConfig": {
+        "description": "Personal Security Configuration.",
+        "properties": {
+          "personal-security": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "WLAN Personal Security refers to a wireless network security mode designed for home and small office environments,\nwhere network access is secured using a pre-shared key (PSK) instead of complex authentication methods like those used in enterprise networks.\nWLAN Personal Security is using WPA, WPA2-Personal or WPA3-Personal. This feature is only applicable for AP.",
+            "properties": {
+              "passphrase-format": {
+                "type": "string",
+                "enum": [
+                  "STRING",
+                  "HEX"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "STRING": "The length of string passphrase supports 8-63.",
+                  "HEX": "The length of hexadecimal passphrase supports 64."
+                },
+                "x-typeDescription": "Passphrase format.",
+                "description": "For passphrase, AP supports hexadecimal and string."
+              },
+              "wpa-passphrase": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Defines a WPA passphrase with which you can generate a PSK. WPA passphrase for Character passphrase, supports 8-63. Hex passphrase only supports 64"
+              },
+              "wep-key-size": {
+                "type": "string",
+                "enum": [
+                  "128BIT",
+                  "64BIT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "128BIT": "The key length of WEP static.",
+                  "64BIT": "The key length of WEP static."
+                },
+                "x-typeDescription": "WEP static key size.",
+                "description": "WEP-static key size. It can be 128bit or 64bit."
+              },
+              "wep-key-index": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4,
+                "description": "WEP-static key index."
+              },
+              "wep-key": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "wep-key",
+                "x-patterns": "'[0-9a-fA-F]*'",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Static WEP key associated with the key index. The WEP key values can be 10 or 26 hexadecimal characters in length."
+              },
+              "mpsk-cloud-auth": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable MPSK cloud auth."
+              },
+              "mpsk-local-profile": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-mpsk-local:mpsk-local/ac-mpsk-local:profile/ac-mpsk-local:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Associate one MPSK Local profile."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAuthServer_CalledStationIdConfig": {
+        "description": "Called Station ID configuration grouping.",
+        "properties": {
+          "called-station-id": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "description": "Configure this parameter to be sent with the RADIUS attribute Called Station ID for authentication and accounting requests. For AP, this API is applicable for\nWLAN profile and AP port profile. For GW, this API is applicable for the authentication server profile. This feature is applicable for AP and GW.",
+            "properties": {
+              "type": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "MAC_ADDRESS",
+                  "VLAN",
+                  "IP_ADDRESS",
+                  "AP_GROUP",
+                  "AP_NAME",
+                  "AP_MAC_ADDRESS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MAC_ADDRESS": "MAC Address.",
+                  "VLAN": "VLAN ID.",
+                  "IP_ADDRESS": "IP address.",
+                  "AP_GROUP": "AP Group.",
+                  "AP_NAME": "AP Name.",
+                  "AP_MAC_ADDRESS": "AP MAC address for gateway."
+                },
+                "x-typeDescription": "Called Station ID type.",
+                "description": " Configure the called-station-id types.\nFor AP, The type includes AP group, AP MAC address, AP name, AP IP or user vlan. The default value is AP MAC address."
+              },
+              "mac-address-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "COLON",
+                  "DASH",
+                  "OUI_NIC",
+                  "PERCENT",
+                  "COMMA",
+                  "SLASH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "XXXXXXXXXXXX",
+                  "COLON": " XX:XX:XX:XX:XX:XX",
+                  "DASH": "XX-XX-XX-XX-XX-XX",
+                  "OUI_NIC": "XXXXXX-XXXXXX",
+                  "PERCENT": "XX%XX%XX%XX%XX%XX",
+                  "COMMA": "XX,XX,XX,XX,XX,XX",
+                  "SLASH": "XX/XX/XX/XX/XX/XX"
+                },
+                "x-typeDescription": "MAC address format.",
+                "default": "NONE",
+                "description": "By default, called-station-id is AP MAC Address string and no delimiter, when configure mac-address-delimiter, AP MAC Address will be added delimiter in authentication packet."
+              },
+              "upper-case": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "By default, called-station-id is AP MAC Address string, when enabled upper-case, AP MAC Address will be changed to upper case in authentication packet."
+              },
+              "include-ssid": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Include SSID in called-station-id attribute."
+              },
+              "include-ssid-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 9999,
+                "description": "The delimiter between mac address and SSID. For example, the delimiter is dash. The called-station-id like aa:bb:cc:dd:ee:ff-wlanssid."
+              }
+            }
+          }
+        }
+      },
+      "ArubaDynamicAssignment_AssignmentRulesConfig": {
+        "description": "Assignment Rules grouping.",
+        "properties": {
+          "assignment-rules": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "description": "Assign the client a user role, VLAN ID or VLAN name based on attributes. For GW and AP, the attributes is returned for the client by the authentication server and this API is applicable for\nauth server group. For AP, this API is also applicable WLAN profile and if this API works in WLAN profile, the attributes can be returned for the client by the authentication server or other\nattributes such as mac-address, dhcp-option, AP-Name, etc. Rules are ordered: the first rule that matches the configured condition is applied. VLAN IDs and VLAN names cannot be listed together.\nThis feature is only applicable for AP and GW.",
+            "properties": {
+              "assignment-rule": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "description": "Configure the assignment rule parameters.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "sequence-id": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "The sequence id determines the rule order."
+                    },
+                    "attribute": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CUSTOM_ATTRIBUTE_TYPE",
+                        "ARAP_FEATURES",
+                        "ARAP_PASSWORD",
+                        "ARAP_SECURITY",
+                        "ARAP_SECURITY_DATA",
+                        "ARAP_ZONE_ACCESS",
+                        "AP_GROUP",
+                        "AP_NAME",
+                        "ACCT_AUTHENTIC",
+                        "ACCT_DELAY_TIME",
+                        "ACCT_INPUT_GIGAWORDS",
+                        "ACCT_INPUT_OCTETS",
+                        "ACCT_INPUT_PACKETS",
+                        "ACCT_INTERIM_INTERVAL",
+                        "ACCT_LINK_COUNT",
+                        "ACCT_MULTI_SESSION_ID",
+                        "ACCT_OUTPUT_GIGAWORDS",
+                        "ACCT_OUTPUT_OCTETS",
+                        "ACCT_OUTPUT_PACKETS",
+                        "ACCT_SESSION_ID",
+                        "ACCT_SESSION_TIME",
+                        "ACCT_STATUS_TYPE",
+                        "ACCT_TERMINATE_CAUSE",
+                        "ACCT_TUNNEL_PACKETS_LOST",
+                        "ADD_PORT_TO_IP_ADDRESS",
+                        "ARUBA_AP_GROUP",
+                        "ARUBA_AP_IP_ADDRESS",
+                        "ARUBA_AS_CREDENTIAL_HASH",
+                        "ARUBA_AS_USER_NAME",
+                        "ARUBA_ADMIN_ROLE",
+                        "ARUBA_ADMIN_PATH",
+                        "ARUBA_AIRGROUP_DEVICE_TYPE",
+                        "ARUBA_AIRGROUP_SHARED_ROLE",
+                        "ARUBA_AIRGROUP_SHARED_USER",
+                        "ARUBA_AIRGROUP_SHARED_GROUP",
+                        "ARUBA_AIRGROUP_USER_NAME",
+                        "ARUBA_AIRGROUP_VERSION",
+                        "ARUBA_AUTH_SURVMETHOD",
+                        "ARUBA_AUTH_SURVIVABILITY",
+                        "ARUBA_CPPM_ROLE",
+                        "ARUBA_DEVICE_TYPE",
+                        "ARUBA_ESSID_NAME",
+                        "ARUBA_FRAMED_IPV6_ADDRESS",
+                        "ARUBA_LOCATION_ID",
+                        "ARUBA_CALEA_SERVER_IP",
+                        "ARUBA_MDPS_DEVICE_ICCID",
+                        "ARUBA_MDPS_DEVICE_IMEI",
+                        "ARUBA_MDPS_DEVICE_NAME",
+                        "ARUBA_MDPS_DEVICE_PRODUCT",
+                        "ARUBA_MDPS_DEVICE_SERIAL",
+                        "ARUBA_MDPS_DEVICE_UDID",
+                        "ARUBA_MDPS_DEVICE_VERSION",
+                        "ARUBA_MDPS_DEVICE_PROFILE",
+                        "ARUBA_MDPS_PROVISIONING_SETTINGS",
+                        "ARUBA_MDPS_MAX_DEVICES",
+                        "ARUBA_NAMED_USER_VLAN",
+                        "ARUBA_NO_DHCP_FINGERPRINT",
+                        "ARUBA_NETWORK_SSO_TOKEN",
+                        "ARUBA_PORT_ID",
+                        "ARUBA_PORT_BOUNCE_HOST",
+                        "ARUBA_PRIV_ADMIN_USER",
+                        "ARUBA_TEMPLATE_USER",
+                        "ARUBA_USER_ROLE",
+                        "ARUBA_USER_VLAN",
+                        "ARUBA_USER_GROUP",
+                        "ARUBA_WORKSPACE_APP_NAME",
+                        "AUTHENTICATION_SUB_TYPE",
+                        "AUTHENTICATION_TYPE",
+                        "CHAP_CHALLENGE",
+                        "CHAP_PASSWORD",
+                        "CALLBACK_ID",
+                        "CALLBACK_NUMBER",
+                        "CALLED_STATION_ID",
+                        "CALLING_STATION_ID",
+                        "CLASS",
+                        "MAC_ADDRESS",
+                        "CONNECT_INFO",
+                        "CONNECT_RATE",
+                        "CRYPT_PASSWORD",
+                        "CHARGEABLE_USER_IDENTITY",
+                        "CISCO_AV_PAIR",
+                        "DHCP_OPTION",
+                        "DIGEST_RESPONSE",
+                        "DOMAIN_NAME",
+                        "EAP_MESSAGE",
+                        "ERROR_CAUSE",
+                        "EVENT_TIMESTAMP",
+                        "EXEC_PROGRAM",
+                        "EXEC_PROGRAM_WAIT",
+                        "EXPIRATION",
+                        "FILTER_ID",
+                        "FRAMED_APPLETALK_LINK",
+                        "FRAMED_APPLETALK_NETWORK",
+                        "FRAMED_APPLETALK_ZONE",
+                        "FRAMED_COMPRESSION",
+                        "FORWARDING_MODE",
+                        "FRAMED_IP_ADDRESS",
+                        "FRAMED_IP_NETMASK",
+                        "FRAMED_IPX_NETWORK",
+                        "FRAMED_IPV6_POOL",
+                        "FRAMED_IPV6_PREFIX",
+                        "FRAMED_IPV6_ROUTE",
+                        "FRAMED_IPV6_ADDRESS",
+                        "FRAMED_INTERFACE_ID",
+                        "FRAMED_MTU",
+                        "FRAMED_PROTOCOL",
+                        "FRAMED_ROUTE",
+                        "FRAMED_ROUTING",
+                        "FULL_NAME",
+                        "GROUP",
+                        "GROUP_NAME",
+                        "HINT",
+                        "HUNTGROUP_NAME",
+                        "IDLE_TIMEOUT",
+                        "LOGIN_IP_HOST",
+                        "LOGIN_IPV6_HOST",
+                        "LOGIN_LAT_NODE",
+                        "LOGIN_LAT_PORT",
+                        "LOGIN_LAT_SERVICE",
+                        "LOGIN_SERVICE",
+                        "LOCATION_CAPABLE",
+                        "LOGIN_TCP_PORT",
+                        "LOCATION_DATA",
+                        "LOCATION_INFORMATION",
+                        "MS_BAP_USAGE",
+                        "MS_CHAP_CPW_1",
+                        "MS_CHAP_CPW_2",
+                        "MS_CHAP_CHALLENGE",
+                        "MS_CHAP_DOMAIN",
+                        "MS_CHAP_ERROR",
+                        "MS_CHAP_LM_ENC_PW",
+                        "MS_CHAP_MPPE_KEYS",
+                        "MS_CHAP_NT_ENC_PW",
+                        "MS_CHAP_RESPONSE",
+                        "MS_CHAP2_CPW",
+                        "MS_CHAP2_RESPONSE",
+                        "MS_CHAP2_SUCCESS",
+                        "MS_FILTER",
+                        "MS_LINK_DROP_TIME_LIMIT",
+                        "MS_LINK_UTILIZATION_THRESHOLD",
+                        "MS_MPPE_ENCRYPTION_POLICY",
+                        "MS_MPPE_ENCRYPTION_TYPES",
+                        "MS_MPPE_RECV_KEY",
+                        "MS_MPPE_SEND_KEY",
+                        "MS_RAS_VENDOR",
+                        "MS_RAS_VERSION",
+                        "MENU",
+                        "MESSAGE_AUTH",
+                        "NAS-IP-Address",
+                        "NAS_IPV6_ADDRESS",
+                        "NAS_IDENTIFIER",
+                        "NAS_PORT_ID",
+                        "NAS_PORT_TYPE",
+                        "NOMADIX_GROUP_BW_POLICY_ID",
+                        "NOMADIX_GROUP_MAX_DOWN",
+                        "NOMADIX_GROUP_MAX_UP",
+                        "OPERATOR_NAME",
+                        "PASSWORD",
+                        "PASSWORD_RETRY",
+                        "PORT_LIMIT",
+                        "PREFIX",
+                        "PROMPT",
+                        "PROXY_STATE",
+                        "RAD_AUTHENTICATOR",
+                        "RAD_CODE",
+                        "RAD_ID",
+                        "RAD_LENGTH",
+                        "RTTS_BACKOFF_TIME",
+                        "RTTS_EARLYLIFT_THRESHOLD",
+                        "RTTS_ESTIMATED_THROUGHPUT",
+                        "RTTS_REEST_BELOW_THROUGHPUT",
+                        "RTTS_REEST_KEEPALIVE_NUM",
+                        "RTTS_REESTIMATION_PERIOD",
+                        "RTTS_RESULT",
+                        "REPLY_MESSAGE",
+                        "REQUESTED_LOCATION_INFO",
+                        "SERVICE_TYPE",
+                        "SESSION_TIMEOUT",
+                        "SIMULTANEOUS_USE",
+                        "STATE",
+                        "STRIP_USER_NAME",
+                        "SUFFIX",
+                        "TERMINATION_ACTION",
+                        "TERMINATION_MENU",
+                        "TUNNEL_ASSIGNMENT_ID",
+                        "TUNNEL_CLIENT_AUTH_ID",
+                        "TUNNEL_CLIENT_ENDPOINT",
+                        "TUNNEL_CONNECTION_ID",
+                        "TUNNEL_MEDIUM_TYPE",
+                        "TUNNEL_PASSWORD",
+                        "TUNNEL_PREFERENCE",
+                        "TUNNEL_PRIVATE_GROUP_ID",
+                        "TUNNEL_SERVER_AUTH_ID",
+                        "TUNNEL_SERVER_ENDPOINT",
+                        "TUNNEL_TYPE",
+                        "USER_CATEGORY",
+                        "USER_NAME",
+                        "USER_VLAN",
+                        "VENDOR_SPECIFIC",
+                        "WISPR_BANDWIDTH_MAX_DOWN",
+                        "WISPR_BANDWIDTH_MAX_UP",
+                        "WISPR_BANDWIDTH_MIN_DOWN",
+                        "WISPR_BANDWIDTH_MIN_UP",
+                        "WISPR_BILLING_CLASS_OF_SERVICE",
+                        "WISPR_LOCATION_ID",
+                        "WISPR_LOCATION_NAME",
+                        "WISPR_LOGOFF_URL",
+                        "WISPR_REDIRECTION_URL",
+                        "WISPR_SESSION_TERM_END_OF_DAY",
+                        "WISPR_SESSION_TERM_TIME"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CUSTOM_ATTRIBUTE_TYPE": "GW String type arrtibute",
+                        "ARAP_FEATURES": "ARAP Features",
+                        "ARAP_PASSWORD": "ARAP Password",
+                        "ARAP_SECURITY": "ARAP Security",
+                        "ARAP_SECURITY_DATA": "ARAP Security Data",
+                        "ARAP_ZONE_ACCESS": "ARAP Zone Access",
+                        "AP_GROUP": "Access point-Group.",
+                        "AP_NAME": "Access point-Name.",
+                        "ACCT_AUTHENTIC": "Acct-Authentic.",
+                        "ACCT_DELAY_TIME": "Acct-Delay-Time.",
+                        "ACCT_INPUT_GIGAWORDS": "Acct-Input-Gigawords.",
+                        "ACCT_INPUT_OCTETS": "Acct-Input-Octets.",
+                        "ACCT_INPUT_PACKETS": "Acct-Input-Packets.",
+                        "ACCT_INTERIM_INTERVAL": "Acct-Interim-Interval.",
+                        "ACCT_LINK_COUNT": "Acct-Link-Count.",
+                        "ACCT_MULTI_SESSION_ID": "Acct-Multi-Session-Id.",
+                        "ACCT_OUTPUT_GIGAWORDS": "Acct-Output-Gigawords.",
+                        "ACCT_OUTPUT_OCTETS": "Acct-Output-Octets.",
+                        "ACCT_OUTPUT_PACKETS": "Acct-Output-Packets.",
+                        "ACCT_SESSION_ID": "Acct-Session-Id.",
+                        "ACCT_SESSION_TIME": "Acct-Session-Time.",
+                        "ACCT_STATUS_TYPE": "Acct-Status-Type.",
+                        "ACCT_TERMINATE_CAUSE": "Acct-Terminate-Cause.",
+                        "ACCT_TUNNEL_PACKETS_LOST": "Acct-Tunnel-Packets-Lost.",
+                        "ADD_PORT_TO_IP_ADDRESS": "Add-Port-To-IP-Address.",
+                        "ARUBA_AP_GROUP": "Aruba-Access point-Group.",
+                        "ARUBA_AP_IP_ADDRESS": "Aruba-Access point-IP-Address.",
+                        "ARUBA_AS_CREDENTIAL_HASH": "Aruba-AS-Credential-Hash.",
+                        "ARUBA_AS_USER_NAME": "Aruba-AS-User-Name.",
+                        "ARUBA_ADMIN_ROLE": "Aruba-Admin-Role.",
+                        "ARUBA_ADMIN_PATH": "Aruba-Admin-Path.",
+                        "ARUBA_AIRGROUP_DEVICE_TYPE": "Aruba-AirGroup-Device-Type.",
+                        "ARUBA_AIRGROUP_SHARED_ROLE": "Aruba-AirGroup-Shared-Role.",
+                        "ARUBA_AIRGROUP_SHARED_USER": "Aruba-AirGroup-Shared-User.",
+                        "ARUBA_AIRGROUP_SHARED_GROUP": "Aruba-AirGroup-Shared-Group.",
+                        "ARUBA_AIRGROUP_USER_NAME": "Aruba-AirGroup-User-Name.",
+                        "ARUBA_AIRGROUP_VERSION": "Aruba-AirGroup-Version.",
+                        "ARUBA_AUTH_SURVMETHOD": "Aruba-Auth-SurvMethod.",
+                        "ARUBA_AUTH_SURVIVABILITY": "Aruba-Auth-Survivability.",
+                        "ARUBA_CPPM_ROLE": "Aruba-CPPM-Role.",
+                        "ARUBA_DEVICE_TYPE": "Aruba-Device-Type.",
+                        "ARUBA_ESSID_NAME": "Aruba-Essid-Name.",
+                        "ARUBA_FRAMED_IPV6_ADDRESS": "Aruba-Framed-IPv6-Address.",
+                        "ARUBA_LOCATION_ID": "Aruba-Location-Id.",
+                        "ARUBA_CALEA_SERVER_IP": "Aruba-Calea-Server-Ip.",
+                        "ARUBA_MDPS_DEVICE_ICCID": "Aruba-Mdps-Device-Iccid.",
+                        "ARUBA_MDPS_DEVICE_IMEI": "Aruba-Mdps-Device-Imei.",
+                        "ARUBA_MDPS_DEVICE_NAME": "Aruba-Mdps-Device-Name.",
+                        "ARUBA_MDPS_DEVICE_PRODUCT": "Aruba-Mdps-Device-Product.",
+                        "ARUBA_MDPS_DEVICE_SERIAL": "Aruba-Mdps-Device-Serial.",
+                        "ARUBA_MDPS_DEVICE_UDID": "Aruba-Mdps-Device-Udid.",
+                        "ARUBA_MDPS_DEVICE_VERSION": "Aruba-Mdps-Device-Version.",
+                        "ARUBA_MDPS_DEVICE_PROFILE": "Aruba-Mdps-Device-Profile.",
+                        "ARUBA_MDPS_PROVISIONING_SETTINGS": "Aruba-Mdps-Provisioning-Settings.",
+                        "ARUBA_MDPS_MAX_DEVICES": "Aruba-Mdps-Max-Devices.",
+                        "ARUBA_NAMED_USER_VLAN": "Aruba-Named-User-Vlan.",
+                        "ARUBA_NO_DHCP_FINGERPRINT": "Aruba-No-DHCP-Fingerprint.",
+                        "ARUBA_NETWORK_SSO_TOKEN": "Aruba-Network-SSO-Token.",
+                        "ARUBA_PORT_ID": "Aruba-Port-Id.",
+                        "ARUBA_PORT_BOUNCE_HOST": "Aruba-Port-Bounce-Host.",
+                        "ARUBA_PRIV_ADMIN_USER": "Aruba-Priv-Admin-User.",
+                        "ARUBA_TEMPLATE_USER": "Aruba-Template-User.",
+                        "ARUBA_USER_ROLE": "Aruba-User-Role.",
+                        "ARUBA_USER_VLAN": "Aruba-User-Vlan.",
+                        "ARUBA_USER_GROUP": "Aruba-User-Group.",
+                        "ARUBA_WORKSPACE_APP_NAME": "Aruba-WorkSpace-App-Name.",
+                        "AUTHENTICATION_SUB_TYPE": "Authentication-Sub-Type.",
+                        "AUTHENTICATION_TYPE": "Authentication-Type.",
+                        "CHAP_CHALLENGE": "CHAP-Challenge.",
+                        "CHAP_PASSWORD": "CHAP-Password.",
+                        "CALLBACK_ID": "Callback-Id.",
+                        "CALLBACK_NUMBER": "Callback-Number.",
+                        "CALLED_STATION_ID": "Called-Station-Id",
+                        "CALLING_STATION_ID": "Calling-Station-Id",
+                        "CLASS": "Class.",
+                        "MAC_ADDRESS": "Client MAC Address.",
+                        "CONNECT_INFO": "Connect-Info.",
+                        "CONNECT_RATE": "Connect-Rate.",
+                        "CRYPT_PASSWORD": "Crypt-Password.",
+                        "CHARGEABLE_USER_IDENTITY": "Chargeable-User-Identity.",
+                        "CISCO_AV_PAIR": "Cisco AV-Pair.",
+                        "DHCP_OPTION": "dhcp-option.",
+                        "DIGEST_RESPONSE": "Digest-Response.",
+                        "DOMAIN_NAME": "Domain-Name.",
+                        "EAP_MESSAGE": "EAP-Message.",
+                        "ERROR_CAUSE": "Error-Cause.",
+                        "EVENT_TIMESTAMP": "Event-Timestamp.",
+                        "EXEC_PROGRAM": "Exec-Program.",
+                        "EXEC_PROGRAM_WAIT": "Exec-Program-Wait.",
+                        "EXPIRATION": "Expiration.",
+                        "FILTER_ID": "Filter-Id.",
+                        "FRAMED_APPLETALK_LINK": "Framed-AppleTalk-Link",
+                        "FRAMED_APPLETALK_NETWORK": "Framed-AppleTalk-Network",
+                        "FRAMED_APPLETALK_ZONE": "Framed-AppleTalk-Zone",
+                        "FRAMED_COMPRESSION": "Framed-Compression",
+                        "FORWARDING_MODE": "Forwarding-Mode.",
+                        "FRAMED_IP_ADDRESS": "Framed-IP-Address.",
+                        "FRAMED_IP_NETMASK": "Framed-IP-Netmask.",
+                        "FRAMED_IPX_NETWORK": "Framed-IPX-Network.",
+                        "FRAMED_IPV6_POOL": "Framed-IPv6-Pool.",
+                        "FRAMED_IPV6_PREFIX": "Framed-IPv6-Prefix.",
+                        "FRAMED_IPV6_ROUTE": "Framed-IPv6-Route.",
+                        "FRAMED_IPV6_ADDRESS": "Framed-IPv6-address.",
+                        "FRAMED_INTERFACE_ID": "Framed-Interface-Id.",
+                        "FRAMED_MTU": "Framed-MTU.",
+                        "FRAMED_PROTOCOL": "Framed-Protocol.",
+                        "FRAMED_ROUTE": "Framed-Route.",
+                        "FRAMED_ROUTING": "Framed-Routing.",
+                        "FULL_NAME": "Full-Name.",
+                        "GROUP": "Group.",
+                        "GROUP_NAME": "Group-Name.",
+                        "HINT": "Hint.",
+                        "HUNTGROUP_NAME": "Huntgroup-Name.",
+                        "IDLE_TIMEOUT": "Idle-Timeout.",
+                        "LOGIN_IP_HOST": "Login-IP-Host.",
+                        "LOGIN_IPV6_HOST": "Login-IPv6-Host.",
+                        "LOGIN_LAT_NODE": "Login-LAT-Node.",
+                        "LOGIN_LAT_PORT": "Login-LAT-Port.",
+                        "LOGIN_LAT_SERVICE": "Login-LAT-Service.",
+                        "LOGIN_SERVICE": "Login-Service.",
+                        "LOCATION_CAPABLE": "Location-Capable.",
+                        "LOGIN_TCP_PORT": "Login-TCP-Port.",
+                        "LOCATION_DATA": "Location-Data.",
+                        "LOCATION_INFORMATION": "Location-Information.",
+                        "MS_BAP_USAGE": "MS-BAP-Usage.",
+                        "MS_CHAP_CPW_1": "MS-CHAP-CPW-1.",
+                        "MS_CHAP_CPW_2": "MS-CHAP-CPW-2.",
+                        "MS_CHAP_CHALLENGE": "MS-CHAP-Challenge.",
+                        "MS_CHAP_DOMAIN": "MS-CHAP-Domain.",
+                        "MS_CHAP_ERROR": "MS-CHAP-Error.",
+                        "MS_CHAP_LM_ENC_PW": "MS-CHAP-LM-Enc-PW.",
+                        "MS_CHAP_MPPE_KEYS": "MS-CHAP-MPPE-Keys.",
+                        "MS_CHAP_NT_ENC_PW": "MS-CHAP-NT-Enc-PW.",
+                        "MS_CHAP_RESPONSE": "MS-CHAP-Response.",
+                        "MS_CHAP2_CPW": "MS-CHAP2-CPW.",
+                        "MS_CHAP2_RESPONSE": "MS-CHAP2-Response.",
+                        "MS_CHAP2_SUCCESS": "MS-CHAP2-Success.",
+                        "MS_FILTER": "MS-Filter.",
+                        "MS_LINK_DROP_TIME_LIMIT": "MS-Link-Drop-Time-Limit.",
+                        "MS_LINK_UTILIZATION_THRESHOLD": "MS-Link-Utilization-Threshold.",
+                        "MS_MPPE_ENCRYPTION_POLICY": "MS-MPPE-Encryption-Policy.",
+                        "MS_MPPE_ENCRYPTION_TYPES": "MS-MPPE-Encryption-Types.",
+                        "MS_MPPE_RECV_KEY": "MS-MPPE-Recv-Key.",
+                        "MS_MPPE_SEND_KEY": "MS-MPPE-Send-Key.",
+                        "MS_RAS_VENDOR": "MS-RAS-Vendor.",
+                        "MS_RAS_VERSION": "MS-RAS-Version.",
+                        "MENU": "Menu.",
+                        "MESSAGE_AUTH": "Message-Auth.",
+                        "NAS-IP-Address": "NAS-IP-Address.",
+                        "NAS_IPV6_ADDRESS": "NAS-IPv6-Address.",
+                        "NAS_IDENTIFIER": "NAS-Identifier.",
+                        "NAS_PORT_ID": "NAS-Port-Id.",
+                        "NAS_PORT_TYPE": "NAS-Port-Type.",
+                        "NOMADIX_GROUP_BW_POLICY_ID": "Nomadix-Group-Bw-Policy-ID.",
+                        "NOMADIX_GROUP_MAX_DOWN": "Nomadix-Group-Max-Down.",
+                        "NOMADIX_GROUP_MAX_UP": "Nomadix-Group-Max-Up.",
+                        "OPERATOR_NAME": "Operator-Name.",
+                        "PASSWORD": "Password.",
+                        "PASSWORD_RETRY": "Password-Retry.",
+                        "PORT_LIMIT": "Port-Limit.",
+                        "PREFIX": "Prefix.",
+                        "PROMPT": "Prompt.",
+                        "PROXY_STATE": "Proxy-State.",
+                        "RAD_AUTHENTICATOR": "Rad-Authenticator.",
+                        "RAD_CODE": "Rad-Code.",
+                        "RAD_ID": "Rad-Id.",
+                        "RAD_LENGTH": "Rad-Length.",
+                        "RTTS_BACKOFF_TIME": "RTTS-Backoff-Time.",
+                        "RTTS_EARLYLIFT_THRESHOLD": "RTTS-Earlylift-Threshold.",
+                        "RTTS_ESTIMATED_THROUGHPUT": "RTTS-Estimated-Throughput.",
+                        "RTTS_REEST_BELOW_THROUGHPUT": "RTTS-Reest-Below-Throughput.",
+                        "RTTS_REEST_KEEPALIVE_NUM": "RTTS-Reest-Keepalive-Num.",
+                        "RTTS_REESTIMATION_PERIOD": "RTTS-Reestimation-Period.",
+                        "RTTS_RESULT": "RTTS-Result.",
+                        "REPLY_MESSAGE": "Reply-Message.",
+                        "REQUESTED_LOCATION_INFO": "Requested-Location-Info.",
+                        "SERVICE_TYPE": "Service-Type.",
+                        "SESSION_TIMEOUT": "Session-Timeout.",
+                        "SIMULTANEOUS_USE": "Simultaneous-Use.",
+                        "STATE": "State.",
+                        "STRIP_USER_NAME": "Strip-User-Name.",
+                        "SUFFIX": "Suffix.",
+                        "TERMINATION_ACTION": "Termination-Action.",
+                        "TERMINATION_MENU": "Termination-Menu.",
+                        "TUNNEL_ASSIGNMENT_ID": "Tunnel-Assignment-Id.",
+                        "TUNNEL_CLIENT_AUTH_ID": "Tunnel-Client-Auth-Id.",
+                        "TUNNEL_CLIENT_ENDPOINT": "Tunnel-Client-Endpoint.",
+                        "TUNNEL_CONNECTION_ID": "Tunnel-Connection-Id.",
+                        "TUNNEL_MEDIUM_TYPE": "Tunnel-Medium-Type.",
+                        "TUNNEL_PASSWORD": "Tunnel-Password.",
+                        "TUNNEL_PREFERENCE": "Tunnel-Preference.",
+                        "TUNNEL_PRIVATE_GROUP_ID": "Tunnel-Private-Group-Id.",
+                        "TUNNEL_SERVER_AUTH_ID": "Tunnel-Server-Auth-Id.",
+                        "TUNNEL_SERVER_ENDPOINT": "Tunnel-Server-Endpoint.",
+                        "TUNNEL_TYPE": "Tunnel-Type.",
+                        "USER_CATEGORY": "User-Category.",
+                        "USER_NAME": "User-Name.",
+                        "USER_VLAN": "User-Vlan.",
+                        "VENDOR_SPECIFIC": "Vendor-Specific.",
+                        "WISPR_BANDWIDTH_MAX_DOWN": "WISPr-Bandwidth-Max-Down.",
+                        "WISPR_BANDWIDTH_MAX_UP": "WISPr-Bandwidth-Max-Up.",
+                        "WISPR_BANDWIDTH_MIN_DOWN": "WISPr-Bandwidth-Min-Down.",
+                        "WISPR_BANDWIDTH_MIN_UP": "WISPr-Bandwidth-Min-Up.",
+                        "WISPR_BILLING_CLASS_OF_SERVICE": "WISPr-Billing-Class-Of-Service.",
+                        "WISPR_LOCATION_ID": "WISPr-Location-ID.",
+                        "WISPR_LOCATION_NAME": "WISPr-Location-Name.",
+                        "WISPR_LOGOFF_URL": "WISPr-Logoff-URL.",
+                        "WISPR_REDIRECTION_URL": "WISPr-Redirection-URL.",
+                        "WISPR_SESSION_TERM_END_OF_DAY": "WISPr-Session-Term-End-Of-Day.",
+                        "WISPR_SESSION_TERM_TIME": "WISPr-Session-Term-Time."
+                      },
+                      "x-typeDescription": "Role and VLAN derivation attributes.",
+                      "description": "Attribute returned by the authentication server.\nFor AP, it also includes some custom attributes like mac-address, dhcp-option and fw_mode."
+                    },
+                    "attribute-str": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "VSA attribute string."
+                    },
+                    "operator": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MATCH_EQUAL",
+                        "CONTAINS",
+                        "ENDS_WITH",
+                        "MATCHES_REGULAR_EXPRESSION",
+                        "NOT_EQUALS",
+                        "STARTS_WITH",
+                        "VALUE_OF"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MATCH_EQUAL": "Equality match.",
+                        "CONTAINS": "Contains match.",
+                        "ENDS_WITH": "Ends-with match.",
+                        "MATCHES_REGULAR_EXPRESSION": "matches-regular-expression match.",
+                        "NOT_EQUALS": "Not-equals match.",
+                        "STARTS_WITH": "Starts-with match.",
+                        "VALUE_OF": "Value-of match."
+                      },
+                      "x-typeDescription": "Match Operator.",
+                      "description": "Match Operator."
+                    },
+                    "operand": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Match operand, For GW, the VSA value. For AP, it is VSA value under server group profile.\nIt is VSA value and mac-addrees, dhcp-option and fw_mode under SSID profile and AP wired port profile."
+                    },
+                    "assign-action": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ASSIGN_ROLE",
+                        "ASSIGN_VLAN"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ASSIGN_ROLE": "Assign Role.",
+                        "ASSIGN_VLAN": "Assign VLAN."
+                      },
+                      "x-typeDescription": "Assignment action.",
+                      "description": "Assignmant action."
+                    },
+                    "vlan": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094
+                        },
+                        {
+                          "x-path": "/ac-named-vlan:named-vlan/ac-named-vlan:profile/ac-named-vlan:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32
+                        }
+                      ],
+                      "description": "This is the assigned VLAN when there is a rule match."
+                    },
+                    "role": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "This is the assigned Role when there is a rule match."
+                    }
+                  }
+                },
+                "x-key": [
+                  "sequenceId"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

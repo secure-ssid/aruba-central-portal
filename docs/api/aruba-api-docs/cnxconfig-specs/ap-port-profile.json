@@ -1,0 +1,3151 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ap-port-profile API generated from aruba-ap-port-profile.yang",
+    "version": "1.0.0",
+    "title": "ap-port-profile",
+    "x-tag-group": "Interfaces"
+  },
+  "tags": [
+    {
+      "name": "ap-port-profiles"
+    }
+  ],
+  "paths": {
+    "/ap-port-profiles": {
+      "get": {
+        "summary": "Read configured port profiles",
+        "description": "Port profiles, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "operationId": "readApPortProfiles",
+        "x-cliParam": {
+          "commandName": "readApPortProfilesCmd",
+          "summary": "Read operation for ap-port-profiles",
+          "commandUse": "ap-port-profiles",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ap-port-profiles/"
+        },
+        "tags": [
+          "ap-port-profiles"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApPortProfile_ApPortProfilesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ap-port-profiles/{profileName}": {
+      "post": {
+        "summary": "Create a new port profile by unique name",
+        "description": "List of Port profile, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "operationId": "createApPortProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "createApPortProfilesProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createApPortProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "profileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-port-profiles/profile/%s/"
+        },
+        "tags": [
+          "ap-port-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profileName",
+            "description": "Port profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApPortProfile_ApPortProfilesprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing port profile configuration",
+        "description": "List of Port profile, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "operationId": "readApPortProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "readApPortProfilesProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readApPortProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "profileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-port-profiles/profile/%s/"
+        },
+        "tags": [
+          "ap-port-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profileName",
+            "description": "Port profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApPortProfile_ApPortProfilesprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {profileName}",
+        "description": "List of Port profile, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "operationId": "updateApPortProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "updateApPortProfilesProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateApPortProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "profileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-port-profiles/profile/%s/"
+        },
+        "tags": [
+          "ap-port-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profileName",
+            "description": "Port profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApPortProfile_ApPortProfilesprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the port profile",
+        "description": "List of Port profile, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "operationId": "deleteApPortProfilesProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteApPortProfilesProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteApPortProfilesCmd",
+          "paramKeys": [
+            {
+              "key": "profileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-port-profiles/profile/%s/"
+        },
+        "tags": [
+          "ap-port-profiles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profileName",
+            "description": "Port profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaApPortProfile_ApPortProfilesprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaApPortProfile_ApPortProfilesprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaApPortProfile_ApPortProfilesSchema": {
+        "description": "Port profiles, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+        "properties": {
+          "profile": {
+            "description": "List of Port profile, config parameters on the port such as VLAN settings, authentication methods, link speed, PoE settings, and more.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaApPortProfile_WiredPortVlanConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaApPortProfile_PortPorfileSecurityConfig"
+                },
+                {
+                  "properties": {
+                    "profile-name": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "Port profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "description": "User-defined description or comment for the Port Profile."
+                    },
+                    "speed": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "SPEED_10MB",
+                        "SPEED_100MB",
+                        "SPEED_1GB",
+                        "SPEED_2_5GB",
+                        "SPEED_5GB",
+                        "SPEED_10GB",
+                        "SPEED_40GB",
+                        "SPEED_100GB",
+                        "SPEED_1000GB",
+                        "SPEED_AUTO"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "SPEED_10MB": "10 Mb/sec Ethernet.",
+                        "SPEED_100MB": "100 Mb/sec Ethernet.",
+                        "SPEED_1GB": "1 Gb/sec Ethernet.",
+                        "SPEED_2_5GB": "2.5 Gb/sec Ethernet.",
+                        "SPEED_5GB": "5 Gb/sec Ethernet.",
+                        "SPEED_10GB": "10 Gb/sec Ethernet.",
+                        "SPEED_40GB": "40 Gb/sec Ethernet.",
+                        "SPEED_100GB": "100 Gb/sec Ethernet.",
+                        "SPEED_1000GB": "1000 Gb/sec Ethernet.",
+                        "SPEED_AUTO": "Auto negotiation Ethernet."
+                      },
+                      "x-typeDescription": "Speed Type.",
+                      "default": "SPEED_AUTO",
+                      "description": "Ethernet speed."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable interface."
+                    },
+                    "duplex": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "HALF_DUPLEX",
+                        "FULL_DUPLEX",
+                        "AUTO_DUPLEX"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "HALF_DUPLEX": "Half-duplex.",
+                        "FULL_DUPLEX": "Full-duplex.",
+                        "AUTO_DUPLEX": "Auto-duplex."
+                      },
+                      "x-typeDescription": "Duplex mode.",
+                      "description": "Duplex mode."
+                    },
+                    "port-type": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "WAN",
+                        "LAN"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "WAN": "Port type WAN.",
+                        "LAN": "Port type LAN."
+                      },
+                      "x-typeDescription": "For microbranch AP, port type WAN means uplink, port type LAN means downlink",
+                      "description": "Port works in WAN or LAN."
+                    },
+                    "trusted": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Mark as a trusted interface."
+                    },
+                    "poe": {
+                      "description": "Config PoE on the port, PoE is a technology for wired Ethernet LANs to carry electric power required for the device in the data cables.",
+                      "properties": {
+                        "enabled": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "description": "Enable or disable PoE in the ethernet interface."
+                        }
+                      }
+                    },
+                    "stp": {
+                      "description": "Config Spanning Tree Protocol (STP) on the port, Spanning Tree Protocol (STP) is a network protocol used to prevent loops in Ethernet networks.",
+                      "properties": {
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable STP on the port"
+                        }
+                      }
+                    },
+                    "loop-protect": {
+                      "description": "Config loop protection on the port.",
+                      "properties": {
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enables loop protect on the L2 interface."
+                        },
+                        "transmit-interval": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 10,
+                          "default": "2",
+                          "description": "Loop-protect packet transmission time interval."
+                        },
+                        "re-enable": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "If the Ethernet port of AP is marked with status Loop-ERR and shutdown, at the\nexpiry of the auto-recovery-interval, the Loop-ERR status of the Ethernet port\nwill be cleared and the port will be re-enabled automatically."
+                        },
+                        "re-enable-timer": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 30,
+                          "maximum": 43200,
+                          "default": "300",
+                          "description": "Time interval for enabling port blocked by loop-protect."
+                        },
+                        "storm-control-broadcast": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "During broadcast-storm control, AP counts the broadcast packets received\non each of its Ethernet port and determines the packet rate in an interval.\nIf the broadcast packet rate on one Ethernet port exceeds the configured\nthreshold (default value is 2000 packets per second), the Ethernet port\nis shut down."
+                        },
+                        "storm-control-threshold": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 1,
+                          "maximum": 1000000,
+                          "default": "2000",
+                          "description": "The threshhold is used for storm-control-broadcast, if the broadcast packet\nrate on one Ethernet port exceeds the threshold (default value is 2000\npackets per second), the Ethernet port will be shut down."
+                        }
+                      }
+                    },
+                    "port-bond": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Bond this Ethernet port into virtual port bond0 as uplink."
+                    },
+                    "dot3az": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable 802.3az standard on an AP."
+                    },
+                    "dot3bz": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable 802.3bz standard on an AP."
+                    },
+                    "client-isolation": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable all peer-to-peer communication in the VLAN network."
+                    },
+                    "cluster-preemption": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable cluster preemption."
+                    },
+                    "content-filtering": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable content filtering."
+                    },
+                    "forward-mode": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "BRIDGE",
+                        "L2",
+                        "L3",
+                        "MIXED"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "BRIDGE": "Bridge mode.",
+                        "L2": "Layer 2 mode.",
+                        "L3": "Layer 3 mode.",
+                        "MIXED": "Mixed mode."
+                      },
+                      "x-typeDescription": "Forwarding mode for the network on AP",
+                      "description": "Forwarding mode for the network on AP."
+                    },
+                    "inactivity-timeout": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 60,
+                      "maximum": 86400,
+                      "default": "1000",
+                      "description": "Specify an interval for a client session timeout in seconds."
+                    },
+                    "out-of-service": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "TUNNEL_DOWN",
+                        "UPLINK_DOWN",
+                        "INTERNET_DOWN",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "TUNNEL_DOWN": "Tunnel Down",
+                        "UPLINK_DOWN": "Uplink Down",
+                        "INTERNET_DOWN": "Internet Down",
+                        "NONE": "None."
+                      },
+                      "x-typeDescription": "Out of service types",
+                      "description": "Out of service type for this wired profile."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "profileName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaApPortProfile_ApPortProfilesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApPortProfile_ApPortProfilesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApPortProfile_ApPortProfilesprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApPortProfile_WiredPortVlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaApPortProfile_PortPorfileSecurityConfig"
+          },
+          {
+            "properties": {
+              "profile-name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Port profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "User-defined description or comment for the Port Profile."
+              },
+              "speed": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "SPEED_10MB",
+                  "SPEED_100MB",
+                  "SPEED_1GB",
+                  "SPEED_2_5GB",
+                  "SPEED_5GB",
+                  "SPEED_10GB",
+                  "SPEED_40GB",
+                  "SPEED_100GB",
+                  "SPEED_1000GB",
+                  "SPEED_AUTO"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "SPEED_10MB": "10 Mb/sec Ethernet.",
+                  "SPEED_100MB": "100 Mb/sec Ethernet.",
+                  "SPEED_1GB": "1 Gb/sec Ethernet.",
+                  "SPEED_2_5GB": "2.5 Gb/sec Ethernet.",
+                  "SPEED_5GB": "5 Gb/sec Ethernet.",
+                  "SPEED_10GB": "10 Gb/sec Ethernet.",
+                  "SPEED_40GB": "40 Gb/sec Ethernet.",
+                  "SPEED_100GB": "100 Gb/sec Ethernet.",
+                  "SPEED_1000GB": "1000 Gb/sec Ethernet.",
+                  "SPEED_AUTO": "Auto negotiation Ethernet."
+                },
+                "x-typeDescription": "Speed Type.",
+                "default": "SPEED_AUTO",
+                "description": "Ethernet speed."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable interface."
+              },
+              "duplex": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "HALF_DUPLEX",
+                  "FULL_DUPLEX",
+                  "AUTO_DUPLEX"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "HALF_DUPLEX": "Half-duplex.",
+                  "FULL_DUPLEX": "Full-duplex.",
+                  "AUTO_DUPLEX": "Auto-duplex."
+                },
+                "x-typeDescription": "Duplex mode.",
+                "description": "Duplex mode."
+              },
+              "port-type": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "WAN",
+                  "LAN"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "WAN": "Port type WAN.",
+                  "LAN": "Port type LAN."
+                },
+                "x-typeDescription": "For microbranch AP, port type WAN means uplink, port type LAN means downlink",
+                "description": "Port works in WAN or LAN."
+              },
+              "trusted": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Mark as a trusted interface."
+              },
+              "poe": {
+                "description": "Config PoE on the port, PoE is a technology for wired Ethernet LANs to carry electric power required for the device in the data cables.",
+                "properties": {
+                  "enabled": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "description": "Enable or disable PoE in the ethernet interface."
+                  }
+                }
+              },
+              "stp": {
+                "description": "Config Spanning Tree Protocol (STP) on the port, Spanning Tree Protocol (STP) is a network protocol used to prevent loops in Ethernet networks.",
+                "properties": {
+                  "enable": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable STP on the port"
+                  }
+                }
+              },
+              "loop-protect": {
+                "description": "Config loop protection on the port.",
+                "properties": {
+                  "enable": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enables loop protect on the L2 interface."
+                  },
+                  "transmit-interval": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "default": "2",
+                    "description": "Loop-protect packet transmission time interval."
+                  },
+                  "re-enable": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "If the Ethernet port of AP is marked with status Loop-ERR and shutdown, at the\nexpiry of the auto-recovery-interval, the Loop-ERR status of the Ethernet port\nwill be cleared and the port will be re-enabled automatically."
+                  },
+                  "re-enable-timer": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 30,
+                    "maximum": 43200,
+                    "default": "300",
+                    "description": "Time interval for enabling port blocked by loop-protect."
+                  },
+                  "storm-control-broadcast": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "During broadcast-storm control, AP counts the broadcast packets received\non each of its Ethernet port and determines the packet rate in an interval.\nIf the broadcast packet rate on one Ethernet port exceeds the configured\nthreshold (default value is 2000 packets per second), the Ethernet port\nis shut down."
+                  },
+                  "storm-control-threshold": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1,
+                    "maximum": 1000000,
+                    "default": "2000",
+                    "description": "The threshhold is used for storm-control-broadcast, if the broadcast packet\nrate on one Ethernet port exceeds the threshold (default value is 2000\npackets per second), the Ethernet port will be shut down."
+                  }
+                }
+              },
+              "port-bond": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Bond this Ethernet port into virtual port bond0 as uplink."
+              },
+              "dot3az": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable 802.3az standard on an AP."
+              },
+              "dot3bz": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable 802.3bz standard on an AP."
+              },
+              "client-isolation": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable all peer-to-peer communication in the VLAN network."
+              },
+              "cluster-preemption": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable cluster preemption."
+              },
+              "content-filtering": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable content filtering."
+              },
+              "forward-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "BRIDGE",
+                  "L2",
+                  "L3",
+                  "MIXED"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "BRIDGE": "Bridge mode.",
+                  "L2": "Layer 2 mode.",
+                  "L3": "Layer 3 mode.",
+                  "MIXED": "Mixed mode."
+                },
+                "x-typeDescription": "Forwarding mode for the network on AP",
+                "description": "Forwarding mode for the network on AP."
+              },
+              "inactivity-timeout": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 60,
+                "maximum": 86400,
+                "default": "1000",
+                "description": "Specify an interval for a client session timeout in seconds."
+              },
+              "out-of-service": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "TUNNEL_DOWN",
+                  "UPLINK_DOWN",
+                  "INTERNET_DOWN",
+                  "NONE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "TUNNEL_DOWN": "Tunnel Down",
+                  "UPLINK_DOWN": "Uplink Down",
+                  "INTERNET_DOWN": "Internet Down",
+                  "NONE": "None."
+                },
+                "x-typeDescription": "Out of service types",
+                "description": "Out of service type for this wired profile."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApPortProfile_PortPorfileSecurityConfig": {
+        "description": "AP security config for port profile.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_MacAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaApPortProfile_WiredDot1xAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_CaptivePortalConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_SecurityCommonConfig"
+          }
+        ]
+      },
+      "ArubaApPortProfile_WiredDot1xAuthConfig": {
+        "description": "802.1X authentication configurations.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_Dot1xAuthConfig"
+          }
+        ],
+        "properties": {
+          "dot1x": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.1X authentication."
+          }
+        }
+      },
+      "ArubaApPortProfile_WiredPortVlanConfig": {
+        "description": "Config VLAN parameters on an port, such like trunk or access, native VLAN ID, allowed VLANs.",
+        "properties": {
+          "switchport": {
+            "description": "Config VLAN parameters on an port, such like trunk or access, native VLAN ID, allowed VLANs.",
+            "properties": {
+              "interface-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "ACCESS",
+                  "TRUNK"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ACCESS": "Access mode VLAN interface (No 802.1q header)",
+                  "TRUNK": "Trunk mode VLAN interface"
+                },
+                "x-typeDescription": "VLAN interface mode (trunk or access)",
+                "description": "Interface access or trunk mode for VLANs."
+              },
+              "native-vlan": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "Native VLAN id for untagged frames arriving on\na trunk interface.  Tagged frames sent on an interface\nconfigured with a native VLAN should have their tags\nstripped prior to transmission. This configuration is only\nvalid on a trunk interface."
+              },
+              "access-vlan": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "Assign the access VLAN to the access port."
+              },
+              "allowed-vlan-selector": {
+                "type": "string",
+                "enum": [
+                  "NAMED_VLAN",
+                  "VLAN_RANGES"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NAMED_VLAN": "Configure the VLAN(s) using a named-VLAN",
+                  "VLAN_RANGES": "Configure the VLAN(s) as a list of VLAN ranges"
+                },
+                "x-typeDescription": "VLAN ID configuration Types.",
+                "description": "Method to specify the VLAN(s) for this port:\nIf it is 'VLAN_RANGES', it can be a combination of\nlist of VLAN-ID-ranges and list of VLAN-IDs\nExample: 61-65,67,69,71-75."
+              },
+              "allowed-vlan-name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-named-vlan:named-vlan/ac-named-vlan:profile/ac-named-vlan:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Named-VLAN to map to this port."
+              },
+              "trunk-vlan-ranges": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "vlan-range",
+                  "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                  "description": "List of VLANs or VLAN ranges to map to this port."
+                },
+                "maxItems": 2147483647
+              },
+              "trunk-vlan-all": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow all vlans for trunk mode interface."
+              }
+            }
+          }
+        }
+      },
+      "ArubaWlanSecurity_MacAuthConfig": {
+        "description": "Group for MAC authentication configurations.",
+        "properties": {
+          "mac-authentication": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable MAC authentication."
+          }
+        }
+      },
+      "ArubaWlanSecurity_Dot1xAuthConfig": {
+        "description": "Group for 802.1X authenticator configurations.",
+        "properties": {
+          "dot1x-timer-idrequest-period": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "5",
+            "description": "Time period (in seconds) to wait for a response from a client before retransmitting an EAPoL PDU."
+          },
+          "l2-auth-failthrough": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Continue with 802.1x authentication even if MAC auth fail."
+          }
+        }
+      },
+      "ArubaWlanSecurity_SecurityCommonConfig": {
+        "description": "Wireless and wired common parameters for security.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAuthServer_CalledStationIdConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_AuthServerConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_RadiusAccountingConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaWlanSecurity_AuthorizationConfig"
+          }
+        ],
+        "properties": {
+          "radius-reauth-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 32768,
+            "description": "Radius reauth interval, when session timeout, device do reauth."
+          },
+          "type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "EMPLOYEE",
+              "GUEST",
+              "RECOVERY",
+              "VOICE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "EMPLOYEE": "Employee.",
+              "GUEST": "Guest",
+              "RECOVERY": "Recovery",
+              "VOICE": "Voice"
+            },
+            "x-typeDescription": "Network type.",
+            "description": "Network type."
+          },
+          "use-ip-for-calling-station-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Use IP as Calling Station Id."
+          },
+          "server-load-balancing": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable server load balancing."
+          },
+          "radius-loc-obj-in-access": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable location in radius access request."
+          },
+          "radius-loc-obj-in-accting": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable location in radius accounting request."
+          },
+          "radius-ip-based-acct-session": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable ip-based accounting."
+          },
+          "download-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "A user is assigned a role by ClearPass Policy Manager. If the role is not defined on the Instant AP, the role attributes can also be downloaded automatically."
+          }
+        }
+      },
+      "ArubaWlanSecurity_AuthServerConfig": {
+        "description": "Group for Radius accounting related configurations.",
+        "properties": {
+          "internal-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INTERNAL_SERVER": "Internal authentication server."
+            },
+            "x-typeDescription": "Authentication server type.",
+            "description": "Internal server for authentication."
+          },
+          "primary-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Primary server for authentication under SSID profile or wired port profile."
+          },
+          "backup-auth-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Backup server for authentication under SSID profile or wired port profile."
+          },
+          "auth-server-group": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Server group to be used for authentication under the SSID profile or wired port profile."
+          },
+          "cloud-auth": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Using cloud auth server."
+          }
+        }
+      },
+      "ArubaWlanSecurity_RadiusAccountingConfig": {
+        "description": "Group for Radius accounting related configurations.",
+        "properties": {
+          "radius-accounting": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable radius accounting."
+          },
+          "radius-interim-accounting-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 60,
+            "description": "Radius accounting interval."
+          },
+          "primary-acct-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Primary accounting servers for radius accounting under the SSID profile or wired port profile."
+          },
+          "backup-acct-server": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Backup accounting servers for radius accounting under the SSID profile or wired port profile."
+          },
+          "acct-server-group": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Server group to be used for accounting under the SSID profile or wired port profile. The primary/backup accounting\nserver and accounting server group only support one configuration at a time. If both are configured simultaneously,\nthe accounting server group will be used during accounting."
+          },
+          "cp-accounting-mode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "USER_ASSOCIATION",
+              "USER_AUTHENTICATION"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "USER_ASSOCIATION": "When configured, the accounting starts when the client associates to the network successfully and stops when the client is disconnected.",
+              "USER_AUTHENTICATION": "when configured, the accounting starts only after client authentication is successful and stops when the client logs out of the network."
+            },
+            "x-typeDescription": "Configure an accounting mode for the captive portal users.",
+            "default": "USER_AUTHENTICATION",
+            "description": "Radius Accounting Mode just for captive portal."
+          }
+        }
+      },
+      "ArubaWlanSecurity_AuthorizationConfig": {
+        "description": "Group for authorization attributes.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaDynamicAssignment_AssignmentRulesConfig"
+          }
+        ],
+        "properties": {
+          "pre-auth-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Configure a pre-authentication role to allow some access to the guest users before the client authentication."
+          },
+          "mac-auth-only-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Allow administrator to create a MAC Authentication only role for role-based access rule when MAC authentication is enabled for Captive Portal.\nIf MAC authentication is successful, the mac-auth-only role will be assigned to the client."
+          },
+          "machine-auth": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configure a machine authentication rule. When a Windows device boots, it logs onto the network domain using a machine account. Within the domain, the device is authenticated\nbefore computer group policies and software settings can be executed; this process is known as machine authentication. Machine authentication ensures that only authorized devices\nare allowed on the network. You can configure 802.1X for both user and machine authentication. This tightens the authentication process further, since both the device and user need\nto be authenticated. This feature is applicable for 802.1x authenticaion and it is only applicable for AP.",
+            "properties": {
+              "machine-only-role": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "Client can obtain machine auth role, when it only pass machine authentication. Assign different rights to clients based on whether their hardware device supports machine authentication."
+              },
+              "user-only-role": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "Client can obtain user only role, when using username and password pass authentication."
+              }
+            }
+          },
+          "default-role": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "When Default role is configured, default role is used. If default role isn't configured, use the role that the role name is same as SSID profile name."
+          }
+        }
+      },
+      "ArubaWlanSecurity_CaptivePortalConfig": {
+        "description": "Group for Captive Portal configurations.",
+        "properties": {
+          "captive-portal-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "CENTRAL_NAC",
+              "EXTERNAL_CP",
+              "INTERNAL_CP"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "CENTRAL_NAC": "Using Central Network Access Control(NAC) as the Captive Portal Server.",
+              "EXTERNAL_CP": "Using External Captive Portal Server.",
+              "INTERNAL_CP": "Using Internal Captive Portal Server."
+            },
+            "x-typeDescription": "Captive Portal Server type.",
+            "description": "For Captive Portal Server, AP supports Central Network Access Control(NAC) and External Captive Portal."
+          },
+          "captive-portal": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "x-path": "/ac-aaa-captive-portal:captive-portal/ac-aaa-captive-portal:profile/ac-aaa-captive-portal:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Associate one Captive Portal profile under SSID profile or wired port profile."
+          },
+          "exclude-uplink": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ETHERNET",
+                "MESH",
+                "WIFI",
+                "CELLULAR"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "ETHERNET": "Uplink is Ethernet.",
+                "MESH": "Uplink is Mesh.",
+                "WIFI": "Uplink is WIFI.",
+                "CELLULAR": "Uplink is Cellular."
+              },
+              "x-typeDescription": "Captive portal exclude Uplink type.",
+              "description": "For Captive Portal Server, customer can disable redirection to the captive portal based on the type of current uplink."
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAuthServer_CalledStationIdConfig": {
+        "description": "Called Station ID configuration grouping.",
+        "properties": {
+          "called-station-id": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "description": "Configure this parameter to be sent with the RADIUS attribute Called Station ID for authentication and accounting requests. For AP, this API is applicable for\nWLAN profile and AP port profile. For GW, this API is applicable for the authentication server profile. This feature is applicable for AP and GW.",
+            "properties": {
+              "type": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "MAC_ADDRESS",
+                  "VLAN",
+                  "IP_ADDRESS",
+                  "AP_GROUP",
+                  "AP_NAME",
+                  "AP_MAC_ADDRESS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MAC_ADDRESS": "MAC Address.",
+                  "VLAN": "VLAN ID.",
+                  "IP_ADDRESS": "IP address.",
+                  "AP_GROUP": "AP Group.",
+                  "AP_NAME": "AP Name.",
+                  "AP_MAC_ADDRESS": "AP MAC address for gateway."
+                },
+                "x-typeDescription": "Called Station ID type.",
+                "description": " Configure the called-station-id types.\nFor AP, The type includes AP group, AP MAC address, AP name, AP IP or user vlan. The default value is AP MAC address."
+              },
+              "mac-address-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "COLON",
+                  "DASH",
+                  "OUI_NIC",
+                  "PERCENT",
+                  "COMMA",
+                  "SLASH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "XXXXXXXXXXXX",
+                  "COLON": " XX:XX:XX:XX:XX:XX",
+                  "DASH": "XX-XX-XX-XX-XX-XX",
+                  "OUI_NIC": "XXXXXX-XXXXXX",
+                  "PERCENT": "XX%XX%XX%XX%XX%XX",
+                  "COMMA": "XX,XX,XX,XX,XX,XX",
+                  "SLASH": "XX/XX/XX/XX/XX/XX"
+                },
+                "x-typeDescription": "MAC address format.",
+                "default": "NONE",
+                "description": "By default, called-station-id is AP MAC Address string and no delimiter, when configure mac-address-delimiter, AP MAC Address will be added delimiter in authentication packet."
+              },
+              "upper-case": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "By default, called-station-id is AP MAC Address string, when enabled upper-case, AP MAC Address will be changed to upper case in authentication packet."
+              },
+              "include-ssid": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Include SSID in called-station-id attribute."
+              },
+              "include-ssid-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 9999,
+                "description": "The delimiter between mac address and SSID. For example, the delimiter is dash. The called-station-id like aa:bb:cc:dd:ee:ff-wlanssid."
+              }
+            }
+          }
+        }
+      },
+      "ArubaDynamicAssignment_AssignmentRulesConfig": {
+        "description": "Assignment Rules grouping.",
+        "properties": {
+          "assignment-rules": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "description": "Assign the client a user role, VLAN ID or VLAN name based on attributes. For GW and AP, the attributes is returned for the client by the authentication server and this API is applicable for\nauth server group. For AP, this API is also applicable WLAN profile and if this API works in WLAN profile, the attributes can be returned for the client by the authentication server or other\nattributes such as mac-address, dhcp-option, AP-Name, etc. Rules are ordered: the first rule that matches the configured condition is applied. VLAN IDs and VLAN names cannot be listed together.\nThis feature is only applicable for AP and GW.",
+            "properties": {
+              "assignment-rule": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "description": "Configure the assignment rule parameters.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "sequence-id": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "The sequence id determines the rule order."
+                    },
+                    "attribute": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CUSTOM_ATTRIBUTE_TYPE",
+                        "ARAP_FEATURES",
+                        "ARAP_PASSWORD",
+                        "ARAP_SECURITY",
+                        "ARAP_SECURITY_DATA",
+                        "ARAP_ZONE_ACCESS",
+                        "AP_GROUP",
+                        "AP_NAME",
+                        "ACCT_AUTHENTIC",
+                        "ACCT_DELAY_TIME",
+                        "ACCT_INPUT_GIGAWORDS",
+                        "ACCT_INPUT_OCTETS",
+                        "ACCT_INPUT_PACKETS",
+                        "ACCT_INTERIM_INTERVAL",
+                        "ACCT_LINK_COUNT",
+                        "ACCT_MULTI_SESSION_ID",
+                        "ACCT_OUTPUT_GIGAWORDS",
+                        "ACCT_OUTPUT_OCTETS",
+                        "ACCT_OUTPUT_PACKETS",
+                        "ACCT_SESSION_ID",
+                        "ACCT_SESSION_TIME",
+                        "ACCT_STATUS_TYPE",
+                        "ACCT_TERMINATE_CAUSE",
+                        "ACCT_TUNNEL_PACKETS_LOST",
+                        "ADD_PORT_TO_IP_ADDRESS",
+                        "ARUBA_AP_GROUP",
+                        "ARUBA_AP_IP_ADDRESS",
+                        "ARUBA_AS_CREDENTIAL_HASH",
+                        "ARUBA_AS_USER_NAME",
+                        "ARUBA_ADMIN_ROLE",
+                        "ARUBA_ADMIN_PATH",
+                        "ARUBA_AIRGROUP_DEVICE_TYPE",
+                        "ARUBA_AIRGROUP_SHARED_ROLE",
+                        "ARUBA_AIRGROUP_SHARED_USER",
+                        "ARUBA_AIRGROUP_SHARED_GROUP",
+                        "ARUBA_AIRGROUP_USER_NAME",
+                        "ARUBA_AIRGROUP_VERSION",
+                        "ARUBA_AUTH_SURVMETHOD",
+                        "ARUBA_AUTH_SURVIVABILITY",
+                        "ARUBA_CPPM_ROLE",
+                        "ARUBA_DEVICE_TYPE",
+                        "ARUBA_ESSID_NAME",
+                        "ARUBA_FRAMED_IPV6_ADDRESS",
+                        "ARUBA_LOCATION_ID",
+                        "ARUBA_CALEA_SERVER_IP",
+                        "ARUBA_MDPS_DEVICE_ICCID",
+                        "ARUBA_MDPS_DEVICE_IMEI",
+                        "ARUBA_MDPS_DEVICE_NAME",
+                        "ARUBA_MDPS_DEVICE_PRODUCT",
+                        "ARUBA_MDPS_DEVICE_SERIAL",
+                        "ARUBA_MDPS_DEVICE_UDID",
+                        "ARUBA_MDPS_DEVICE_VERSION",
+                        "ARUBA_MDPS_DEVICE_PROFILE",
+                        "ARUBA_MDPS_PROVISIONING_SETTINGS",
+                        "ARUBA_MDPS_MAX_DEVICES",
+                        "ARUBA_NAMED_USER_VLAN",
+                        "ARUBA_NO_DHCP_FINGERPRINT",
+                        "ARUBA_NETWORK_SSO_TOKEN",
+                        "ARUBA_PORT_ID",
+                        "ARUBA_PORT_BOUNCE_HOST",
+                        "ARUBA_PRIV_ADMIN_USER",
+                        "ARUBA_TEMPLATE_USER",
+                        "ARUBA_USER_ROLE",
+                        "ARUBA_USER_VLAN",
+                        "ARUBA_USER_GROUP",
+                        "ARUBA_WORKSPACE_APP_NAME",
+                        "AUTHENTICATION_SUB_TYPE",
+                        "AUTHENTICATION_TYPE",
+                        "CHAP_CHALLENGE",
+                        "CHAP_PASSWORD",
+                        "CALLBACK_ID",
+                        "CALLBACK_NUMBER",
+                        "CALLED_STATION_ID",
+                        "CALLING_STATION_ID",
+                        "CLASS",
+                        "MAC_ADDRESS",
+                        "CONNECT_INFO",
+                        "CONNECT_RATE",
+                        "CRYPT_PASSWORD",
+                        "CHARGEABLE_USER_IDENTITY",
+                        "CISCO_AV_PAIR",
+                        "DHCP_OPTION",
+                        "DIGEST_RESPONSE",
+                        "DOMAIN_NAME",
+                        "EAP_MESSAGE",
+                        "ERROR_CAUSE",
+                        "EVENT_TIMESTAMP",
+                        "EXEC_PROGRAM",
+                        "EXEC_PROGRAM_WAIT",
+                        "EXPIRATION",
+                        "FILTER_ID",
+                        "FRAMED_APPLETALK_LINK",
+                        "FRAMED_APPLETALK_NETWORK",
+                        "FRAMED_APPLETALK_ZONE",
+                        "FRAMED_COMPRESSION",
+                        "FORWARDING_MODE",
+                        "FRAMED_IP_ADDRESS",
+                        "FRAMED_IP_NETMASK",
+                        "FRAMED_IPX_NETWORK",
+                        "FRAMED_IPV6_POOL",
+                        "FRAMED_IPV6_PREFIX",
+                        "FRAMED_IPV6_ROUTE",
+                        "FRAMED_IPV6_ADDRESS",
+                        "FRAMED_INTERFACE_ID",
+                        "FRAMED_MTU",
+                        "FRAMED_PROTOCOL",
+                        "FRAMED_ROUTE",
+                        "FRAMED_ROUTING",
+                        "FULL_NAME",
+                        "GROUP",
+                        "GROUP_NAME",
+                        "HINT",
+                        "HUNTGROUP_NAME",
+                        "IDLE_TIMEOUT",
+                        "LOGIN_IP_HOST",
+                        "LOGIN_IPV6_HOST",
+                        "LOGIN_LAT_NODE",
+                        "LOGIN_LAT_PORT",
+                        "LOGIN_LAT_SERVICE",
+                        "LOGIN_SERVICE",
+                        "LOCATION_CAPABLE",
+                        "LOGIN_TCP_PORT",
+                        "LOCATION_DATA",
+                        "LOCATION_INFORMATION",
+                        "MS_BAP_USAGE",
+                        "MS_CHAP_CPW_1",
+                        "MS_CHAP_CPW_2",
+                        "MS_CHAP_CHALLENGE",
+                        "MS_CHAP_DOMAIN",
+                        "MS_CHAP_ERROR",
+                        "MS_CHAP_LM_ENC_PW",
+                        "MS_CHAP_MPPE_KEYS",
+                        "MS_CHAP_NT_ENC_PW",
+                        "MS_CHAP_RESPONSE",
+                        "MS_CHAP2_CPW",
+                        "MS_CHAP2_RESPONSE",
+                        "MS_CHAP2_SUCCESS",
+                        "MS_FILTER",
+                        "MS_LINK_DROP_TIME_LIMIT",
+                        "MS_LINK_UTILIZATION_THRESHOLD",
+                        "MS_MPPE_ENCRYPTION_POLICY",
+                        "MS_MPPE_ENCRYPTION_TYPES",
+                        "MS_MPPE_RECV_KEY",
+                        "MS_MPPE_SEND_KEY",
+                        "MS_RAS_VENDOR",
+                        "MS_RAS_VERSION",
+                        "MENU",
+                        "MESSAGE_AUTH",
+                        "NAS-IP-Address",
+                        "NAS_IPV6_ADDRESS",
+                        "NAS_IDENTIFIER",
+                        "NAS_PORT_ID",
+                        "NAS_PORT_TYPE",
+                        "NOMADIX_GROUP_BW_POLICY_ID",
+                        "NOMADIX_GROUP_MAX_DOWN",
+                        "NOMADIX_GROUP_MAX_UP",
+                        "OPERATOR_NAME",
+                        "PASSWORD",
+                        "PASSWORD_RETRY",
+                        "PORT_LIMIT",
+                        "PREFIX",
+                        "PROMPT",
+                        "PROXY_STATE",
+                        "RAD_AUTHENTICATOR",
+                        "RAD_CODE",
+                        "RAD_ID",
+                        "RAD_LENGTH",
+                        "RTTS_BACKOFF_TIME",
+                        "RTTS_EARLYLIFT_THRESHOLD",
+                        "RTTS_ESTIMATED_THROUGHPUT",
+                        "RTTS_REEST_BELOW_THROUGHPUT",
+                        "RTTS_REEST_KEEPALIVE_NUM",
+                        "RTTS_REESTIMATION_PERIOD",
+                        "RTTS_RESULT",
+                        "REPLY_MESSAGE",
+                        "REQUESTED_LOCATION_INFO",
+                        "SERVICE_TYPE",
+                        "SESSION_TIMEOUT",
+                        "SIMULTANEOUS_USE",
+                        "STATE",
+                        "STRIP_USER_NAME",
+                        "SUFFIX",
+                        "TERMINATION_ACTION",
+                        "TERMINATION_MENU",
+                        "TUNNEL_ASSIGNMENT_ID",
+                        "TUNNEL_CLIENT_AUTH_ID",
+                        "TUNNEL_CLIENT_ENDPOINT",
+                        "TUNNEL_CONNECTION_ID",
+                        "TUNNEL_MEDIUM_TYPE",
+                        "TUNNEL_PASSWORD",
+                        "TUNNEL_PREFERENCE",
+                        "TUNNEL_PRIVATE_GROUP_ID",
+                        "TUNNEL_SERVER_AUTH_ID",
+                        "TUNNEL_SERVER_ENDPOINT",
+                        "TUNNEL_TYPE",
+                        "USER_CATEGORY",
+                        "USER_NAME",
+                        "USER_VLAN",
+                        "VENDOR_SPECIFIC",
+                        "WISPR_BANDWIDTH_MAX_DOWN",
+                        "WISPR_BANDWIDTH_MAX_UP",
+                        "WISPR_BANDWIDTH_MIN_DOWN",
+                        "WISPR_BANDWIDTH_MIN_UP",
+                        "WISPR_BILLING_CLASS_OF_SERVICE",
+                        "WISPR_LOCATION_ID",
+                        "WISPR_LOCATION_NAME",
+                        "WISPR_LOGOFF_URL",
+                        "WISPR_REDIRECTION_URL",
+                        "WISPR_SESSION_TERM_END_OF_DAY",
+                        "WISPR_SESSION_TERM_TIME"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CUSTOM_ATTRIBUTE_TYPE": "GW String type arrtibute",
+                        "ARAP_FEATURES": "ARAP Features",
+                        "ARAP_PASSWORD": "ARAP Password",
+                        "ARAP_SECURITY": "ARAP Security",
+                        "ARAP_SECURITY_DATA": "ARAP Security Data",
+                        "ARAP_ZONE_ACCESS": "ARAP Zone Access",
+                        "AP_GROUP": "Access point-Group.",
+                        "AP_NAME": "Access point-Name.",
+                        "ACCT_AUTHENTIC": "Acct-Authentic.",
+                        "ACCT_DELAY_TIME": "Acct-Delay-Time.",
+                        "ACCT_INPUT_GIGAWORDS": "Acct-Input-Gigawords.",
+                        "ACCT_INPUT_OCTETS": "Acct-Input-Octets.",
+                        "ACCT_INPUT_PACKETS": "Acct-Input-Packets.",
+                        "ACCT_INTERIM_INTERVAL": "Acct-Interim-Interval.",
+                        "ACCT_LINK_COUNT": "Acct-Link-Count.",
+                        "ACCT_MULTI_SESSION_ID": "Acct-Multi-Session-Id.",
+                        "ACCT_OUTPUT_GIGAWORDS": "Acct-Output-Gigawords.",
+                        "ACCT_OUTPUT_OCTETS": "Acct-Output-Octets.",
+                        "ACCT_OUTPUT_PACKETS": "Acct-Output-Packets.",
+                        "ACCT_SESSION_ID": "Acct-Session-Id.",
+                        "ACCT_SESSION_TIME": "Acct-Session-Time.",
+                        "ACCT_STATUS_TYPE": "Acct-Status-Type.",
+                        "ACCT_TERMINATE_CAUSE": "Acct-Terminate-Cause.",
+                        "ACCT_TUNNEL_PACKETS_LOST": "Acct-Tunnel-Packets-Lost.",
+                        "ADD_PORT_TO_IP_ADDRESS": "Add-Port-To-IP-Address.",
+                        "ARUBA_AP_GROUP": "Aruba-Access point-Group.",
+                        "ARUBA_AP_IP_ADDRESS": "Aruba-Access point-IP-Address.",
+                        "ARUBA_AS_CREDENTIAL_HASH": "Aruba-AS-Credential-Hash.",
+                        "ARUBA_AS_USER_NAME": "Aruba-AS-User-Name.",
+                        "ARUBA_ADMIN_ROLE": "Aruba-Admin-Role.",
+                        "ARUBA_ADMIN_PATH": "Aruba-Admin-Path.",
+                        "ARUBA_AIRGROUP_DEVICE_TYPE": "Aruba-AirGroup-Device-Type.",
+                        "ARUBA_AIRGROUP_SHARED_ROLE": "Aruba-AirGroup-Shared-Role.",
+                        "ARUBA_AIRGROUP_SHARED_USER": "Aruba-AirGroup-Shared-User.",
+                        "ARUBA_AIRGROUP_SHARED_GROUP": "Aruba-AirGroup-Shared-Group.",
+                        "ARUBA_AIRGROUP_USER_NAME": "Aruba-AirGroup-User-Name.",
+                        "ARUBA_AIRGROUP_VERSION": "Aruba-AirGroup-Version.",
+                        "ARUBA_AUTH_SURVMETHOD": "Aruba-Auth-SurvMethod.",
+                        "ARUBA_AUTH_SURVIVABILITY": "Aruba-Auth-Survivability.",
+                        "ARUBA_CPPM_ROLE": "Aruba-CPPM-Role.",
+                        "ARUBA_DEVICE_TYPE": "Aruba-Device-Type.",
+                        "ARUBA_ESSID_NAME": "Aruba-Essid-Name.",
+                        "ARUBA_FRAMED_IPV6_ADDRESS": "Aruba-Framed-IPv6-Address.",
+                        "ARUBA_LOCATION_ID": "Aruba-Location-Id.",
+                        "ARUBA_CALEA_SERVER_IP": "Aruba-Calea-Server-Ip.",
+                        "ARUBA_MDPS_DEVICE_ICCID": "Aruba-Mdps-Device-Iccid.",
+                        "ARUBA_MDPS_DEVICE_IMEI": "Aruba-Mdps-Device-Imei.",
+                        "ARUBA_MDPS_DEVICE_NAME": "Aruba-Mdps-Device-Name.",
+                        "ARUBA_MDPS_DEVICE_PRODUCT": "Aruba-Mdps-Device-Product.",
+                        "ARUBA_MDPS_DEVICE_SERIAL": "Aruba-Mdps-Device-Serial.",
+                        "ARUBA_MDPS_DEVICE_UDID": "Aruba-Mdps-Device-Udid.",
+                        "ARUBA_MDPS_DEVICE_VERSION": "Aruba-Mdps-Device-Version.",
+                        "ARUBA_MDPS_DEVICE_PROFILE": "Aruba-Mdps-Device-Profile.",
+                        "ARUBA_MDPS_PROVISIONING_SETTINGS": "Aruba-Mdps-Provisioning-Settings.",
+                        "ARUBA_MDPS_MAX_DEVICES": "Aruba-Mdps-Max-Devices.",
+                        "ARUBA_NAMED_USER_VLAN": "Aruba-Named-User-Vlan.",
+                        "ARUBA_NO_DHCP_FINGERPRINT": "Aruba-No-DHCP-Fingerprint.",
+                        "ARUBA_NETWORK_SSO_TOKEN": "Aruba-Network-SSO-Token.",
+                        "ARUBA_PORT_ID": "Aruba-Port-Id.",
+                        "ARUBA_PORT_BOUNCE_HOST": "Aruba-Port-Bounce-Host.",
+                        "ARUBA_PRIV_ADMIN_USER": "Aruba-Priv-Admin-User.",
+                        "ARUBA_TEMPLATE_USER": "Aruba-Template-User.",
+                        "ARUBA_USER_ROLE": "Aruba-User-Role.",
+                        "ARUBA_USER_VLAN": "Aruba-User-Vlan.",
+                        "ARUBA_USER_GROUP": "Aruba-User-Group.",
+                        "ARUBA_WORKSPACE_APP_NAME": "Aruba-WorkSpace-App-Name.",
+                        "AUTHENTICATION_SUB_TYPE": "Authentication-Sub-Type.",
+                        "AUTHENTICATION_TYPE": "Authentication-Type.",
+                        "CHAP_CHALLENGE": "CHAP-Challenge.",
+                        "CHAP_PASSWORD": "CHAP-Password.",
+                        "CALLBACK_ID": "Callback-Id.",
+                        "CALLBACK_NUMBER": "Callback-Number.",
+                        "CALLED_STATION_ID": "Called-Station-Id",
+                        "CALLING_STATION_ID": "Calling-Station-Id",
+                        "CLASS": "Class.",
+                        "MAC_ADDRESS": "Client MAC Address.",
+                        "CONNECT_INFO": "Connect-Info.",
+                        "CONNECT_RATE": "Connect-Rate.",
+                        "CRYPT_PASSWORD": "Crypt-Password.",
+                        "CHARGEABLE_USER_IDENTITY": "Chargeable-User-Identity.",
+                        "CISCO_AV_PAIR": "Cisco AV-Pair.",
+                        "DHCP_OPTION": "dhcp-option.",
+                        "DIGEST_RESPONSE": "Digest-Response.",
+                        "DOMAIN_NAME": "Domain-Name.",
+                        "EAP_MESSAGE": "EAP-Message.",
+                        "ERROR_CAUSE": "Error-Cause.",
+                        "EVENT_TIMESTAMP": "Event-Timestamp.",
+                        "EXEC_PROGRAM": "Exec-Program.",
+                        "EXEC_PROGRAM_WAIT": "Exec-Program-Wait.",
+                        "EXPIRATION": "Expiration.",
+                        "FILTER_ID": "Filter-Id.",
+                        "FRAMED_APPLETALK_LINK": "Framed-AppleTalk-Link",
+                        "FRAMED_APPLETALK_NETWORK": "Framed-AppleTalk-Network",
+                        "FRAMED_APPLETALK_ZONE": "Framed-AppleTalk-Zone",
+                        "FRAMED_COMPRESSION": "Framed-Compression",
+                        "FORWARDING_MODE": "Forwarding-Mode.",
+                        "FRAMED_IP_ADDRESS": "Framed-IP-Address.",
+                        "FRAMED_IP_NETMASK": "Framed-IP-Netmask.",
+                        "FRAMED_IPX_NETWORK": "Framed-IPX-Network.",
+                        "FRAMED_IPV6_POOL": "Framed-IPv6-Pool.",
+                        "FRAMED_IPV6_PREFIX": "Framed-IPv6-Prefix.",
+                        "FRAMED_IPV6_ROUTE": "Framed-IPv6-Route.",
+                        "FRAMED_IPV6_ADDRESS": "Framed-IPv6-address.",
+                        "FRAMED_INTERFACE_ID": "Framed-Interface-Id.",
+                        "FRAMED_MTU": "Framed-MTU.",
+                        "FRAMED_PROTOCOL": "Framed-Protocol.",
+                        "FRAMED_ROUTE": "Framed-Route.",
+                        "FRAMED_ROUTING": "Framed-Routing.",
+                        "FULL_NAME": "Full-Name.",
+                        "GROUP": "Group.",
+                        "GROUP_NAME": "Group-Name.",
+                        "HINT": "Hint.",
+                        "HUNTGROUP_NAME": "Huntgroup-Name.",
+                        "IDLE_TIMEOUT": "Idle-Timeout.",
+                        "LOGIN_IP_HOST": "Login-IP-Host.",
+                        "LOGIN_IPV6_HOST": "Login-IPv6-Host.",
+                        "LOGIN_LAT_NODE": "Login-LAT-Node.",
+                        "LOGIN_LAT_PORT": "Login-LAT-Port.",
+                        "LOGIN_LAT_SERVICE": "Login-LAT-Service.",
+                        "LOGIN_SERVICE": "Login-Service.",
+                        "LOCATION_CAPABLE": "Location-Capable.",
+                        "LOGIN_TCP_PORT": "Login-TCP-Port.",
+                        "LOCATION_DATA": "Location-Data.",
+                        "LOCATION_INFORMATION": "Location-Information.",
+                        "MS_BAP_USAGE": "MS-BAP-Usage.",
+                        "MS_CHAP_CPW_1": "MS-CHAP-CPW-1.",
+                        "MS_CHAP_CPW_2": "MS-CHAP-CPW-2.",
+                        "MS_CHAP_CHALLENGE": "MS-CHAP-Challenge.",
+                        "MS_CHAP_DOMAIN": "MS-CHAP-Domain.",
+                        "MS_CHAP_ERROR": "MS-CHAP-Error.",
+                        "MS_CHAP_LM_ENC_PW": "MS-CHAP-LM-Enc-PW.",
+                        "MS_CHAP_MPPE_KEYS": "MS-CHAP-MPPE-Keys.",
+                        "MS_CHAP_NT_ENC_PW": "MS-CHAP-NT-Enc-PW.",
+                        "MS_CHAP_RESPONSE": "MS-CHAP-Response.",
+                        "MS_CHAP2_CPW": "MS-CHAP2-CPW.",
+                        "MS_CHAP2_RESPONSE": "MS-CHAP2-Response.",
+                        "MS_CHAP2_SUCCESS": "MS-CHAP2-Success.",
+                        "MS_FILTER": "MS-Filter.",
+                        "MS_LINK_DROP_TIME_LIMIT": "MS-Link-Drop-Time-Limit.",
+                        "MS_LINK_UTILIZATION_THRESHOLD": "MS-Link-Utilization-Threshold.",
+                        "MS_MPPE_ENCRYPTION_POLICY": "MS-MPPE-Encryption-Policy.",
+                        "MS_MPPE_ENCRYPTION_TYPES": "MS-MPPE-Encryption-Types.",
+                        "MS_MPPE_RECV_KEY": "MS-MPPE-Recv-Key.",
+                        "MS_MPPE_SEND_KEY": "MS-MPPE-Send-Key.",
+                        "MS_RAS_VENDOR": "MS-RAS-Vendor.",
+                        "MS_RAS_VERSION": "MS-RAS-Version.",
+                        "MENU": "Menu.",
+                        "MESSAGE_AUTH": "Message-Auth.",
+                        "NAS-IP-Address": "NAS-IP-Address.",
+                        "NAS_IPV6_ADDRESS": "NAS-IPv6-Address.",
+                        "NAS_IDENTIFIER": "NAS-Identifier.",
+                        "NAS_PORT_ID": "NAS-Port-Id.",
+                        "NAS_PORT_TYPE": "NAS-Port-Type.",
+                        "NOMADIX_GROUP_BW_POLICY_ID": "Nomadix-Group-Bw-Policy-ID.",
+                        "NOMADIX_GROUP_MAX_DOWN": "Nomadix-Group-Max-Down.",
+                        "NOMADIX_GROUP_MAX_UP": "Nomadix-Group-Max-Up.",
+                        "OPERATOR_NAME": "Operator-Name.",
+                        "PASSWORD": "Password.",
+                        "PASSWORD_RETRY": "Password-Retry.",
+                        "PORT_LIMIT": "Port-Limit.",
+                        "PREFIX": "Prefix.",
+                        "PROMPT": "Prompt.",
+                        "PROXY_STATE": "Proxy-State.",
+                        "RAD_AUTHENTICATOR": "Rad-Authenticator.",
+                        "RAD_CODE": "Rad-Code.",
+                        "RAD_ID": "Rad-Id.",
+                        "RAD_LENGTH": "Rad-Length.",
+                        "RTTS_BACKOFF_TIME": "RTTS-Backoff-Time.",
+                        "RTTS_EARLYLIFT_THRESHOLD": "RTTS-Earlylift-Threshold.",
+                        "RTTS_ESTIMATED_THROUGHPUT": "RTTS-Estimated-Throughput.",
+                        "RTTS_REEST_BELOW_THROUGHPUT": "RTTS-Reest-Below-Throughput.",
+                        "RTTS_REEST_KEEPALIVE_NUM": "RTTS-Reest-Keepalive-Num.",
+                        "RTTS_REESTIMATION_PERIOD": "RTTS-Reestimation-Period.",
+                        "RTTS_RESULT": "RTTS-Result.",
+                        "REPLY_MESSAGE": "Reply-Message.",
+                        "REQUESTED_LOCATION_INFO": "Requested-Location-Info.",
+                        "SERVICE_TYPE": "Service-Type.",
+                        "SESSION_TIMEOUT": "Session-Timeout.",
+                        "SIMULTANEOUS_USE": "Simultaneous-Use.",
+                        "STATE": "State.",
+                        "STRIP_USER_NAME": "Strip-User-Name.",
+                        "SUFFIX": "Suffix.",
+                        "TERMINATION_ACTION": "Termination-Action.",
+                        "TERMINATION_MENU": "Termination-Menu.",
+                        "TUNNEL_ASSIGNMENT_ID": "Tunnel-Assignment-Id.",
+                        "TUNNEL_CLIENT_AUTH_ID": "Tunnel-Client-Auth-Id.",
+                        "TUNNEL_CLIENT_ENDPOINT": "Tunnel-Client-Endpoint.",
+                        "TUNNEL_CONNECTION_ID": "Tunnel-Connection-Id.",
+                        "TUNNEL_MEDIUM_TYPE": "Tunnel-Medium-Type.",
+                        "TUNNEL_PASSWORD": "Tunnel-Password.",
+                        "TUNNEL_PREFERENCE": "Tunnel-Preference.",
+                        "TUNNEL_PRIVATE_GROUP_ID": "Tunnel-Private-Group-Id.",
+                        "TUNNEL_SERVER_AUTH_ID": "Tunnel-Server-Auth-Id.",
+                        "TUNNEL_SERVER_ENDPOINT": "Tunnel-Server-Endpoint.",
+                        "TUNNEL_TYPE": "Tunnel-Type.",
+                        "USER_CATEGORY": "User-Category.",
+                        "USER_NAME": "User-Name.",
+                        "USER_VLAN": "User-Vlan.",
+                        "VENDOR_SPECIFIC": "Vendor-Specific.",
+                        "WISPR_BANDWIDTH_MAX_DOWN": "WISPr-Bandwidth-Max-Down.",
+                        "WISPR_BANDWIDTH_MAX_UP": "WISPr-Bandwidth-Max-Up.",
+                        "WISPR_BANDWIDTH_MIN_DOWN": "WISPr-Bandwidth-Min-Down.",
+                        "WISPR_BANDWIDTH_MIN_UP": "WISPr-Bandwidth-Min-Up.",
+                        "WISPR_BILLING_CLASS_OF_SERVICE": "WISPr-Billing-Class-Of-Service.",
+                        "WISPR_LOCATION_ID": "WISPr-Location-ID.",
+                        "WISPR_LOCATION_NAME": "WISPr-Location-Name.",
+                        "WISPR_LOGOFF_URL": "WISPr-Logoff-URL.",
+                        "WISPR_REDIRECTION_URL": "WISPr-Redirection-URL.",
+                        "WISPR_SESSION_TERM_END_OF_DAY": "WISPr-Session-Term-End-Of-Day.",
+                        "WISPR_SESSION_TERM_TIME": "WISPr-Session-Term-Time."
+                      },
+                      "x-typeDescription": "Role and VLAN derivation attributes.",
+                      "description": "Attribute returned by the authentication server.\nFor AP, it also includes some custom attributes like mac-address, dhcp-option and fw_mode."
+                    },
+                    "attribute-str": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "VSA attribute string."
+                    },
+                    "operator": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MATCH_EQUAL",
+                        "CONTAINS",
+                        "ENDS_WITH",
+                        "MATCHES_REGULAR_EXPRESSION",
+                        "NOT_EQUALS",
+                        "STARTS_WITH",
+                        "VALUE_OF"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MATCH_EQUAL": "Equality match.",
+                        "CONTAINS": "Contains match.",
+                        "ENDS_WITH": "Ends-with match.",
+                        "MATCHES_REGULAR_EXPRESSION": "matches-regular-expression match.",
+                        "NOT_EQUALS": "Not-equals match.",
+                        "STARTS_WITH": "Starts-with match.",
+                        "VALUE_OF": "Value-of match."
+                      },
+                      "x-typeDescription": "Match Operator.",
+                      "description": "Match Operator."
+                    },
+                    "operand": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Match operand, For GW, the VSA value. For AP, it is VSA value under server group profile.\nIt is VSA value and mac-addrees, dhcp-option and fw_mode under SSID profile and AP wired port profile."
+                    },
+                    "assign-action": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ASSIGN_ROLE",
+                        "ASSIGN_VLAN"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ASSIGN_ROLE": "Assign Role.",
+                        "ASSIGN_VLAN": "Assign VLAN."
+                      },
+                      "x-typeDescription": "Assignment action.",
+                      "description": "Assignmant action."
+                    },
+                    "vlan": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094
+                        },
+                        {
+                          "x-path": "/ac-named-vlan:named-vlan/ac-named-vlan:profile/ac-named-vlan:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32
+                        }
+                      ],
+                      "description": "This is the assigned VLAN when there is a rule match."
+                    },
+                    "role": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "This is the assigned Role when there is a rule match."
+                    }
+                  }
+                },
+                "x-key": [
+                  "sequenceId"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

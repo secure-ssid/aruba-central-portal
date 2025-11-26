@@ -1,0 +1,3584 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ap-uplink API generated from aruba-ap-uplink.yang",
+    "version": "1.0.0",
+    "title": "ap-uplink",
+    "x-tag-group": "Interfaces"
+  },
+  "tags": [
+    {
+      "name": "ap-uplinks"
+    }
+  ],
+  "paths": {
+    "/ap-uplinks": {
+      "get": {
+        "summary": "Read existing uplink parameters",
+        "description": "AP uplink profile, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "operationId": "readApUplinks",
+        "x-cliParam": {
+          "commandName": "readApUplinksCmd",
+          "summary": "Read operation for ap-uplinks",
+          "commandUse": "ap-uplinks",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ap-uplinks/"
+        },
+        "tags": [
+          "ap-uplinks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApUplink_ApUplinksSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ap-uplinks/{name}": {
+      "post": {
+        "summary": "Create an uplink profile",
+        "description": "List of uplink profiles, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "operationId": "createApUplinksProfileByID",
+        "x-cliParam": {
+          "commandName": "createApUplinksProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createApUplinksCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-uplinks/profile/%s/"
+        },
+        "tags": [
+          "ap-uplinks"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Uplink profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApUplink_ApUplinksprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read the existing uplink profile",
+        "description": "List of uplink profiles, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "operationId": "readApUplinksProfileByID",
+        "x-cliParam": {
+          "commandName": "readApUplinksProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readApUplinksCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-uplinks/profile/%s/"
+        },
+        "tags": [
+          "ap-uplinks"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Uplink profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApUplink_ApUplinksprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "List of uplink profiles, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "operationId": "updateApUplinksProfileByID",
+        "x-cliParam": {
+          "commandName": "updateApUplinksProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateApUplinksCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-uplinks/profile/%s/"
+        },
+        "tags": [
+          "ap-uplinks"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Uplink profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApUplink_ApUplinksprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the uplink profile",
+        "description": "List of uplink profiles, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "operationId": "deleteApUplinksProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteApUplinksProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteApUplinksCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-uplinks/profile/%s/"
+        },
+        "tags": [
+          "ap-uplinks"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Uplink profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaApUplink_ApUplinksprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaApUplink_ApUplinksprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaApUplink_ApUplinksSchema": {
+        "x-supportedDeviceType": [
+          "Access Point"
+        ],
+        "description": "AP uplink profile, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "List of uplink profiles, configure the uplink parameters, such like ethernet uplink, cellular uplink, preemption parameters, management VLAN, etc.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaApUplink_PreemptionConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaApUplink_UplinkHealthCheck"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Uplink profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Uplink profile description."
+                    },
+                    "ap-mode": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CAMPUS",
+                        "MICROBRANCH",
+                        "INSTANT"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CAMPUS": "AP campus mode.",
+                        "MICROBRANCH": "AP microbranch mode.",
+                        "INSTANT": "Instant AP mode."
+                      },
+                      "x-typeDescription": "AP mode, campus or microbranch or instant.",
+                      "description": "AP campus or microbranch or Instant mode."
+                    },
+                    "gateway-detect": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Re-trigger DHCP once the ARP entry for the APs default gateway is lost"
+                    },
+                    "ethernet-1": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Uplink Ethernet 1.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_Resolver"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkEthernet"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkPppoeConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkDot1xsuppConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_StaticIpv4Env"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_StaticIpv6Env"
+                        }
+                      ],
+                      "properties": {
+                        "domain-name": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "minLength": 1,
+                          "maxLength": 253,
+                          "x-patternSources": "domain-name",
+                          "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                          "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492",
+                          "description": "Configures domain name."
+                        },
+                        "eth0-mode": {
+                          "type": "string",
+                          "enum": [
+                            "UPLINK",
+                            "DOWNLINK"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "UPLINK": "Eth1 is bonded with eth0 both working as uplink.",
+                            "DOWNLINK": "Eth1 is NOT bonded with eth0."
+                          },
+                          "x-typeDescription": "Configures eth0 working as uplink or downlink.",
+                          "description": "Configures the ethernet port 0 working as uplink or downlink."
+                        },
+                        "eth1-mode": {
+                          "type": "string",
+                          "enum": [
+                            "BONDED_UPLINK",
+                            "NOT_BONDED_UPLINK"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "BONDED_UPLINK": "Eth1 is bonded into bond0 working as uplink.",
+                            "NOT_BONDED_UPLINK": "Eth1 is NOT bonded into bond0."
+                          },
+                          "x-typeDescription": "Configures eth1 bonded with eth0 or not.",
+                          "description": "Configures the ethernet port 1 working as uplink bonded with eth0 or not."
+                        },
+                        "uplink-tagged-vlan": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "Allow AP to get the IP address from a tagged VLAN."
+                        },
+                        "uplink-native-vlan": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "Configure the uplink native VLAN."
+                        },
+                        "uplink_customerized_vlan": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Configures the ethernet port 0 working as uplink or downlink."
+                        },
+                        "enforce": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enforces the specified uplink connection."
+                        },
+                        "priority": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 99,
+                          "description": "Uplink ethernet-1 priority."
+                        },
+                        "default-gateway": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "AP default gateway."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "dns-server": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "List of DNS servers."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "resolver-alias": {
+                          "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                          "type": "string",
+                          "format": "pattern",
+                          "minLength": 1,
+                          "maxLength": 256,
+                          "x-patternSources": "name",
+                          "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                          "description": "Aliases for the list of DNS name servers."
+                        },
+                        "ipv6-address-auto": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable automatic IPv6 address configuration based on IPv6 RA advertisements."
+                        }
+                      }
+                    },
+                    "ethernet-2": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Uplink Ethernet 2.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_Resolver"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkEthernet"
+                        }
+                      ],
+                      "properties": {
+                        "enforce": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enforces the specified uplink connection."
+                        },
+                        "priority": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 99,
+                          "description": "Uplink ethernet-2 priority."
+                        },
+                        "default-gateway": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "AP default gateway."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "dns-server": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "List of DNS servers."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "resolver-alias": {
+                          "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                          "type": "string",
+                          "format": "pattern",
+                          "minLength": 1,
+                          "maxLength": 256,
+                          "x-patternSources": "name",
+                          "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                          "description": "Aliases for the list of DNS name servers."
+                        }
+                      }
+                    },
+                    "lte-modem": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Uplink LTE Modem, this feature is used to configure modem parameters\nfor 3G or 4G uplink and only applies to AP, the 3G and 4G modems can be used to extend connectivity to places\nand enables the AP to automatically choose the available network in a specific region.\nThis feature supports configuring both 3rd party modem and aruba modem, but only one modem can be used as the uplink.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkCellular"
+                        }
+                      ],
+                      "properties": {
+                        "enforce": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enforces the specified uplink connection."
+                        },
+                        "priority": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 99,
+                          "description": "Uplink cellular priority."
+                        }
+                      }
+                    },
+                    "wifi-uplink": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Wifi uplink, this feature is used to configure ARUBA AP as a standard WiFi client to assoc with Aruba ap or third party devices.\nWhen both sides are Aruba AP, Aruba Mesh should be the first choice.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                        },
+                        {
+                          "$ref": "#/components/schemas/ArubaApUplink_UplinkWifi"
+                        }
+                      ],
+                      "properties": {
+                        "enforce": {
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enforces the specified uplink connection."
+                        },
+                        "priority": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 99,
+                          "description": "Uplink wifi priority."
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaApUplink_ApUplinksSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApUplink_ApUplinksSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApUplink_ApUplinksprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApUplink_PreemptionConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaApUplink_UplinkHealthCheck"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Uplink profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Uplink profile description."
+              },
+              "ap-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "CAMPUS",
+                  "MICROBRANCH",
+                  "INSTANT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "CAMPUS": "AP campus mode.",
+                  "MICROBRANCH": "AP microbranch mode.",
+                  "INSTANT": "Instant AP mode."
+                },
+                "x-typeDescription": "AP mode, campus or microbranch or instant.",
+                "description": "AP campus or microbranch or Instant mode."
+              },
+              "gateway-detect": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Re-trigger DHCP once the ARP entry for the APs default gateway is lost"
+              },
+              "ethernet-1": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Uplink Ethernet 1.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_Resolver"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkEthernet"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkPppoeConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkDot1xsuppConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_StaticIpv4Env"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_StaticIpv6Env"
+                  }
+                ],
+                "properties": {
+                  "domain-name": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "x-patternSources": "domain-name",
+                    "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                    "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492",
+                    "description": "Configures domain name."
+                  },
+                  "eth0-mode": {
+                    "type": "string",
+                    "enum": [
+                      "UPLINK",
+                      "DOWNLINK"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "UPLINK": "Eth1 is bonded with eth0 both working as uplink.",
+                      "DOWNLINK": "Eth1 is NOT bonded with eth0."
+                    },
+                    "x-typeDescription": "Configures eth0 working as uplink or downlink.",
+                    "description": "Configures the ethernet port 0 working as uplink or downlink."
+                  },
+                  "eth1-mode": {
+                    "type": "string",
+                    "enum": [
+                      "BONDED_UPLINK",
+                      "NOT_BONDED_UPLINK"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "BONDED_UPLINK": "Eth1 is bonded into bond0 working as uplink.",
+                      "NOT_BONDED_UPLINK": "Eth1 is NOT bonded into bond0."
+                    },
+                    "x-typeDescription": "Configures eth1 bonded with eth0 or not.",
+                    "description": "Configures the ethernet port 1 working as uplink bonded with eth0 or not."
+                  },
+                  "uplink-tagged-vlan": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "Allow AP to get the IP address from a tagged VLAN."
+                  },
+                  "uplink-native-vlan": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "Configure the uplink native VLAN."
+                  },
+                  "uplink_customerized_vlan": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Configures the ethernet port 0 working as uplink or downlink."
+                  },
+                  "enforce": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enforces the specified uplink connection."
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 99,
+                    "description": "Uplink ethernet-1 priority."
+                  },
+                  "default-gateway": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "AP default gateway."
+                    },
+                    "maxItems": 2147483647
+                  },
+                  "dns-server": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "List of DNS servers."
+                    },
+                    "maxItems": 2147483647
+                  },
+                  "resolver-alias": {
+                    "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "x-patternSources": "name",
+                    "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                    "description": "Aliases for the list of DNS name servers."
+                  },
+                  "ipv6-address-auto": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable automatic IPv6 address configuration based on IPv6 RA advertisements."
+                  }
+                }
+              },
+              "ethernet-2": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Uplink Ethernet 2.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_Resolver"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkEthernet"
+                  }
+                ],
+                "properties": {
+                  "enforce": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enforces the specified uplink connection."
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 99,
+                    "description": "Uplink ethernet-2 priority."
+                  },
+                  "default-gateway": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "AP default gateway."
+                    },
+                    "maxItems": 2147483647
+                  },
+                  "dns-server": {
+                    "type": "array",
+                    "items": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "List of DNS servers."
+                    },
+                    "maxItems": 2147483647
+                  },
+                  "resolver-alias": {
+                    "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "x-patternSources": "name",
+                    "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                    "description": "Aliases for the list of DNS name servers."
+                  }
+                }
+              },
+              "lte-modem": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Uplink LTE Modem, this feature is used to configure modem parameters\nfor 3G or 4G uplink and only applies to AP, the 3G and 4G modems can be used to extend connectivity to places\nand enables the AP to automatically choose the available network in a specific region.\nThis feature supports configuring both 3rd party modem and aruba modem, but only one modem can be used as the uplink.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkCellular"
+                  }
+                ],
+                "properties": {
+                  "enforce": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enforces the specified uplink connection."
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 99,
+                    "description": "Uplink cellular priority."
+                  }
+                }
+              },
+              "wifi-uplink": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Wifi uplink, this feature is used to configure ARUBA AP as a standard WiFi client to assoc with Aruba ap or third party devices.\nWhen both sides are Aruba AP, Aruba Mesh should be the first choice.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkCommonConfig"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArubaApUplink_UplinkWifi"
+                  }
+                ],
+                "properties": {
+                  "enforce": {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enforces the specified uplink connection."
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 99,
+                    "description": "Uplink wifi priority."
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApUplink_PreemptionConfig": {
+        "description": "Preemption configuration.",
+        "properties": {
+          "preemption": {
+            "description": "Preemption for uplink.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enables pre-emption when no uplinks are enforced. When enabled, if the current uplink is active,\nthe AP periodically tries to use a higher priority uplink, and switches to a higher priority uplink even if the current uplink is active."
+              },
+              "interval": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 15,
+                "maximum": 600,
+                "description": "Preemption interval."
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_UplinkHealthCheck": {
+        "description": "Uplink health check configures.",
+        "properties": {
+          "failover": {
+            "description": "Health check for uplink.",
+            "properties": {
+              "enable": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables uplink switchover based on the availability of the Internet. When enabled, the\nAP continuously sends ICMP packets to some well-known Internet servers. If the request\nis timed out due to a bad uplink connection or uplink interface failure, and the public\nInternet is not reachable from the current uplink, the AP switches to a different connection."
+              },
+              "ip": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "x-patternSources": "domain-name",
+                    "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                    "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                  }
+                ],
+                "description": "IP address to which the ICMP or UDP Probe packets are sent in the event of Internet failure."
+              },
+              "ip-for-cell": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "x-patternSources": "domain-name",
+                    "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                    "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                  }
+                ],
+                "description": "Configures the Internet failover IP address for a cellular 3G/4G uplink."
+              },
+              "timeout": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 3600,
+                "default": "10",
+                "description": "Configures the number of seconds after which the Internet based uplink verification times out."
+              },
+              "pkt-lost-cnt": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 1000,
+                "default": "10",
+                "description": "Configures the number of packets that are to be lost when verifying the uplink availability\nusing the Internet."
+              },
+              "pkt-send-freq": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 3600,
+                "default": "30",
+                "description": "Configures the frequency in seconds, at which the ICMP packets are sent to verify the\nuplink availability using the Internet."
+              },
+              "vpn-timeout": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 15,
+                "maximum": 600,
+                "default": "180",
+                "description": "Configures a duration to wait for an uplink switch based on VPN status."
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_UplinkCommonConfig": {
+        "description": "Uplink common configuration.",
+        "properties": {
+          "backup-link": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Mark uplink as a hot-standby uplink."
+          }
+        }
+      },
+      "ArubaApUplink_UplinkPppoeConfig": {
+        "description": "Grouping for the uplink IPv4 PPPoE configurations",
+        "properties": {
+          "uplink-pppoe": {
+            "description": "Container for the uplink IPv4 PPPoE configurations",
+            "properties": {
+              "lcp-interval": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 32767,
+                "description": "LCP Echo Interval"
+              },
+              "lcp-failure": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 32767,
+                "description": "LCP Echo Failure Count"
+              },
+              "password": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "PAP password"
+              },
+              "secret": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "CHAP Secret"
+              },
+              "service-name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 127,
+                "description": "Service Name"
+              },
+              "username": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 127,
+                "description": "PAP username"
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_UplinkEthernet": {
+        "description": "AP uplink ethernet.",
+        "properties": {
+          "port": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ETH_0",
+              "ETH_1",
+              "ETH0_ETH1"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ETH_0": "The ethernet port eth0.",
+              "ETH_1": "The ethernet port port eth1.",
+              "ETH0_ETH1": "Both ethernet port eth0 and eth1."
+            },
+            "x-typeDescription": "AP uplink port options",
+            "description": "AP uplink ports."
+          },
+          "speed": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "SPEED_10MB",
+              "SPEED_100MB",
+              "SPEED_1GB",
+              "SPEED_2_5GB",
+              "SPEED_5GB",
+              "SPEED_10GB",
+              "SPEED_40GB",
+              "SPEED_100GB",
+              "SPEED_1000GB",
+              "SPEED_AUTO"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SPEED_10MB": "10 Mb/sec Ethernet.",
+              "SPEED_100MB": "100 Mb/sec Ethernet.",
+              "SPEED_1GB": "1 Gb/sec Ethernet.",
+              "SPEED_2_5GB": "2.5 Gb/sec Ethernet.",
+              "SPEED_5GB": "5 Gb/sec Ethernet.",
+              "SPEED_10GB": "10 Gb/sec Ethernet.",
+              "SPEED_40GB": "40 Gb/sec Ethernet.",
+              "SPEED_100GB": "100 Gb/sec Ethernet.",
+              "SPEED_1000GB": "1000 Gb/sec Ethernet.",
+              "SPEED_AUTO": "Auto negotiation Ethernet."
+            },
+            "x-typeDescription": "Speed Type.",
+            "default": "SPEED_AUTO",
+            "description": "Ethernet speed."
+          },
+          "duplex": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "HALF_DUPLEX",
+              "FULL_DUPLEX",
+              "AUTO_DUPLEX"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "HALF_DUPLEX": "Half-duplex.",
+              "FULL_DUPLEX": "Full-duplex.",
+              "AUTO_DUPLEX": "Auto-duplex."
+            },
+            "x-typeDescription": "Duplex mode.",
+            "description": "Duplex mode."
+          },
+          "dot3az": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable 802.3az standard on an AP."
+          },
+          "interface-mode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ACCESS",
+              "TRUNK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ACCESS": "Access mode VLAN interface (No 802.1q header)",
+              "TRUNK": "Trunk mode VLAN interface"
+            },
+            "x-typeDescription": "VLAN interface mode (trunk or access)",
+            "description": "Interface access or trunk mode for VLANs."
+          },
+          "native-vlan": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Native VLAN id for untagged frames arriving on\na trunk interface.  Tagged frames sent on an interface\nconfigured with a native VLAN should have their tags\nstripped prior to transmission. This configuration is only\nvalid on a trunk interface."
+          },
+          "access-vlan": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Assign the access VLAN to the access port."
+          },
+          "trunk-vlan-ranges": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "vlan-range",
+              "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+              "maxLength": 9999,
+              "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+              "description": "VLAN ranges that the interface may carry when in trunk mode."
+            },
+            "maxItems": 2147483647
+          },
+          "trunk-vlan-all": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow all vlans for trunk mode interface."
+          },
+          "mgmt-vlan-opt": {
+            "type": "string",
+            "enum": [
+              "NATIVE_VLAN",
+              "TAGGED_VLAN"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NATIVE_VLAN": "AP management vlan is native vlan.",
+              "TAGGED_VLAN": "AP management vlan is tagged vlan."
+            },
+            "x-typeDescription": "AP management vlan options",
+            "description": "AP management VLAN option."
+          },
+          "mgmt-vlan-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Ethernet management VLAN Id."
+          },
+          "ipv4-management-address": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-prefix",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "DHCP",
+                  "PPPOE",
+                  "NO_DHCP",
+                  "NONE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "DHCP": "Dynamic Host Configuration Protocol.",
+                  "PPPOE": "Point-to-point Protocol over Ethernet.",
+                  "NO_DHCP": "Dynamic Host Configuration Protocol.",
+                  "NONE": "Client/address is not configured."
+                },
+                "x-typeDescription": "Dynamic client type to obtain IPv4 address."
+              }
+            ],
+            "description": "IPv4 Management Address."
+          },
+          "ipv4-management-alias": {
+            "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 256,
+            "x-patternSources": "name",
+            "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+            "description": "Alias for IPv4 address, this could be static or dynamic"
+          },
+          "ipv6-management-address-format": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "EUI_64",
+              "STABLE_PRIVACY_ALGORITHM"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "EUI_64": "Generate IPv6 address with EUI-64.",
+              "STABLE_PRIVACY_ALGORITHM": "Generate IPv6 address with Stable Provacy Algorithm."
+            },
+            "x-typeDescription": "IPv6 Management Address Format.",
+            "description": "IPv6 Management Address Format."
+          },
+          "wan-vlan": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Ethernet uplink WAN-VLAN Id."
+          },
+          "wan-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "INET",
+              "MPLS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INET": "WAN circuit type is Internet.",
+              "MPLS": "WAN circuit type is MultiProtocol Label Switching."
+            },
+            "x-typeDescription": "WAN circuit types.",
+            "description": "Access technology of this WAN uplink."
+          }
+        }
+      },
+      "ArubaApUplink_UplinkDot1xsuppConfig": {
+        "description": "Grouping for AP uplink dot1x config.",
+        "properties": {
+          "uplink-dot1xsupp": {
+            "description": "Container for AP uplink dot1x config.",
+            "properties": {
+              "eapol-method": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "EAP_TLS",
+                  "EAP_MD5",
+                  "EAP_PEAP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "EAP_TLS": "Transport Layer Security Protocol",
+                  "EAP_MD5": "MD5 hash function to generate hashed password",
+                  "EAP_PEAP": "Protected EAP"
+                },
+                "x-typeDescription": "EAP method type.",
+                "description": "EAP method to use for authentication."
+              },
+              "eap-tls-cert-type": {
+                "type": "string",
+                "enum": [
+                  "USER",
+                  "DEVICE",
+                  "EST"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "USER": "User defined certificate",
+                  "DEVICE": "Device certificate stored in the Trusted Platform Module (TPM)",
+                  "EST": "EST(Enrollment over Secure Transport protocol) certificate."
+                },
+                "x-typeDescription": "Certificate type.",
+                "description": "The type of certificate to use for EAP-TLS authentication."
+              },
+              "eap-identity": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "EAP identity used for authentication."
+              },
+              "eap-identity-password": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Plaintext password associated with the EAP identity."
+              },
+              "auth-timeout": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 60,
+                "maximum": 36000,
+                "default": "60",
+                "description": "Time period (in seconds) to wait for a successful authentication\nbefore terminating further authentication attempts until the device is\nrebooted."
+              },
+              "validate-server-cert": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable the device to validate the server certificate."
+              },
+              "secure-enhance": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable safer cipher suites"
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_CellSimPin": {
+        "description": "AP uplink cellular sim pin is a security method to protect the SIM card from unauthorized access,\nthe following operations can be configured for the sim pin:\n1.sim-pin-enable: enable SIM PIN lock\n2.sim-pin-renew: update the current SIM PIN\n3.sim-pin-puk: unlock the SIM PIN using PUK.",
+        "properties": {
+          "sim-pin-enable": {
+            "description": "Enables locking of the SIM PIN, to enable SIM PIN lock, the PIN code should be same as the PIN code that is currently used.",
+            "properties": {
+              "current": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 4,
+                "maxLength": 8,
+                "description": "Current PIN of the modem SIM."
+              }
+            }
+          },
+          "sim-pin-renew": {
+            "description": "Renews the SIM PIN of the modem, update the current SIM PIN by entering a new SIM PIN.",
+            "properties": {
+              "current": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 4,
+                "maxLength": 8,
+                "description": "Current PIN of the modem SIM."
+              },
+              "new": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 4,
+                "maxLength": 8,
+                "description": "New SIM PIN for the modem."
+              }
+            }
+          },
+          "sim-pin-puk": {
+            "description": "Unlocks the SIM PIN using the PUK code provided by the ISP and by entering a new PIN code.",
+            "properties": {
+              "puk": {
+                "type": "string",
+                "format": "const",
+                "minLength": 4,
+                "maxLength": 8,
+                "description": "Personal Unlock code(PUK) for PIN"
+              },
+              "new": {
+                "type": "string",
+                "format": "const",
+                "minLength": 4,
+                "maxLength": 8,
+                "description": "New PIN code."
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_UplinkCellular": {
+        "description": "AP uplink cellular config.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCellular_ArubaModemConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCellular_ThirdPartyModemConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaApUplink_CellSimPin"
+          }
+        ],
+        "properties": {
+          "type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ARUBA_USB_LTE",
+              "THIRD_PARTY",
+              "INTERNAL_LTE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ARUBA_USB_LTE": "Aruba modem.",
+              "THIRD_PARTY": "Third party modem.",
+              "INTERNAL_LTE": "Internal 9004-LTE gateway."
+            },
+            "x-typeDescription": "Modem type.",
+            "description": "Cellular type."
+          }
+        }
+      },
+      "ArubaApUplink_WifiUplinkConfig": {
+        "description": "Wifi uplink network topology config grouping.",
+        "properties": {
+          "ssid-name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Defines a unique name for the network on which the Wi-Fi uplink will be enabled"
+          },
+          "uplink-band": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "DOT11A",
+              "DOT11G",
+              "DOT116GHZ",
+              "ALL"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DOT11A": "5GHz radio ",
+              "DOT11G": "2.4GHz radio",
+              "DOT116GHZ": "6GHz radio",
+              "ALL": "all radios"
+            },
+            "x-typeDescription": "wifiuplink band type",
+            "default": "DOT11G",
+            "description": "Configures the band for uplink connection. Range: 802.11a, 802.11g, 802.116GHz (For Wi-Fi 6E capable access points) Default: 802.11g"
+          },
+          "opmode": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "OPENSYSTEM",
+              "PERSONAL",
+              "ENTERPRISE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "OPENSYSTEM": "Use OPEN key management",
+              "PERSONAL": "Use WPA/WPA2/WPA3 PSK encryption mode",
+              "ENTERPRISE": "Use WPA-TKIP and WPA2-CCMP for 802.1X authentication"
+            },
+            "x-typeDescription": "encryption mode",
+            "description": "Encryption mode."
+          },
+          "cipher-suite": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "WPA_TKIP_PSK",
+              "WPA2_CCMP_PSK",
+              "WPA_TKIP",
+              "WPA2_CCMP",
+              "WPA3_SAE_AES",
+              "WPA3_CCM_128",
+              "WPA3_GCM_256",
+              "WPA3_CNSA"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "CLEAR": "Opensytem  cipher suite",
+              "WPA_TKIP_PSK": "WPA TKIP PSK  cipher suite",
+              "WPA2_CCMP_PSK": "WPA2 CCMP PSK  cipher suite",
+              "WPA_TKIP": "WPA TKIP  cipher suite",
+              "WPA2_CCMP": "WPA2 CCMP  cipher suite",
+              "WPA3_SAE_AES": "WPA3 SAE AES  cipher suite",
+              "WPA3_CCM_128": "WPA3 CCM 128  cipher suite",
+              "WPA3_GCM_256": "WPA3 GCM 256  cipher suite",
+              "WPA3_CNSA": "WPA3 CNSA  cipher suite"
+            },
+            "x-typeDescription": "Cipher suite type",
+            "description": "Cipher suite."
+          },
+          "wifi1x-auth": {
+            "description": "802.1X authentication configuration.",
+            "properties": {
+              "method": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "PEAP",
+                  "TLS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "PEAP": "PEAP",
+                  "TLS": "TLS"
+                },
+                "x-typeDescription": "802.1X auth mode",
+                "description": "802.1X authentication method."
+              },
+              "username": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "Username when using 802.1X PEAP."
+              },
+              "password": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Password when using 802.1X PEAP."
+              },
+              "tls-method": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "TPM",
+                  "USER",
+                  "EST"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "TPM": "TLS Trusted Platform Mode (TPM)",
+                  "USER": "USER",
+                  "EST": "Enrollment over Secure Transport"
+                },
+                "x-typeDescription": "TLS type ",
+                "description": "SUB options(tpm/user) when use 802.1X TLS ."
+              },
+              "tls-method-user": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "default": "IAP",
+                "description": "SUB options(user) when use 802.1X TLS ."
+              },
+              "eap-server": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Validates the server certificate when TLS method is used for 802.1X authentication."
+              }
+            }
+          },
+          "wpa-passphrase": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Defines a WPA passphrase with which a PSK can be generated.The passphrase must be between 8 and 64 characters."
+          },
+          "disable-on-mesh-point": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "In Mesh deployments, the configurations are synced to all peer APs, irrespective of their mesh roles. Use this command to disable the configuration of wifi uplink on mesh points. When this is configured the only the master AP uses wi-fi uplink to connect to the Internet."
+          },
+          "eht-enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable extremely-high-throughput (802.11be)  features on Wifiuplink"
+          }
+        }
+      },
+      "ArubaApUplink_UplinkWifi": {
+        "description": "AP uplink wifiuplink config.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApUplink_WifiUplinkConfig"
+          }
+        ]
+      },
+      "ArubaApUplink_StaticIpv4Env": {
+        "description": "AP uplink static IPv4 env config.",
+        "properties": {
+          "static-ipv4": {
+            "description": "AP uplink static IPv4 env config.",
+            "properties": {
+              "ip": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "IPv4 address."
+              },
+              "mask": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "IPv4 address mask."
+              },
+              "gateway": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "The gateway IPv4 address."
+              },
+              "dns": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "The DNS server IPv4 address."
+              },
+              "domain": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 253,
+                "x-patternSources": "domain-name",
+                "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492",
+                "description": "The Domain name for the AP."
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_StaticIpv6Env": {
+        "description": "AP uplink static IPv6 env config grouping.",
+        "properties": {
+          "static-ipv6": {
+            "description": "AP uplink static IPv6 env config container.",
+            "properties": {
+              "ip6-prefix": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-prefix",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                "description": "IPv6 address."
+              },
+              "gateway": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "The gateway IPv6 address."
+              },
+              "dns": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "The DNS server IPv6 address."
+              },
+              "domain": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 253,
+                "x-patternSources": "domain-name",
+                "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492",
+                "description": "The Domain name for the AP."
+              }
+            }
+          }
+        }
+      },
+      "ArubaApUplink_Resolver": {
+        "description": "Grouping for DNS resolver functionality"
+      },
+      "ArubaCellular_ThirdPartyModemConfig": {
+        "description": "cellular uplink configurations for third party modem.",
+        "properties": {
+          "tp-driver-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "OPTION",
+              "ACM",
+              "AIRPRIME",
+              "HSO",
+              "SIERRA_EVDO",
+              "SIERRA_GSM",
+              "PANTECH_3G",
+              "ETHER_3G",
+              "SIERRA_NET",
+              "RNDIS_U770",
+              "RNDIS_L800",
+              "HUAWEI_CDC",
+              "NOVATEL_U620",
+              "RNDIS_UML295",
+              "SIERRA_GOBI",
+              "ZTE_CDC",
+              "ARUBA_GOBI"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "the default value.",
+              "OPTION": "the driver for Huawei modem.",
+              "ACM": "the driver for DOCOMO modem.",
+              "AIRPRIME": "the driver for Airprime modem.",
+              "HSO": "the driver for hso modem.",
+              "SIERRA_EVDO": "the driver for Sierra EVDO modem.",
+              "SIERRA_GSM": "the driver for Sierra GSM modem.",
+              "PANTECH_3G": "the driver for Pantech UML290 modem (3G mode).",
+              "ETHER_3G": "the driver for Novatal MC551 modem.",
+              "SIERRA_NET": "the driver for Sierra Net modem.",
+              "RNDIS_U770": "the driver for Franklin U770/U772 modem.",
+              "RNDIS_L800": "the driver for Alcatel L800 modem.",
+              "HUAWEI_CDC": "the driver for Huawei E3372/E3276 modem.",
+              "NOVATEL_U620": "the driver for Novatel U620L modem.",
+              "RNDIS_UML295": "the driver for Pantech UML295 modem.",
+              "SIERRA_GOBI": "the driver for Aircard 340u/341u modem.",
+              "ZTE_CDC": "the driver for ZTE modem.",
+              "ARUBA_GOBI": "the driver for Aruba modem."
+            },
+            "x-typeDescription": "the driver required for 3G or 4G modem.",
+            "description": "The device driver required for 3G or 4G modem, this API is AP specific and only for 3rd party modem.\nRange: OPTION, ACM, AIRPRIME, HSO, SIERRA_EVDO, SIERRA_GSM, PANTECH_3G, ETHER_3G, SIERRA_NET,\nRNDIS_U770, RNDIS_L800, HUAWEI_CDC, NOVATEL_U620, RNDIS_UML295, SIERRA_GOBI, ZTE_CDC, ARUBA_GOBI"
+          },
+          "tp-device-id": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "The device ID of the modem, this API is AP specific and only for 3rd party modem."
+          },
+          "tp-device-tty": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "The modem TTY port, this API is AP specific and only for 3rd party modem."
+          },
+          "tp-init-parameters": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "The parameter name to initialize the modem, this API is AP specific and only for 3rd party modem."
+          },
+          "tp-cell-auth": {
+            "description": "Cellular authentication parameters,these parameters are important credentials used to verify user identity,\nthese parameters are typically provided by ISP to ensure that only authorized users can access the network.",
+            "properties": {
+              "type": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "PAP",
+                  "CHAP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "the default value.",
+                  "PAP": "the PAP authentication.",
+                  "CHAP": "the CHAP authentication."
+                },
+                "x-typeDescription": "the authentication type for modem.",
+                "description": "The authentication type for modem, this API is AP specific and only for 3rd party modem.\nRange: PAP, CHAP"
+              },
+              "username": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "The username of subscriber of selected Internet Service Provider,\nthis API is AP specific and only for 3rd party modem."
+              },
+              "password": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "The password for the account associated with the subscriber of the selected Internet Service Provider,\nthis API is AP specific and only for 3rd party modem."
+              }
+            }
+          },
+          "tp-dial-cmd": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "The parameter to dial the cell tower, this API is AP specific and only for 3rd party modem."
+          },
+          "tp-modeswitch-cmd": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "The parameter used to switch modem from storage mode to modem mode,\nthis API is AP specific and only for 3rd party modem."
+          },
+          "tp-isp": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CINCINNATI_BELL",
+              "VIRGIN",
+              "TELECOM",
+              "TELENOR",
+              "VODAFONE_SMARTONE",
+              "O2",
+              "SFR",
+              "ORANGE",
+              "HUTCH",
+              "OPTUS",
+              "SINGTEL",
+              "HKCSL",
+              "VERIZON",
+              "RELIANCE",
+              "TATA_INDICOM",
+              "AIRTEL_3G",
+              "NOKIA_CS_10",
+              "NTT",
+              "KDDI",
+              "MOVISTAR",
+              "CHINA_TELECOM",
+              "CHINA_UNICOM",
+              "VODAFONE",
+              "NETCOM",
+              "T_MOBILE",
+              "MOBILY",
+              "EMOBILE",
+              "SPRINT",
+              "CRICKET",
+              "VODAFONE_3G",
+              "AIRTEL",
+              "ATT",
+              "BELL",
+              "DEUTSCH_TELEKOM",
+              "ICE",
+              "TELSTRA",
+              "CHINA_MOBILE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "the default value.",
+              "CINCINNATI_BELL": "Cincinnati Bell ISP.",
+              "VIRGIN": "Virgin ISP.",
+              "TELECOM": "Telecom ISP.",
+              "TELENOR": "Telenor ISP.",
+              "VODAFONE_SMARTONE": "Vodafone/SmarTone ISP.",
+              "O2": "O2 ISP.",
+              "SFR": "SFR ISP.",
+              "ORANGE": "Orange ISP.",
+              "HUTCH": "Hutch ISP.",
+              "OPTUS": "Optus ISP.",
+              "SINGTEL": "SingTel ISP.",
+              "HKCSL": "HKCSL ISP.",
+              "VERIZON": "Verizon ISP.",
+              "RELIANCE": "Reliance ISP.",
+              "TATA_INDICOM": "Tata Indicom ISP.",
+              "AIRTEL_3G": "Airtel 3G ISP.",
+              "NOKIA_CS_10": "Nokia CS-10 ISP.",
+              "NTT": "NTT ISP.",
+              "KDDI": "KDDI ISP.",
+              "MOVISTAR": "Movistar ISP.",
+              "CHINA_TELECOM": "China Telecom ISP.",
+              "CHINA_UNICOM": "China Unicom ISP.",
+              "VODAFONE": "Vodafone ISP.",
+              "NETCOM": "Netcom ISP.",
+              "T_MOBILE": "T-mobile ISP.",
+              "MOBILY": "Mobily ISP.",
+              "EMOBILE": "EMOBILE ISP.",
+              "SPRINT": "Sprint ISP.",
+              "CRICKET": "Cricket ISP.",
+              "VODAFONE_3G": "Vodafone 3G ISP.",
+              "AIRTEL": "Airtel ISP.",
+              "ATT": "ATT ISP.",
+              "BELL": "Bell ISP.",
+              "DEUTSCH_TELEKOM": "Deutsch Telekom ISP.",
+              "ICE": "Ice ISP.",
+              "TELSTRA": "Telstra ISP.",
+              "CHINA_MOBILE": "China Mobile ISP."
+            },
+            "x-typeDescription": "Name of the Internet Service Provider to connect.",
+            "description": "The name of the Internet Service Provider to connect, this API is AP specific and only for 3rd party modem.\nRange: CINCINNATI_BELL, VIRGIN, TELECOM, TELENOR, VODAFONE_SMARTONE, O2, SFR, ORANGE, HUTCH, OPTUS,\nSINGTEL, HKCSL, VERIZON, RELIANCE, TATA_INDICOM, AIRTEL_3G, NOKIA_CS_10, NTT, KDDI, MOVISTAR, CHINA_TELECOM,\nCHINA_UNICOM, VODAFONE, NETCOM, T_MOBILE, MOBILY, EMOBILE, SPRINT, CRICKET, VODAFONE_3G, AIRTEL, ATT,\nBELL, DEUTSCH_TELEKOM, ICE, TELSTRA, CHINA_MOBILE"
+          },
+          "tp-country": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "FRANCE",
+              "NZ",
+              "ISRAEL",
+              "HK",
+              "SWEDEN",
+              "SPAIN",
+              "UK",
+              "NORWAY",
+              "GERMANY",
+              "CROATIA",
+              "SAUDI_ARABIA",
+              "US",
+              "JAPAN",
+              "AUSTRALIA",
+              "CANADA",
+              "INDIA",
+              "CHINA"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "the default value.",
+              "FRANCE": "the country France.",
+              "NZ": "the country New Zealand.",
+              "ISRAEL": "the country Israel.",
+              "HK": "the country Hong Kong.",
+              "SWEDEN": "the country Sweden.",
+              "SPAIN": "the country Spain.",
+              "UK": "the country UK.",
+              "NORWAY": "the country Norway.",
+              "GERMANY": "the country Germany.",
+              "CROATIA": "the country Croatia.",
+              "SAUDI_ARABIA": "the country Saudi Arabia.",
+              "US": "the coutry US.",
+              "JAPAN": "the country Japan.",
+              "AUSTRALIA": "the country Australia.",
+              "CANADA": "the country Canada.",
+              "INDIA": "the country India.",
+              "CHINA": "the country China."
+            },
+            "x-typeDescription": "the country for modem.",
+            "description": "The country for the deployment, this API is AP specific and only for 3rd party modem."
+          }
+        }
+      },
+      "ArubaCellular_ArubaModemConfig": {
+        "description": "Cellular uplink configurations for Aruba modem.",
+        "properties": {
+          "aruba-skylark": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Skylark profile has been created and enabled and all other modems are disabled."
+          },
+          "plmn": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 5,
+            "maxLength": 9,
+            "description": "The Public Land Mobile Network(PLMN) identifier, this API is Aruba modem specific.\nFor AP, valid length: 5 or 6 digits"
+          },
+          "modem-apn": {
+            "description": "Modem APN(Access Point Name) Configuration is used by modem to connect to a mobile network\nfor internet access, this configuration help the modem identify the correct network and establish a data connection.",
+            "properties": {
+              "id": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "description": "APN-profile-id number."
+              },
+              "apn": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "The Access Point Name(APN) of modem, this API is Aruba modem specific."
+              },
+              "apn-username": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "APN usernmae"
+              },
+              "apn-password": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 16,
+                "description": "APN password"
+              },
+              "apn-authentication": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 3,
+                "default": "0",
+                "description": "APN authentication type. 0 - NONE, 1 - PAP, 2 - CHAP, 3 - MSCHAPv2"
+              },
+              "isp-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "ISP Access point name."
+              }
+            }
+          },
+          "gps": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable the GPS on the Aruba modem, this API is AP specific and only for Aruba modem"
+          },
+          "network-mode": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "AUTO",
+              "MODE_4G",
+              "MODE_3G",
+              "CUSTOM",
+              "NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "AUTO": "the network mode for aruba modem is automatic.",
+              "MODE_4G": "the network mode for aruba modem is 4G.",
+              "MODE_3G": "the network mode for aruba modem is 3G.",
+              "CUSTOM": "Custom mode used by Central UI. Not used for CLI configuration.",
+              "NONE": "Network mode is not required."
+            },
+            "x-typeDescription": "the cellular network mode for Aruba modem.",
+            "description": "The cellular network mode for Aruba modem, this API is Aruba modem specific.\nFollowing values are valid for AP:\nAUTO: connects to whichever mode is available.\nMODE_4G: connects to only 4G networks.\nMODE_3G: connects to only 3G networks."
+          },
+          "sim-slot": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "AUTO",
+              "SLOT_1",
+              "SLOT_2",
+              "NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "AUTO": "automatic selection of SIM slot.",
+              "SLOT_1": "SIM slot 1.",
+              "SLOT_2": "SIM slot 2.",
+              "NONE": "when SIM config is not required."
+            },
+            "x-typeDescription": "the SIM slot for Aruba modem.",
+            "description": "SIM slot for internal Aruba modem, this API is Aruba modem specific."
+          },
+          "data-rate-limit": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Data rate limit for cellular Connection(Mbps)."
+          },
+          "billing-start-date": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 31,
+            "description": "Billing start date from 1st to 31st."
+          },
+          "modem-e3372": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enabling/Disabling the Cellular profile for Huawei E3372h-320 modem."
+          },
+          "generation": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "GENERATION_4G",
+              "GENERATION_3G",
+              "NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "GENERATION_4G": "4G Generation.",
+              "GENERATION_3G": "3G Generation",
+              "NONE": "when generation-type is not required."
+            },
+            "x-typeDescription": "Cellular generation.",
+            "description": "Cellular generation - 3G or 4G."
+          },
+          "frequency-range": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "WCDMA_B19_800",
+              "WCDMA_B1_2100",
+              "WCDMA_B2_1900",
+              "WCDMA_B3_1800",
+              "WCDMA_B4_1700",
+              "WCDMA_B5_850",
+              "WCDMA_B8_900",
+              "WCDMA_B9_1700",
+              "LTE_B12_700",
+              "LTE_B13_700",
+              "LTE_B14_700",
+              "LTE_B17_700",
+              "LTE_B18_850",
+              "LTE_B19_850",
+              "LTE_B1_2100",
+              "LTE_B20_800",
+              "LTE_B21_1500",
+              "LTE_B25_1900",
+              "LTE_B26_850",
+              "LTE_B28_700",
+              "LTE_B29_700",
+              "LTE_B2_1900",
+              "LTE_B30_2300",
+              "LTE_B32_1500",
+              "LTE_B38_2600",
+              "LTE_B39_1900",
+              "LTE_B3_1800",
+              "LTE_B40_2300",
+              "LTE_B41_2500",
+              "LTE_B4_1700",
+              "LTE_B5_850",
+              "LTE_B66_1700",
+              "LTE_B7_2600",
+              "LTE_B8_900",
+              "LTE_B9"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "WCDMA_B19_800": "Tx:830~845 Rx:875~890 Mhz.",
+              "WCDMA_B1_2100": "Tx:1920~1980 Rx:2110~2170 Mhz.",
+              "WCDMA_B2_1900": "Tx:1850~1910 Rx:1930~1990 Mhz.",
+              "WCDMA_B3_1800": "Tx:1710~1785 Rx:1805~1880 Mhz.",
+              "WCDMA_B4_1700": "Tx:1710~1755 Rx:2110~2155 Mhz.",
+              "WCDMA_B5_850": "Tx:824~849 Rx:869~894 Mhz.",
+              "WCDMA_B8_900": "Tx:880~915 Rx:925~960 Mhz.",
+              "WCDMA_B9_1700": "Tx:1750~1785 Rx:1845~1880 Mhz.",
+              "LTE_B12_700": "Tx:699~716 Rx:729~746 Mhz.",
+              "LTE_B13_700": "Tx:777~787 Rx:746~756 Mhz.",
+              "LTE_B14_700": "Tx:788~798 Rx:758~768 Mhz.",
+              "LTE_B17_700": "Tx:704~716 Rx:734~746 Mhz.",
+              "LTE_B18_850": "Tx:815~830 Rx:860~875 Mhz.",
+              "LTE_B19_850": "Tx:830~845 Rx:875~890 Mhz.",
+              "LTE_B1_2100": "Tx:1920~1980 Rx:2110~2170 Mhz.",
+              "LTE_B20_800": "Tx:832~862 Rx:791~821 Mhz.",
+              "LTE_B21_1500": "Tx:1447.9~1462.9 Rx:1495.9~1510.9 Mhz.",
+              "LTE_B25_1900": "Tx:1850~1915 Rx:1930~1995 Mhz.",
+              "LTE_B26_850": "Tx:814~849 Rx:859~894 Mhz.",
+              "LTE_B28_700": "Tx:703~748 Rx:758~803 Mhz.",
+              "LTE_B29_700": "Tx:NA Rx:717~728 Mhz.",
+              "LTE_B2_1900": "Tx:1850~1910 Rx:1930~1990 Mhz.",
+              "LTE_B30_2300": "Tx:2305~2315 Rx:2350~2360 Mhz.",
+              "LTE_B32_1500": "Tx:NA Rx:1452~1496 Mhz.",
+              "LTE_B38_2600": "Tx:2570~2620 Rx:2570~2620 Mhz.",
+              "LTE_B39_1900": "Tx:1880~1920 Rx:1880~1920 Mhz.",
+              "LTE_B3_1800": "Tx:1710~1785 Rx:1805~1880 Mhz.",
+              "LTE_B40_2300": "Tx:2300~2400 Rx:2300~2400 Mhz.",
+              "LTE_B41_2500": "Tx:2496~2690 Rx:2496~2690 Mhz.",
+              "LTE_B4_1700": "Tx:1710~1755 Rx:2110~2155 Mhz.",
+              "LTE_B5_850": "Tx:824~849 Rx:869~894 Mhz.",
+              "LTE_B66_1700": "Tx:1710~1780 Rx:2110~2200 Mhz.",
+              "LTE_B7_2600": "Tx:2500~2570 Rx:2620~2690 Mhz.",
+              "LTE_B8_900": "Tx:880~915 Rx:925~960 Mhz.",
+              "LTE_B9": "Tx:1749.9~1784.9 Rx:1844.9~1879.9 Mhz."
+            },
+            "description": "Frequency band."
+          },
+          "auto-upgrade": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Automatic firmware upgrade for Aruba modem, this API is AP specific and only for Aruba modem."
+          },
+          "sim-failover": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable Sim failover for uplink manager configuration."
+          },
+          "prefer-modem": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "MODEM_0",
+              "MODEM_1",
+              "NONE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MODEM_0": "prefer modem 0.",
+              "MODEM_1": "prefer modem 1.",
+              "NONE": "when prefer-modem config is not required."
+            },
+            "x-typeDescription": "the preferred modem.",
+            "description": "The preferred modem, this API is AP specific and only for Aruba modem."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

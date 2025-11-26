@@ -1,0 +1,1744 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ubt API generated from aruba-ubt.yang",
+    "version": "1.0.0",
+    "title": "ubt",
+    "x-tag-group": "Security"
+  },
+  "tags": [
+    {
+      "name": "ubt"
+    }
+  ],
+  "paths": {
+    "/ubt": {
+      "get": {
+        "summary": "Read configured UBT profiles",
+        "description": "Configuration of UBT (User based Tunnel) Profiles.\nThis feature creates UBT GRE tunnel between the\nswitch and the controller when UBT users are\npresent on the switch. It encapsulates incoming\npackets from end-hosts in GRE and forwards them\nto the Mobility Controller.The feature is enabled\non a Per User Tunneled Node basis.",
+        "operationId": "readUbt",
+        "x-cliParam": {
+          "commandName": "readUbtCmd",
+          "summary": "Read operation for ubt",
+          "commandUse": "ubt",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ubt/"
+        },
+        "tags": [
+          "ubt"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaUbt_UbtSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubt/{name}": {
+      "post": {
+        "summary": "Create a new UBT profile by unique name",
+        "description": "A list of global profile(s) for UBT, each\nscope (global, site, site-collection, device, device-collection)\ncan accept only one profile.",
+        "operationId": "createUbtProfileByID",
+        "x-cliParam": {
+          "commandName": "createUbtProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createUbtCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ubt/profile/%s/"
+        },
+        "tags": [
+          "ubt"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "UBT profile name to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaUbt_UbtprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing UBT profile configurations",
+        "description": "A list of global profile(s) for UBT, each\nscope (global, site, site-collection, device, device-collection)\ncan accept only one profile.",
+        "operationId": "readUbtProfileByID",
+        "x-cliParam": {
+          "commandName": "readUbtProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readUbtCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ubt/profile/%s/"
+        },
+        "tags": [
+          "ubt"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "UBT profile name to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaUbt_UbtprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing UBT profile configurations",
+        "description": "A list of global profile(s) for UBT, each\nscope (global, site, site-collection, device, device-collection)\ncan accept only one profile.",
+        "operationId": "updateUbtProfileByID",
+        "x-cliParam": {
+          "commandName": "updateUbtProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateUbtCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ubt/profile/%s/"
+        },
+        "tags": [
+          "ubt"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "UBT profile name to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaUbt_UbtprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the UBT profile",
+        "description": "A list of global profile(s) for UBT, each\nscope (global, site, site-collection, device, device-collection)\ncan accept only one profile.",
+        "operationId": "deleteUbtProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteUbtProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteUbtCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ubt/profile/%s/"
+        },
+        "tags": [
+          "ubt"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "UBT profile name to be configured.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaUbt_UbtprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaUbt_UbtprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaUbt_UbtSchema": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Configuration of UBT (User based Tunnel) Profiles.\nThis feature creates UBT GRE tunnel between the\nswitch and the controller when UBT users are\npresent on the switch. It encapsulates incoming\npackets from end-hosts in GRE and forwards them\nto the Mobility Controller.The feature is enabled\non a Per User Tunneled Node basis.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "description": "A list of global profile(s) for UBT, each\nscope (global, site, site-collection, device, device-collection)\ncan accept only one profile.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "UBT profile name to be configured."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "User description for UBT Profile."
+                },
+                "zone": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "description": "A list of UBT zone specific configuration.",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "zone-name-vrf": {
+                        "type": "string",
+                        "format": "const",
+                        "maxLength": 9999,
+                        "description": "Key combination of zone-name and vrf separated by ~"
+                      },
+                      "zone-description": {
+                        "type": "string",
+                        "format": "const",
+                        "minLength": 1,
+                        "maxLength": 255,
+                        "description": "UBT Zone description"
+                      },
+                      "primary-controller-ip": {
+                        "x-supportedDeviceType": [
+                          "Switch CX",
+                          "Switch PVOS"
+                        ],
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                        "x-mandatory": true,
+                        "description": "UBT zone's primary controller's ip address.\nEach zone within a profile must have a unique primary-controller ip.\nThis ip must also be distinct from backup-controller ip within\nthe same zone and backup-controller ip of other zones"
+                      },
+                      "backup-controller-ip": {
+                        "x-supportedDeviceType": [
+                          "Switch CX",
+                          "Switch PVOS"
+                        ],
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                        "description": "UBT zone's secondary controller's ip address.\nEach zone within a profile must have a unique backup-controller ip.\nThis ip must also be distinct from primary-controller ip within\nthe same zone and primary-controller ip of other zones"
+                      },
+                      "papi-security-key": {
+                        "x-supportedDeviceType": [
+                          "Switch CX",
+                          "Switch PVOS"
+                        ],
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaUbt_PasswordInfo"
+                          }
+                        ],
+                        "description": "Shared security key that will be used to encrypt UBT PAPI messages\nexchanged between this switch and the controller cluster corresponding\nto this zone. When not set, shared security key is not used for\nencrypting papi messages."
+                      },
+                      "uac-keepalive-interval": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 1,
+                        "maximum": 60,
+                        "default": "60",
+                        "description": "Time interval (in seconds) between successive\nkeep-alive messages sent to the User Anchor Controller(UAC)."
+                      },
+                      "sac-heartbeat-interval": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 1,
+                        "maximum": 8,
+                        "default": "1",
+                        "description": "Time interval (in seconds) between successive\nheartbeat messages to the Switch Anchor Controller(SAC)."
+                      },
+                      "maintenance-period": {
+                        "x-supportedDeviceType": [
+                          "Switch PVOS"
+                        ],
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 720,
+                        "default": "0",
+                        "description": "The user-based tunnel maintenance period is in the range of\n1 to 720 hours. The default value of 0 can be used to\ndisable the maintenance window. If maintenance period is configured\nthen authenticated clients will be retained in current role in the\nevent of controller unreachability. Client traffic will be dropped\nin switch ingress port. Once controller is reachable, client\ntraffic flow will be resumed. If controller is not reachable even\nafter configured maintenance period, clients will be\ndeauthenticated."
+                      },
+                      "wol-vlans": {
+                        "type": "array",
+                        "items": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS"
+                          ],
+                          "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "Wake-on-LAN VLAN configuration.\nThese VLANs need to pre-configured on Switch and Controller.\nThis is applicable only when mode is set to VLAN_EXTEND."
+                        },
+                        "maxItems": 2147483647
+                      },
+                      "enable": {
+                        "x-supportedDeviceType": [
+                          "Switch CX",
+                          "Switch PVOS"
+                        ],
+                        "type": "boolean",
+                        "description": "Enables/Disables UBT functionality for this zone."
+                      }
+                    },
+                    "required": [
+                      "primary-controller-ip"
+                    ]
+                  },
+                  "x-key": [
+                    "zoneNameVrf"
+                  ],
+                  "maxItems": 2147483647
+                },
+                "mode": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "VLAN_EXTEND",
+                    "LOCAL_VLAN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "VLAN_EXTEND": "Clients are assigned to their UBT-role based\nVLAN in the hardware datapath. This mode allows\nfor UBT to support VLAN-tagged clients like VOIP\nphones.",
+                    "LOCAL_VLAN": "Clients are assigned to a VLAN that is local to\nthe switch and associated with their UBT-role\nbased VLAN when client traffic reaches the\ncontroller. This mode allows for reducing the\nnumber of VLANs that need to be instantiated on\nthe switch but can only support VLAN-untagged UBT\nclients. The 'client-vid' will be used to\nspecify the local_vlan that UBT clients are\nassigned to. "
+                  },
+                  "x-typeDescription": "UBT modes of operation",
+                  "default": "LOCAL_VLAN",
+                  "description": "UBT VLAN mode configuration"
+                },
+                "client-vid": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 4094,
+                  "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                  "description": "This vlan is used when mode is LOCAL_VLAN.\nIf UBT Client VLAN is configured in VLAN_EXTEND mode, it is ignored.\nVLAN-ID assigned to UBT clients for tunneling traffic from\nswitch to controller."
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaUbt_UbtSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaUbt_UbtSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaUbt_UbtprofileSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "UBT profile name to be configured."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "User description for UBT Profile."
+          },
+          "zone": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "A list of UBT zone specific configuration.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "zone-name-vrf": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Key combination of zone-name and vrf separated by ~"
+                },
+                "zone-description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "description": "UBT Zone description"
+                },
+                "primary-controller-ip": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "x-mandatory": true,
+                  "description": "UBT zone's primary controller's ip address.\nEach zone within a profile must have a unique primary-controller ip.\nThis ip must also be distinct from backup-controller ip within\nthe same zone and backup-controller ip of other zones"
+                },
+                "backup-controller-ip": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "UBT zone's secondary controller's ip address.\nEach zone within a profile must have a unique backup-controller ip.\nThis ip must also be distinct from primary-controller ip within\nthe same zone and primary-controller ip of other zones"
+                },
+                "papi-security-key": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaUbt_PasswordInfo"
+                    }
+                  ],
+                  "description": "Shared security key that will be used to encrypt UBT PAPI messages\nexchanged between this switch and the controller cluster corresponding\nto this zone. When not set, shared security key is not used for\nencrypting papi messages."
+                },
+                "uac-keepalive-interval": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 60,
+                  "default": "60",
+                  "description": "Time interval (in seconds) between successive\nkeep-alive messages sent to the User Anchor Controller(UAC)."
+                },
+                "sac-heartbeat-interval": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 8,
+                  "default": "1",
+                  "description": "Time interval (in seconds) between successive\nheartbeat messages to the Switch Anchor Controller(SAC)."
+                },
+                "maintenance-period": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "maximum": 720,
+                  "default": "0",
+                  "description": "The user-based tunnel maintenance period is in the range of\n1 to 720 hours. The default value of 0 can be used to\ndisable the maintenance window. If maintenance period is configured\nthen authenticated clients will be retained in current role in the\nevent of controller unreachability. Client traffic will be dropped\nin switch ingress port. Once controller is reachable, client\ntraffic flow will be resumed. If controller is not reachable even\nafter configured maintenance period, clients will be\ndeauthenticated."
+                },
+                "wol-vlans": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "Wake-on-LAN VLAN configuration.\nThese VLANs need to pre-configured on Switch and Controller.\nThis is applicable only when mode is set to VLAN_EXTEND."
+                  },
+                  "maxItems": 2147483647
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "description": "Enables/Disables UBT functionality for this zone."
+                }
+              },
+              "required": [
+                "primary-controller-ip"
+              ]
+            },
+            "x-key": [
+              "zoneNameVrf"
+            ],
+            "maxItems": 2147483647
+          },
+          "mode": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "VLAN_EXTEND",
+              "LOCAL_VLAN"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "VLAN_EXTEND": "Clients are assigned to their UBT-role based\nVLAN in the hardware datapath. This mode allows\nfor UBT to support VLAN-tagged clients like VOIP\nphones.",
+              "LOCAL_VLAN": "Clients are assigned to a VLAN that is local to\nthe switch and associated with their UBT-role\nbased VLAN when client traffic reaches the\ncontroller. This mode allows for reducing the\nnumber of VLANs that need to be instantiated on\nthe switch but can only support VLAN-untagged UBT\nclients. The 'client-vid' will be used to\nspecify the local_vlan that UBT clients are\nassigned to. "
+            },
+            "x-typeDescription": "UBT modes of operation",
+            "default": "LOCAL_VLAN",
+            "description": "UBT VLAN mode configuration"
+          },
+          "client-vid": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "This vlan is used when mode is LOCAL_VLAN.\nIf UBT Client VLAN is configured in VLAN_EXTEND mode, it is ignored.\nVLAN-ID assigned to UBT clients for tunneling traffic from\nswitch to controller."
+          }
+        }
+      },
+      "ArubaUbt_PasswordInfo": {
+        "description": "Configure password details.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure plaintext key",
+              "CIPHER_TEXT": "Configure ciphertext key"
+            },
+            "x-typeDescription": "Password type",
+            "default": "PLAIN_TEXT",
+            "description": "Password type [ciphertext | plaintext]."
+          },
+          "plain-password": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Set the plaintext authentication key."
+          },
+          "cipher-password": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Set the ciphertext authentication key."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

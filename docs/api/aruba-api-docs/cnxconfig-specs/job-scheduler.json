@@ -1,0 +1,2048 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-job-scheduler API generated from aruba-job-scheduler.yang",
+    "version": "1.0.0",
+    "title": "job-scheduler",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "job-scheduler"
+    }
+  ],
+  "paths": {
+    "/job-scheduler": {
+      "get": {
+        "summary": "Read existing job-scheduler configurations",
+        "description": "The job scheduler feature facilitates us to schedule a job to be\nexecuted in the near future.  Currently, only non-interactive enable\nand configuration commands are allowed to be configured as a job.\nSchedules can be configured to be triggered periodically or at a specific\ncalendar date and time. They are categorized into periodic schedules,\ncalendar schedules, and one-shot schedules. Periodic schedules are based\non the fixed time interval between the two triggers.\n\nCalendar schedules are based on the specified days of the week and days\nof the month. Calendar schedules are therefore aware of the notion of\nmonths, days, weekdays, hours, and minutes.\n\nOne-shot schedules are similar to the calendar schedule but they will\nautomatically disable themselves after one trigger.\n\nThis feature is useful to schedule a toggling port, check the system\nhealth status, clear the statistics or some clean-up activities,\nQoS policy changes, save the configurations, and other similar jobs.\n\nWhile updating trigger-type other parameter must set to null, which are\nnot applicable.",
+        "operationId": "readJobScheduler",
+        "x-cliParam": {
+          "commandName": "readJobSchedulerCmd",
+          "summary": "Read operation for job-scheduler",
+          "commandUse": "job-scheduler",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/job-scheduler/"
+        },
+        "tags": [
+          "job-scheduler"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_JobSchedulerSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/job-scheduler/{name}": {
+      "post": {
+        "summary": "Create a new schedule by unique name",
+        "description": "Scheduling entry parameters.",
+        "operationId": "createJobSchedulerScheduleByID",
+        "x-cliParam": {
+          "commandName": "createJobSchedulerScheduleCmd",
+          "summary": "Create operation for schedule",
+          "commandUse": "schedule",
+          "parentCommand": "createJobSchedulerCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/job-scheduler/schedule/%s/"
+        },
+        "tags": [
+          "job-scheduler"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Schedule name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaJobScheduler_JobSchedulerscheduleSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing schedule configurations",
+        "description": "Scheduling entry parameters.",
+        "operationId": "readJobSchedulerScheduleByID",
+        "x-cliParam": {
+          "commandName": "readJobSchedulerScheduleCmd",
+          "summary": "Read operation for schedule",
+          "commandUse": "schedule",
+          "parentCommand": "readJobSchedulerCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/job-scheduler/schedule/%s/"
+        },
+        "tags": [
+          "job-scheduler"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Schedule name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_JobSchedulerscheduleSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing schedule configurations",
+        "description": "Scheduling entry parameters.",
+        "operationId": "updateJobSchedulerScheduleByID",
+        "x-cliParam": {
+          "commandName": "updateJobSchedulerScheduleCmd",
+          "summary": "Update operation for schedule",
+          "commandUse": "schedule",
+          "parentCommand": "updateJobSchedulerCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/job-scheduler/schedule/%s/"
+        },
+        "tags": [
+          "job-scheduler"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Schedule name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaJobScheduler_JobSchedulerscheduleSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the schedule",
+        "description": "Scheduling entry parameters.",
+        "operationId": "deleteJobSchedulerScheduleByID",
+        "x-cliParam": {
+          "commandName": "deleteJobSchedulerScheduleCmd",
+          "summary": "Delete operation for schedule",
+          "commandUse": "schedule",
+          "parentCommand": "deleteJobSchedulerCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/job-scheduler/schedule/%s/"
+        },
+        "tags": [
+          "job-scheduler"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Schedule name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaJobScheduler_JobSchedulerscheduleSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaJobScheduler_JobSchedulerscheduleSchema"
+            }
+          }
+        },
+        "description": "schedulebody object"
+      }
+    },
+    "schemas": {
+      "ArubaJobScheduler_JobSchedulerSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "The job scheduler feature facilitates us to schedule a job to be\nexecuted in the near future.  Currently, only non-interactive enable\nand configuration commands are allowed to be configured as a job.\nSchedules can be configured to be triggered periodically or at a specific\ncalendar date and time. They are categorized into periodic schedules,\ncalendar schedules, and one-shot schedules. Periodic schedules are based\non the fixed time interval between the two triggers.\n\nCalendar schedules are based on the specified days of the week and days\nof the month. Calendar schedules are therefore aware of the notion of\nmonths, days, weekdays, hours, and minutes.\n\nOne-shot schedules are similar to the calendar schedule but they will\nautomatically disable themselves after one trigger.\n\nThis feature is useful to schedule a toggling port, check the system\nhealth status, clear the statistics or some clean-up activities,\nQoS policy changes, save the configurations, and other similar jobs.\n\nWhile updating trigger-type other parameter must set to null, which are\nnot applicable.",
+        "properties": {
+          "schedule": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Scheduling entry parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_ScheduleEntry"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_Job"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_Trigger"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "Schedule name."
+                    },
+                    "description": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "description": "Description about the schedule."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable the schedule."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaJobScheduler_JobSchedulerSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_JobSchedulerSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaJobScheduler_JobSchedulerscheduleSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_ScheduleEntry"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_Job"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_Trigger"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "Schedule name."
+              },
+              "description": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 128,
+                "description": "Description about the schedule."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable the schedule."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaJobScheduler_Job": {
+        "description": "Job group.",
+        "properties": {
+          "job": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Job configuration.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaJobScheduler_Entry"
+                },
+                {
+                  "properties": {
+                    "job-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "Job name."
+                    },
+                    "description": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "description": "A description about the job."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable the job."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "jobName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaJobScheduler_ScheduleEntry": {
+        "description": "Schedule entry",
+        "properties": {
+          "schedule-entry": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Schedule entry",
+            "type": "array",
+            "items": {
+              "properties": {
+                "sequence-number": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 4294967295,
+                  "description": "Sequence number."
+                },
+                "schedule-job": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Jobs associated with this schedule."
+                }
+              }
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaJobScheduler_Entry": {
+        "description": "Job entry group.",
+        "properties": {
+          "entry": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Job entry parameters.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "sequence-number": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 4294967295,
+                  "description": "Sequence number."
+                },
+                "cli-command": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 4096,
+                  "x-mandatory": true,
+                  "description": "CLI command that needs to be executed when the job is scheduled."
+                },
+                "cli-delay": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 300,
+                  "description": "Delay in seconds that the system will wait after executing\nthe current CLI command."
+                },
+                "type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CLI"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CLI": "Set of CLI commands are defined as job."
+                  },
+                  "x-typeDescription": "Type of job.",
+                  "default": "CLI",
+                  "description": "Type of the job."
+                }
+              },
+              "required": [
+                "cli-command"
+              ]
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaJobScheduler_TriggerAt": {
+        "description": "Trigger at grouping.",
+        "properties": {
+          "frequency": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DAILY": "Daily.",
+              "WEEKLY": "Weekly.",
+              "MONTHLY": "Monthly.",
+              "YEARLY": "Yearly"
+            },
+            "x-typeDescription": "Frequency of Job Scheduler.",
+            "description": "Frequency of job scheduler calendar time on schedule."
+          },
+          "week-day": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "sunday",
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "everyday"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "sunday": "Sunday",
+              "monday": "Monday",
+              "tuesday": "Tuesday",
+              "wednesday": "Wednesday",
+              "thursday": "Thursday",
+              "friday": "Friday",
+              "saturday": "Saturday",
+              "everyday": "Everyday"
+            },
+            "x-typeDescription": "Day of week",
+            "description": "Day in a week. week-day is valid when frequency is WEEKLY"
+          },
+          "days-of-the-week": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "enum": [
+                "sunday",
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "everyday"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "sunday": "Sunday",
+                "monday": "Monday",
+                "tuesday": "Tuesday",
+                "wednesday": "Wednesday",
+                "thursday": "Thursday",
+                "friday": "Friday",
+                "saturday": "Saturday",
+                "everyday": "Everyday"
+              },
+              "x-typeDescription": "Day of week",
+              "description": "Days of the week, separated by range."
+            },
+            "maxItems": 2147483647
+          },
+          "month-day": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": -31,
+            "maximum": -1,
+            "description": "Date in a month. month-day is valid when frequency is MONTHLY."
+          },
+          "yearly-date": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "yearly-date",
+            "x-patterns": "'(04|06|09|11)/(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)/(0[1-9]|[12][0-9]|3[01])|(02)/(0[1-9]|[12][0-9])'",
+            "maxLength": 9999,
+            "description": "The date when the job should run, in MM/DD format."
+          },
+          "start-date-at": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "utc-date",
+            "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])'",
+            "maxLength": 9999,
+            "x-typeDescription": "A full UTC date, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DD\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value.",
+            "description": "Trigger start date, expressed as YYYY-MM-DD .\nstart-date-at is valid when trigger-type is TRIGGER_AT and start-time-at\nis configured."
+          },
+          "start-time-at": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "start-time-at",
+            "x-patterns": "'([0-1][0-9]|2[0-3]):[0-5][0-9]'",
+            "maxLength": 9999,
+            "description": "Trigger start time. 24-hour time, expressed as HH:MM .\nstart-time-at is valid when trigger-type is TRIGGER_AT"
+          },
+          "start-time-on": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "start-time-on",
+            "x-patterns": "'[0-2][0-9]:[0-5][0-9]'",
+            "maxLength": 9999,
+            "description": "Trigger start time. 24-hour time, expressed as HH:MM .\nstart-time-on is valid when trigger-type is TRIGGER_ON"
+          },
+          "start-date-on": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "utc-date",
+            "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])'",
+            "maxLength": 9999,
+            "x-typeDescription": "A full UTC date, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DD\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value.",
+            "description": "Trigger start date, expressed as YYYY-MM-DD .\nstart-date-on is valid when trigger-type is TRIGGER_ON"
+          },
+          "start-date-every": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "utc-date",
+            "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])'",
+            "maxLength": 9999,
+            "x-typeDescription": "A full UTC date, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DD\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value.",
+            "description": "Trigger start date, expressed as YYYY-MM-DD .\nstart-date-every is valid when trigger-type is TRIGGER_EVERY and\nstart-time-every is configured. "
+          },
+          "start-time-every": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "start-time-every",
+            "x-patterns": "'[0-2][0-9]:[0-5][0-9]'",
+            "maxLength": 9999,
+            "description": "Trigger start time. 24-hour time, expressed as HH:MM .\nstart-time-every is valid when /trigger-type is TRIGGER_EVERY."
+          }
+        }
+      },
+      "ArubaJobScheduler_TriggerEvery": {
+        "description": "Repeated trigger time grouping.",
+        "properties": {
+          "days": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 365,
+            "description": "Days. days is valid when trigger-type is TRIGGER_EVERY."
+          },
+          "hours": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 8760,
+            "description": "Hours. hours is valid when trigger-type is TRIGGER_EVERY."
+          },
+          "minutes": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 30,
+            "maximum": 525600,
+            "description": "Minutes. minutes is valid when trigger-type is TRIGGER_EVERY."
+          },
+          "duration": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Delay time in DD:HH:MM format."
+          }
+        }
+      },
+      "ArubaJobScheduler_Trigger": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_TriggerAt"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaJobScheduler_TriggerEvery"
+          }
+        ],
+        "description": "Job scheduler trigger grouping.",
+        "properties": {
+          "trigger-type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "TRIGGER_AT",
+              "TRIGGER_ON",
+              "TRIGGER_EVERY",
+              "TRIGGER_EVENT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TRIGGER_AT": "Fixed date and time for the schedule. This is oneshot schedule.",
+              "TRIGGER_ON": "Calendar time for the schedule.",
+              "TRIGGER_EVERY": "Periodic interval for schedule with custom time interval.",
+              "TRIGGER_EVENT": "Event at which the job is triggered."
+            },
+            "x-typeDescription": "Job scheduler trigger type.",
+            "description": "Trigger type.\nWhile updating trigger-type other parameter must set to null, which are\nnot applicable."
+          },
+          "count": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Maximum number of times the schedule can trigger.\nIf not set, no limit is applied on the number of triggers.\nThis is not applicable for 'one-shot' schedule type.\nOnce schedule is triggered count number of times, the status\nchanges to expired."
+          },
+          "date-time": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "date-and-time",
+            "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])[Tt](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-5][0-9]|60)(\\.[0-9]+)?([Zz]|([+-](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9])))'",
+            "maxLength": 9999,
+            "x-typeDescription": "A date and time, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DDTHH:MM:SSZ+-hh:mm\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value. T is the literal character 'T',\nHH is the hour of the day expressed as a two digit number, using\nthe 24-hour clock, MM is the minute of the hour expressed as a\ntwo digit number. Z is the literal character 'Z', followed by a\ntimezone offset expressed in hours (hh) and minutes (mm), both\nexpressed as two digit numbers. The time offset is specified as\na positive or negative offset to UTC using the '+' or '-'\ncharacter preceding the offset.\n\nOptionally, fractional seconds can be expressed after the minute\nof the hour as a decimal number of unspecified precision\nreflecting fractions of a second.",
+            "description": "Trigger date and time."
+          },
+          "trigger-at-event": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "REBOOT",
+              "FAILOVER"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "REBOOT": "Reboot event.",
+              "FAILOVER": "Failover event."
+            },
+            "x-typeDescription": "Event to trigger the job.",
+            "description": "Runs the job when the event occur."
+          },
+          "trigger-at": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "TRIGGER_AT",
+              "TRIGGER_ON",
+              "TRIGGER_EVERY",
+              "TRIGGER_EVENT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TRIGGER_AT": "Fixed date and time for the schedule. This is oneshot schedule.",
+              "TRIGGER_ON": "Calendar time for the schedule.",
+              "TRIGGER_EVERY": "Periodic interval for schedule with custom time interval.",
+              "TRIGGER_EVENT": "Event at which the job is triggered."
+            },
+            "x-typeDescription": "Job scheduler trigger type.",
+            "description": "Trigger at given time.\ntrigger-at is valid when trigger-type is TRIGGER_AT."
+          },
+          "trigger-on": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "TRIGGER_AT",
+              "TRIGGER_ON",
+              "TRIGGER_EVERY",
+              "TRIGGER_EVENT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TRIGGER_AT": "Fixed date and time for the schedule. This is oneshot schedule.",
+              "TRIGGER_ON": "Calendar time for the schedule.",
+              "TRIGGER_EVERY": "Periodic interval for schedule with custom time interval.",
+              "TRIGGER_EVENT": "Event at which the job is triggered."
+            },
+            "x-typeDescription": "Job scheduler trigger type.",
+            "description": "Trigger on given date and time.\ntrigger-on is valid when trigger-type is TRIGGER_ON."
+          },
+          "trigger-on-weekly": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DAILY": "Daily.",
+              "WEEKLY": "Weekly.",
+              "MONTHLY": "Monthly.",
+              "YEARLY": "Yearly"
+            },
+            "x-typeDescription": "Frequency of Job Scheduler.",
+            "description": "Trigger type weekly. trigger-on-weekly is valid when frequency is WEEKLY."
+          },
+          "trigger-on-monthly": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DAILY": "Daily.",
+              "WEEKLY": "Weekly.",
+              "MONTHLY": "Monthly.",
+              "YEARLY": "Yearly"
+            },
+            "x-typeDescription": "Frequency of Job Scheduler.",
+            "description": "Trigger type monthly. trigger-on-monthly is valid when frequency is MONTHLY."
+          },
+          "trigger-on-yearly": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DAILY": "Daily.",
+              "WEEKLY": "Weekly.",
+              "MONTHLY": "Monthly.",
+              "YEARLY": "Yearly"
+            },
+            "x-typeDescription": "Frequency of Job Scheduler.",
+            "description": "Trigger type yearly. trigger-on-yearly is valid when frequency is YEARLY."
+          },
+          "trigger-every": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "TRIGGER_AT",
+              "TRIGGER_ON",
+              "TRIGGER_EVERY",
+              "TRIGGER_EVENT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TRIGGER_AT": "Fixed date and time for the schedule. This is oneshot schedule.",
+              "TRIGGER_ON": "Calendar time for the schedule.",
+              "TRIGGER_EVERY": "Periodic interval for schedule with custom time interval.",
+              "TRIGGER_EVENT": "Event at which the job is triggered."
+            },
+            "x-typeDescription": "Job scheduler trigger type.",
+            "description": "Trigger every peoriodic interval. trigger-every is valid when\ntrigger-type is TRIGGER_EVERY."
+          },
+          "cli-command": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Command to execute when this job runs."
+          },
+          "config-save": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Save the running configuration to flash after the job completes."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

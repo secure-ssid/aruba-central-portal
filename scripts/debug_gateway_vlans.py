@@ -1,40 +1,21 @@
 #!/usr/bin/env python3
 """
 Debug script to find the correct gateway VLAN endpoint
+
+Tests multiple potential VLAN API endpoints to identify which one successfully
+returns VLAN configuration data. Useful for debugging API endpoint issues.
+
+Usage:
+    python scripts/debug_gateway_vlans.py
 """
 
-import requests
+import json
+import traceback
 from rich.console import Console
 from rich.json import JSON
-import json
+from utils.test_helpers import login_to_dashboard, get_first_gateway, DASHBOARD_API, api_request
 
 console = Console()
-
-DASHBOARD_API = "http://localhost:5000/api"
-
-def login():
-    """Login and get session"""
-    try:
-        response = requests.post(f"{DASHBOARD_API}/auth/login")
-        if response.status_code == 200:
-            return response.json().get('session_id')
-    except Exception as e:
-        console.print(f"[red]Login failed:[/red] {str(e)}")
-    return None
-
-def get_gateway(session_id):
-    """Get first gateway"""
-    try:
-        headers = {'X-Session-ID': session_id}
-        response = requests.get(f"{DASHBOARD_API}/devices", headers=headers)
-        if response.status_code == 200:
-            devices = response.json().get('items', [])
-            gateways = [d for d in devices if d.get('deviceType') == 'GATEWAY']
-            if gateways:
-                return gateways[0]
-    except Exception as e:
-        console.print(f"[red]Error:[/red] {str(e)}")
-    return None
 
 def try_vlan_endpoints(gateway_serial, session_id):
     """Try different VLAN endpoints to find one that works"""
@@ -110,7 +91,7 @@ def try_vlan_endpoints(gateway_serial, session_id):
                         'status': 'FAILED',
                         'error': error.get('message', str(error))
                     })
-                except:
+                except Exception:
                     console.print(f"[dim]  Error: {response.text[:100]}[/dim]")
                     results.append({
                         'endpoint': endpoint,
@@ -133,17 +114,17 @@ def main():
 
     # Login
     console.print("[cyan]Step 1: Authenticating...[/cyan]")
-    session_id = login()
-    if not session_id:
-        console.print("[red]Failed to authenticate[/red]")
+    session_id, error = login_to_dashboard()
+    if error:
+        console.print(f"[red]Authentication failed:[/red] {error}")
         return
     console.print("[green]✓[/green] Authenticated\n")
 
     # Get gateway
     console.print("[cyan]Step 2: Getting gateway info...[/cyan]")
-    gateway = get_gateway(session_id)
-    if not gateway:
-        console.print("[red]No gateway found[/red]")
+    gateway, error = get_first_gateway(session_id)
+    if error:
+        console.print(f"[red]Failed to get gateway:[/red] {error}")
         return
 
     gateway_serial = gateway.get('serialNumber', gateway.get('serial', ''))
@@ -186,6 +167,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         console.print("\n[yellow]Interrupted[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]Error:[/red] {str(e)}")
-        import traceback
+        console.print(f"\n[red]Unexpected error:[/red] {str(e)}")
         console.print(f"[dim]{traceback.format_exc()}[/dim]")

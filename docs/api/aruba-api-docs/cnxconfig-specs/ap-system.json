@@ -1,0 +1,3765 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ap-system API generated from aruba-ap-system.yang",
+    "version": "1.0.0",
+    "title": "ap-system",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "ap-system"
+    }
+  ],
+  "paths": {
+    "/ap-system": {
+      "get": {
+        "summary": "Read configured ap system",
+        "description": "AP System Configurations.",
+        "operationId": "readApSystem",
+        "x-cliParam": {
+          "commandName": "readApSystemCmd",
+          "summary": "Read operation for ap-system",
+          "commandUse": "ap-system",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ap-system/"
+        },
+        "tags": [
+          "ap-system"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApSystem_ApSystemSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ap-system/{name}": {
+      "post": {
+        "summary": "Create profile for AP system",
+        "description": "System profile.",
+        "operationId": "createApSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "createApSystemProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createApSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-system/profile/%s/"
+        },
+        "tags": [
+          "ap-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "System profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApSystem_ApSystemprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read configured profile for AP system",
+        "description": "System profile.",
+        "operationId": "readApSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "readApSystemProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readApSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-system/profile/%s/"
+        },
+        "tags": [
+          "ap-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "System profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaApSystem_ApSystemprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing AP system profile configurations",
+        "description": "System profile.",
+        "operationId": "updateApSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "updateApSystemProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateApSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-system/profile/%s/"
+        },
+        "tags": [
+          "ap-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "System profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaApSystem_ApSystemprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the profile for AP system",
+        "description": "System profile.",
+        "operationId": "deleteApSystemProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteApSystemProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteApSystemCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ap-system/profile/%s/"
+        },
+        "tags": [
+          "ap-system"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "System profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaApSystem_ApSystemprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaApSystem_ApSystemprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaApSystem_ApSystemSchema": {
+        "description": "AP System Configurations.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "System profile.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaLocation_GpsConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaLocation_LciConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaLocation_BarometerConfig"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "System profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "System profile description."
+                    },
+                    "timezone": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Timezone configuration.",
+                      "properties": {
+                        "name": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 3,
+                          "maxLength": 32,
+                          "default": "none",
+                          "description": "Timezone name."
+                        },
+                        "hour-offset": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": -12,
+                          "maximum": 13,
+                          "default": "0",
+                          "description": "Hours offset from the UTC."
+                        },
+                        "minute-offset": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 59,
+                          "default": "0",
+                          "description": "Minutes offset from the UTC."
+                        }
+                      }
+                    },
+                    "summer-time": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Set the software clock to begin and end daylight saving time on a recurring basis.",
+                      "properties": {
+                        "timezone": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 15,
+                          "description": "timezone of daylight saving time"
+                        },
+                        "start-week": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "FIRST",
+                            "SECOND",
+                            "THIRD",
+                            "FOURTH",
+                            "LAST"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "FIRST": "The first week of the month.",
+                            "SECOND": "The second week of the month.",
+                            "THIRD": "The third week of the month.",
+                            "FOURTH": "The fourth week of the month.",
+                            "LAST": "The last week of the month."
+                          },
+                          "x-typeDescription": "Enumeration for specifying the week of the month (FIRST, SECOND, THIRD, FOURTH, LAST).",
+                          "description": "The time change begin FIRST/SECOND/THIRD/FOURTH/LAST week of the month."
+                        },
+                        "start-day": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "sunday",
+                            "monday",
+                            "tuesday",
+                            "wednesday",
+                            "thursday",
+                            "friday",
+                            "saturday",
+                            "everyday"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "sunday": "Sunday",
+                            "monday": "Monday",
+                            "tuesday": "Tuesday",
+                            "wednesday": "Wednesday",
+                            "thursday": "Thursday",
+                            "friday": "Friday",
+                            "saturday": "Saturday",
+                            "everyday": "Everyday"
+                          },
+                          "x-typeDescription": "Day of week",
+                          "description": "The weekday when the time change begin."
+                        },
+                        "start-month": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "january",
+                            "february",
+                            "march",
+                            "april",
+                            "may",
+                            "june",
+                            "july",
+                            "august",
+                            "september",
+                            "october",
+                            "november",
+                            "december"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "january": "January",
+                            "february": "February",
+                            "march": "March",
+                            "april": "April",
+                            "may": "May",
+                            "june": "June",
+                            "july": "July",
+                            "august": "August",
+                            "september": "September",
+                            "october": "October",
+                            "november": "November",
+                            "december": "December"
+                          },
+                          "x-typeDescription": "Month of year",
+                          "description": "The month when the time change begin."
+                        },
+                        "start-hour": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "start-hour",
+                          "x-patterns": "'([0-9]|[01][0-9]|2[0-3])(:[0-5][0-9])?'",
+                          "maxLength": 9999,
+                          "description": "The time, in hours and minutes, that the time change begin."
+                        },
+                        "end-week": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "FIRST",
+                            "SECOND",
+                            "THIRD",
+                            "FOURTH",
+                            "LAST"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "FIRST": "The first week of the month.",
+                            "SECOND": "The second week of the month.",
+                            "THIRD": "The third week of the month.",
+                            "FOURTH": "The fourth week of the month.",
+                            "LAST": "The last week of the month."
+                          },
+                          "x-typeDescription": "Enumeration for specifying the week of the month (FIRST, SECOND, THIRD, FOURTH, LAST).",
+                          "description": "The time change end FIRST/SECOND/THIRD/FOURTH/LAST week of the month."
+                        },
+                        "end-day": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "sunday",
+                            "monday",
+                            "tuesday",
+                            "wednesday",
+                            "thursday",
+                            "friday",
+                            "saturday",
+                            "everyday"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "sunday": "Sunday",
+                            "monday": "Monday",
+                            "tuesday": "Tuesday",
+                            "wednesday": "Wednesday",
+                            "thursday": "Thursday",
+                            "friday": "Friday",
+                            "saturday": "Saturday",
+                            "everyday": "Everyday"
+                          },
+                          "x-typeDescription": "Day of week",
+                          "description": "The weekday when the time change end."
+                        },
+                        "end-month": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "january",
+                            "february",
+                            "march",
+                            "april",
+                            "may",
+                            "june",
+                            "july",
+                            "august",
+                            "september",
+                            "october",
+                            "november",
+                            "december"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "january": "January",
+                            "february": "February",
+                            "march": "March",
+                            "april": "April",
+                            "may": "May",
+                            "june": "June",
+                            "july": "July",
+                            "august": "August",
+                            "september": "September",
+                            "october": "October",
+                            "november": "November",
+                            "december": "December"
+                          },
+                          "x-typeDescription": "Month of year",
+                          "description": "The month when the time change end."
+                        },
+                        "end-hour": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "end-hour",
+                          "x-patterns": "'([0-9]|[01][0-9]|2[0-3])(:[0-5][0-9])?'",
+                          "maxLength": 9999,
+                          "description": "The time, in hours and minutes, that the time change end."
+                        }
+                      }
+                    },
+                    "location": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "Device location information."
+                    },
+                    "led": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Enable LED display on an AP."
+                    },
+                    "led-override": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Override the LED action for LED operation mode normal."
+                    },
+                    "country-code": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 4,
+                      "description": "Defines the country of operation of an AP."
+                    },
+                    "virtual-controller-name": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "Defines a unique name for the virtual controller."
+                    },
+                    "virtual-controller-ip": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "Assigns an IP address for the virtual controller. This API is AOS8 specific."
+                    },
+                    "virtual-controller-ipv6": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "Assigns an IPv6 address for the virtual controller. This API is AOS8 specific."
+                    },
+                    "virtual-controller-vlan": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Configures the virtual controller settings. This API is AOS8 specific.",
+                      "properties": {
+                        "vlan": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                          "description": "Associates a VLAN ID with the virtual controller."
+                        },
+                        "mask": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Configures a subnet mask for the virtual controller."
+                        },
+                        "gateway": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                          "description": "Configures a gateway for the virtual controller."
+                        }
+                      }
+                    },
+                    "virtual-controller-dnsip": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "Configures the DNS IP address for the virtual controller. This API is AOS8 specific."
+                    },
+                    "allow-new-aps": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "description": "Allows the new access points to join the AP cluster. This API is AOS8 specific."
+                    },
+                    "country-code-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller country code."
+                    },
+                    "vc-name-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller name."
+                    },
+                    "vc-ip-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller ip. This API is AOS8 specific."
+                    },
+                    "vc-ipv6-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller ipv6. This API is AOS8 specific."
+                    },
+                    "vc-vlan-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller vlan. This API is AOS8 specific."
+                    },
+                    "vc-dnsip-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for virtual controller dnsip. This API is AOS8 specific."
+                    },
+                    "allow-new-aps-alias": {
+                      "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                      "description": "Alias for allow new aps. This API is AOS8 specific"
+                    },
+                    "allowed-ap": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "mac-address",
+                        "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IEEE 802 MAC address",
+                        "description": "Specifies the MAC address of the AP that is allowed to join the cluster. This API is AOS8 specific."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "swarm-mode": {
+                      "description": "Provision an Instant AP in the standalone, single AP, or cluster mode. This API is AOS8 specific.",
+                      "properties": {
+                        "mode": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "CLUSTER",
+                            "STANDALONE",
+                            "SINGLEAP"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "CLUSTER": "Instant AP in the cluster mode, it can form a cluster with other Virtual Controller Instant APs in the same VLAN.",
+                            "STANDALONE": "Instant AP in the standalone mode, it cannot join a cluster of Instant APs even if there are other Instant APs in the same VLAN.",
+                            "SINGLEAP": "Instant AP in the single AP mode, it does not send or receive management frames such as mobility packets, roaming packets,\nhierarchy beacons through the uplink port."
+                          },
+                          "x-typeDescription": "Provisions the Instant AP in the standalone, single AP, or cluster mode.",
+                          "description": "Provisions the Instant AP in the standalone, single AP, or cluster mode.\nRange: CLUSTER, STANDALONE, SINGLEAP."
+                        },
+                        "reboot": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "description": "Rebboot Instant AP"
+                        }
+                      }
+                    },
+                    "conductor": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "description": "Provisions the Instant AP as a conductor Instant AP. This API is AOS8 specific."
+                    },
+                    "restricted-access": {
+                      "description": "Restricted management configuration.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "subnet": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "Management subnet address."
+                          },
+                          "subnet-mask": {
+                            "x-supportedDeviceType": [
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "ipv4-address",
+                            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                            "description": "Subnet mask for the management subnet address."
+                          }
+                        }
+                      },
+                      "x-key": [
+                        "subnet"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "extended-ssid": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "This command allows you to configure additional WLAN SSIDs.\nExtended SSID is enabled in the factory default settings of APs."
+                    },
+                    "mas-integration": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "description": "Enables mobility Access Switch integration on an AP."
+                    },
+                    "itm": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable Intelligent Thermal Management(ITM) on the AP. When enabled, certain operations of the\nAP will be throttled down to reduce its internal temperature. The limitations of AP operations\nis defined by the priority assigned for reduction steps configured in Intelligent Power Monitoring(IPM)\nAPI. IPM must be enabled for ITM to function."
+                    },
+                    "dynamic-cpu-mgmt": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "AUTO",
+                        "ENABLE",
+                        "DISABLE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "AUTO": "Configure the AP to automatically enable or disable CPU management feature during run-time.\nWhen configured, the AP determines the need for enabling or disabling CPU management, based\non the real-time load calculations taking into account all different functions that the CPU\nneeds to perform. The auto option is the default and recommended setting.",
+                        "ENABLE": "Enable the CPU management feature. When configured, the client and network management functions\nare protected. This setting helps in large networks with a high client density.",
+                        "DISABLE": "Disable the CPU management feature, typically for small networks. This setting protects the user experience."
+                      },
+                      "x-typeDescription": "Enable/Disable CPU management feature.",
+                      "default": "AUTO",
+                      "description": "Enable/Disable Dynamic CPU management to manage resources across different functions performed by an AP."
+                    },
+                    "disable-factory-reset": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable the factory reset function on the AP. Prevent the manual hard reset to factory default by pressing\ndown reset button for 5 seconds."
+                    },
+                    "firsthop-security": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable the first hop security features on the AP. By default these security features are enabled on the AP."
+                    },
+                    "drt-upgrade-disable": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable the automatic download and installation of DRT updates on the AP managed by Aruba Central."
+                    },
+                    "usb-port-disable": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable USB port."
+                    },
+                    "usb-power-override": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable USB power override."
+                    },
+                    "poe-power-optimization-enable": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable optimization minimizes the POE draw of the AP and may disable some parts of the AP. The USB\nand Ethernet port (eth1) are shut down on the AP when this option is enabled. The AP will operate in\nthe full power mode when this option is disabled. It is disabled by default on the AP."
+                    },
+                    "application-monitoring": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable application monitoring"
+                    },
+                    "airslice-policy": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable airslice policy"
+                    },
+                    "mtu": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1024,
+                      "maximum": 1500,
+                      "default": "1300",
+                      "description": "Configure the MTU size for tunnel and br0 interfaces, and uplink interface such as 3G or 4G.\nThe configured MTU size is applied when the uplink changes."
+                    },
+                    "dhcp-option82-xml": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "NONE",
+                        "DEFAULT_DHCPOPT82_1_XML",
+                        "DEFAULT_DHCPOPT82_2_XML",
+                        "DEFAULT_DHCPOPT82_3_XML"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "NONE": "No DHCP Option 82 XML file will be used.",
+                        "DEFAULT_DHCPOPT82_1_XML": "Default DHCP Option 82 XML file 1. Values for Circuit and Remote ID's are as follows:\nCircuit ID: AP Name, AP MAC Address, Extended AP MAC Address,\nRemote ID: User's MAC Address.",
+                        "DEFAULT_DHCPOPT82_2_XML": "Default DHCP Option 82 XML file 2. Values for Circuit and Remote ID's are as follows:\nCircuit ID: AP MAC Address, Extended AP MAC Address, SSID Tunnel,\nRemote ID: User's MAC Address.",
+                        "DEFAULT_DHCPOPT82_3_XML": "Default DHCP Option 82 XML file 3. Values for Circuit and Remote ID's are as follows:\nCircuit ID: User's MAC Address,\nRemote ID: AP Name, Extended AP MAC Address."
+                      },
+                      "x-typeDescription": "Enumeration of allowed DHCP Option 82 XML file names.",
+                      "description": "Configure DHCP Option 82 XML file. The AP inserts circuit and remote ID information\ninto DHCP requests from clients."
+                    },
+                    "dhcp-option82-xml-vlan-list": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "vlan-range",
+                      "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                      "description": "VLAN or VLAN range for which DHCP Option 82 XML applies. Allowed values: a single VLAN (1-4094)\nor a range (e.g., 10-100). This leaf can only be configured when dhcp-option82-xml is set to a valid XML file."
+                    },
+                    "out-of-service-hold-on-time": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 300,
+                      "default": "30",
+                      "description": "Configure a hold on time in seconds, after which out-of-service operation is triggered.\nFor example, if the Internet is unreachable, the effect of this out-of-service state impacts the SSID\navailability after the configured hold on time."
+                    },
+                    "lacp": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ENABLE",
+                        "DISABLE",
+                        "AUTO"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ENABLE": "This parameter enables the static LACP configuration. The AP will work on LACP mode irrespective of whether or not the\npeer switch works on the LACP mode.",
+                        "DISABLE": "This parameter disables the static LACP configuration. The AP will not work on LACP mode even it detects any LACP PDUs\nfrom the peer switch.",
+                        "AUTO": "This parameter enables the dynamic LACP configuration. The AP will work on LACP mode only if the peer switch works on."
+                      },
+                      "x-typeDescription": "LACP mode config.",
+                      "default": "AUTO",
+                      "description": "Enable/Disable/Remove the static LACP(Link Aggregation Control Protocol) configuration.\nWhen an AP boots up, it forms the LACP according to the static configuration."
+                    },
+                    "enet-vlan": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4093,
+                      "description": "Configures VLAN for the upstream switch to which the AP is connected."
+                    },
+                    "advertise-location": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable advertising location info in beacon frame.\nDisable by default."
+                    },
+                    "voip-qos-trusted": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Trusted Qos for UCC applications."
+                    },
+                    "deny-local-routing": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Deny local routing."
+                    },
+                    "ip-mode": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "IPV4_ONLY",
+                        "IPV4_PREFER"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "IPV4_ONLY": "Enables system processing of IPv4 packets.",
+                        "IPV4_PREFER": "Prefer IPv4 packets."
+                      },
+                      "x-typeDescription": "IP mode to process IPv6 or IPv4 packets.",
+                      "description": "IP mode to enable the processing of IPv4 packets globally."
+                    },
+                    "aaa": {
+                      "description": "AAA attributes.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaApSystem_AuthenticationSystemApConfig"
+                        }
+                      ]
+                    },
+                    "module": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "List of module type, module and sub-module.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "type-process-subcategory": {
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "Key combination of type, process and subcategory separated by '~'."
+                          },
+                          "severity": {
+                            "type": "string",
+                            "enum": [
+                              "EMERGENCY",
+                              "ALERT",
+                              "CRITICAL",
+                              "ERROR",
+                              "WARNING",
+                              "NOTICE",
+                              "INFO",
+                              "DEBUG",
+                              "MAJOR"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "EMERGENCY": "System is unusable",
+                              "ALERT": "Immediate action needed.",
+                              "CRITICAL": "Critical Condition",
+                              "ERROR": "Error condition in the system",
+                              "WARNING": "Warning condition",
+                              "NOTICE": "Normal bug significant condition",
+                              "INFO": "Informational Messages",
+                              "DEBUG": "Debug Messages",
+                              "MAJOR": "Major condition"
+                            },
+                            "x-typeDescription": "Logging level upto which, the messages are logged.",
+                            "description": "Minimum severity for logging.\nRange: EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG."
+                          }
+                        }
+                      },
+                      "x-key": [
+                        "typeProcessSubcategory"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "cluster-security": {
+                      "description": "Cluster Security DTLS configuration for IAP.\nEnabling cluster-security dtls will form Datagram TLS connection between Conductor and Member APs.",
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "properties": {
+                        "dtls": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "description": "PAPI Security in DTLS mode"
+                        },
+                        "allow-low-assurance-devices": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "description": "Allow non-TPM (Trusted-Platform-Module) devices to connect over DTLS"
+                        },
+                        "allow-non-dtls-members": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "boolean",
+                          "default": "true",
+                          "description": "Do not allow non-DTLS enabled APs to connect"
+                        }
+                      }
+                    },
+                    "zonename": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "format": "pattern",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "x-patternSources": "zonename",
+                        "x-patterns": "'^[^, ]+$'",
+                        "description": "This configures a zone name for the AP. You can configure zone settings on an AP and the SSID profile, to assign an SSID to a specific AP.\nTo assign an SSID to a specific AP, the AP zone name must be configured on the WLAN SSID profile."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "advanced-zone": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable or disable the advanced zone feature that can configure up to 32 SSIDs.\nSince the mapping method of the WLAN index and BSSID index are different,\nwhen you change the advanced zone configuration, the BSSID is removed and created again.\nWhen advanced zone is enabled:\n The WLAN SSID profile will remain inactive without the zone.\n The WLAN SSID profile will remain inactive without the zone.\n A zone can be assigned to a maximum of up to 16 SSIDs.\n However, if the extended SSID is disabled,\n a zone can be assigned to a maximum of up to 14 SSIDs wherein the first two virtual APs are reserved for mesh."
+                    },
+                    "tx-blanking": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "When enabled, AP supports scanning Ultra Tri-Band (UTB) blocked channels. It is used to\nresolve 5GHz & 6GHz co-existence problem with interference when 5GHz UNII-4 and 6GHz UNII-5\nconcurrent transmission happens."
+                    },
+                    "recovery-ssid-backoff-time": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 3,
+                      "maximum": 300,
+                      "default": "3",
+                      "description": "Configures the backoff time in minutes before bringing up the recovery SSID.\nWhen the AP disconnects from Central, the recovery SSID will be brought up after this backoff period.\nThe recovery SSID type can be configured in the wlan-ssid profile and provides access to the AP's troubleshooting interface."
+                    },
+                    "content-filtering": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Content filtering configuration at system level.\nThis option control access to websites and applications based on their content, adding more security."
+                    },
+                    "advertise-ap-health-ie": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Control AP to enable/disable 'Over the Air AP Rescue' feature. This feature is enabled by default.\n'Over the Air AP Rescue' feature controls AP to broadcast the AP health IE through the wireless SSIDs.\nThe AP health IE contains many flags that can reflect current AP status like uplink status,\nCentral connectivity status. Once AP lost Central connection, this AP health IE can be broadcast through\nwireless beacons so that our Aruba APs nearby can hear this beacon and send the AP health IE to Central.\nThis will allow the user or engineer to understand the status of the issue AP and take measures to rescue it."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaApSystem_ApSystemSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaApSystem_ApSystemSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApSystem_ApSystemprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaLocation_GpsConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaLocation_LciConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaLocation_BarometerConfig"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "System profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "System profile description."
+              },
+              "timezone": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Timezone configuration.",
+                "properties": {
+                  "name": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 3,
+                    "maxLength": 32,
+                    "default": "none",
+                    "description": "Timezone name."
+                  },
+                  "hour-offset": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": -12,
+                    "maximum": 13,
+                    "default": "0",
+                    "description": "Hours offset from the UTC."
+                  },
+                  "minute-offset": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 59,
+                    "default": "0",
+                    "description": "Minutes offset from the UTC."
+                  }
+                }
+              },
+              "summer-time": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Set the software clock to begin and end daylight saving time on a recurring basis.",
+                "properties": {
+                  "timezone": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 15,
+                    "description": "timezone of daylight saving time"
+                  },
+                  "start-week": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "FIRST",
+                      "SECOND",
+                      "THIRD",
+                      "FOURTH",
+                      "LAST"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "FIRST": "The first week of the month.",
+                      "SECOND": "The second week of the month.",
+                      "THIRD": "The third week of the month.",
+                      "FOURTH": "The fourth week of the month.",
+                      "LAST": "The last week of the month."
+                    },
+                    "x-typeDescription": "Enumeration for specifying the week of the month (FIRST, SECOND, THIRD, FOURTH, LAST).",
+                    "description": "The time change begin FIRST/SECOND/THIRD/FOURTH/LAST week of the month."
+                  },
+                  "start-day": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "sunday",
+                      "monday",
+                      "tuesday",
+                      "wednesday",
+                      "thursday",
+                      "friday",
+                      "saturday",
+                      "everyday"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "sunday": "Sunday",
+                      "monday": "Monday",
+                      "tuesday": "Tuesday",
+                      "wednesday": "Wednesday",
+                      "thursday": "Thursday",
+                      "friday": "Friday",
+                      "saturday": "Saturday",
+                      "everyday": "Everyday"
+                    },
+                    "x-typeDescription": "Day of week",
+                    "description": "The weekday when the time change begin."
+                  },
+                  "start-month": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "january",
+                      "february",
+                      "march",
+                      "april",
+                      "may",
+                      "june",
+                      "july",
+                      "august",
+                      "september",
+                      "october",
+                      "november",
+                      "december"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "january": "January",
+                      "february": "February",
+                      "march": "March",
+                      "april": "April",
+                      "may": "May",
+                      "june": "June",
+                      "july": "July",
+                      "august": "August",
+                      "september": "September",
+                      "october": "October",
+                      "november": "November",
+                      "december": "December"
+                    },
+                    "x-typeDescription": "Month of year",
+                    "description": "The month when the time change begin."
+                  },
+                  "start-hour": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "start-hour",
+                    "x-patterns": "'([0-9]|[01][0-9]|2[0-3])(:[0-5][0-9])?'",
+                    "maxLength": 9999,
+                    "description": "The time, in hours and minutes, that the time change begin."
+                  },
+                  "end-week": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "FIRST",
+                      "SECOND",
+                      "THIRD",
+                      "FOURTH",
+                      "LAST"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "FIRST": "The first week of the month.",
+                      "SECOND": "The second week of the month.",
+                      "THIRD": "The third week of the month.",
+                      "FOURTH": "The fourth week of the month.",
+                      "LAST": "The last week of the month."
+                    },
+                    "x-typeDescription": "Enumeration for specifying the week of the month (FIRST, SECOND, THIRD, FOURTH, LAST).",
+                    "description": "The time change end FIRST/SECOND/THIRD/FOURTH/LAST week of the month."
+                  },
+                  "end-day": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "sunday",
+                      "monday",
+                      "tuesday",
+                      "wednesday",
+                      "thursday",
+                      "friday",
+                      "saturday",
+                      "everyday"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "sunday": "Sunday",
+                      "monday": "Monday",
+                      "tuesday": "Tuesday",
+                      "wednesday": "Wednesday",
+                      "thursday": "Thursday",
+                      "friday": "Friday",
+                      "saturday": "Saturday",
+                      "everyday": "Everyday"
+                    },
+                    "x-typeDescription": "Day of week",
+                    "description": "The weekday when the time change end."
+                  },
+                  "end-month": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "january",
+                      "february",
+                      "march",
+                      "april",
+                      "may",
+                      "june",
+                      "july",
+                      "august",
+                      "september",
+                      "october",
+                      "november",
+                      "december"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "january": "January",
+                      "february": "February",
+                      "march": "March",
+                      "april": "April",
+                      "may": "May",
+                      "june": "June",
+                      "july": "July",
+                      "august": "August",
+                      "september": "September",
+                      "october": "October",
+                      "november": "November",
+                      "december": "December"
+                    },
+                    "x-typeDescription": "Month of year",
+                    "description": "The month when the time change end."
+                  },
+                  "end-hour": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "end-hour",
+                    "x-patterns": "'([0-9]|[01][0-9]|2[0-3])(:[0-5][0-9])?'",
+                    "maxLength": 9999,
+                    "description": "The time, in hours and minutes, that the time change end."
+                  }
+                }
+              },
+              "location": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Device location information."
+              },
+              "led": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable LED display on an AP."
+              },
+              "led-override": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Override the LED action for LED operation mode normal."
+              },
+              "country-code": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 4,
+                "description": "Defines the country of operation of an AP."
+              },
+              "virtual-controller-name": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "Defines a unique name for the virtual controller."
+              },
+              "virtual-controller-ip": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "Assigns an IP address for the virtual controller. This API is AOS8 specific."
+              },
+              "virtual-controller-ipv6": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "Assigns an IPv6 address for the virtual controller. This API is AOS8 specific."
+              },
+              "virtual-controller-vlan": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configures the virtual controller settings. This API is AOS8 specific.",
+                "properties": {
+                  "vlan": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4094,
+                    "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                    "description": "Associates a VLAN ID with the virtual controller."
+                  },
+                  "mask": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Configures a subnet mask for the virtual controller."
+                  },
+                  "gateway": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                    "description": "Configures a gateway for the virtual controller."
+                  }
+                }
+              },
+              "virtual-controller-dnsip": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "Configures the DNS IP address for the virtual controller. This API is AOS8 specific."
+              },
+              "allow-new-aps": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "description": "Allows the new access points to join the AP cluster. This API is AOS8 specific."
+              },
+              "country-code-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller country code."
+              },
+              "vc-name-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller name."
+              },
+              "vc-ip-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller ip. This API is AOS8 specific."
+              },
+              "vc-ipv6-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller ipv6. This API is AOS8 specific."
+              },
+              "vc-vlan-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller vlan. This API is AOS8 specific."
+              },
+              "vc-dnsip-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for virtual controller dnsip. This API is AOS8 specific."
+              },
+              "allow-new-aps-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for allow new aps. This API is AOS8 specific"
+              },
+              "allowed-ap": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "mac-address",
+                  "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IEEE 802 MAC address",
+                  "description": "Specifies the MAC address of the AP that is allowed to join the cluster. This API is AOS8 specific."
+                },
+                "maxItems": 2147483647
+              },
+              "swarm-mode": {
+                "description": "Provision an Instant AP in the standalone, single AP, or cluster mode. This API is AOS8 specific.",
+                "properties": {
+                  "mode": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "CLUSTER",
+                      "STANDALONE",
+                      "SINGLEAP"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "CLUSTER": "Instant AP in the cluster mode, it can form a cluster with other Virtual Controller Instant APs in the same VLAN.",
+                      "STANDALONE": "Instant AP in the standalone mode, it cannot join a cluster of Instant APs even if there are other Instant APs in the same VLAN.",
+                      "SINGLEAP": "Instant AP in the single AP mode, it does not send or receive management frames such as mobility packets, roaming packets,\nhierarchy beacons through the uplink port."
+                    },
+                    "x-typeDescription": "Provisions the Instant AP in the standalone, single AP, or cluster mode.",
+                    "description": "Provisions the Instant AP in the standalone, single AP, or cluster mode.\nRange: CLUSTER, STANDALONE, SINGLEAP."
+                  },
+                  "reboot": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "description": "Rebboot Instant AP"
+                  }
+                }
+              },
+              "conductor": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "description": "Provisions the Instant AP as a conductor Instant AP. This API is AOS8 specific."
+              },
+              "restricted-access": {
+                "description": "Restricted management configuration.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "subnet": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "Management subnet address."
+                    },
+                    "subnet-mask": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "Subnet mask for the management subnet address."
+                    }
+                  }
+                },
+                "x-key": [
+                  "subnet"
+                ],
+                "maxItems": 2147483647
+              },
+              "extended-ssid": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "This command allows you to configure additional WLAN SSIDs.\nExtended SSID is enabled in the factory default settings of APs."
+              },
+              "mas-integration": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "description": "Enables mobility Access Switch integration on an AP."
+              },
+              "itm": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable Intelligent Thermal Management(ITM) on the AP. When enabled, certain operations of the\nAP will be throttled down to reduce its internal temperature. The limitations of AP operations\nis defined by the priority assigned for reduction steps configured in Intelligent Power Monitoring(IPM)\nAPI. IPM must be enabled for ITM to function."
+              },
+              "dynamic-cpu-mgmt": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "AUTO",
+                  "ENABLE",
+                  "DISABLE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "AUTO": "Configure the AP to automatically enable or disable CPU management feature during run-time.\nWhen configured, the AP determines the need for enabling or disabling CPU management, based\non the real-time load calculations taking into account all different functions that the CPU\nneeds to perform. The auto option is the default and recommended setting.",
+                  "ENABLE": "Enable the CPU management feature. When configured, the client and network management functions\nare protected. This setting helps in large networks with a high client density.",
+                  "DISABLE": "Disable the CPU management feature, typically for small networks. This setting protects the user experience."
+                },
+                "x-typeDescription": "Enable/Disable CPU management feature.",
+                "default": "AUTO",
+                "description": "Enable/Disable Dynamic CPU management to manage resources across different functions performed by an AP."
+              },
+              "disable-factory-reset": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable the factory reset function on the AP. Prevent the manual hard reset to factory default by pressing\ndown reset button for 5 seconds."
+              },
+              "firsthop-security": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable the first hop security features on the AP. By default these security features are enabled on the AP."
+              },
+              "drt-upgrade-disable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable the automatic download and installation of DRT updates on the AP managed by Aruba Central."
+              },
+              "usb-port-disable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable USB port."
+              },
+              "usb-power-override": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable USB power override."
+              },
+              "poe-power-optimization-enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable optimization minimizes the POE draw of the AP and may disable some parts of the AP. The USB\nand Ethernet port (eth1) are shut down on the AP when this option is enabled. The AP will operate in\nthe full power mode when this option is disabled. It is disabled by default on the AP."
+              },
+              "application-monitoring": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable application monitoring"
+              },
+              "airslice-policy": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable airslice policy"
+              },
+              "mtu": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1024,
+                "maximum": 1500,
+                "default": "1300",
+                "description": "Configure the MTU size for tunnel and br0 interfaces, and uplink interface such as 3G or 4G.\nThe configured MTU size is applied when the uplink changes."
+              },
+              "dhcp-option82-xml": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "DEFAULT_DHCPOPT82_1_XML",
+                  "DEFAULT_DHCPOPT82_2_XML",
+                  "DEFAULT_DHCPOPT82_3_XML"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "No DHCP Option 82 XML file will be used.",
+                  "DEFAULT_DHCPOPT82_1_XML": "Default DHCP Option 82 XML file 1. Values for Circuit and Remote ID's are as follows:\nCircuit ID: AP Name, AP MAC Address, Extended AP MAC Address,\nRemote ID: User's MAC Address.",
+                  "DEFAULT_DHCPOPT82_2_XML": "Default DHCP Option 82 XML file 2. Values for Circuit and Remote ID's are as follows:\nCircuit ID: AP MAC Address, Extended AP MAC Address, SSID Tunnel,\nRemote ID: User's MAC Address.",
+                  "DEFAULT_DHCPOPT82_3_XML": "Default DHCP Option 82 XML file 3. Values for Circuit and Remote ID's are as follows:\nCircuit ID: User's MAC Address,\nRemote ID: AP Name, Extended AP MAC Address."
+                },
+                "x-typeDescription": "Enumeration of allowed DHCP Option 82 XML file names.",
+                "description": "Configure DHCP Option 82 XML file. The AP inserts circuit and remote ID information\ninto DHCP requests from clients."
+              },
+              "dhcp-option82-xml-vlan-list": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "vlan-range",
+                "x-patterns": "'((((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9]))|(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{1,2}|[1-9])))'",
+                "maxLength": 9999,
+                "x-typeDescription": "VLANs or only single-tagged VLANs or both. A range is\nspecified as x-y where x and y are valid VLAN IDs\n(1 <= vlan-id <= 4094). The range is assumed to be inclusive,\nsuch that any VLAN-ID matching x <= VLAN-ID <= y falls within\nthe range.",
+                "description": "VLAN or VLAN range for which DHCP Option 82 XML applies. Allowed values: a single VLAN (1-4094)\nor a range (e.g., 10-100). This leaf can only be configured when dhcp-option82-xml is set to a valid XML file."
+              },
+              "out-of-service-hold-on-time": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 300,
+                "default": "30",
+                "description": "Configure a hold on time in seconds, after which out-of-service operation is triggered.\nFor example, if the Internet is unreachable, the effect of this out-of-service state impacts the SSID\navailability after the configured hold on time."
+              },
+              "lacp": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "ENABLE",
+                  "DISABLE",
+                  "AUTO"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ENABLE": "This parameter enables the static LACP configuration. The AP will work on LACP mode irrespective of whether or not the\npeer switch works on the LACP mode.",
+                  "DISABLE": "This parameter disables the static LACP configuration. The AP will not work on LACP mode even it detects any LACP PDUs\nfrom the peer switch.",
+                  "AUTO": "This parameter enables the dynamic LACP configuration. The AP will work on LACP mode only if the peer switch works on."
+                },
+                "x-typeDescription": "LACP mode config.",
+                "default": "AUTO",
+                "description": "Enable/Disable/Remove the static LACP(Link Aggregation Control Protocol) configuration.\nWhen an AP boots up, it forms the LACP according to the static configuration."
+              },
+              "enet-vlan": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4093,
+                "description": "Configures VLAN for the upstream switch to which the AP is connected."
+              },
+              "advertise-location": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable advertising location info in beacon frame.\nDisable by default."
+              },
+              "voip-qos-trusted": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Trusted Qos for UCC applications."
+              },
+              "deny-local-routing": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Deny local routing."
+              },
+              "ip-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "IPV4_ONLY",
+                  "IPV4_PREFER"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "IPV4_ONLY": "Enables system processing of IPv4 packets.",
+                  "IPV4_PREFER": "Prefer IPv4 packets."
+                },
+                "x-typeDescription": "IP mode to process IPv6 or IPv4 packets.",
+                "description": "IP mode to enable the processing of IPv4 packets globally."
+              },
+              "aaa": {
+                "description": "AAA attributes.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaApSystem_AuthenticationSystemApConfig"
+                  }
+                ]
+              },
+              "module": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "List of module type, module and sub-module.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "type-process-subcategory": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Key combination of type, process and subcategory separated by '~'."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "enum": [
+                        "EMERGENCY",
+                        "ALERT",
+                        "CRITICAL",
+                        "ERROR",
+                        "WARNING",
+                        "NOTICE",
+                        "INFO",
+                        "DEBUG",
+                        "MAJOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "EMERGENCY": "System is unusable",
+                        "ALERT": "Immediate action needed.",
+                        "CRITICAL": "Critical Condition",
+                        "ERROR": "Error condition in the system",
+                        "WARNING": "Warning condition",
+                        "NOTICE": "Normal bug significant condition",
+                        "INFO": "Informational Messages",
+                        "DEBUG": "Debug Messages",
+                        "MAJOR": "Major condition"
+                      },
+                      "x-typeDescription": "Logging level upto which, the messages are logged.",
+                      "description": "Minimum severity for logging.\nRange: EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG."
+                    }
+                  }
+                },
+                "x-key": [
+                  "typeProcessSubcategory"
+                ],
+                "maxItems": 2147483647
+              },
+              "cluster-security": {
+                "description": "Cluster Security DTLS configuration for IAP.\nEnabling cluster-security dtls will form Datagram TLS connection between Conductor and Member APs.",
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "properties": {
+                  "dtls": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "description": "PAPI Security in DTLS mode"
+                  },
+                  "allow-low-assurance-devices": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "description": "Allow non-TPM (Trusted-Platform-Module) devices to connect over DTLS"
+                  },
+                  "allow-non-dtls-members": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "boolean",
+                    "default": "true",
+                    "description": "Do not allow non-DTLS enabled APs to connect"
+                  }
+                }
+              },
+              "zonename": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-patternSources": "zonename",
+                  "x-patterns": "'^[^, ]+$'",
+                  "description": "This configures a zone name for the AP. You can configure zone settings on an AP and the SSID profile, to assign an SSID to a specific AP.\nTo assign an SSID to a specific AP, the AP zone name must be configured on the WLAN SSID profile."
+                },
+                "maxItems": 2147483647
+              },
+              "advanced-zone": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable or disable the advanced zone feature that can configure up to 32 SSIDs.\nSince the mapping method of the WLAN index and BSSID index are different,\nwhen you change the advanced zone configuration, the BSSID is removed and created again.\nWhen advanced zone is enabled:\n The WLAN SSID profile will remain inactive without the zone.\n The WLAN SSID profile will remain inactive without the zone.\n A zone can be assigned to a maximum of up to 16 SSIDs.\n However, if the extended SSID is disabled,\n a zone can be assigned to a maximum of up to 14 SSIDs wherein the first two virtual APs are reserved for mesh."
+              },
+              "tx-blanking": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "When enabled, AP supports scanning Ultra Tri-Band (UTB) blocked channels. It is used to\nresolve 5GHz & 6GHz co-existence problem with interference when 5GHz UNII-4 and 6GHz UNII-5\nconcurrent transmission happens."
+              },
+              "recovery-ssid-backoff-time": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 3,
+                "maximum": 300,
+                "default": "3",
+                "description": "Configures the backoff time in minutes before bringing up the recovery SSID.\nWhen the AP disconnects from Central, the recovery SSID will be brought up after this backoff period.\nThe recovery SSID type can be configured in the wlan-ssid profile and provides access to the AP's troubleshooting interface."
+              },
+              "content-filtering": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Content filtering configuration at system level.\nThis option control access to websites and applications based on their content, adding more security."
+              },
+              "advertise-ap-health-ie": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Control AP to enable/disable 'Over the Air AP Rescue' feature. This feature is enabled by default.\n'Over the Air AP Rescue' feature controls AP to broadcast the AP health IE through the wireless SSIDs.\nThe AP health IE contains many flags that can reflect current AP status like uplink status,\nCentral connectivity status. Once AP lost Central connection, this AP health IE can be broadcast through\nwireless beacons so that our Aruba APs nearby can hear this beacon and send the AP health IE to Central.\nThis will allow the user or engineer to understand the status of the issue AP and take measures to rescue it."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaApSystem_AuthenticationSystemApConfig": {
+        "description": "Group for AP specific system level authentication configurations.",
+        "properties": {
+          "aaa-dns-query-interval": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 1440,
+            "default": "15",
+            "description": "AAA DNS query interval."
+          },
+          "dot1x-eap-frag-mtu": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 576,
+            "maximum": 1300,
+            "description": "Dot1x EAP FRAG MTU size."
+          },
+          "auth-failure-denylist-time": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "3600",
+            "description": "Auth failure denylist time."
+          },
+          "rfc-3576-server-udp-port": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+            "default": "3799",
+            "description": "Change rfc3576 server port."
+          },
+          "wlan-wpa3-dh-groups": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "DIFFIE_HELLMAN_GRP_19",
+              "DIFFIE_HELLMAN_GRP_20",
+              "DIFFIE_HELLMAN_GRP_21"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DIFFIE_HELLMAN_GRP_19": "Diffie-Hellman Group 19.",
+              "DIFFIE_HELLMAN_GRP_20": "Diffie-Hellman Group 20.",
+              "DIFFIE_HELLMAN_GRP_21": "Diffie-Hellman Group 21."
+            },
+            "x-typeDescription": "Diffie Hellman groups.",
+            "default": "DIFFIE_HELLMAN_GRP_19",
+            "description": "Diffie-Hellman Groups Supported for EnhancedOpen."
+          },
+          "denylist-time": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "3600",
+            "description": "Sets the duration in seconds for denylisting clients due to an ACL rule trigger."
+          },
+          "preference-of-san-over-cn": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Prefer to check the SAN string, if the SAN string has legal domain, use this domain as the Captive Portal domain."
+          },
+          "onboard-event-connection-record": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable/Disable onboarding event connection."
+          },
+          "pmk-cache-timeout": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 2000,
+            "default": "8",
+            "description": "Pmk cache timeout."
+          },
+          "max-pmk-cache-threshold": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1000,
+            "maximum": 10000,
+            "description": "AP support the max pmk cache count."
+          },
+          "auth-survivability-cachetime": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 168,
+            "default": "24",
+            "description": "This parameter specifies the lifetime in hours for the cached access credential in the local Survival Server. When the specified cache-lifetime expires, the cached access credential is deleted from the managed device.\nThe default value is 24h, the time range is 1-168 for AP."
+          },
+          "radius-termination-action": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable/Disable RADIUS Ternimation Action."
+          },
+          "dynamic-radius-proxy": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable/Disable Dynamic RADIUS proxy."
+          },
+          "dynamic-tacacs-proxy": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable/Disable Dynamic TACACS proxy."
+          }
+        }
+      },
+      "ArubaLocation_GpsConfig": {
+        "description": "Grouping for GPS configuration.",
+        "properties": {
+          "gps": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configure parameters for GPS (Global Positioning System) function.",
+            "properties": {
+              "state": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "ENABLE",
+                  "AUTO",
+                  "DISABLE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ENABLE": "Enable GPS function.",
+                  "AUTO": "Set GPS function in auto mode.",
+                  "DISABLE": "Disable GPS function."
+                },
+                "x-typeDescription": "Control GPS working state.\nThere are three states: enable, auto and disable.",
+                "default": "AUTO",
+                "description": "Configure GPS function with options AUTO/ENABLE/DISABLE, AUTO is the default config."
+              },
+              "dynamic-model": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "AIRBORNEV1",
+                  "AIRBORNEV2",
+                  "AIRBORNEV4",
+                  "AUTOMOTIVE",
+                  "BIKE",
+                  "PEDESTRIAN",
+                  "PORTABLE",
+                  "SEA",
+                  "STATIONARY",
+                  "WRIST"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "AIRBORNEV1": "GPS receiver is used by an airborne object with an acceleration of 1g (gravitational acceleration),\nand that object is accelerating at a rate equal to the acceleration due to gravity on Earth.",
+                  "AIRBORNEV2": "GPS receiver is used by an airborne object with an acceleration of 2g (gravitational acceleration),\nand that object is accelerating at a rate equal to the acceleration due to gravity on Earth.",
+                  "AIRBORNEV4": "GPS receiver is used by an airborne object with an acceleration of 2g (gravitational acceleration),\nand that object is accelerating at a rate equal to the acceleration due to gravity on Earth.",
+                  "AUTOMOTIVE": "GSP receiver is used on an automobile.",
+                  "BIKE": "GPS receiver works in a bike scenario.",
+                  "PEDESTRIAN": "GPS receiver is used by a pedestrian.",
+                  "PORTABLE": "GPS receiver is used on a portable device.",
+                  "SEA": "GPS receiver is used on the sea.",
+                  "STATIONARY": "GPS receiver is stationary.",
+                  "WRIST": "GPS receiver is wore on someone's wrist."
+                },
+                "x-typeDescription": "Dynamic model refers to the navigation dynamic platform model that GPS receiver uses.\nIt includes airborne, automative, bike, pedestrian, portable devices, sea scenario,\nstationary and wearing devices.",
+                "default": "STATIONARY",
+                "description": "Dynamic model of GPS, in which it includes options: AIRBORNEV1/AIRBORNEV2/AIRBORNEV4\n/AUTOMOTIVE/BIKE/PEDESTRIAN/PORTABLE/SEA/STATIONARY/WRIST.\nSTATIONARY is default."
+              },
+              "sampling-interval": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 3600,
+                "default": "10",
+                "description": "Interval to read GPS data from chip, an integer that from 1 to 3600, in seconds.\nDeault value is 10 second"
+              },
+              "height": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "default": "0",
+                "description": "Height of device over ground, which supports 16 fractions at most.\nIn meters."
+              },
+              "min-samples": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 100,
+                "default": "30",
+                "description": "Minimum number of GPS samples for the fisrt report, its value is from 1 to 100, 30 by default.\nA step for the next report till the max number. For example, first reporting happens\nwhen there are 30 samples, the nex report happens when 60 (30 + 30) samples."
+              },
+              "max-samples": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 30,
+                "maximum": 600,
+                "default": "100",
+                "description": "Maximum number of samples for GPS ellipse report, which is from 30 to 600, 100 by default.\nThis value means the maxmum samples saved on APs."
+              },
+              "retry": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether AP sends GPS reports when number of samples reaches the maximum, but no reply\nfrom FCO (Automatic Frequency Coordination) service. This service applies channel list\nand power level to enable AP 6G radio within the USA.\nDisabled by default."
+              },
+              "ellipse-report-interval": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 60,
+                "maximum": 1440,
+                "default": "360",
+                "description": "Interval for ellipse report when FCO response is received.\nRange is from 60 to 1440 in minutes, 360 by default."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable GPS function."
+              },
+              "indoor-sp-location": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "An enhancement for Standard Power(SP) APs to obtain GPS ellipse data. When enabled,\nAPs are able to broadcast their GPS ellipse data in wireless packets, then neighbor APs with\npoor GPS signal can use the received infomation to compute their own ellipses."
+              },
+              "max-relay-distance": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 1000,
+                "default": "500",
+                "description": "A limit for accumulated distance from the AP that broadcasts original ellipse data.\nIf the distance is over this limit, AP will not choose this ellipse."
+              }
+            }
+          }
+        }
+      },
+      "ArubaLocation_LciConfig": {
+        "description": "Grouping for LCI configuration",
+        "properties": {
+          "lci": {
+            "description": "Location Coordinate Information (LCI) configuration on AP.",
+            "properties": {
+              "location": {
+                "description": "Location information, which includes latitude, longitude and altitude.",
+                "properties": {
+                  "latitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "AP latitude, which support 16 fractions at most, in unit of decimal degrees."
+                  },
+                  "longitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "AP longitude, which support 16 fractions at most, in unit of decimal degrees."
+                  },
+                  "altitude-type": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "UNKNOWN",
+                      "METERS",
+                      "FLOORS"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "UNKNOWN": "It means an unknow measurement method.",
+                      "METERS": "Height is measured in meters.",
+                      "FLOORS": "Height is measured in floors."
+                    },
+                    "x-typeDescription": "Different measurement methods for altitude in Location Coordinate Information (LCI).\nIt includes unknow, by meters and by floors.",
+                    "description": "Altitude type, which means how to disply altitude, in meters, in floors or unknown."
+                  },
+                  "altitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "AP altitude, which support 16 fractions at most, in unit of decimal degrees."
+                  },
+                  "datum": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "WGS88_2",
+                      "NAD83_NAVD88_3",
+                      "NAD83_MLLW"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "WGS88_2": "Use World Geodetic System 1984 [WGS84] coordinate reference system.",
+                      "NAD83_NAVD88_3": "Combination of the North American Datum 1983 (NAD83) for\nhorizontal (Latitude and Longitude) values, plus the North\nAmerican Vertical Datum of 1988 (NAVD88) vertical datum.",
+                      "NAD83_MLLW": "Combination of the North American Datum 1983 (NAD83) for horizontal (Latitude\nand Longitude) values, plus the Mean Lower Low Water (MLLW) vertical datum."
+                    },
+                    "x-typeDescription": "Use different datums in LCI",
+                    "description": "Real world coordinate systems used.\n1, World Geodetic System 1984 [WGS84].\n2, Combination of the North American Datum 1983 (NAD83) for\n   horizontal (Latitude and Longitude) values, plus the North\n   American Vertical Datum of 1988 (NAVD88) vertical datum.\n3, Combination of the North American Datum 1983 (NAD83) for\n   horizontal (Latitude and Longitude) values, plus the Mean\n   Lower Low Water (MLLW) vertical datum."
+                  }
+                }
+              },
+              "uncertainty": {
+                "description": "LCI uncertainty parameters for latitude, longitude and altitude.",
+                "properties": {
+                  "latitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "Latitude uncertainty, which support 16 fractions at most, in unit of decimal degrees."
+                  },
+                  "longitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "Longitude uncertainty, which support 16 fractions at most, in unit of decimal degrees."
+                  },
+                  "altitude": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "default": "0",
+                    "description": "Altitude uncertainty, which support 16 fractions at most, in unit of decimal degrees."
+                  }
+                }
+              },
+              "floor": {
+                "description": "Floor parameters in location.",
+                "properties": {
+                  "move": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "NO_MOVE",
+                      "EXPECT_TO_MOVE",
+                      "UNKNOWN"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "NO_MOVE": "An object is not moving.",
+                      "EXPECT_TO_MOVE": "An object is going to move.",
+                      "UNKNOWN": "Not sure whether an object is going to move or not."
+                    },
+                    "x-typeDescription": "Moving trends.",
+                    "description": "Trend of moving, which includes NO_MOVE, EXPECT_TO_MOVE and UNKNOWN."
+                  },
+                  "number": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 4,
+                    "x-patternSources": "number",
+                    "x-patterns": "'-?([0-9]{0,512})'",
+                    "description": "Floor number, which is from -9512 to 9512."
+                  },
+                  "height": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 5,
+                    "x-patternSources": "height",
+                    "x-patterns": "'-?([0-9]{0,2048})'",
+                    "description": "Height over the specific floor, which is from -92048 to 92048."
+                  },
+                  "uncertainty": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "x-patternSources": "uncertainty",
+                    "x-patterns": "'-?([0-9])(\\.[0-9]{1,10})'",
+                    "description": "Uncertainty in floor management, it assigns the precision."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ArubaLocation_BarometerConfig": {
+        "description": "Grouping for barometer configuration.",
+        "properties": {
+          "barometer": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "Configure parameters for the barometer sensor.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable/Disable reading data from barometer sensor."
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1643 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-qos-threshold-profile API generated from aruba-qos-threshold-profile.yang",
+    "version": "1.0.0",
+    "title": "qos-threshold-profile",
+    "x-tag-group": "Network Services"
+  },
+  "tags": [
+    {
+      "name": "qos-thresholds"
+    }
+  ],
+  "paths": {
+    "/qos-thresholds": {
+      "get": {
+        "summary": "Read QoS threshold profile parameters",
+        "description": "QoS threshold profile parameters.",
+        "operationId": "readQosThresholds",
+        "x-cliParam": {
+          "commandName": "readQosThresholdsCmd",
+          "summary": "Read operation for qos-thresholds",
+          "commandUse": "qos-thresholds",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/qos-thresholds/"
+        },
+        "tags": [
+          "qos-thresholds"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaQosThresholdProfile_QosThresholdsSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/qos-thresholds/{threshProfileName}": {
+      "post": {
+        "summary": "Create a new QoS threshold profile by unique name",
+        "description": "QoS Threshold Profile. This profile configures interface queue\nactions for WRED and ECN behavior. Once it has been created, a\nthreshold profle can be globally applied using the aruba-qos-global\nyang model. The threshold configuration (e.g., WRED, responsive-WRED,\nnon-responsive-WRED, or ECN) must be supported by the platform to\nwhich the profile is applied. On some platforms, threshold profiles\ncan also be applied to ports, using the aruba-interface-ethernet\nand/or aruba-interface-portchannel yang models.",
+        "operationId": "createQosThresholdsProfileByID",
+        "x-cliParam": {
+          "commandName": "createQosThresholdsProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createQosThresholdsCmd",
+          "paramKeys": [
+            {
+              "key": "threshProfileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/qos-thresholds/profile/%s/"
+        },
+        "tags": [
+          "qos-thresholds"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threshProfileName",
+            "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaQosThresholdProfile_QosThresholdsprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing QoS threshold profile configurations",
+        "description": "QoS Threshold Profile. This profile configures interface queue\nactions for WRED and ECN behavior. Once it has been created, a\nthreshold profle can be globally applied using the aruba-qos-global\nyang model. The threshold configuration (e.g., WRED, responsive-WRED,\nnon-responsive-WRED, or ECN) must be supported by the platform to\nwhich the profile is applied. On some platforms, threshold profiles\ncan also be applied to ports, using the aruba-interface-ethernet\nand/or aruba-interface-portchannel yang models.",
+        "operationId": "readQosThresholdsProfileByID",
+        "x-cliParam": {
+          "commandName": "readQosThresholdsProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readQosThresholdsCmd",
+          "paramKeys": [
+            {
+              "key": "threshProfileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/qos-thresholds/profile/%s/"
+        },
+        "tags": [
+          "qos-thresholds"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threshProfileName",
+            "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaQosThresholdProfile_QosThresholdsprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing QoS threshold profile configurations",
+        "description": "QoS Threshold Profile. This profile configures interface queue\nactions for WRED and ECN behavior. Once it has been created, a\nthreshold profle can be globally applied using the aruba-qos-global\nyang model. The threshold configuration (e.g., WRED, responsive-WRED,\nnon-responsive-WRED, or ECN) must be supported by the platform to\nwhich the profile is applied. On some platforms, threshold profiles\ncan also be applied to ports, using the aruba-interface-ethernet\nand/or aruba-interface-portchannel yang models.",
+        "operationId": "updateQosThresholdsProfileByID",
+        "x-cliParam": {
+          "commandName": "updateQosThresholdsProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateQosThresholdsCmd",
+          "paramKeys": [
+            {
+              "key": "threshProfileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/qos-thresholds/profile/%s/"
+        },
+        "tags": [
+          "qos-thresholds"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threshProfileName",
+            "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaQosThresholdProfile_QosThresholdsprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the QoS threshold profile",
+        "description": "QoS Threshold Profile. This profile configures interface queue\nactions for WRED and ECN behavior. Once it has been created, a\nthreshold profle can be globally applied using the aruba-qos-global\nyang model. The threshold configuration (e.g., WRED, responsive-WRED,\nnon-responsive-WRED, or ECN) must be supported by the platform to\nwhich the profile is applied. On some platforms, threshold profiles\ncan also be applied to ports, using the aruba-interface-ethernet\nand/or aruba-interface-portchannel yang models.",
+        "operationId": "deleteQosThresholdsProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteQosThresholdsProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteQosThresholdsCmd",
+          "paramKeys": [
+            {
+              "key": "threshProfileName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/qos-thresholds/profile/%s/"
+        },
+        "tags": [
+          "qos-thresholds"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threshProfileName",
+            "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaQosThresholdProfile_QosThresholdsprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaQosThresholdProfile_QosThresholdsprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaQosThresholdProfile_QosThresholdsSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX"
+        ],
+        "description": "QoS threshold profile parameters.",
+        "properties": {
+          "profile": {
+            "description": "QoS Threshold Profile. This profile configures interface queue\nactions for WRED and ECN behavior. Once it has been created, a\nthreshold profle can be globally applied using the aruba-qos-global\nyang model. The threshold configuration (e.g., WRED, responsive-WRED,\nnon-responsive-WRED, or ECN) must be supported by the platform to\nwhich the profile is applied. On some platforms, threshold profiles\ncan also be applied to ports, using the aruba-interface-ethernet\nand/or aruba-interface-portchannel yang models.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaQosThresholdProfile_ThresholdProfileConfig"
+                },
+                {
+                  "properties": {
+                    "thresh-profile-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "x-patternSources": "qos-string-type",
+                      "x-patterns": "'[a-zA-Z0-9._-]+'",
+                      "x-typeDescription": "Name or description of the entity. Must be 1-64 characters in length and can only\ncontain alphanumeric characters, periods, underscores, and hyphens",
+                      "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "QoS threshold profile description."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "threshProfileName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaQosThresholdProfile_QosThresholdsSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaQosThresholdProfile_QosThresholdsSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaQosThresholdProfile_QosThresholdsprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaQosThresholdProfile_ThresholdProfileConfig"
+          },
+          {
+            "properties": {
+              "thresh-profile-name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-patternSources": "qos-string-type",
+                "x-patterns": "'[a-zA-Z0-9._-]+'",
+                "x-typeDescription": "Name or description of the entity. Must be 1-64 characters in length and can only\ncontain alphanumeric characters, periods, underscores, and hyphens",
+                "description": "QoS threshold profile name. Must be 1-64 characters in length and\ncan only contain alphanumeric characters, periods, underscores, and\nhyphens."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "QoS threshold profile description."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaQosThresholdProfile_WredEntryConfig": {
+        "description": "Weighted Random Early Detection (WRED) entry configuration.",
+        "properties": {
+          "color": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "RED",
+              "GREEN",
+              "YELLOW"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "RED": "Red.",
+              "GREEN": "Green.",
+              "YELLOW": "Yellow."
+            },
+            "x-typeDescription": "QoS COS Map color.",
+            "description": "Colored traffic WRED threshold."
+          },
+          "min-threshold-percent": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The minimum WRED drop-threshold value as a percentage of queue bandwidth."
+          },
+          "max-threshold-percent": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The maximum WRED drop-threshold value as a percentage of queue bandwidth."
+          },
+          "min-threshold-kbytes": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 50000,
+            "description": "The minimum WRED drop-threshold value in kilobytes."
+          },
+          "max-threshold-kbytes": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 50000,
+            "description": "The maximum WRED drop-threshold value in kilobytes."
+          },
+          "max-prob": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The maximum probability used by WRED to determine when to\nrandom-early-drop packets."
+          }
+        }
+      },
+      "ArubaQosThresholdProfile_ThresholdProfileConfig": {
+        "description": "QoS Threshold Profile configuration.",
+        "properties": {
+          "queue": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Queue thresholds. Every queue must have an assigned threshold (or\nthresholds, for platforms that support both a min and a max).",
+            "type": "array",
+            "items": {
+              "properties": {
+                "queue-num": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 7,
+                  "description": "Queue number."
+                },
+                "ecn": {
+                  "description": "Explicit Congestion Notification (ECN) configuration. This allows\nconfiguring thresholds for the amount of ECN-capable packets that may\nbe received before they will be re-marked as Congestion Encountered (CE).",
+                  "properties": {
+                    "min-threshold-percent": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 100,
+                      "description": "The minimum ECN-marking threshold value for all traffic colors, as\na percentage of queue bandwidth."
+                    },
+                    "max-threshold-percent": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 100,
+                      "description": "The maximum ECN-marking threshold value for all traffic colors, as\na percentage of queue bandwidth."
+                    },
+                    "min-threshold-kbytes": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 50000,
+                      "description": "The minimum ECN-marking threshold value for all traffic colors, in\nkilobytes."
+                    },
+                    "max-threshold-kbytes": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 50000,
+                      "description": "The maximum ECN-marking threshold value for all traffic colors, in\nkilobytes."
+                    },
+                    "threshold-percent": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 100,
+                      "description": "The ECN-marking threshold for all traffic colors, as a percentage\nof queue bandwidth. Some platforms only permit setting a single ECN\nthreshold, whereas some support setting both a minimum and maximum\nthreshold."
+                    },
+                    "threshold-kbytes": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 50000,
+                      "description": "The ECN-marking threshold for all traffic colors, in kilobytes.\nSome platforms only permit setting a single ECN threshold, whereas\nsome support setting both a minimum and maximum threshold."
+                    }
+                  }
+                },
+                "wred-non-resp": {
+                  "description": "Weighted random early detection (WRED) for non-responsive protocols.",
+                  "properties": {
+                    "entry": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "WRED entry for non-responsive protocols.",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaQosThresholdProfile_WredEntryConfig"
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "color"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                },
+                "wred": {
+                  "description": "Weighted Random Early Detection (WRED) entry configuration for\nplatforms that do not distinguish between responsive and\nnon-responsive protocols.",
+                  "properties": {
+                    "entry": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "WRED entry for platforms that do not distinguish between\nresponsive and non-responsive protocols.",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaQosThresholdProfile_WredEntryConfig"
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "color"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                },
+                "wred-resp": {
+                  "description": "Weighted random early detection (WRED) for responsive protocols.",
+                  "properties": {
+                    "entry": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "WRED entry for responsive protocols.",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaQosThresholdProfile_WredEntryConfig"
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "color"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                }
+              }
+            },
+            "x-key": [
+              "queueNum"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

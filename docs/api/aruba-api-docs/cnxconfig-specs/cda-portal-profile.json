@@ -1,0 +1,1602 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-cda-portal-profile API generated from aruba-cda-portal-profile.yang",
+    "version": "1.0.0",
+    "title": "cda-portal-profile",
+    "x-tag-group": "Central NAC"
+  },
+  "tags": [
+    {
+      "name": "portals"
+    }
+  ],
+  "paths": {
+    "/portals": {
+      "get": {
+        "summary": "Read portal profiles",
+        "description": "A list of portal profiles that contain customizations to be applied to\nCentral NAC portals (e.g. MPSK provisioning, or captive portals)",
+        "operationId": "readPortals",
+        "x-cliParam": {
+          "commandName": "readPortalsCmd",
+          "summary": "Read operation for portals",
+          "commandUse": "portals",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/portals/"
+        },
+        "tags": [
+          "portals"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaPortalProfile_PortalsSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/portals/{portalId}": {
+      "post": {
+        "summary": "Create a portal profile",
+        "description": "A portal profile contains customizations to be applied to Central NAC\nportals (e.g. MPSK provisioning, or captive portals)",
+        "operationId": "createPortalsPortalByID",
+        "x-cliParam": {
+          "commandName": "createPortalsPortalCmd",
+          "summary": "Create operation for portal",
+          "commandUse": "portal",
+          "parentCommand": "createPortalsCmd",
+          "paramKeys": [
+            {
+              "key": "portalId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/portals/portal/%s/"
+        },
+        "tags": [
+          "portals"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "portalId",
+            "description": "Unique identifier for the portal profile (must be a UUID).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaPortalProfile_PortalsportalSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read a portal profile",
+        "description": "A portal profile contains customizations to be applied to Central NAC\nportals (e.g. MPSK provisioning, or captive portals)",
+        "operationId": "readPortalsPortalByID",
+        "x-cliParam": {
+          "commandName": "readPortalsPortalCmd",
+          "summary": "Read operation for portal",
+          "commandUse": "portal",
+          "parentCommand": "readPortalsCmd",
+          "paramKeys": [
+            {
+              "key": "portalId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/portals/portal/%s/"
+        },
+        "tags": [
+          "portals"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "portalId",
+            "description": "Unique identifier for the portal profile (must be a UUID).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaPortalProfile_PortalsportalSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a portal profile",
+        "description": "A portal profile contains customizations to be applied to Central NAC\nportals (e.g. MPSK provisioning, or captive portals)",
+        "operationId": "updatePortalsPortalByID",
+        "x-cliParam": {
+          "commandName": "updatePortalsPortalCmd",
+          "summary": "Update operation for portal",
+          "commandUse": "portal",
+          "parentCommand": "updatePortalsCmd",
+          "paramKeys": [
+            {
+              "key": "portalId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/portals/portal/%s/"
+        },
+        "tags": [
+          "portals"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "portalId",
+            "description": "Unique identifier for the portal profile (must be a UUID).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaPortalProfile_PortalsportalSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a portal profile",
+        "description": "A portal profile contains customizations to be applied to Central NAC\nportals (e.g. MPSK provisioning, or captive portals)",
+        "operationId": "deletePortalsPortalByID",
+        "x-cliParam": {
+          "commandName": "deletePortalsPortalCmd",
+          "summary": "Delete operation for portal",
+          "commandUse": "portal",
+          "parentCommand": "deletePortalsCmd",
+          "paramKeys": [
+            {
+              "key": "portalId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/portals/portal/%s/"
+        },
+        "tags": [
+          "portals"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "portalId",
+            "description": "Unique identifier for the portal profile (must be a UUID).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaCdaPortalProfile_PortalsportalSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaCdaPortalProfile_PortalsportalSchema"
+            }
+          }
+        },
+        "description": "portalbody object"
+      }
+    },
+    "schemas": {
+      "ArubaCdaPortalProfile_PortalsSchema": {
+        "description": "A list of portal profiles that contain customizations to be applied to\nCentral NAC portals (e.g. MPSK provisioning, or captive portals)",
+        "properties": {
+          "portal": {
+            "description": "A portal profile contains customizations to be applied to Central NAC\nportals (e.g. MPSK provisioning, or captive portals)",
+            "type": "array",
+            "items": {
+              "properties": {
+                "portal-id": {
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "portal-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "x-mandatory": true,
+                  "description": "Unique identifier for the portal profile (must be a UUID)."
+                },
+                "name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "x-mandatory": true,
+                  "description": "Unique name for the portal profile."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 0,
+                  "maxLength": 255,
+                  "x-typeDescription": "Add Description to the entity.",
+                  "description": "A description, or note, for the portal profile."
+                },
+                "login-image": {
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "login-image",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "A custom image shown on the login page.\n\nThe UUID for this image must be a valid Central NAC image file identifier.\n\nSee the Central NAC image upload API for further details."
+                },
+                "login-image-link": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+                  "description": "The URL that clicking the login image should take the user to"
+                },
+                "overrides": {
+                  "x-path": "/ac-cda-pop:overrides/ac-cda-pop:override/ac-cda-pop:override-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "override-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "Customization override set for this page"
+                },
+                "registration-email-message": {
+                  "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "message-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "An optional custom email message to send on registration.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be REGISTRATION.\n\nIf not set, the default custom message of type EMAIL and purpose REGISTRATION\nwill be used. If no default custom message is defined, the system default\nregistration email message will be used."
+                },
+                "registration-sms-message": {
+                  "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "message-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "An optional custom SMS message to send on registration.\n\nThe message type of the referenced custom message must be SMS.\n\nThe message purpose of the referenced custom message must be REGISTRATION.\n\nIf not set, the default custom message of type SMS and purpose REGISTRATION\nwill be used. If no default custom message is defined, the system default\nregistration SMS message will be used."
+                },
+                "require-accept-terms": {
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Require the user to accept the terms and conditions of login page"
+                },
+                "sponsor-approval-email-message": {
+                  "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "message-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "An optional custom email message to send when requesting sponsor approval.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be SPONSOR_APPROVAL.\n\nIf not set, the default custom message of type EMAIL and purpose\nSPONSOR_APPROVAL will be used. If no default custom message is defined, the\nsystem default sponsor approval email message will be used."
+                },
+                "terms-location": {
+                  "type": "string",
+                  "enum": [
+                    "INTERNAL",
+                    "EXTERNAL"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "INTERNAL": "Display terms and conditions inline on the sign-in page",
+                    "EXTERNAL": "Display terms and conditions on a separate page, accessible via a link"
+                  },
+                  "x-typeDescription": "Where the terms and conditions should be displayed",
+                  "default": "INTERNAL",
+                  "description": "Where the terms and conditions should be displayed"
+                },
+                "verification-code-sms-message": {
+                  "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "message-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "An optional custom SMS message to send for verification.\n\nThe message type of the referenced custom message must be SMS.\n\nThe message purpose of the referenced custom message must be VERIFICATION_CODE.\n\nIf not set, the default custom message of type SMS and purpose VERIFICATION_CODE\nwill be used. If no default custom message is defined, the system default\nverification code SMS message will be used."
+                },
+                "verification-link-email-message": {
+                  "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "message-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "An optional custom email message to send for verification.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be VERIFICATION_LINK.\n\nIf not set, the default custom message of type EMAIL and purpose\nVERIFICATION_LINK will be used. If no default custom message is defined, the\nsystem default verification link email message will be used."
+                },
+                "skin": {
+                  "x-path": "/ac-cda-psp:skins/ac-cda-psp:skin/ac-cda-psp:skin-id",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "skin-id",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "description": "The skin for this portal"
+                }
+              },
+              "required": [
+                "portal-id",
+                "name"
+              ]
+            },
+            "x-key": [
+              "portalId"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaPortalProfile_PortalsSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaPortalProfile_PortalsSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaCdaPortalProfile_PortalsportalSchema": {
+        "properties": {
+          "portal-id": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "portal-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "x-mandatory": true,
+            "description": "Unique identifier for the portal profile (must be a UUID)."
+          },
+          "name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-mandatory": true,
+            "description": "Unique name for the portal profile."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-typeDescription": "Add Description to the entity.",
+            "description": "A description, or note, for the portal profile."
+          },
+          "login-image": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "login-image",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "A custom image shown on the login page.\n\nThe UUID for this image must be a valid Central NAC image file identifier.\n\nSee the Central NAC image upload API for further details."
+          },
+          "login-image-link": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "The URL that clicking the login image should take the user to"
+          },
+          "overrides": {
+            "x-path": "/ac-cda-pop:overrides/ac-cda-pop:override/ac-cda-pop:override-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "override-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "Customization override set for this page"
+          },
+          "registration-email-message": {
+            "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "message-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "An optional custom email message to send on registration.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be REGISTRATION.\n\nIf not set, the default custom message of type EMAIL and purpose REGISTRATION\nwill be used. If no default custom message is defined, the system default\nregistration email message will be used."
+          },
+          "registration-sms-message": {
+            "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "message-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "An optional custom SMS message to send on registration.\n\nThe message type of the referenced custom message must be SMS.\n\nThe message purpose of the referenced custom message must be REGISTRATION.\n\nIf not set, the default custom message of type SMS and purpose REGISTRATION\nwill be used. If no default custom message is defined, the system default\nregistration SMS message will be used."
+          },
+          "require-accept-terms": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Require the user to accept the terms and conditions of login page"
+          },
+          "sponsor-approval-email-message": {
+            "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "message-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "An optional custom email message to send when requesting sponsor approval.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be SPONSOR_APPROVAL.\n\nIf not set, the default custom message of type EMAIL and purpose\nSPONSOR_APPROVAL will be used. If no default custom message is defined, the\nsystem default sponsor approval email message will be used."
+          },
+          "terms-location": {
+            "type": "string",
+            "enum": [
+              "INTERNAL",
+              "EXTERNAL"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INTERNAL": "Display terms and conditions inline on the sign-in page",
+              "EXTERNAL": "Display terms and conditions on a separate page, accessible via a link"
+            },
+            "x-typeDescription": "Where the terms and conditions should be displayed",
+            "default": "INTERNAL",
+            "description": "Where the terms and conditions should be displayed"
+          },
+          "verification-code-sms-message": {
+            "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "message-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "An optional custom SMS message to send for verification.\n\nThe message type of the referenced custom message must be SMS.\n\nThe message purpose of the referenced custom message must be VERIFICATION_CODE.\n\nIf not set, the default custom message of type SMS and purpose VERIFICATION_CODE\nwill be used. If no default custom message is defined, the system default\nverification code SMS message will be used."
+          },
+          "verification-link-email-message": {
+            "x-path": "/ac-cda-pcm:custom-messages/ac-cda-pcm:custom-message/ac-cda-pcm:message-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "message-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "An optional custom email message to send for verification.\n\nThe message type of the referenced custom message must be EMAIL.\n\nThe message purpose of the referenced custom message must be VERIFICATION_LINK.\n\nIf not set, the default custom message of type EMAIL and purpose\nVERIFICATION_LINK will be used. If no default custom message is defined, the\nsystem default verification link email message will be used."
+          },
+          "skin": {
+            "x-path": "/ac-cda-psp:skins/ac-cda-psp:skin/ac-cda-psp:skin-id",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "skin-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "The skin for this portal"
+          }
+        },
+        "required": [
+          "portal-id",
+          "name"
+        ]
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

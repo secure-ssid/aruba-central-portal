@@ -1,0 +1,2629 @@
+/* JavaScript for Common Header and Footer */
+function _hpehf($) {
+/*********************************************************/
+window.HPEHF = {
+
+/*
+ * HPEHF
+ *
+ * Object that handles HPE Common Header and Footer functionality
+ */
+
+	cc: null,
+	ll: null,
+	hfInitialized: false,
+	privacyCode: true,
+	coveoAutocomplete: true,
+	flyoutIds: new Array(),
+	documentClickEvent: null,
+	flyoutOpenedTimer: null,
+	flyoutOverlayOpenedTimer: null,
+	hideFlyoutTimer: null,
+	autocompleteCurrentFocus : -1,
+	autocompleteMinChar: 3,
+	autocompleteResultsMaxNumber: 4,
+	autocompleteResultsNumber: 4,
+	autocompleteSearchTerm: "",
+	searchOpened: false,
+	savedSearchTerm: null,
+	currentRequest: 0,
+	shownRequest: 0,
+	mobileHeaderBreakPoint: 1199,
+	oktaEnabled: false,
+
+	legacyPassportCfg: {
+		'ckptAuthAPI': 'https://www-prod-cockpit-west.ext.hpe.com/hpe/api/auth/v1/user',
+		'legacyLogutService': 'https://www.hpe.com/h41225/services/auth/logout?clearall=1'
+	},
+
+	iamOKTACfg: {
+		'pro': {
+			'oktaIframeURL': 'https://www.hpe.com/us/en/service-pages/hfws-cookie.html',
+			'oktaLoginPage': 'https://www-prod-cockpit-west.ext.hpe.com/oauth2/authorization/hpe-okta',
+			'oktaLogoutPage': 'https://www.hpe.com/system/sling/logout.html',
+			'ckptAuthAPI': 'https://www-prod-cockpit-west.ext.hpe.com/hpe/api/auth/v1/user',
+			'aemBaseUrl': 'https://www.hpe.com/',
+			'iamOktaBaseUrl': 'https://auth.hpe.com/'
+		},
+		'stg': {
+			'oktaIframeURL': 'https://stg.www.hpe.com/us/en/service-pages/hfws-cookie.html',
+			'oktaLoginPage': 'https://www-stage-cockpit-west.ext.hpe.com/oauth2/authorization/hpe-okta',
+			'oktaLogoutPage': 'https://stg.www.hpe.com/system/sling/logout.html',
+			'ckptAuthAPI': 'https://www-stage-cockpit-west.ext.hpe.com/hpe/api/auth/v1/user',
+			'aemBaseUrl': 'https://stg.www.hpe.com/',
+			'iamOktaBaseUrl': 'https://auth-itg.hpe.com/'
+		},
+		'qa': {
+			'oktaIframeURL': 'https://origin-qa-www-hpe-com.ext.hpe.com/us/en/service-pages/hfws-cookie.html',
+			'oktaLoginPage': 'https://www-qa-cockpit-west.ext.hpe.com/oauth2/authorization/hpe-okta',
+			'oktaLogoutPage': 'https://origin-qa-www-hpe-com.ext.hpe.com/system/sling/logout.html',
+			'ckptAuthAPI': 'https://www-qa-cockpit-west.ext.hpe.com/hpe/api/auth/v1/user',
+			'aemBaseUrl': 'https://origin-qa-www-hpe-com.ext.hpe.com/',
+			'iamOktaBaseUrl': 'https://auth-itg.hpe.com/'
+		}
+	},
+
+	iamOKTAEnvSelector: "pro",
+
+	itgOKTAsites: [".*\\.hpqcorp\\.net", ".*\\.hpe-gl-intg\\.com", "^localhost$"],
+	userName: "",
+	userEmail: "",
+	userIconHTML: '<hpehf-hpe-avatar username="###user-name###" class="hpehf-hpe-avatar"><div class="hpehf-hpe-avatar-text">###user-initials###</div></hpehf-hpe-avatar>',
+	userFlyoutHTML: '<hpehf-hpe-avatar class="hpehf-hpe-avatar" username="###user-name###"><div class="hpehf-hpe-avatar-text">###user-initials###</div></hpehf-hpe-avatar><div class="hpehf-logout-detailed"><span class="hpehf-flyout-link-card-header">###user-name###</span><span class="hpehf-flyout-link-card-desc">###user-email###</span></div>',
+	cfg: null,
+	// TODO: if we receive more domains and it makes for good logic - change below var and three arrays into single object/subobject field, where we will store info of matching domains, and expected list of string replacements for them.
+	consoleProDomain: "common.cloud.hpe.com",
+	omegaConsoleNonProDomains: [/* omega links: */ "omega\\.common\\.cloud\\.hpe\\.com"],
+	pavoConsoleNonProDomains: [/* pavo links: */ "pavo\\.common\\.cloud\\.hpe\\.com","console-heliumops-app\\.qa\\.cds\\.hpe\\.com", ".*\\.rugby\\.hpeserver\\.management","console-neonops3-app\\.qa\\.cds\\.hpe\\.com","console-atlaspoc-app\\.qa\\.cds\\.hpe\\.com","console-fleetpoc2-app\\.qa\\.cds\\.hpe\\.com","console-fleetpoc3-app\\.qa\\.cds\\.hpe\\.com","console-fleetscale-app\\.qa\\.cds\\.hpe\\.com","console-fleetpoc-app\\.qa\\.cds\\.hpe\\.com","console-scint-app\\.qa\\.cds\\.hpe\\.com","console-scalpha-app\\.qa\\.cds\\.hpe\\.com","console-atlaspoc2-app\\.qa\\.cds\\.hpe\\.com","console-.*-app\\.qa\\.cds\\.hpe\\.com","dev-app-androdev-us-west-2\\.hpeoneview\\.management","integ-androdev-us-west-2\\.hpeoneview\\.management","staging-androstage-us-west-2\\.hpeoneview\\.management","ptest-us-west2\\.compute\\.cloud\\.hpe\\.com"],
+	arubathenaConsoleNonProDomains: [/* arubathena links: */ ".*\\.ccs\\.arubathena\\.com"],
+	proConsoleNonProDomains: [/* pro links: */ "console-staging\\.data\\.cloud\\.hpe\\.com", "console-us1\\.data\\.cloud\\.hpe\\.com", "console-eu1\\.data\\.cloud\\.hpe\\.com", "console-jp1\\.data\\.cloud\\.hpe\\.com", "us-west2\\.compute\\.cloud\\.hpe\\.com"],
+
+	consoleLogoOverride: [
+		{ 'consoleURL': 'https://h41390.www4.hpe.com/support/staging/', 'logoOverride': 'pavo.common.cloud.hpe.com' },
+		{ 'consoleURL': 'https://console-scalpha-app.qa.cds.hpe.com', 'logoOverride': 'glcphf.ccs.arubathena.com'}
+	],
+
+	enableBrightcoveVideo: false,
+	secondaryNavLinksVisible: 7,
+	contextParam:"",
+	clickableFlyouts: true,
+	consoleNavCallback: null,
+	customHelpIconCallback: null,
+	pleaseSelectTxt: 'Please Select',
+
+	/*
+	 * log(logStr)
+	 *
+	 * Our own log method; it checks if console exists, to make it safe to execute on older browsers
+	 */
+	log: function(logStr) {
+		if ( (typeof console != 'undefined') && (typeof console.log != 'undefined') ) {
+			console.log(logStr);
+		}
+	},
+
+
+	loadPrivacyBannerScript: function () {
+		// check if privacy code was included to the page already, and if this version of HFWS requires privacy code
+		if ( (this.privacyCode === true) && ( (typeof window.hpeuck_loaded === 'undefined') || (window.hpeuck_loaded === false) ) ) {
+			// load privacy banner javascript
+			var euck_jsScript = "https://www.hpe.com/global/assets/privacy_cookie.js";
+			var self = this;
+
+			if (document.location.href.indexOf("privacybannerdev=1")!=-1) { euck_jsScript = "https://www.hpe.com/global/assets/privacy_cookie_dev.js"; }
+			else if (document.location.href.indexOf("privacybanneritg=1")!=-1) { euck_jsScript = "https://www.hpe.com/global/assets/privacy_cookie_itg.js"; }
+			else if (document.location.href.indexOf("privacybannerlindev=1")!=-1) { euck_jsScript = "http://lindev.emea.hpqcorp.net/privacy/banner/privacy_cookie_dev.js"; }
+
+			this.log('HFWS: including privacy banner...');
+			jQuery.ajax({
+				url: euck_jsScript,
+				dataType: 'script',
+				cache: true
+			}).done(function() {
+				self.log('HFWS privacy_cookie.js loaded...');
+			});
+		}
+	},
+
+
+	/*
+	 * makeVisible()
+	 *
+	 * To avoid html rendering artifacts (oversized icons because CSS did not finish loading etc), the rendered Header and Footer HTML contains hardcoded styles to hide header and footer.
+	 *
+	 * This method is called at the end of HF initialization, to show ready Header and Footer.
+	 */
+	makeVisible: function () {
+		// make header and footer visible
+		$('#hpehf-header').css('visibility', '');
+		$('#hpehf-flyout-overlay').css('visibility', '');
+		$('#hpehf-footer').css('visibility', '');
+		// check for slim header and footer DIVs first, as Common HF could be a replacement for Slim HFWS
+		if (document.getElementById('hpe_slim_header') != null) {
+			$('#hpe_slim_header').css('visibility', '');
+		}
+		else {
+			$('#header').css('visibility', '');
+		}
+		if (document.getElementById('hpe_slim_footer') != null) {
+			$('#hpe_slim_footer').css('visibility', '');
+		}
+		else {
+			$('#footer').css('visibility', '');
+		}
+	},
+
+
+	/*
+	 * forceReInit()
+	 *
+	 * Forces HF re-initialization, even if it was initialized already
+	 */
+	forceReInit: function () {
+		this.log('HFWS: forceReInit()');
+		this.hfInitialized = false;
+		this.init();
+	},
+
+
+	/*
+	 * linkAddNavigateFrom()
+	 *
+	 * Appends navigateFrom param to all country selector links, and site feedback links.
+	*/
+	linkAddNavigateFrom: function () {
+		// Find all anchor elements with hpehf-add-navigate-from class:
+		$('a.hpehf-add-navigate-from').each(function(index, a) {
+			// Check if href attribute already contains navigateFrom parameter, ignore those who already have it
+			// to avoid overwritting and duplicated parameters (just in case)
+			if ($(a).attr("href").search("navigateFrom") === -1) {
+				var href = $(a).attr("href");
+				var param;
+
+				// Check if the href attribute already contains "?", and either add it or start with "&"
+				if (href.search(/\?/) !== -1) {
+					param = "&navigateFrom="+encodeURIComponent(document.URL);
+				}
+				else {
+					param = "?navigateFrom="+encodeURIComponent(document.URL);
+				}
+
+				// Append parameter to current href attribute:
+				$(a).attr("href", href+param);
+			}
+		});
+	},
+
+
+	/*
+	 * commonHeaderFlyoutInit()
+	 *
+	 * Detect flyout id's for header nav links
+	*/
+	commonHeaderFlyoutInit: function () {
+		var self = this;
+		var navLinks = $('.hpehf-main-nav .hpehf-nav-link');
+		navLinks.each(function() {
+			flyoutLink = $(this);
+			flyout = $('#' + flyoutLink.attr("data-target-id"));
+			if(flyout.length) {
+				self.flyoutIds.push(flyout.attr("id"));
+			}
+		});
+	},
+
+
+	/*
+	 * addCommonHeaderFlyoutEvents()
+	 *
+	 * Add open and close events for flyouts
+	*/
+	addCommonHeaderFlyoutEvents: function () {
+		var self = this;
+		// TEMP: Main Nav flyouts have been disabled until new decision about design is made
+		// var navLinks = $('.hpehf-main-nav .hpehf-nav-list-item');
+		var navLinks = $('.hpehf-main-nav .hpehf-icons .hpehf-nav-list-item');
+		// END TEMP
+		var clickableFlyoutFlag = this.clickableFlyouts;
+		var secondaryNav = $('.hpehf-secondary-nav-list-item.hpehf-sn-more');
+
+		this.log('HFWS: addCommonHeaderFlyoutEvents() start');
+
+		navLinks.each(function() {
+			var flyoutLink = $(this).children('.hpehf-nav-link');
+			var flyout = $('#' + flyoutLink.attr("data-target-id"));
+			if(flyout.length) {
+				// Click event
+				flyoutLink.on('click', function(e) {
+					// Close secondary nav if it is opened
+					if (window.innerWidth <= self.mobileHeaderBreakPoint && $('#hpehf-secondary-nav').hasClass('hpehf-active')) {
+						self.closeMobileSecondaryNav();
+					}
+					//check for the secondary nav more flyout is opened
+					if (secondaryNav.hasClass("hpehf-active")){
+						self.closeSecondaryNavMoreFlyout();
+					}
+					// Follow cart link if cart is empty
+					if (  ($(this).parent().attr('id') === 'hpehf-cart')
+							&&
+								((typeof(window.HPE_MINI_CART) !== 'undefined') &&  window.HPE_MINI_CART.isCartEmpty() )
+									||
+								(typeof(window.HPE_MINI_CART) == 'undefined')
+							) {
+						return true;
+					}
+					// Disable 'click' event for all flyout links and for Main Nav links in desktop mode
+					else if ( ($(this).parent().attr('id') !== 'hpehf-search' && (window.innerWidth > self.mobileHeaderBreakPoint) && clickableFlyoutFlag !== true)  || ($(this).closest('.hpehf-nav-menu').length === 1)) {
+						e.preventDefault();
+						e.stopPropagation();
+						return;
+					}
+					else {
+						e.preventDefault();
+						e.stopPropagation();
+						flyout = $('#' + $(this).attr("data-target-id"));
+						if(flyout.hasClass("hpehf-active")) {
+							self.commonHeaderCloseFlyouts();
+						} else {
+							if ( ($(this).parent().attr('id') === 'hpehf-cart')
+										&&
+									((typeof(window.HPE_MINI_CART) !== 'undefined') && !window.HPE_MINI_CART.isCartEmpty() && window.innerWidth > self.mobileHeaderBreakPoint )
+									){
+										// Close all flyouts
+										self.commonHeaderCloseFlyouts();
+										// Open current flyout
+										self.commonHeaderOpenFlyout(flyout);
+									}else{
+										// Close all flyouts
+										self.commonHeaderCloseFlyouts();
+										// Open current flyout
+										self.commonHeaderOpenFlyout(flyout);
+									}
+							// Disable scrollbar for body when the mobile flyouts or the search bar are opened
+							if (window.innerWidth <= self.mobileHeaderBreakPoint || flyout.attr("id") === "hpehf-search-flyout") {
+								$('body').addClass('hpehf-disable-scroll');
+							}
+
+							$(document).on({
+								'click.hpehf-flyout-click-outside': function(e) {
+									if (flyout.hasClass('hpehf-active') && ( (!flyout.is(e.target) && flyout.has(e.target).length === 0) || !(flyoutLink.is(e.target) || flyoutLink.has(e.target).length === 0) ) && (flyout.attr('id') !== 'hephf-mobile-nav' && $('.hpehf-search-flyout-area').has(e.target).length === 0) ) {
+										self.commonHeaderCloseFlyouts();
+									}
+								}
+							});
+						}
+					}
+				});
+			}
+		});
+
+		// Close flyouts from 'X' button
+		$(".hpehf-close-btn").on('click', function() {
+			self.commonHeaderCloseFlyouts();
+		});
+
+		// Submit search form when user clicks magnifying glass icon
+		$("#hpehf-search-submit").click(function(e) {
+			e.preventDefault();
+			//trim search term
+			$('#hpehf-search-input').val($('#hpehf-search-input').val().trim());
+			$('#hpehf-search-input').val($('#hpehf-search-input').val().replace(/\s+/g, ' '));
+			//If search term not empty
+			if($('#hpehf-search-input').val().length > 0) {
+				self.autocompleteCloseAllLists();
+				$(".hpehf-search-form").submit();
+			}
+		});
+
+		// Event on search submit, to make sure search flyout is closed before submitting the form
+		$('.hpehf-search-form').submit(function(ev) {
+			ev.preventDefault();
+			self.commonHeaderCloseFlyouts();
+			this.submit();
+		});
+
+		// Event to show flyout when nav link is hovered (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+		// Check if if the clickable flyouts feature is on click or on hover
+		if(this.clickableFlyouts === false){
+			$('.hpehf-icons .hpehf-nav-list-item:not(#hpehf-search)').on('mouseenter', function(e) {
+				// $('.hpehf-nav-list-item:not(#hpehf-search)').on('mouseenter', function(e) {
+				if(window.innerWidth > self.mobileHeaderBreakPoint) {
+					// Do not open cart flyout when cart is empty
+					if (  ($(this).attr('id') === 'hpehf-cart')
+							&&
+								((typeof(window.HPE_MINI_CART) !== 'undefined') &&  window.HPE_MINI_CART.isCartEmpty() )
+									||
+								(typeof(window.HPE_MINI_CART) == 'undefined')
+							) {
+						return false;
+					}
+					self.commonHeaderOpenFlyoutOnHover(this);
+				}
+			});
+			// Event to close flyouts when nav link hover ends (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+			$('.hpehf-icons .hpehf-nav-list-item:not(#hpehf-search)').on('mouseleave', function(e) {
+				// $('.hpehf-nav-list-item:not(#hpehf-search)').on('mouseleave', function(e) {
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					// Clear flyout close timeout
+					self.headerClearFlyoutCloseTimeout();
+
+					// Set flyout close timeout
+					self.flyoutOpenedTimer = setTimeout(function() {
+						// Close all opened flyouts
+						self.commonHeaderCloseFlyouts();
+
+						// Clear flyout close timeout
+						self.headerClearFlyoutCloseTimeout();
+					}, 250);
+				}
+			});
+			// Event to clear flyout close timeout when nav flyout is hovered (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+			$('.hpehf-nav-flyout').on('mouseenter', function() {
+				// $('.hpehf-nav-flyout').on('mouseenter', function() {
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					self.headerClearFlyoutCloseTimeout();
+				}
+			});
+
+			// Event to clear flyout close timeout when icons flyout is hovered (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+			$('.hpehf-icons-flyout').on('mouseenter', function() {
+				// $('.hpehf-icons-flyout').on('mouseenter', function() {
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					self.headerClearFlyoutCloseTimeout();
+				}
+			});
+
+			// Event to close flyout when nav flyout hover ends (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+			$('.hpehf-nav-flyout').on('mouseleave', function() {
+				// $('.hpehf-nav-flyout').on('mouseleave', function() {
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					self.headerCloseFlyoutsOnHoverEnd();
+				}
+			});
+
+			// Event to close flyout when icons flyout hover ends (CURRENTLY DISPLAYS ONLY THE ICONS FLYOUTS - UNCOMMENT BELOW FIRST LINE AND COMMENT SECOND LINE TO ENABLE MAIN NAV LINKS)
+			$('.hpehf-icons-flyout').on('mouseleave', function() {
+				// $('.hpehf-icons-flyout').on('mouseleave', function() {
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					self.headerCloseFlyoutsOnHoverEnd();
+				}
+			});
+		}
+
+		/* HELP MENU */
+		// Event to switch between Help Menu sub-sections
+		$('.hpehf-help-menu-nav-link').on('click tap', function(e) {
+			var link = $(this);
+			var parent = link.parent();
+			var subsection = $('#' + parent.attr('data-target-id'));
+			var activeLinkParent = parent.siblings('.hpehf-active');
+			var activeSubsection = subsection.siblings('.hpehf-active');
+
+			if (!parent.hasClass('hpehf-active')) {
+				self.pauseIconsFlyoutPlayingVideos();
+				// Hide current active subsection
+				activeLinkParent.removeClass('hpehf-active');
+				activeSubsection.removeClass('hpehf-active');
+				// Display selected subsection
+				parent.addClass('hpehf-active');
+				subsection.addClass('hpehf-active');
+			}
+
+			// Check if visible section has video and if Brightcove API is loaded
+			if (subsection.find('.hpehf-help-menu-video-wrapper:visible').length > 0 && subsection.find('video-js').length > 0 && !window.videojs) {
+				self.initBrightcoveVideoPlayer();
+			}
+		});
+
+		// Select product
+		$('.hpehf-help-menu-dropdown-link').on('click tap', function(e) {
+			var clicked = $(e.target);
+			var targetValue = $(clicked).attr('data-feedback-target') || $(clicked).attr('data-feedback-type');
+			var dropdownContainer = $(clicked).closest('.hpehf-help-menu-dropdown'); // Dropdown of clciked element
+			var openedSubsection = $('.hpehf-help-menu-subsection-content.hpehf-active');
+			var newOpenedSubsection = $('#' + clicked.attr('data-target-id'));
+			var feedbackDesc = $('#hpehf-help-menu-feedback-desc');
+
+			// arturp 20221025: asked to remove Report a bug option for all consoles; hiding it here and not removing from template, as it is not 100% clear if Report a bug will come back or not:
+			$('li.hpehf-help-menu-dropdown-item a.hpehf-help-menu-dropdown-link[data-feedback-type="rb"]').css('display', 'none');
+
+			// When the clicked element is the dropdown placeholder, we assume we are clicking the entire dropdown to open or close:
+			if($(clicked).parent().prop('nodeName').toLowerCase() === 'span'){
+				// Remember if at the moment of the click this dropdow was active or not:
+				var wasActive = $(dropdownContainer).hasClass('hpehf-active');
+				// Close all dropdowns, making sure only one is open at the time;
+				$('.hpehf-help-menu-dropdown').removeClass('hpehf-active');
+				// Decides if open or close:
+				wasActive ? $(dropdownContainer).removeClass('hpehf-active') : $(dropdownContainer).addClass('hpehf-active');
+			} else {
+				// Dropdowns that contains an option that is equal to clicked one:
+				var matchingTargets = $('[data-feedback-target="'+targetValue+'"], [data-feedback-type="'+targetValue+'"]').closest('.hpehf-help-menu-dropdown').find('.hpehf-dropdown-selected-item .hpehf-help-menu-dropdown-link');
+
+				// Reset Help and Feedback dropdowns, as we don't know if both have the clicked option:
+				// Run this as long as we are not clicking on feedback type dropdown
+				if(!$(clicked).hasClass('hpehf-feedback-type')){
+					var helpAndFeedbackDropdowns = $('.hpehf-help-menu-dropdown:not(".hpehf-feedback-type")').find('.hpehf-dropdown-selected-item .hpehf-help-menu-dropdown-link');
+					$(helpAndFeedbackDropdowns).html(self.pleaseSelectTxt);
+					$(helpAndFeedbackDropdowns).attr({
+						'data-target-value': self.pleaseSelectTxt,
+						'data-feedback-target':'',
+						'data-target-id': 'hpehf-default'
+					});
+
+					// Reset feedback type:
+					$('#hpehf-feedback-type-selected').html(self.pleaseSelectTxt);
+					$('#hpehf-feedback-type-selected').attr({
+						'data-target-value': self.pleaseSelectTxt,
+						'data-feedback-target': '',
+						'data-feedback-type': '',
+					});
+
+					// Shows active links depending on Help or Feedback option selection:
+					if (openedSubsection && newOpenedSubsection) {
+						openedSubsection.removeClass('hpehf-active');
+						newOpenedSubsection.addClass('hpehf-active');
+						// Pause playing video if tab is changed
+						if (!newOpenedSubsection.is(openedSubsection)) {
+							self.pauseIconsFlyoutPlayingVideos();
+						}
+					}
+				}
+
+				// Set clicked value if the dropdowns contains the clicked option:
+				$(matchingTargets).html(clicked.attr('data-target-value'));
+				$(matchingTargets).attr({
+					'data-target-value': clicked.attr('data-target-value'),
+					'data-feedback-target': clicked.attr('data-feedback-target'),
+					'data-feedback-type': clicked.attr('data-feedback-type'),
+					'data-target-id': clicked.attr('data-target-id')
+				});
+
+				// Display the description for 'Report a Bug' item and hide it for the rest
+				if ($('#hpehf-feedback-type-selected').attr('data-feedback-type') === 'rb') {
+					feedbackDesc.addClass('hpehf-active');
+				} else {
+					feedbackDesc.removeClass('hpehf-active');
+				}
+
+				// Check if Brightcove video player is used and if API is loaded
+				// ToDo/ToAsk: Check what does "this" mean in this context:
+				if ($('#hpehf-help-menu-support').has($(this)).length > 0 && newOpenedSubsection.find('video-js').length > 0 && !window.videojs) {
+					self.initBrightcoveVideoPlayer();
+				}
+
+				// Generate Feedback Url:
+				self.createFeedbackURL();
+
+				// Close the dropwdown of the clicked element:
+				$(dropdownContainer).removeClass('hpehf-active');
+			}
+		});
+
+		// Close help menu dropdown when click event happens outside the dropdown
+		$('#hpehf-help-menu-flyout').on('click', function(e) {
+			var dropdown = $('.hpehf-help-menu-dropdown');
+			if (!$(e.target).is('.hpehf-help-menu-dropdown-link') && dropdown.hasClass('hpehf-active')) {
+				dropdown.removeClass('hpehf-active');
+			}
+		});
+
+		// Create URL for the feedback tab
+		/*
+		Oscar L. 20221212: Since last code refactoring, this block is never executed (See line 488)
+		$('#hpehf-help-menu-feedback .hpehf-dropdown-selected-item .hpehf-help-menu-dropdown-link').on('change', function() {
+			self.createFeedbackURL();
+		});
+		*/
+
+		this.log('HFWS: addCommonHeaderFlyoutEvents() done');
+	},
+
+
+	initBrightcoveVideoPlayer: function() {
+		var container = $('.hpehf-help-menu-video-wrapper:visible');
+		var loader = this.generateBrightcoveVideoLoader();
+
+		if (container.find($('.hpehf-loader-backdrop')).length === 0) {
+			container.append(loader);
+		}
+
+		this.getBrightcoveAPI(function() {
+			container.find('.hpehf-loader-backdrop').remove();
+		});
+	},
+
+
+	generateBrightcoveVideoLoader: function() {
+		var backdrop = document.createElement('div');
+		backdrop.className = 'hpehf-loader-backdrop';
+		backdrop.style.cssText = 'position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.3);';
+
+		var spinner = document.createElement('img');
+		spinner.className = 'hpehf-loader';
+		spinner.src = 'https://h50007.www5.hpe.com/hfws-static/5/img/loader.gif';
+		spinner.alt = 'loading';
+		spinner.style.margin = 0;
+
+		backdrop.appendChild(spinner);
+
+		return backdrop;
+	},
+
+
+	getBrightcoveAPI: function(callback) {
+		$.ajax({
+			type: "GET",
+			url: 'https://players.brightcove.net/1160438707001/zp8Ztilh8_default/index.min.js',
+			dataType: 'script',
+			cache: true,
+			async: true
+		}).done(function() {
+			callback();
+			console.log('Brightcove API initialized successfully.');
+		}).fail(function(e) {
+			console.log('Could not initialize Brighcove API. Message: ', e);
+		});
+	},
+
+
+	/**
+	 * createFeedbackURL() - function to generate the URL for the 'Continue' button under 'Give Feedback' tab
+	 */
+	createFeedbackURL: function() {
+		if ($('#hpehf-help-menu-flyout').length > 0) {
+			var feedbackServiceItem = $('#hpehf-help-menu-feedback #hpehf-feedback-service-selected');
+			var feedbackTypeItem = $('#hpehf-help-menu-feedback #hpehf-feedback-type-selected');
+			var submitButton = $('#hpehf-help-menu-flyout .hpehf-help-menu-submit-feedback');
+
+			if (feedbackServiceItem.attr('data-feedback-target') === "" || feedbackTypeItem.attr('data-feedback-type') === "") {
+				submitButton.addClass('hpehf-disabled');
+				submitButton.attr('href', 'javascript:void(0);');
+			} else {
+				submitButton.removeClass('hpehf-disabled');
+
+				var url = submitButton.attr('data-base-href');
+				var env = 'env=p';
+				var feedbackTarget = 'pd=' + $('.hpehf-dropdown-selected-item .hpehf-help-menu-dropdown-link.hpehf-service-selector').attr('data-feedback-target');
+				var feedbackType = 'tof=' + $('.hpehf-dropdown-selected-item .hpehf-help-menu-dropdown-link.hpehf-feedback-type').attr('data-feedback-type');
+				var newURL;
+
+				if (this.isConsoleNonProEnvironment()) {
+					env = 'env=d'
+				}
+				if (url.indexOf('?') > -1) {
+					url = url.split('?')[0];
+				}
+
+				newURL = url + '?' + env + '&' + feedbackTarget + '&' + feedbackType;
+
+				submitButton.attr('href', newURL);
+			}
+		}
+	},
+
+
+	/**
+	 * commonHeaderOpenFlyoutOnHover(link);
+	 * Opens the flyout when user hovers over a nav link
+	 */
+	commonHeaderOpenFlyoutOnHover: function(menuItem) {
+		var self = this;
+		var link = $(menuItem);
+		var arrow = link.find('.hpehf-flyout-arrow');
+		var flyoutId = link.children('.hpehf-nav-link').attr('data-target-id');
+		var flyout = $('#' + flyoutId);
+		var overlay = $('#hpehf-flyout-overlay');
+		var secondaryNavMoreLink = $('.hpehf-secondary-nav-list-item.hpehf-sn-more');
+
+		// Clear hideFlyoutTimer
+		clearTimeout(this.hideFlyoutTimer);
+		this.hideFlyoutTimer = null;
+
+		if (flyout.length > 0) {
+			// Clear flyout close timeout
+			self.headerClearFlyoutCloseTimeout();
+
+			// Set flyout close timeout
+			self.flyoutOpenedTimer = setTimeout(function() {
+				// Check if Secondary Nav 'More' link is active and remove active class
+				if (secondaryNavMoreLink) {
+					secondaryNavMoreLink.removeClass('hpehf-active');
+					overlay.removeClass('hpehf-sn-active');
+				}
+
+				// Close all opened flyouts
+				if (!link.hasClass('hpehf-active')) {
+					self.commonHeaderCloseFlyouts();
+
+					// Clear overlay close timeout
+					self.clearFlyoutOverlayOpenedTimer();
+
+					// Check if cart flyout
+					if (flyoutId == 'hpehf-cart-flyout') {
+						// Load cart if object is available and cart is not empty. TODO: remove timeout, this is just for loader testing
+						if ( (typeof(window.HPE_MINI_CART) !== 'undefined') && !window.HPE_MINI_CART.isCartEmpty()) {
+							//setTimeout(function(){ window.HPE_MINI_CART.loadCart(); }, 1000);
+							window.HPE_MINI_CART.loadCart();
+						}
+					}
+
+					// Display the arrow, the flyout and the overlay
+					arrow.css('display', 'block');
+					flyout.css('display', 'flex');
+					overlay.css('display', 'block');
+					setTimeout(function() {
+						// Add active class to link, arrow, flyout and overlay
+						link.addClass("hpehf-active");
+						arrow.addClass('hpehf-active');
+						flyout.addClass('hpehf-active');
+						overlay.addClass('hpehf-active');
+					}, 20);
+				}
+			}, 200);
+		}
+	},
+
+
+	/**
+	 * commonHeaerOpenFlyout(flyout)
+	 * Opens flyout provided as parameter
+	 */
+	commonHeaderOpenFlyout: function(flyout) {
+		var navLink = $('a[data-target-id="' + $(flyout).attr('id') + '"]');
+		// Add active class to list item
+		navLink.parent().addClass('hpehf-active');
+		var overlay = $('#hpehf-flyout-overlay');
+		var arrow = navLink.parent().find('.hpehf-flyout-arrow');
+
+
+		// Display flyout and then add active class
+		flyout.css("display", "flex");
+		overlay.css('display', 'block');
+		arrow.css('display', 'block');
+
+		setTimeout(function() {
+			// Display search bar when hamburger menu is opened
+			if (flyout.attr('id') === 'hpehf-mobile-nav') {
+				// Clear search field on open
+				$('#hpehf-search-input').val("");
+				$('#hpehf-header').addClass('hpehf-mobile-menu-opened');
+				$('#hpehf-search-flyout').addClass('hpehf-active');
+			}
+			// Search flyout
+			if(flyout.attr("id") === "hpehf-search-flyout") {
+				// Clear search field on open
+				$('#hpehf-search-input').val("");
+				// Display search dark overlay
+				$("#hpehf-search-dark-overlay").css("display", "block");
+				// Scroll to the top of the page
+				$('html, body').animate({scrollTop: 0}, 200);
+				// Set focus inside the search bar
+				setTimeout(function() {
+					$('#hpehf-search-input').focus();
+				}, 250);
+			}
+			// Check if cart flyout
+			if (flyout.attr("id") == 'hpehf-cart-flyout') {
+				// Load cart if object is available and cart is not empty. TODO: remove timeout, this is just for loader testing
+				if ( (typeof(window.HPE_MINI_CART) !== 'undefined') && !window.HPE_MINI_CART.isCartEmpty()) {
+					//setTimeout(function(){ window.HPE_MINI_CART.loadCart(); }, 1000);
+					window.HPE_MINI_CART.loadCart();
+				}
+			}
+			// Add active class to link, arrow, flyout and overlay
+			arrow.addClass('hpehf-active');
+			overlay.addClass('hpehf-active');
+			flyout.addClass("hpehf-active");
+		}, 20);
+	},
+
+
+	/*
+	 * commonHeaderCloseFlyouts()
+	 *
+	 * Closes all header navigation flyouts
+	*/
+	commonHeaderCloseFlyouts: function() {
+		var self = this;
+		var openedFlyout = null;
+		$.each(this.flyoutIds, function() {
+			var linkItem = $('.hpehf-nav-link[data-target-id="' + this + '"]').parent();
+			var arrow = linkItem.find('.hpehf-flyout-arrow');
+			var flyout = $('#' + this);
+			var flyoutOverlay = $('#hpehf-flyout-overlay');
+
+			if (linkItem.hasClass('hpehf-active')) {
+				openedFlyout=flyout;
+				// Remove search flyout's dark overlay
+				if(flyout.attr("id") === "hpehf-search-flyout") {
+					$("#hpehf-search-dark-overlay").css("display", "none");
+					openedFlyout=null;
+				}
+
+				// Check if arrow exists and remove active class
+				if (arrow.length === 1 && arrow.hasClass('hpehf-active')) {
+					arrow.removeClass('hpehf-active');
+				}
+
+				// Check if flyout overlay is visible and hide it
+				if (flyoutOverlay.hasClass('hpehf-active')) {
+					flyoutOverlay.removeClass('hpehf-active');
+				}
+
+				// Remove active class from link and flyout
+				linkItem.removeClass('hpehf-active');
+				flyout.removeClass('hpehf-active');
+
+				// Cleanup styles that were added to the element during "show" flyout event:
+				setTimeout(function() {
+					flyout.removeAttr('style');
+				}, 200);
+
+				// Re-enable scrollbar for body when the mobile flyouts or the search bar are closed
+				if ($('body').hasClass('hpehf-disable-scroll')) {
+					setTimeout(function() {
+						$('body').removeClass('hpehf-disable-scroll');
+					}, 200);
+				}
+
+				// Close search bar when mobile menu is closed
+				if ($(linkItem).attr('id') === 'hpehf-hmb-menu') {
+					$('#hpehf-search-flyout').removeClass('hpehf-active');
+				}
+
+				// Close Help flyout dropdown menu if it is opened
+				if (flyout.is('#hpehf-help-menu-flyout') && $('.hpehf-help-menu-dropdown').hasClass('hpehf-active')) {
+					$('.hpehf-help-menu-dropdown').removeClass('hpehf-active');
+				}
+
+				// Remove 'hpehf-mobile-menu-opened' class from the header
+				setTimeout(function() {
+					$('#hpehf-header').removeClass('hpehf-mobile-menu-opened');
+				}, 200);
+
+				// Pause any playing videos
+				self.pauseIconsFlyoutPlayingVideos();
+
+				// Clear overlay close timeout
+				//setFlyoutOverlayOpenedTimer commented in order to maintain the black-overlay when switching through flyouts onClick
+				//self.setFlyoutOverlayOpenedTimer();
+			}
+		});
+
+		// Set 'display: none' to flyout arrow, previously displayed flyouts and flyout overlay 1sec after the flyout is closed
+		this.hideFlyoutTimer = setTimeout(function() {
+			if ($('.hpehf-nav-list-item.hpehf-active').length === 0) {
+				$('.hpehf-nav-list-item .hpehf-flyout-arrow').css('display', 'none');
+				$('.hpehf-nav-flyout').css('display', 'none');
+				$('.hpehf-icons-flyout').css('display', 'none');
+				$('#hpehf-mobile-nav').css('display', 'none');
+			}
+			if (openedFlyout) openedFlyout.css('display', 'none');
+		}, 300);
+
+		$(document).off('click.hpehf-flyout-click-outside');
+	},
+
+
+	/**
+	 * Pause playing videos from Icons flyout
+	 */
+	pauseIconsFlyoutPlayingVideos: function () {
+		var players;
+		if (this.enableBrightcoveVideo) {
+			if (window.videojs) {
+				players = Object.keys(videojs.players);
+
+				players.forEach(function(player) {
+					if (!videojs(player).paused()) {
+						videojs(player).pause();
+					}
+				});
+			}
+		} else {
+			players = $('.hpehf-icons-flyout video').toArray();
+
+			players.forEach(function(player) {
+				if (!player.paused) {
+					player.pause();
+				}
+			});
+		}
+	},
+
+
+	/*
+	 * searchOnStore
+	 *
+	 * Check if search is running on store
+	 * return true or false based on result
+	 *
+	 */
+	searchOnStore: function() {
+		var searchFormAction = $('form[name="hpehf-search-form"]').attr('action');
+		if(searchFormAction.indexOf("buy.hpe.com") >= 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+
+
+	/*
+	 * updateSearchFormAutocomplete
+	 *
+	 * Updates the search form autocomplete value if search is not running on store
+	 */
+	updateSearchFormAutocomplete: function(newValue) {
+		if(!this.searchOnStore()) {
+			//add / update hidden autocomplete input to form
+			if($('#hiddenAutocompleteValue').length) {
+				$('#hiddenAutocompleteValue').val(newValue);
+			}
+			else {
+				$('<input>', {
+					type: 'hidden',
+					id: 'hiddenAutocompleteValue',
+					name: 'autocomplete',
+					value: newValue
+				}).appendTo('form[name="hpehf-search-form"]');
+			}
+		}
+	},
+
+
+	/*
+	 * searchBarInit()
+	 *
+	 * Initialize the search bar
+	*/
+	searchBarInit: function() {
+		var self = this;
+
+		// Event to trigger the autocomplete call
+		$('#hpehf-search-input').keyup(function(e) {
+			/*clearTimeout(self.requestDelayTimeout);*/
+			var val = $('#hpehf-search-input').val();
+			if(val.length >= self.autocompleteMinChar && val != self.autocompleteSearchTerm) {
+				self.autocompleteSearchTerm = val;
+				self.autocompleteCurrentFocus = -1;
+				self.searchAutocompleteLoadSugestions(val);
+			}
+		});
+
+		//event to detect changes in the search field
+		$('#hpehf-search-input').bind('input', function() {
+			if($('#hpehf-search-input').val() == "" || $('#hpehf-search-input').val().length < self.autocompleteMinChar) {
+				self.savedSearchTerm = $('#hpehf-search-input').val() == "";
+				self.autocompleteCloseAllLists();
+			}
+		});
+
+		//event to detect blur action on search input and close autocomplete list
+		$('#hpehf-search-input').bind('blur', function() {
+			self.autocompleteCloseAllLists();
+		});
+
+		// Event to navigate the autocomplete list
+		$('#hpehf-search-input').keydown(function(e) {
+			var select = $("#hpehf-search-input-autocomplete-list").children("div");
+			if (e.keyCode == 13) {
+				//If ENTER
+				e.preventDefault();
+
+				//trim search term
+				$('#hpehf-search-input').val($('#hpehf-search-input').val().trim());
+				$('#hpehf-search-input').val($('#hpehf-search-input').val().replace(/\s+/g, ' '));
+
+				//If search term not empty
+				if($('#hpehf-search-input').val().length > 0) {
+					self.autocompleteCloseAllLists();
+					$(".hpehf-search-form").submit();
+				}
+			}
+			else if (e.keyCode == 40) {
+				//If DOWN
+				e.preventDefault();
+				if(self.autocompleteCurrentFocus < self.autocompleteResultsNumber - 1) {
+					self.autocompleteCurrentFocus++;
+					self.autocompleteAddActive(select);
+					self.autocompleteSearchTerm = $("#hpehf-autocomplete-value-" + self.autocompleteCurrentFocus).val();
+					$('#hpehf-search-input').val(self.autocompleteSearchTerm);
+					self.updateSearchFormAutocomplete("hf");
+				}
+				else {
+					self.autocompleteRemoveActive(select);
+					self.autocompleteCurrentFocus = -1;
+					self.autocompleteSearchTerm = self.savedSearchTerm;
+					$('#hpehf-search-input').val(self.savedSearchTerm);
+					self.updateSearchFormAutocomplete("0");
+				}
+			}
+			else if (e.keyCode == 38) {
+				//If UP
+				e.preventDefault();
+				if(self.autocompleteCurrentFocus >= 0) {
+					self.autocompleteCurrentFocus--;
+					if(self.autocompleteCurrentFocus > -1) {
+						self.autocompleteAddActive(select);
+						self.autocompleteSearchTerm = $("#hpehf-autocomplete-value-" + self.autocompleteCurrentFocus).val();
+						$('#hpehf-search-input').val(self.autocompleteSearchTerm);
+						self.updateSearchFormAutocomplete("hf");
+					}
+					else {
+						self.autocompleteRemoveActive(select);
+						self.autocompleteSearchTerm = self.savedSearchTerm;
+						$('#hpehf-search-input').val(self.savedSearchTerm);
+						self.updateSearchFormAutocomplete("0");
+					}
+				}
+				else {
+					self.autocompleteRemoveActive(select);
+					self.autocompleteCurrentFocus = self.autocompleteResultsNumber - 1;
+					self.autocompleteAddActive(select);
+				}
+			}
+			else { //if user is typing search term
+				self.updateSearchFormAutocomplete("0");
+			}
+		});
+	},
+
+
+	getUrlParameter: function(sParam) {
+		var sPageURL = window.location.search.substring(1),
+			sURLVariables = sPageURL.split('&'),
+			sParameterName,
+			i;
+
+		for (i = 0; i < sURLVariables.length; i++) {
+			sParameterName = sURLVariables[i].split('=');
+
+			if (sParameterName[0] === sParam) {
+				return typeof sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			}
+		}
+		return false;
+	},
+
+
+	/*
+	 * Search autocomplete methods
+	 */
+	/*
+	 * Search autocomplete start *
+	 */
+	searchAutocompleteLoadSugestions: function(search) {
+		var self = this;
+
+		self.currentRequest++;
+		var cur_req = self.currentRequest;
+
+		if(this.getUrlParameter("coveo") == "1" || this.coveoAutocomplete === true) { // coveo autocomplete
+			$.ajax({
+				url: 'https://platform.cloud.coveo.com/rest/search/v2/querySuggest',
+				type: 'POST',
+				headers: { Authorization: 'Bearer xxe642a92d-277d-49bf-b487-13d529795ce7' }, // PROD Key
+				//data: {"q": search, "searchHub": "hpecom_hub_" + self.cc + "-" + self.ll, "locale": self.ll + "-" + self.cc.toUpperCase(), "isGuestUser": true, "tab": "default" },
+				data: {
+					"q": search,
+					"searchHub": "hpecom_hub",
+					"locale": self.ll + "-" + self.cc.toUpperCase(),
+					"tab": "all_results",
+					"context": {
+						"context_cc": self.cc,
+						"context_lc": self.ll
+					},
+					"mlparameters": {
+						"filters": {
+							"c_context_cc": self.cc,
+							"c_context_lc": self.ll,
+							"originLevel2": "all_results"
+						}
+					}
+				},
+				dataType: 'json',
+
+				success: function (data) {
+					//check if newer request was made and stop execution of coveoSearchAutocomplete method if so
+					if (self.shownRequest > cur_req) { return false; }
+					self.shownRequest = cur_req;
+					self.autocompleteCloseAllLists();
+					self.coveoSearchAutocomplete($("#hpehf-search-input"), data);
+				},
+				error: function () { console.log('Fail'); },
+			});
+		}
+	},
+
+
+	coveoSearchAutocomplete: function(inp, json) {
+		var self = this;
+		var val = inp.val();
+		var highlightVal = "";
+		var autocompleteList, autocompleteItem;
+		var i, pos;
+		var optionId, optionContent, sugestionValue = "";
+
+		if(!val) { return false; }
+
+		$('<div/>', {
+			id: "hpehf-search-input-autocomplete-list",
+			class: "hpehf-autocomplete-items"
+		}).appendTo("#hpehf-search-autocomplete");
+
+		self.savedSearchTerm = val;
+		var resultsNumber = json.completions.length;
+
+		if(resultsNumber > 0) {
+			if(resultsNumber <= self.autocompleteResultsMaxNumber) {
+				self.autocompleteResultsNumber = resultsNumber;
+			}
+			else {
+				self.autocompleteResultsNumber = self.autocompleteResultsMaxNumber;
+			}
+
+			$(".hpehf-search-autocomplete").css('visibility', 'visible');
+			var num = 0;
+			$.each(json.completions, function(key, value) {
+				num += 1;
+				if(num > self.autocompleteResultsNumber) {
+					return false;
+				}
+
+				sugestionValue = value.expression.toString();
+				highlightedValue = value.highlighted.toString();
+				highlightedValue = highlightedValue.substring(highlightedValue.indexOf("("), highlightedValue.indexOf(")")+1);
+
+				pos = sugestionValue.toLowerCase().indexOf(val.toLowerCase());
+				if (pos >= 0) {
+					highlightVal = sugestionValue.replace("" + sugestionValue.substr(pos, val.length) + "", "<strong>" + sugestionValue.substr(pos, val.length) + "</strong>");
+				}
+				else {
+					highlightVal = sugestionValue;
+				}
+
+				//create HTML container for search suggestion
+				$('<div/>', {
+					id: "hpehf-autocomplete-item-" + key,
+					class: "hpehf-centered-content"
+				}).appendTo(".hpehf-autocomplete-items");
+
+				optionId = "#hpehf-autocomplete-item-" + key;
+				autocompleteItem = $(optionId);
+
+				optionContent = "<span>" + highlightVal + "</span>";
+				optionContent += "<input id='hpehf-autocomplete-value-" + key + "' type='hidden' value='" + sugestionValue + "'>" + " " + highlightedValue;
+
+				//add suggestion content to suggestion container
+				autocompleteItem.html(optionContent);
+
+				//add click event
+				autocompleteItem.mousedown(function(e) {
+					optionId = "#" + this.id + " #" + this.id.replace("item", "value");
+					inp.val($(optionId).val());
+					self.autocompleteCloseAllLists();
+					self.updateSearchFormAutocomplete("hf");
+					//trim search term
+					$('#hpehf-search-input').val($('#hpehf-search-input').val().trim());
+					$('#hpehf-search-input').val($('#hpehf-search-input').val().replace(/\s+/g, ' '));
+					$(".hpehf-search-form").submit();
+				});
+			});
+			self.autocompleteListPadding($("#hpehf-search-input-autocomplete-list").children("div"));
+		}
+	},
+
+
+	searchAutocomplete: function(inp, json) {
+		var self = this;
+		var val = inp.val();
+		var highlightVal = "";
+		var autocompleteList, autocompleteItem;
+		var i, pos;
+		var optionId, optionContent, sugestionValue = "";
+
+		if(!val) { return false; }
+
+		$('<div/>', {
+			id: "hpehf-search-input-autocomplete-list",
+			class: "hpehf-autocomplete-items"
+		}).appendTo("#hpehf-search-autocomplete");
+
+		self.savedSearchTerm = val;
+		var resultsNumber = json.response.docs.length;
+
+		if(resultsNumber > 0) {
+			if(resultsNumber <= self.autocompleteResultsMaxNumber) {
+				self.autocompleteResultsNumber = resultsNumber;
+			}
+			else {
+				self.autocompleteResultsNumber = self.autocompleteResultsMaxNumber;
+			}
+			$(".hpehf-search-autocomplete").css('visibility', 'visible');
+			$.each(json.response.docs, function(key, value) {
+				sugestionValue = value.term.toString();
+				pos = sugestionValue.toLowerCase().indexOf(val.toLowerCase());
+				if (pos >= 0) {
+					highlightVal = sugestionValue.replace(sugestionValue.substr(pos, val.length), "<span>" + sugestionValue.substr(pos, val.length) + "</span>");
+				}
+				else {
+					highlightVal = sugestionValue;
+				}
+
+				$('<div/>', {
+					id: "hpehf-autocomplete-item-" + key,
+					class: "hpehf-centered-content"
+				}).appendTo(".hpehf-autocomplete-items");
+
+				optionId = "#hpehf-autocomplete-item-" + key;
+				autocompleteItem = $(optionId);
+
+				optionContent = highlightVal;
+				optionContent += "<input id='hpehf-autocomplete-value-" + key + "' type='hidden' value='" + sugestionValue + "'>";
+				autocompleteItem.html(optionContent);
+				autocompleteItem.mousedown(function(e) {
+					optionId = "#" + this.id + " #" + this.id.replace("item", "value");
+					inp.val($(optionId).val());
+					self.autocompleteCloseAllLists();
+					self.updateSearchFormAutocomplete("hf");
+					//trim search term
+					$('#hpehf-search-input').val($('#hpehf-search-input').val().trim());
+					$('#hpehf-search-input').val($('#hpehf-search-input').val().replace(/\s+/g, ' '));
+					$(".hpehf-search-form").submit();
+				});
+			});
+			self.autocompleteListPadding($("#hpehf-search-input-autocomplete-list").children("div"));
+		}
+	},
+
+
+	autocompleteAddActive: function(select) {
+		var self = this;
+		self.autocompleteRemoveActive(select);
+		$("#" + select[self.autocompleteCurrentFocus].id).addClass("hpehf-autocomplete-active");
+	},
+
+
+	autocompleteRemoveActive: function(select) {
+		for (var i = 0; i < select.length; i++) {
+			$("#" + select[i].id).removeClass("hpehf-autocomplete-active");
+		}
+	},
+
+
+	autocompleteCloseAllLists: function(elmnt) {
+		var self = this;
+		self.savedSearchTerm = null;
+		var select = $(".hpehf-autocomplete-items");
+		for (var i = 0; i < select.length; i++) {
+			if (elmnt != select[i] && elmnt != $("#hpehf-search-input")) {
+				select[i].parentNode.removeChild(select[i]);
+			}
+		}
+		$(".hpehf-search-autocomplete").css('visibility', 'hidden');
+	},
+
+
+	autocompleteListPadding: function(select) {
+		var amount = parseInt($("#hpehf-search-bar").css("marginLeft")) + parseInt($("#hpehf-search-bar").css("paddingLeft")) + parseInt($("#hpehf-search-input").css("paddingLeft"));
+		var padding = "10px " + amount + "px";
+		for (var i = 0; i < select.length; i++) {
+			$("#" + select[i].id).css('padding', padding);
+		}
+	},
+	/*
+	 * Search autocomplete end *
+	 */
+
+
+	/*
+	 * userGetInitials()
+	 * Gets user name string, in format like "Firstname Lastname" or "Firstname Secondname [othernames] Lastname", and returns uppercase string with initial letters of first and last name.
+	 */
+	userGetInitials: function(name) {
+		var names = name.split(" ");
+		var initials = names[0].substring(0, 1).toUpperCase();
+
+		if(names.length > 1) {
+			initials += names[names.length - 1].substring(0, 1).toUpperCase();
+		}
+		return initials;
+	},
+
+
+	/*
+	 * getURLParam()
+	 * returns value of URL param or null
+	 */
+	getURLParam: function(name){
+		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+		if (results==null) {
+		   return null;
+		}
+		return decodeURI(results[1]) || 0;
+	},
+
+
+	/*
+	 * initOktaEnvironment()
+	 * Checks if we should use PRO , STG or QA envs hpe.com Cokpit's OKTA integration, based on URL param or configuration
+	 */
+	initOktaEnvironment: function() {
+		this.iamOKTAEnvSelector = "pro";
+
+		//init environment variables bassed on URL parametter
+		if(this.getURLParam('iamOKTAEnv') == 'pro') {
+			this.iamOKTAEnvSelector = "pro";
+		}
+		else if(this.getURLParam('iamOKTAEnv') == 'stg') {
+			this.iamOKTAEnvSelector = "stg";
+		}
+		else if(this.getURLParam('iamOKTAEnv') == 'qa') {
+			this.iamOKTAEnvSelector = "qa";
+		}
+		else {
+			// check if site matches list of sites with ITG OKTA enabled
+			for (var key=0; key<this.itgOKTAsites.length; key++ ) {
+				if ( document.domain.search(new RegExp(this.itgOKTAsites[key])) != -1 ) {
+					this.iamOKTAEnvSelector = "stg";
+				}
+			}
+
+			// check is site is non-PRO console
+			if (this.isConsoleNonProEnvironment() === true) {
+				this.iamOKTAEnvSelector = "stg";
+			}
+		}
+	},
+
+
+	/*
+	 * isSignInEnabled()
+	 * Checks if the conditions are met to show signint button
+	 */
+	isSignInEnabled: function() {
+		var signin = $('#hpehf-sign-in').html();
+		var mobileSignin = $('#hpehf-mobile-sign-in').html();
+
+		if( (window.location.href.split('/')[2].indexOf(".hpe.com") != -1 || window.location.href.indexOf("test-signin-local=1") != -1 || window.location.href.indexOf("prototypes/common-hf/src/header-footer-jquery.html") != -1  || window.location.href.indexOf("prototypes/common-hf/src/translated-hf_" ) != -1 || window.location.href.indexOf("localhost/hfws-test-pages/common-hfws-test-page.php") != -1 || window.location.href.indexOf("lindev.emea.hpqcorp.net") != -1) && signin != null && mobileSignin != null) {
+			return true;
+		}
+		else {
+			$('#hpehf-sign-in').html("");
+			$('#hpehf-sign-in').css("display", "none");
+			$('#hpehf-mobile-sign-in').html("");
+			$('#hpehf-mobile-sign-in').css("display", "none");
+			return false;
+		}
+	},
+
+
+	/*
+	 * initNonHPEcomUserLogin()
+	 * initialize the iamOKTA User Login by getting the user session through the iframe
+	 * and passing it to the initUserLogin method
+	 */
+	initNonHPEcomUserLogin: function() {
+		var self = this;
+
+		window.addEventListener('message', function(event) {
+			console.log("iamOKTA message received from cockpit iframe.");
+			//console.log("iamOKTA data: ", event.data);
+
+			const data = JSON.parse(event.data);
+			if (data.cookie) {
+				//console.log('[COCKPIT]:' + data.cookie);
+				console.log('cockpit iframe: data received');
+				self.initUserLogin(data.cookie);
+			} else {
+				console.log('cockpit iframe: data not received: ' + data.message);
+			}
+		}, false);
+
+		//console.log("iamOKTA loading iframe:", this.iamOKTACfg[this.iamOKTAEnvSelector]['oktaIframeURL']);
+		console.log("iamOKTA loading iframe...");
+		$("<iframe>")
+			.attr('id', 'OKTA-iframe')
+			.attr('src', this.iamOKTACfg[this.iamOKTAEnvSelector]['oktaIframeURL'])
+			.attr('style', 'display: none')
+			.appendTo('#header');
+	},
+
+
+	/*
+	 * initSignInLinkRedirectURL()
+	 * Adds current page url as redirectURL param to login page URLs in header
+	 */
+	initSignInLinkRedirectURL: function() {
+		var self = this;
+		var desktopLink = $('#hpehf-sign-in-link');
+		var mobileLink = $('#hpehf-mobile-sign-in-link');
+		var pageURL = encodeURIComponent(window.location.href);
+
+		// check if OKTA is enabled
+		if (this.oktaEnabled) {
+			//$('#hpehf-header #hpehf-user-signout-container').css("display", "none");
+			$('#hpehf-header #hpehf-user-signout-container').remove();
+			desktopLink.attr("href", this.iamOKTACfg[this.iamOKTAEnvSelector]['oktaLoginPage'] + "?redirectUri=" + pageURL);
+			mobileLink.attr("href", this.iamOKTACfg[this.iamOKTAEnvSelector]['oktaLoginPage'] + "?redirectUri=" + pageURL);
+		}
+		else {
+			// OKTA is not enabled - using HPE Passport auth
+			$('#hpehf-header .hpehf-oauth').css("display", "none");
+			desktopLink.attr("href", desktopLink.attr("href") + "?redirectURL=" + pageURL);
+			mobileLink.attr("href", mobileLink.attr("href") + "?redirectURL=" + pageURL);
+		}
+	},
+
+
+	/*
+	 * initProfileMenuLinks()
+	 * Initializes links in profile menu, to point them to correct environment if necessary.
+	 */
+	initProfileMenuLinks: function() {
+		var self=this;
+
+		$('#hpehf-user-flyout a').each(function(index, a) {
+			var href = $(a).attr("href").replace("https://www.hpe.com/", self.iamOKTACfg[self.iamOKTAEnvSelector]['aemBaseUrl']);
+			href = href.replace("https://auth.hpe.com/", self.iamOKTACfg[self.iamOKTAEnvSelector]['iamOktaBaseUrl']);
+			$(a).attr("href", href);
+		});
+	},
+
+
+	/*
+	 * initUserSignOut()
+	 * Initializes Sign out link in my account flyout, so it works and signs out the user when clicked.
+	 */
+	initUserSignOut: function() {
+		var self = this;
+		var signoutCTA = $("#hpehf-user-signout-cta");
+		var pageURL = encodeURIComponent(window.location.href);
+		var randomParam = Date.now() + Math.random();
+
+		// check if OKTA is enabled
+		if(this.oktaEnabled) {
+			$(".hpehf-user-signout-cta").attr("href", self.iamOKTACfg[self.iamOKTAEnvSelector]['oktaLogoutPage'] + "?redirectUri=" + pageURL + "&rnd=" + randomParam);
+		}
+		else {
+			signoutCTA.on('click', function() {
+				$.ajax ({
+					type: 'GET',
+					url: self.legacyPassportCfg['legacyLogutService'] + "?rnd=" + randomParam,
+					dataType: 'json',
+					async: true,
+					xhrFields: {withCredentials: true},
+					cache: true
+				})
+				.done(function(data) {
+					console.log("logged out");
+					$('#hpehf-user-menu').css("display", "none");
+					$('#hpehf-sign-in').css("display", "");
+					$('#hpehf-mobile-sign-in').css("display", "");
+				})
+				.fail(function() {
+					console.log("Sign Out failed!");
+				});
+			});
+		}
+	},
+
+
+	/*
+	 * initUserLogin()
+	 * Checks if user is logged in - and if yes, shows in header the circle icon with user's initials, and minimal "My account" flyout
+	 */
+	initUserLogin: function(data) {
+		var self = this;
+		var loginAPI = this.legacyPassportCfg['ckptAuthAPI'];
+		if(this.oktaEnabled) {
+			loginAPI = this.iamOKTACfg[this.iamOKTAEnvSelector]['ckptAuthAPI'];
+		}
+
+		//console.log("USER Login API: ", loginAPI);
+		console.log("USER Auth check...");
+
+		//check for test param and use test JSON if true
+		if(window.location.href.indexOf("test-signin-local=1") != -1) {
+			self.userName = "John Doe";
+			self.userEmail = "john.doe@hpe.com";
+			// init user icon
+			self.userIconHTML = self.userIconHTML.replace(new RegExp("###user-name###", "g"), self.userName);
+			self.userIconHTML = self.userIconHTML.replace(new RegExp("###user-initials###", "g"), self.userGetInitials(self.userName));
+			$('#hpehf-user-icon-link').html(self.userIconHTML);
+			// init user flyout
+			self.userFlyoutHTML = self.userFlyoutHTML.replace(new RegExp("###user-initials###", "g"), self.userGetInitials(self.userName));
+			self.userFlyoutHTML  = self.userFlyoutHTML.replace(new RegExp("###user-name###", "g"), self.userName);
+			self.userFlyoutHTML  = self.userFlyoutHTML.replace(new RegExp("###user-email###", "g"), self.userEmail);
+			$('#hpehf-logout-user').html(self.userFlyoutHTML);
+
+			// init user sign out action, and profile menu links to be updated according to environment used
+			self.initUserSignOut();
+			self.initProfileMenuLinks();
+
+			$('#hpehf-user-menu').css("display", "flex");
+			$('#hpehf-mobile-sign-in').css("display", "none");
+			$('#hpehf-sign-in').css("display", "none");
+		}
+		else {
+			var headers = {};
+			if(data.length > 0) {
+				headers['x-session-id'] = data;
+			}
+
+			//console.log("USER Login Headers: [" + headers + "]");
+
+			$.ajax ({
+				type: 'GET',
+				url: loginAPI,
+				dataType: 'json',
+				async: true,
+				mimeType: 'text/plain; charset=x-user-defined',
+				xhrFields: {withCredentials: true},
+				contentType: "application/json",
+				headers: headers
+			})
+			.done(function(data){
+				if(!data.description) {
+					self.userName = data.name;
+					self.userEmail = data.email;
+					// init user icon
+					self.userIconHTML = self.userIconHTML.replace(new RegExp("###user-name###", "g"), self.userName);
+					self.userIconHTML = self.userIconHTML.replace(new RegExp("###user-initials###", "g"), self.userGetInitials(self.userName));
+					$('#hpehf-user-icon-link').html(self.userIconHTML);
+					// init user flyout
+					self.userFlyoutHTML = self.userFlyoutHTML.replace(new RegExp("###user-initials###", "g"), self.userGetInitials(self.userName));
+					self.userFlyoutHTML  = self.userFlyoutHTML.replace(new RegExp("###user-name###", "g"), self.userName);
+					self.userFlyoutHTML  = self.userFlyoutHTML.replace(new RegExp("###user-email###", "g"), self.userEmail);
+					$('#hpehf-logout-user').html(self.userFlyoutHTML);
+
+					// init user sign out action, and profile menu links to be updated according to environment used
+					self.initUserSignOut();
+					self.initProfileMenuLinks();
+
+					$('#hpehf-user-menu').css("display", "flex");
+					$('#hpehf-mobile-sign-in').css("display", "none");
+					$('#hpehf-sign-in').css("display", "none");
+					console.log("Done! User Authenticated.");
+				}
+				else {
+					console.log("Done! Not Authenticated!");
+				}
+			})
+			.fail(function(){
+				console.log("Fail! Not Authenticated!");
+			});
+		}
+	},
+
+
+	/**
+	 * initHeaderAccessibilityEvents();
+	 */
+	 initHeaderAccessibilityEvents: function() {
+		var self = this;
+
+		// Add element outline on keyboard event
+		$('body').keydown(function (e) {
+			if ($('body').hasClass('hpehf-disable-focus') && e.keyCode === 9) {
+				$('body').removeClass('hpehf-disable-focus');
+			}
+		});
+
+		// Remove element outline on mouse event
+		$('body').mousedown(function () {
+			if (!$('body').hasClass('hpehf-disable-focus')) {
+				$('body').addClass('hpehf-disable-focus');
+			}
+		});
+
+		// Open nav flyouts on ENTER - except search flyout
+		$('.hpehf-nav-link').on('keydown', function(e) {
+			var flyout = $('#' + $(this).attr('data-target-id'));
+			var menuItem = $(this).parent();
+			var flyoutFirstFocusable = flyout.find('a:visible').first();
+			var flyoutLastFocusable = flyout.find('a:visible').last();
+			var focused = $('body').find(':focus');
+
+			// Exclude search flyout as it has separate handler
+			if (menuItem.attr('id') === 'hpehf-search') {
+				return;
+			}
+
+			// Do not open cart flyout when cart is empty
+			if (  (menuItem.attr('id') === 'hpehf-cart')
+					&&
+						((typeof(window.HPE_MINI_CART) !== 'undefined') &&  window.HPE_MINI_CART.isCartEmpty() )
+							||
+						(typeof(window.HPE_MINI_CART) == 'undefined')
+					) {
+				return true;
+			}
+			// Check if link has flyout
+			if ($(this).attr('data-target-id')) {
+				// If link is active - just close the flyout on ENTER or ESC
+				if (menuItem.hasClass('hpehf-active')) {
+					// ENTER key handlers
+					if (e.keyCode === 13 || e.keyCode === 27) {
+						self.commonHeaderCloseFlyouts();
+						menuItem.children().focus();
+					}
+					// TAB key handlers
+					if (e.keyCode === 9) {
+						e.preventDefault();
+						// Only TAB
+						if (!e.shiftKey) {
+							flyoutFirstFocusable.focus();
+						}
+						// SHIFT + TAB
+						if (e.shiftKey) {
+							flyoutLastFocusable.focus();
+						}
+					}
+				} else {
+					// ENTER key handlers
+					if (e.keyCode === 13) {
+						// Remove focus from nav link
+						focused.blur();
+						// Close opened flyouts
+						self.commonHeaderCloseFlyouts();
+						if(!flyout.hasClass('hpehf-active')) {
+							// Open flyouts - DESKTOP handler
+							if (window.innerWidth > self.mobileHeaderBreakPoint) {
+								self.commonHeaderOpenFlyoutOnHover(menuItem);
+							} else { // MOBILE handler
+								self.commonHeaderOpenFlyout(flyout);
+							}
+							// Focus on the first element
+							setTimeout(function() {
+								flyout.find('a:visible:not(".hpehf-close-btn")').first().focus();
+							}, 300);
+						}
+					}
+				}
+			}
+		});
+
+		// Event handlers for icons flyout
+		$('.hpehf-icons-flyout').on('keydown', function(e) {
+			var focused = $('body').find(':focus');
+			var firstFocusable = $(this).find('a:visible').first();
+			var lastFocusable = $(this).find('a:visible').last();
+			var navLink = $('.hpehf-nav-link[data-target-id="' + $(this).attr('id') + '"]');
+
+			// TAB key event handlers
+			if (e.keyCode === 9) {
+				if (focused.is(firstFocusable) && e.shiftKey) {
+					e.preventDefault();
+					if (window.innerWidth > self.mobileHeaderBreakPoint) {
+						navLink.focus();
+					} else {
+						lastFocusable.focus();
+					}
+				}
+				if (focused.is(lastFocusable) && !e.shiftKey) {
+					e.preventDefault();
+					if (window.innerWidth > self.mobileHeaderBreakPoint) {
+						navLink.focus();
+					} else {
+						firstFocusable.focus();
+					}
+				}
+			}
+			// ESC key handlers
+			if (e.keyCode === 27) {
+				self.commonHeaderCloseFlyouts();
+				navLink.focus();
+			}
+		});
+
+		// Event handlers for search flyout
+		$('.hpehf-search-flyout').on('keydown', function(e) {
+			var focused = $('body').find(':focus');
+			var searchFirstFocusable = $(this).find('a:visible, input:visible').first();
+			var searchLastFocusable = $(this).find('a:visible, input:visible').last();
+			var navLink = $('.hpehf-nav-link[data-target-id="' + $(this).attr('id') + '"]');
+			var mobileNavFirstFocusable = $('#hpehf-mobile-nav').find('a:visible').first();
+			var mobileNavLastFocusable = $('#hpehf-mobile-nav').find('a:visible').last();
+
+			// TAB key handlers
+			if(e.keyCode === 9) {
+				if (focused.is(searchFirstFocusable) && e.shiftKey) {
+					e.preventDefault();
+					// DESKTOP
+					if (window.innerWidth > self.mobileHeaderBreakPoint) {
+						searchLastFocusable.focus();
+					} else { // MOBILE
+						// With mobile menu opened
+						if ($('#hpehf-mobile-nav').hasClass('hpehf-active')) {
+							mobileNavLastFocusable.focus();
+						} else { // Only search bar opened
+							searchLastFocusable.focus();
+						}
+					}
+				}
+				if (focused.is(searchLastFocusable) && !e.shiftKey) {
+					e.preventDefault();
+					// DESKTOP
+					if (window.innerWidth > self.mobileHeaderBreakPoint) {
+						searchFirstFocusable.focus();
+					} else { // MOBILE
+						// With mobile menu opened
+						if ($('#hpehf-mobile-nav').hasClass('hpehf-active')) {
+							mobileNavFirstFocusable.focus();
+						} else { // Only search bar opened
+							searchFirstFocusable.focus();
+						}
+					}
+				}
+			}
+			// ESC key handler
+			if (e.keyCode === 27) {
+				// If mobile nav is opened, focus on hamburger menu link
+				if ($('#hpehf-mobile-nav').hasClass('hpehf-active')) {
+					self.commonHeaderCloseFlyouts();
+					self.updateSearchFormAutocomplete("0");
+					$('#hpehf-hmb-menu').children('.hpehf-nav-link').focus();
+				} else { // Otherwise focus on the search icon link
+					self.commonHeaderCloseFlyouts();
+					self.updateSearchFormAutocomplete("0");
+					navLink.focus();
+				}
+			}
+		});
+
+		// Mobile nav handlers
+		$('#hpehf-mobile-nav').on('keydown', function(e) {
+			var focused = $('body').find(':focus');
+			var mobileNavLastFocusable = $(this).find('a:visible').last();
+			var searchBarFirstFocusable =  $('#hpehf-search-flyout').find('a:visible, input:visible').first();
+			var navLink = $('#hpehf-hmb-menu').children('.hpehf-nav-link');
+
+			// TAB key handlers
+			if (e.keyCode === 9) {
+				if (focused.is(mobileNavLastFocusable) && !e.shiftKey) {
+					e.preventDefault();
+					searchBarFirstFocusable.focus();
+				}
+			}
+			// ESC key handlers
+			if (e.keyCode === 27) {
+				self.commonHeaderCloseFlyouts();
+				navLink.focus();
+			}
+		});
+
+		// Flyout close button handlers
+		$('.hpehf-close-btn').on('keydown', function(e) {
+			var flyoutId = $(this).closest('div[id*=-flyout]').attr('id');
+			if (e.keyCode === 13) {
+				e.preventDefault();
+				if (flyoutId === 'hpehf-search-flyout' && $('#hpehf-mobile-nav').hasClass('hpehf-active')) {
+					self.commonHeaderCloseFlyouts();
+					$('#hpehf-hmb-menu').children('.hpehf-nav-link').focus();
+				} else {
+					self.commonHeaderCloseFlyouts();
+					$('.hpehf-nav-link[data-target-id="' + flyoutId + '"]').focus();
+				}
+			}
+		});
+
+		// Event to close mobile menu when link is followed and link does not have 'data-target-id' attribute
+		$('.hpehf-mobile-menu-link, .hpehf-flyout-link').on('click keydown', function(e) {
+			if (!$(this).attr('data-target-id') && (e.type === 'click' || e.keyCode === 13)) {
+				self.commonHeaderCloseFlyouts();
+			}
+		});
+	 },
+
+
+	/**
+	 * initFooterAccessibilityEvents();
+	 */
+	initFooterAccessibilityEvents: function() {
+		var self = this;
+
+		// Event to open/close mobile links container on click or enter events on the heading, and to close a container if it's opened and escape is pressed on the heading
+		$('#hpehf-footer .hpehf-links-list .hpehf-heading').on('click keydown', function(e) {
+			var container = $('#' + $(this).attr('data-target-id'));
+			if (container.length > 0 && (e.type === 'click' || e.keyCode === 13) || (container.hasClass('hpehf-active') && e.keyCode === 27)) {
+				self.footerToggleMobileMenu(this);
+			}
+		});
+	},
+
+
+	/**
+	 * footerToggleMobileMenu(item);
+	 */
+	footerToggleMobileMenu: function(item) {
+		var containerId = $(item).attr('data-target-id');
+		var container = $('#' + containerId);
+		var containerArrow = $(item).children('.hpehf-icon-tick');
+
+		if (container && window.innerWidth <= this.mobileHeaderBreakPoint) {
+			container.toggleClass('hpehf-active');
+			containerArrow.toggleClass('hpehf-active');
+		}
+	},
+
+
+	handleConsoleNavCallBack: function () {
+		var self = this;
+
+		if ( (this.consoleNavCallback !== null) && (typeof this.consoleNavCallback == "function") ) {
+			// TODO: OLD CODE $('#hpehf-header #hpehf-console-main-nav .hpehf-nav-link').on('click', function(e) {
+			$('#hpehf-header #hpehf-console-main-nav .hpehf-nav-link,' + '#hpehf-header .hpehf-logo-link,' + '#hpehf-header .hpehf-flyout-link,' + '#hpehf-header .hpehf-help-menu-submit-feedback,' + '#hpehf-header .hpehf-more-resources-signup-btn,' + '#hpehf-header #hpehf-notification .hpehf-nav-link,' + '#hpehf-footer .hpehf-footer-link,' + '#hpehf-footer .hpehf-link, '  + '#hpehf-footer .hpe-social-icon-link, ' + '#hpehf-header #hpehf-mobile-console-main-nav .hpehf-mobile-menu-link').on('click', function(e) {
+				var clicked = $(e.target).closest("a");
+				return self.consoleNavCallback(clicked.attr('href'));
+			});
+		}
+	},
+
+
+	handleCustomHelpIconCallBack: function () {
+		if ( (this.customHelpIconCallback !== null) && (typeof this.customHelpIconCallback == "function") ) {
+			return this.customHelpIconCallback();
+		}
+	},
+
+
+	registerConsoleNavHandler: function (callback) {
+		if ( (callback !== null) && (typeof callback == "function") ) {
+			this.consoleNavCallback = callback;
+			this.handleConsoleNavCallBack();
+		}
+	},
+
+	registerCustomHelpIconHandler: function (callback) {
+		if ( (callback !== null) && (typeof callback == "function") ) {
+			var self = this;
+			self.customHelpIconCallback = callback;
+
+			// Remove event listeners for "Help" applied by addCommonHeaderFlyoutEvents()
+			$('.hpehf-nav-link[data-target-id="hpehf-help-menu-flyout"]').unbind();
+
+			// Add own event listener which will trigger custom callback instead:
+			// Keydown event is not required as it is detetced as "click", see comment in this url https://www.w3.org/TR/WCAG20-TECHS/SCR35.html
+			// ***While "onclick" sounds like it is tied to the mouse, the onclick event is actually mapped to the default action of a link or button***
+			$('.hpehf-nav-link[data-target-id="hpehf-help-menu-flyout"]').on('click', function(e){
+				e.preventDefault(); // Removes error for javascript: void(0)
+				self.handleCustomHelpIconCallBack();
+			});
+			self.log('HFWS: registered take over function for Help Icon');
+		}
+	},
+
+	headerInitEvents: function () {
+		var self = this;
+
+		this.log('HFWS: headerInitEvents() start');
+
+		//init header flyouts
+		self.commonHeaderFlyoutInit();
+
+		//add flyout open events
+		self.addCommonHeaderFlyoutEvents();
+
+		//init search bar
+		self.searchBarInit();
+
+		// Init header accessibility events
+		self.initHeaderAccessibilityEvents();
+
+		// Generate the default feedback URL
+		self.createFeedbackURL();
+
+		// Handle Console Nav callback, if provided by single page application
+		if (this.cfg !== null && this.cfg.consoleNavHandler && (typeof this.cfg.consoleNavHandler == "function") ) {
+			self.registerConsoleNavHandler(this.cfg.consoleNavHandler);
+		}
+
+		// Handle Help Menu Icon callback
+		if (this.cfg !== null && this.cfg.customHelpIconHandler && (typeof this.cfg.customHelpIconHandler == "function") ) {
+			self.registerCustomHelpIconHandler(this.cfg.customHelpIconHandler);
+		}
+
+		// When leaving the page, close all un-closed flyouts
+		$(window).bind('beforeunload', function(){
+			self.commonHeaderCloseFlyouts();
+		});
+
+		this.log('HFWS: headerInitEvents() done');
+	},
+
+
+	secondaryNavInitEvents: function() {
+		var self = this;
+
+		$('#hpehf-sn-section-header').on('click keydown', function() {
+			var secondaryNavItem = $('#hpehf-secondary-nav');
+			if (window.innerWidth <= self.mobileHeaderBreakPoint) {
+				if (secondaryNavItem.hasClass('hpehf-active')) {
+					self.closeMobileSecondaryNav();
+				} else {
+					self.openMobileSecondaryNav();
+				}
+			}
+		});
+
+		$('body').on('click', function(e) {
+			var secondaryNav = $('#hpehf-secondary-nav');
+			if (secondaryNav.has($(e.target)).length === 0 && secondaryNav.hasClass('hpehf-active')) {
+				self.closeMobileSecondaryNav();
+			}
+		});
+
+		// Register mouse events for the secondary nav 'more' menu item
+		self.registerSecondaryNavMoreItemMouseEvents();
+
+		// Regenerate secondary nav links when window is resized and reaches the mobile breakpoint value (generate links for mobile) or 1px above it (generate links for desktop)
+		if (window.HPEHF_CFG) {
+			var prevWidth = window.innerWidth;
+			window.onresize = function() {
+				var overMobileBreakpoint = prevWidth <= self.mobileHeaderBreakPoint && window.innerWidth > self.mobileHeaderBreakPoint;
+				var belowMobileBreakpoint = prevWidth > self.mobileHeaderBreakPoint && window.innerWidth <= self.mobileHeaderBreakPoint;
+
+				if (overMobileBreakpoint || belowMobileBreakpoint) {
+					self.addSecondaryNavLinks(HPEHF_CFG.secondaryNav.navLinks);
+				}
+
+				if (overMobileBreakpoint && HPEHF_CFG.secondaryNav.navLinks.length > self.secondaryNavLinksVisible) {
+					self.registerSecondaryNavMoreItemMouseEvents();
+				}
+
+				prevWidth = window.innerWidth;
+			}
+		}
+	},
+
+
+	registerSecondaryNavMoreItemMouseEvents: function() {
+		var self = this;
+		var clickableFlyoutsFlag = this.clickableFlyouts;
+
+		if ($('.hpehf-secondary-nav-list-item.hpehf-sn-more').length > 0) {
+			// enable clickable flyouts if the clickable parameter is true;
+			if (clickableFlyoutsFlag === true){
+				if (window.innerWidth > self.mobileHeaderBreakPoint) {
+					$('.hpehf-secondary-nav-list-item.hpehf-sn-more').click(function(e) {
+						var snMoreLink = $(this);
+						var snFlyout = $('.hpehf-sn-more-flyout');
+						if (!snMoreLink.hasClass('hpehf-active')) {
+							self.openSecondaryNavMoreFlyout();
+							$(document).on({
+								'click.hpehf-sn-more-flyout-click-outside': function(e) {
+									if (snMoreLink.hasClass('hpehf-active') && ( (!snFlyout.is(e.target) && snFlyout.has(e.target).length === 0))) {
+										self.closeSecondaryNavMoreFlyout();
+									}
+								}
+							});
+						}
+					});
+				}
+				// For Secondary nav's "More" flyout links clicks, close more flyout, and allow to follow the link.
+				$('.hpehf-sn-more-flyout .hpehf-secondary-nav-link').click(function(e) {
+					e.stopPropagation();
+					self.closeSecondaryNavMoreFlyout();
+					return true;
+				});
+			}
+			else {
+				$('.hpehf-secondary-nav-list-item.hpehf-sn-more').on('mouseenter', function() {
+					self.headerClearFlyoutCloseTimeout();
+					self.clearFlyoutOverlayOpenedTimer();
+					self.openSecondaryNavMoreFlyout();
+				});
+
+				$('.hpehf-secondary-nav-list-item.hpehf-sn-more').on('mouseleave', function() {
+					self.flyoutOpenedTimer = setTimeout(function() {
+						self.closeSecondaryNavMoreFlyout();
+					}, 250);
+				});
+
+				$('.hpehf-sn-more-flyout, .hpehf-flyout-arrow').on('mouseenter', function() {
+					self.headerClearFlyoutCloseTimeout();
+				});
+			}
+		}
+	},
+
+
+	openSecondaryNavMoreFlyout: function() {
+		clearTimeout(this.hideFlyoutTimer);
+		this.hideFlyoutTimer = null;
+
+		if (window.innerWidth > this.mobileHeaderBreakPoint) {
+			this.commonHeaderCloseFlyouts();
+
+			$('.hpehf-sn-more-flyout').css('display', 'flex');
+			$('.hpehf-secondary-nav-list-item.hpehf-sn-more .hpehf-flyout-arrow').css('display', 'flex');
+			$('#hpehf-flyout-overlay').css('display', 'block');
+			setTimeout(function() {
+				$('.hpehf-secondary-nav-list-item.hpehf-sn-more').addClass('hpehf-active');
+				$('#hpehf-flyout-overlay').addClass('hpehf-sn-active');
+			}, 20);
+		}
+	},
+
+
+	closeSecondaryNavMoreFlyout: function() {
+		$('.hpehf-secondary-nav-list-item.hpehf-sn-more').removeClass('hpehf-active');
+		$('#hpehf-flyout-overlay').removeClass('hpehf-sn-active');
+		//this.setFlyoutOverlayOpenedTimer();
+		this.hideFlyoutTimer = setTimeout(function() {
+			$('.hpehf-sn-more-flyout').css('display', 'none');
+			$('.hpehf-secondary-nav-list-item.hpehf-sn-more .hpehf-flyout-arrow').css('display', 'none');
+		}, 300);
+
+		$(document).off('click.hpehf-sn-more-flyout-click-outside');
+	},
+
+
+	openMobileSecondaryNav: function() {
+		this.clearFlyoutOverlayOpenedTimer();
+
+		var secondaryNavItem = $('#hpehf-secondary-nav');
+		var overlay = $('#hpehf-flyout-overlay');
+
+		secondaryNavItem.addClass('hpehf-active');
+		overlay.css('display', 'block');
+		setTimeout(function() {
+			overlay.addClass('hpehf-active');
+		}, 20);
+	},
+
+
+	closeMobileSecondaryNav: function() {
+		var secondaryNavItem = $('#hpehf-secondary-nav');
+		var overlay = $('#hpehf-flyout-overlay');
+
+		secondaryNavItem.removeClass('hpehf-active');
+		overlay.removeClass('hpehf-active');
+
+		// Clear overlay close timeout
+		this.setFlyoutOverlayOpenedTimer();
+	},
+
+
+	setFlyoutOverlayOpenedTimer: function() {
+		this.flyoutOverlayOpenedTimer = setTimeout(function() {
+			$('#hpehf-flyout-overlay').css('display', 'none');
+		}, 300);
+	},
+
+
+	clearFlyoutOverlayOpenedTimer: function() {
+		clearTimeout(this.flyoutOverlayOpenedTimer);
+		this.flyoutOverlayOpenedTimer = null;
+	},
+
+
+	footerInitEvents: function () {
+		var self = this;
+
+		// Init footer accesibility events
+		self.initFooterAccessibilityEvents();
+		/* TODO: nothing here for "slim" footer as of now. We may add something later - or delete this method */
+	},
+
+
+	/**
+	 * changeThemeColor(color)
+	 * Optional 'color' parameter to force displaying 'dark' or 'light' theme
+	 * If no parameter is provided the function will toggle between 'light' and 'dark' themes
+	 * If any parameter other than 'light' or 'dark' will be provided, then light theme will be displayed
+	 */
+	changeThemeColor: function(color) {
+		var col = color || null;
+		var headerElem = $('#hpehf-header');
+		var footerElem = $('#hpehf-footer');
+		if (col) {
+			if (col === 'dark') {
+				headerElem.addClass('hpehf-dark');
+				footerElem.addClass('hpehf-dark');
+			} else {
+				headerElem.removeClass('hpehf-dark');
+				footerElem.removeClass('hpehf-dark');
+			}
+		} else {
+			headerElem.toggleClass('hpehf-dark');
+			footerElem.toggleClass('hpehf-dark');
+		}
+	},
+
+
+	getHeaderHeight: function() {
+		var headerElem = document.getElementById('hpehf-header');
+
+		if (headerElem) {
+			return headerElem.offsetHeight;
+		}
+	},
+
+
+	getFooterHeight: function() {
+		var footerElem = document.getElementById('hpehf-footer');
+
+		if (footerElem) {
+			return footerElem.offsetHeight;
+		}
+	},
+
+
+	headerCloseFlyoutsOnHoverEnd: function() {
+		var self = this;
+		clearTimeout(this.flyoutOpenedTimer);
+		this.flyoutOpenedTimer = null;
+		this.flyoutOpenedTimer = setTimeout(function() {
+			self.commonHeaderCloseFlyouts();
+		}, 250);
+	},
+
+
+	headerClearFlyoutCloseTimeout: function() {
+		clearTimeout(this.flyoutOpenedTimer);
+		this.flyoutOpenedTimer = null;
+	},
+
+
+	/**
+	 * preloadFonts()
+	 * function to preload HPE fonts for a better UI experience
+	 */
+	preloadFonts: function() {
+		var body = document.body;
+		var fonts = ['Metric Light', 'Metric Regular', 'Metric Medium', 'Metric Semibold', 'MetricBold'];
+
+		fonts.forEach(function(font) {
+			var container = document.createElement('span');
+			container.innerHTML = Array(100).join('wi');
+			container.style.cssText = ['position:absolute', 'width:auto', 'font-size:128px', 'left:-99999px'].join(' !important;');
+			container.id = 'hpef-' + font.replace(' ', '-');
+			container.style.fontFamily = '\'' + font + '\', Arial, sans-serif';
+
+			body.appendChild(container);
+			setTimeout(function() {
+				body.removeChild(container);
+			}, 300);
+		});
+	},
+
+
+	/**
+	 * initSecondayNav() - initialize the secondary navigation
+	 */
+	initSecondaryNav: function() {
+
+		// Check if config object exists and it has secondary nav options, and if DOM has elements to render secondary nav
+		if (this.cfg !== null && this.cfg.secondaryNav && document.getElementById('hpehf-sn-links-wrapper') !== null && document.getElementById('hpehf-sn-section-header') !== null) {
+			var sn = this.cfg.secondaryNav;
+
+			// Set the number of visible links if provided in the configuration object
+			if (sn.visibleLinks && !isNaN(parseInt(sn.visibleLinks))) {
+				this.secondaryNavLinksVisible = sn.visibleLinks;
+			}
+
+			// Add section title
+			if (sn.sectionTitle) {
+				var sectionHeader = document.getElementById('hpehf-sn-section-header');
+				var navTitle = this.generateSecondaryNavHeader(sn.sectionTitle);
+
+				sectionHeader.appendChild(navTitle);
+			}
+
+			if (sn.navLinks.length > 0) {
+				// Add links
+				this.addSecondaryNavLinks(sn.navLinks);
+
+				// Display secondary nav
+				document.getElementById('hpehf-header').classList.add('hpehf-sn-active');
+			}
+		}
+	},
+
+
+	addSecondaryNavLinks: function(navLinks) {
+		var snLinksContainer = document.getElementById('hpehf-sn-links-wrapper');
+
+		// Clear list for the case when links list is re-initialized
+		snLinksContainer.innerHTML = '';
+
+		var links = this.generateArrayOfSecondaryNavLinks(navLinks);
+		var hiddenLinks = [];
+
+		// Split links into visible and hidden for desktop breakpoints
+		if (window.innerWidth > this.mobileHeaderBreakPoint) {
+			hiddenLinks = links.splice(this.secondaryNavLinksVisible);
+		}
+
+		// Create list of visible links and add them to the navigation
+		var visibleLinksList = this.generateSecondaryNavLinksList(links);
+
+		if (hiddenLinks.length > 0) {
+			// Create 'more' link item
+			var moreItem = this.generateSecondaryNavMoreItem(hiddenLinks);
+
+			// Append more item to the visible links list
+			visibleLinksList.appendChild(moreItem);
+		}
+
+		// Add list to the DOM
+		snLinksContainer.appendChild(visibleLinksList);
+	},
+
+
+	generateSecondaryNavMoreItem: function(hiddenLinks) {
+		var moreItem = document.createElement('li');
+		moreItem.className = 'hpehf-secondary-nav-list-item hpehf-sn-more';
+
+		// Create link
+		var moreItemLink = document.createElement('a');
+		moreItemLink.innerHTML = 'More';
+		moreItemLink.className = 'hpehf-secondary-nav-link';
+		moreItemLink.href = 'javascript:void(0);';
+
+		// Create link dropdown arrow
+		var moreLinkDropdownArrow = document.createElement('div');
+		moreLinkDropdownArrow.className = 'hpehf-sn-dropdown-icon';
+
+		// Create flyout arrow
+		var flyoutArrow = document.createElement('span');
+		flyoutArrow.className = 'hpehf-flyout-arrow';
+
+		// Create flyout
+		var moreFlyout = document.createElement('div');
+		moreFlyout.className = 'hpehf-sn-more-flyout';
+
+		// Create list of links
+		var moreItemLinksList = this.generateSecondaryNavLinksList(hiddenLinks);
+
+		// Append 'more' links list to more item
+		moreFlyout.appendChild(moreItemLinksList);
+
+		// Append dropdown arrow to link
+		moreItemLink.appendChild(moreLinkDropdownArrow);
+
+		// Append link, arrow and flyout to the list item
+		moreItem.appendChild(moreItemLink);
+		moreItem.appendChild(flyoutArrow);
+		moreItem.appendChild(moreFlyout);
+
+		return moreItem;
+	},
+
+
+	generateSecondaryNavLinksList: function(linksArray) {
+		var linksList = document.createElement('ul');
+		linksList.className = 'hpehf-secondary-nav-links-list';
+
+		// Add visible links to the list
+		linksArray.forEach(function (link) {
+			var linksListItem = document.createElement('li');
+			linksListItem.className = 'hpehf-secondary-nav-list-item';
+
+			// Add link to list item
+			linksListItem.appendChild(link);
+
+			// Add list item to the links list
+			linksList.appendChild(linksListItem);
+		});
+
+		return linksList;
+	},
+
+
+	/**
+	 * generateSecondaryNavHeader(item) - method to create HTML title element for secondary nav
+	 * @param item - secondary nav title provided in the configuration object
+	 */
+	generateSecondaryNavHeader: function(item) {
+		// Create title element
+		var title = document.createElement('div');
+		title.className = 'hphef-secondary-nav-title';
+		title.innerHTML = item;
+
+		// Create dropdown arrow
+		var dropdownArrow = document.createElement('div');
+		dropdownArrow.className = 'hpehf-sn-dropdown-icon';
+
+		title.appendChild(dropdownArrow);
+
+		return title;
+	},
+
+
+	/**
+	 * generateArrayOfSecondaryNavLinks(items) - method to generate an array of HTML anchor tag links
+	 * @param items - array of link items provided in the configuration object
+	 */
+	generateArrayOfSecondaryNavLinks: function(items) {
+		var secondaryNavLinks = [];
+
+		items.forEach(function(item) {
+			if (item.title && item.href) {
+				// Create anchor item
+				var link = document.createElement('a');
+				link.innerHTML = item.title;
+				link.className = 'hpehf-secondary-nav-link';
+				link.href = item.href;
+
+				// Check if link opens in new window
+				if (item.newWindow) {
+					link.target = '_blank';
+				}
+
+				// Check if data-analytics-region-id is specified. If not, create it
+				if (item.dataAnalyticsRegionId) {
+					link.setAttribute('data-analytics-region-id', item.dataAnalyticsRegionId);
+				} else {
+					link.setAttribute('data-analytics-region-id','gmenu|Secondary Nav|' + item.title);
+				}
+
+				// Create link arrow
+				var linkArrow = document.createElement('div');
+				linkArrow.className = 'hpehf-arrow';
+
+				// Append link arrow to link
+				link.appendChild(linkArrow);
+
+				// Push link to array
+				secondaryNavLinks.push(link);
+			}
+		});
+
+		return secondaryNavLinks;
+	},
+
+
+	/**
+	 * initVideoPlayers() - method to determine whether the videos should be displayed using the Brightcove or the HTML5 players
+	 */
+	initVideoPlayers: function() {
+		// Check for test parameter
+		if (window.location.href.indexOf('hf-video-test=1') > 0 && !this.enableBrightcoveVideo) {
+			$('.hpehf-html5-video-player').remove();
+			return;
+		}
+
+		// Check for configuration
+		if (this.enableBrightcoveVideo) {
+			$('.hpehf-html5-video-player').remove();
+		} else {
+			$('.hpehf-brightcove-video-player').remove();
+		}
+	},
+
+
+	/*
+	 * isConsoleNonProEnvironment() - returns true, if HFWS is loaded on non-pro console environment.
+	 */
+	isConsoleNonProEnvironment: function() {
+		var consoleNonProDomains = [];
+
+		// join omega, pavo and pro ConsoleNonProDomains arrays into single array
+		consoleNonProDomains = consoleNonProDomains.concat(this.omegaConsoleNonProDomains, this.pavoConsoleNonProDomains, this.proConsoleNonProDomains, this.arubathenaConsoleNonProDomains);
+
+		// check if website's URL matches list of our DEV domains
+		for (var key=0; key<consoleNonProDomains.length; key++ ) {
+			if ( document.domain.search(new RegExp(consoleNonProDomains[key])) != -1 ) {
+				return true;
+			}
+		}
+
+		// check if website provides DEV base URL via HPEHF_CFG:
+		if (this.cfg !== null && this.cfg.ccsBaseDomain && this.cfg.ccsBaseDomain !="") {
+			return true;
+		}
+
+		// check if website's URL matches with consoleLogoOverride configuration
+		for (var key=0; key<this.consoleLogoOverride.length; key++ ) {
+console.log("consoleLogoOverride[" + key + "]: " + this.consoleLogoOverride[key].consoleURL + " " + this.consoleLogoOverride[key].logoOverride);
+			if ( document.location.href.startsWith(this.consoleLogoOverride[key].consoleURL) ) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+
+
+	/*
+	 * initConsoleNonProEnvironments() - If non-pro console environment is detected, update links in header that point to that console, to go to non-pro environment.
+	 */
+	initConsoleNonProEnvironments: function() {
+		var self=this;
+		var replacementDomain = "";
+
+		if (this.isConsoleNonProEnvironment()) {
+			// check if replacement is omega
+			for (var key in this.omegaConsoleNonProDomains) {
+				if ( document.domain.search(new RegExp(this.omegaConsoleNonProDomains[key])) != -1 ) {
+					replacementDomain = "omega.common.cloud.hpe.com";
+				}
+			}
+			// check if replacement is pavo
+			for (var key in this.pavoConsoleNonProDomains) {
+				if ( document.domain.search(new RegExp(this.pavoConsoleNonProDomains[key])) != -1 ) {
+					replacementDomain = "pavo.common.cloud.hpe.com";
+				}
+			}
+
+			// check if to replace logo only 
+			var replacelogoonly = false;
+
+			for (var key in this.arubathenaConsoleNonProDomains) {
+				if ( document.domain.search(new RegExp(this.arubathenaConsoleNonProDomains[key])) != -1 ) {
+					replacementDomain = document.domain; // Making sure to replace with current domain, and not a fixed value.
+					replacelogoonly = true;
+				}
+			}
+			// Check if config object exists and if user provided ccsBaseDomain option, then use it for replacement
+			if (this.cfg !== null && this.cfg.ccsBaseDomain && this.cfg.ccsBaseDomain !="") {
+				replacementDomain = this.cfg.ccsBaseDomain;
+			}
+
+			// check if website's URL matches with consoleLogoOverride configuration
+			for (var key=0; key<this.consoleLogoOverride.length; key++ ) {
+				if ( document.location.href.startsWith(this.consoleLogoOverride[key].consoleURL) ) {
+					replacementDomain = this.consoleLogoOverride[key].logoOverride;
+					break;
+				}
+			}
+
+			if ( replacementDomain != "" ) {
+				$('#hpehf-header').find('a').each(function(index, a) {
+					if ($(a).attr("href").search(self.consoleProDomain) !== -1) {
+						// When we are not dealing with arubathena domain, we replace common.cloud.hpe.com wherever it's found into the href attributes:
+						if (!replacelogoonly){
+							$(a).attr("href", $(a).attr("href").replace(new RegExp(self.consoleProDomain, "g"), replacementDomain));
+						}
+						else {
+							// For replacelogoonly=true, replace with ccsBaseDomain for all a-href if configuration is provided by page
+							if (self.cfg !== null && self.cfg.ccsBaseDomain && self.cfg.ccsBaseDomain !="") {
+								$(a).attr("href", $(a).attr("href").replace(new RegExp(self.consoleProDomain, "g"), replacementDomain));
+							}
+							// For replacelogoonly=true, if cssBaseDomain config is not provided, we only replace href attributes when domain is common.cloud.hpe.com root and not deeper paths
+							else if($(a).attr("href").search(new RegExp(/^.*common\.cloud\.hpe\.com\/{0,1}$/mg)) != -1){
+								$(a).attr("href", $(a).attr("href").replace(new RegExp(self.consoleProDomain, "g"), replacementDomain));
+							}
+						}
+					}
+				});
+			}
+
+		}
+	},
+
+	// initialise the header context based on the contextual parameter, takes the context parameter value , and initialise the content accordingly
+	initHeaderContext : function(){
+
+		// find and select help menu entry that corresponds to the requested context
+		var selectedItem = $( "a[data-feedback-target="+"'"+this.contextParam+"']");
+
+		// check the selectedItem size, if the size is 0, we don't have the same context key like the context parameter so we set the selected value from the menu to default to "no selection"
+		if(selectedItem.length === 0 ){
+			selectedItem= $( "a[data-feedback-target='']");
+		}
+
+		// we trigger a click event on the selectedItem in help menu, which works as if user clicked that entry - so the correct context is applied, and user opening help menu sees by default the content that relates to this context.
+		if(this.contextParam){
+			selectedItem.trigger('click');
+		}
+	},
+
+
+	/*
+	 * init()
+	 *
+	 * Main method - intializes HF operation.
+	 */
+	init: function () {
+
+		// check if header was initalized already - to not initalize it twice.
+		if (this.hfInitialized) {
+			this.log('HFWS: init() already initalized - not initalizing again.');
+			return true;
+		}
+
+		this.hfInitialized = true;
+
+		this.log('HFWS: init() start');
+
+		// Preload fonts
+		this.preloadFonts();
+
+		// initialize cc, ll and privacyCode properties based on attributes passed through DOM
+		if (document.getElementById('hpehf-header') != null) {
+			var hpehfHeader = $('#hpehf-header');
+			this.cc = hpehfHeader.attr('hpehf-cc');
+			this.ll = hpehfHeader.attr('hpehf-ll');
+
+
+			// check if hpehf-privacy-code attribute exists, and if yes, initialize our object with its value:
+			if ( typeof(hpehfHeader.attr('hpehf-privacy-code')) != 'undefined' ) {
+				if ( hpehfHeader.attr('hpehf-privacy-code') === 'true' ) {
+					this.privacyCode = true;
+				}
+				else if ( hpehfHeader.attr('hpehf-privacy-code') === 'false' ) {
+					this.privacyCode = false;
+				}
+				else {
+					this.privacyCode = true;
+				}
+			}
+			else {
+				this.privacyCode = true;
+			}
+
+
+			// check if we're provided with context attribute
+			if(typeof(hpehfHeader.attr('context')) != 'undefined'){
+				this.contextParam=hpehfHeader.attr('context');
+			}
+			else{
+				this.contextParam="";
+			}
+
+			//check if we provided and enabled the clickableFlyouts attribute exists, and if yes, initialize our object with its value:
+			if (typeof(hpehfHeader.attr('clickableFlyouts')) != 'undefined'){
+				if ( hpehfHeader.attr('clickableFlyouts') === 'true'){
+					this.clickableFlyouts= true;
+				}
+				else if ( hpehfHeader.attr('clickableFlyouts') === 'false' ){
+					this.clickableFlyouts = false;
+				}
+				else{
+					this.clickableFlyouts = true;
+				}
+			}
+			else {
+				this.clickableFlyouts = true;
+			}
+		}
+		else if (document.getElementById('hpehf-footer') == null) {
+			// If at HF initialization time, both header and footer are not added to the page, do not load privacy code.
+			/* TODO: This is to cover situation like GLC where when init() is executed, they have not yet added header html to page (they re-initialize header from code when they add it to page), so during initial init, hpehf-privacy-code property of header cannot be checked.
+				Because it cannot be checked - privacy code will load for them.
+				They do not load footer - and anyways, if during init() time there is no header, and no footer, then initializing HFWS just in order to load privacy code, does not make sense..
+				1. Add the cc/ll and hpehf-privacy-code properties also to the footer - so in case someone renders only footer and not header, those could be intialized from footer.
+				2. Check however if there is better way to handle this and not loading banner for GLC. Perhaps handling the loading of privacy code not here, but through configuration - and loading it like this script, not through this script?
+			*/
+			this.privacyCode = false;
+		}
+
+		if (!this.cc) this.cc = 'us';
+		if (!this.ll) this.ll = 'en';
+
+		// Check if config object exists and add it to HFWS object
+		if (window.HPEHF_CFG) {
+			this.cfg = window.HPEHF_CFG;
+		}
+
+		// Init secondary nav
+		this.initSecondaryNav();
+
+		// Initialize value for "Please Select" text used in dropdowns, get translated value from DOM or use "Please Selected":
+		this.pleaseSelectTxt =  ($('[data-target-id="hpehf-default"]').first().length === 1) ? $('[data-target-id="hpehf-default"]').first().attr('data-target-value') : 'Please Select';
+
+		// initialize click / mouse move etc events
+		this.headerInitEvents();
+		this.secondaryNavInitEvents();
+		this.footerInitEvents();
+
+		// Init console non-PRO environment URLs
+		this.initConsoleNonProEnvironments();
+
+		// Initialize header context
+		this.initHeaderContext();
+
+		// make header and footer visible
+		this.makeVisible();
+
+		// include privacy banner script
+		this.loadPrivacyBannerScript();
+
+		// check if signin is enabled and initialize it if true
+		if(this.isSignInEnabled()) {
+			// Check if OKTA login testing enabled via URL
+			if (window.location.href.indexOf("test-okta=1") != -1) {
+				this.oktaEnabled = true;
+			}
+			// Enable OKTA for us/en console mode and hpe.com mode
+			if (this.cc == 'us' && this.ll == 'en') {
+				this.oktaEnabled = true;
+			}
+
+			//init hpe.com Cokpit's IAM/OKTA integration environment (PRO, STG or QA) bassed on URL parametter or configuration
+			this.initOktaEnvironment();
+
+			// Pass current page url as redirectURL param to login page
+			this.initSignInLinkRedirectURL();
+
+			if (this.oktaEnabled) {
+				console.log("iamOKTA Login: [enabled]");
+				console.log("iamOKTA Environment: [" + this.iamOKTAEnvSelector + "]")
+
+				// check if page is not under .hpe.com domain, and at the same time, if test param is not used
+				if( !window.location.host.endsWith(".hpe.com") && window.location.href.indexOf("test-signin-local=1") == -1 ) {
+					console.log("iamOKTA User Login init...");
+					this.initNonHPEcomUserLogin();
+				}
+				else {
+					// include init User Login
+					this.initUserLogin("");
+				}
+			}
+			else {
+				// include init User Login
+				this.initUserLogin("");
+			}
+		}
+
+		// Initialize video players
+		this.initVideoPlayers();
+
+		// Pass current page url to country selector link
+		this.linkAddNavigateFrom();
+
+		// Dispatch to document event informing that header and footer is ready
+		hpehfReadyEvent = document.createEvent('Event');
+		hpehfReadyEvent.initEvent('HPEHF.READY', true, true);
+		document.dispatchEvent(hpehfReadyEvent);
+
+		this.log('HFWS: init() finished');
+	}
+};
+
+
+
+/***************** INITIALIZE HPEHF CODE *****************/
+// If document is ready, initialize HF right away
+if (document.readyState == 'complete') {
+	HPEHF.init();
+}
+else {
+	// If document not ready, add event to initialize Slim HF when ready
+	$(document).on('readystatechange', function () {
+			if ( (document.readyState == 'complete') && !HPEHF.hfInitialized ) {
+				HPEHF.init();
+			}
+		});
+}
+/*********************************************************/
+};
+
+/* If this is not migration from legacy mootools hfws installation, initialize HFWS right away */
+if ( ! ((typeof window.hfwsMootoolsMigration !== 'undefined') && window.hfwsMootoolsMigration === true ) ) {
+	_hpehf(window.jQuery);
+}
+/* For migration from legacy mootools hfws instalations, check if jQuery is included to page, and include it if necessary */
+else {
+	if (typeof window.jQuery !== 'undefined') {
+		_hpehf(window.jQuery);
+	}
+	else {
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		if (script.readyState) {  // only required for IE <9
+			script.onreadystatechange = function() {
+				if ( script.readyState === 'loaded' || script.readyState === 'complete' ) {
+					script.onreadystatechange = null;
+					jQuery.noConflict();
+					_hpehf(window.jQuery);
+				}
+			};
+		}
+		else {  //Others
+			script.onload = function() {
+				jQuery.noConflict();
+				_hpehf(window.jQuery);
+			};
+		}
+
+		script.src = 'https://h50007.www5.hpe.com/hfws-static/js/framework/jquery/v-3-6-0/jquery.js';
+		document.getElementsByTagName('head')[0].appendChild(script);
+	}
+}

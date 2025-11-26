@@ -1,0 +1,4052 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-bgp API generated from aruba-bgp.yang",
+    "version": "1.0.0",
+    "title": "bgp",
+    "x-tag-group": "Routing & Overlays"
+  },
+  "tags": [
+    {
+      "name": "bgp"
+    }
+  ],
+  "paths": {
+    "/bgp": {
+      "get": {
+        "summary": "Read existing BGP router configuration",
+        "description": "Top-level Configurations for BGP.",
+        "operationId": "readBgp",
+        "x-cliParam": {
+          "commandName": "readBgpCmd",
+          "summary": "Read operation for bgp",
+          "commandUse": "bgp",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/bgp/"
+        },
+        "tags": [
+          "bgp"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bgp/{name}": {
+      "post": {
+        "summary": "Create BGP profile.",
+        "description": "Configures list of BGP Profile to provide the parameters for the BGP protocol.",
+        "operationId": "createBgpProfileByID",
+        "x-cliParam": {
+          "commandName": "createBgpProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createBgpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bgp/profile/%s/"
+        },
+        "tags": [
+          "bgp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the BGP Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaBgp_BgpprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing BGP profile.",
+        "description": "Configures list of BGP Profile to provide the parameters for the BGP protocol.",
+        "operationId": "readBgpProfileByID",
+        "x-cliParam": {
+          "commandName": "readBgpProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readBgpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bgp/profile/%s/"
+        },
+        "tags": [
+          "bgp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the BGP Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "Configures list of BGP Profile to provide the parameters for the BGP protocol.",
+        "operationId": "updateBgpProfileByID",
+        "x-cliParam": {
+          "commandName": "updateBgpProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateBgpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bgp/profile/%s/"
+        },
+        "tags": [
+          "bgp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the BGP Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaBgp_BgpprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete BGP profile.",
+        "description": "Configures list of BGP Profile to provide the parameters for the BGP protocol.",
+        "operationId": "deleteBgpProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteBgpProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteBgpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/bgp/profile/%s/"
+        },
+        "tags": [
+          "bgp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the BGP Profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaBgp_BgpprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaBgp_BgpprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaBgp_BgpSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS",
+          "Gateway"
+        ],
+        "description": "Top-level Configurations for BGP.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Configures list of BGP Profile to provide the parameters for the BGP protocol.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Name of the BGP Profile."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Description of the BGP Profile."
+                },
+                "router": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "description": "List of BGP Routers.",
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaBgp_BgpGlobalBase"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ArubaBgp_BgpNeighbors"
+                      }
+                    ]
+                  },
+                  "x-key": [
+                    "asVrf"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaBgp_BgpprofileSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Name of the BGP Profile."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Description of the BGP Profile."
+          },
+          "router": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of BGP Routers.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpGlobalBase"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpNeighbors"
+                }
+              ]
+            },
+            "x-key": [
+              "asVrf"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalBase": {
+        "description": "Global configuration parameters for the BGP router",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpGlobal"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpGlobalLoggingOptions"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpGlobalUseMultiplePaths"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpGlobalAfiSafi"
+          }
+        ],
+        "properties": {
+          "default-bgp-attributes": {
+            "description": "Default administrative distance or preference assigned to\nroutes received from different sources\n(external, internal, and local).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpGlobalDefaultBgpAttributes"
+              }
+            ]
+          },
+          "confederation": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Parameters indicating whether the local system acts as part\nof a BGP confederation",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpGlobalConfederation"
+              }
+            ]
+          },
+          "graceful-restart": {
+            "description": "Parameters relating the graceful restart mechanism for BGP",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpGlobalGracefulRestart"
+              }
+            ]
+          },
+          "timers": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Parameters related to the BGP timers.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborTimers"
+              }
+            ]
+          },
+          "default-originate": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "description": "Originate default route to BGP neighbors",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate"
+              }
+            ]
+          },
+          "max-prefix-options": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Parameters relating to the limit for maximum prefix\nconfiguration options.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes"
+              }
+            ]
+          },
+          "route-selection-options": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Parameters relating to options for route selection",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpGlobalRouteSelectionOptions"
+              }
+            ]
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobal": {
+        "description": "Global configuration options for the BGP router.",
+        "properties": {
+          "as-vrf": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Key combination of as and vrf separated by ~"
+          },
+          "router-id": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "[ipv4-router-id-address, ipv4-address]",
+            "x-patterns": "['((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]))|((0\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]))|(0\\.0\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]))|(0\\.0\\.0\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])))', '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}']",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Router id of the router - an unsigned 32-bit integer\nexpressed in dotted quad notation."
+          },
+          "route-reflector-cluster-id": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+              }
+            ],
+            "description": "route-reflector cluster id to use when local router is\nconfigured as a route reflector."
+          },
+          "disable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "description": "Disable the BGP router."
+          },
+          "max-as-limit": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 32,
+            "default": "32",
+            "description": "Limit on the maximum AS numbers allowed in the routes learned from\nthe peers"
+          },
+          "enable-snmp-traps": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable SNMP trap generation for BGP related events."
+          },
+          "fast-external-fallover": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable fast fall-over for directly connected eBGP sessions."
+          },
+          "enable-bgp-update-group": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BGP update groups."
+          },
+          "aggregate-address-split-horizon": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "If enabled, BGP will not advertise the aggregated route back to\nthe peer, that advertises the same network."
+          },
+          "as-notation": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "DOTTED",
+              "DOTTED_PLUS",
+              "PLAIN_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DOTTED": "The AS numbers greater than 65535 should be displayed in AA.NN format",
+              "DOTTED_PLUS": "All the AS numbers should be displayed in AA.NN format",
+              "PLAIN_TEXT": "All the AS numbers should be displayed in plaintext format"
+            },
+            "x-typeDescription": "Specifies the representation of Four-Octet AS Numbers",
+            "description": "Specifies the representation of Four-Octet AS Numbers in show commands."
+          },
+          "as-extended-enable": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable extended-as 4byte configuration in range 65536-4294967295."
+          },
+          "open-on-accept": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Configure BGP to send OPEN message immediately when the\nTCP connection has been extablished for configured peers."
+          },
+          "client-to-client-reflection": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable or disable reflection of routes between route-reflector\nclients. By default, if route-reflector is configured, routes\nfrom a client are reflected to other clients."
+          },
+          "allow-own-as": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Specify the number of occurrences of the local BGP speaker's\nAS that can occur within the AS_PATH before it is rejected."
+          },
+          "nonstop": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable or disable nonstop forwarding for BGP."
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalDefaultBgpAttributes": {
+        "description": "Configuration options relating to the default metric,\nadministrative distance or preference assigned to routes\nreceived from different sources (external, internal, and local).",
+        "properties": {
+          "metric": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Metric for BGP routes."
+          },
+          "external-route-distance": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 255,
+            "description": "Administrative distance for routes learned from external\nBGP (eBGP)."
+          },
+          "internal-route-distance": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 255,
+            "description": "Administrative distance for routes learned from internal\nBGP (iBGP)."
+          },
+          "local-route-distance": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 255,
+            "description": "Administrative distance for local routes."
+          },
+          "local-preference": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": "100",
+            "description": "Local preference for BGP routes."
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalConfederation": {
+        "description": "Configuration options specifying parameters when the local\nrouter is within an autonomous system which is part of a BGP\nconfederation.",
+        "properties": {
+          "identifier": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "x-typeDescription": "A numeric identifier for an autonomous system (AS). An AS is a\nsingle domain, under common administrative control, which forms\na unit of routing policy. Autonomous systems can be assigned a\n2-byte identifier, or a 4-byte identifier which may have public\nor private scope. Private ASNs are assigned from dedicated\nranges. Public ASNs are assigned from ranges allocated by IANA\nto the regional internet registries (RIRs).",
+            "description": "Confederation identifier for the autonomous system.\nSetting the identifier indicates that the local-AS is part\nof a BGP confederation."
+          },
+          "member-as": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "maximum": 4294967295,
+              "x-typeDescription": "A numeric identifier for an autonomous system (AS). An AS is a\nsingle domain, under common administrative control, which forms\na unit of routing policy. Autonomous systems can be assigned a\n2-byte identifier, or a 4-byte identifier which may have public\nor private scope. Private ASNs are assigned from dedicated\nranges. Public ASNs are assigned from ranges allocated by IANA\nto the regional internet registries (RIRs).",
+              "description": "Remote autonomous systems that are to be treated\nas part of the local confederation."
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalGracefulRestart": {
+        "description": "Configuration parameters relating to BGP graceful restart.",
+        "properties": {
+          "restart-time": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4095,
+            "description": "Estimated time (in seconds) for the local BGP speaker to\nrestart a session. This value is advertise in the graceful\nrestart BGP capability.  This is a 12-bit value, referred to\nas Restart Time in RFC4724.  Per RFC4724, the suggested\ndefault value is <= the hold-time value."
+          },
+          "stale-routes-time": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 3600,
+            "description": "An upper-bound on the time thate stale routes will be\nretained by a router after a session is restarted. If an\nEnd-of-RIB (EOR) marker is received prior to this timer\nexpiring stale-routes will be flushed upon its receipt - if\nno EOR is received, then when this timer expires stale paths\nwill be purged. This timer is referred to as the\nSelection_Deferral_Timer in RFC4724"
+          }
+        }
+      },
+      "ArubaBgp_BgpCommonGlobalNeighborTimers": {
+        "description": "Grouping used for configuration parameters relating\nto BGP global and BGP neighbor specific timers.",
+        "properties": {
+          "hold-time": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "default": "180",
+            "description": "BGP hold time in seconds."
+          },
+          "keep-alive": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "default": "60",
+            "description": "BGP keep-alive time in seconds."
+          },
+          "connect-retry": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": "120",
+            "description": "BGP connect-retry time in seconds."
+          }
+        }
+      },
+      "ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate": {
+        "description": "Grouping used for configuration parameters relating\nto advertisement of default route to BGP neighbors.",
+        "properties": {
+          "default-originate-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Originate default route to the neighbors"
+          },
+          "route-map": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 80,
+            "x-patternSources": "route-map-name",
+            "x-patterns": "'[^\\s]*'",
+            "description": "Route-map to specify criteria to originate default"
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalRouteSelectionOptions": {
+        "description": "Set of configuration options that govern best\npath selection.",
+        "properties": {
+          "always-compare-med": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Compare multi-exit discriminator (MED) value of the routes\nfrom peers of different ASes when selecting the best route."
+          },
+          "deterministic-med": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Compare multi-exit discriminator (MED) value of the routes\nadvertised by different peers in the same AS when selecting\nthe best route."
+          },
+          "compare-med-confederation": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Compare multi-exit discriminator (MED) value of the routes\nfrom peers of different ASes within a confederation when\nselecting the best route."
+          },
+          "med-missing-as-worst": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Consider MED value as worst (0xFFFFFFFF), if MED\nattribute is missing in the routes when selecting\nthe best route."
+          },
+          "ignore-as-path-length": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Ignore the AS path length when selecting the best path.\nThe default is to use the AS path length and prefer paths\nwith shorter length."
+          },
+          "as-path-multipath-relax": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Consider two or more BGP routes as ECMP routes when\nroutes AS PATH length is same but AS PATHs are different."
+          },
+          "compare-router-id": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When comparing similar routes received from external\nBGP peers, use the router-id as a criterion to select\nthe active path."
+          },
+          "compare-originator-id": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When comparing similar routes received from external\nBGP peers, use the originator-id as a criterion to select\nthe active path."
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalLoggingOptions": {
+        "description": "Configuration parameters specifying the logging behaviour for\nBGP sessions to the peers",
+        "properties": {
+          "log-neighbor-state-changes": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Configure logging of peer state changes.  Default is\nto disable logging of peer state changes."
+          },
+          "log-neighbor-state-changes-prefix-list": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Specify a prefix-list to filter log messages from specific\nBGP neighbors only."
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalAfiSafi": {
+        "description": "List of address-families associated with the BGP instance",
+        "properties": {
+          "global-afi-safi": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "AFI,SAFI configuration available for the\nneighbor or group",
+            "type": "array",
+            "items": {
+              "properties": {
+                "address-family": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "IPV4_UNICAST",
+                    "IPV6_UNICAST",
+                    "L2VPN_EVPN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "IPV4_UNICAST": "IPv4 unicast (AFI,SAFI = 1,1)",
+                    "IPV6_UNICAST": "IPv6 unicast (AFI,SAFI = 2,1)",
+                    "L2VPN_EVPN": "L2VPN EVPN (AFI,SAFI = 25,70)"
+                  },
+                  "x-typeDescription": "AFI (Address Family Identifier) and\nSAFI (Sub-Address Family Identifier) combinations",
+                  "description": "Reference to the AFI-SAFI name used as a key\nfor the AFI-SAFI list"
+                },
+                "global-ipv4-unicast": {
+                  "description": "IPv4 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalBgpDampening"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv4Network"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv4Redistribute"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv4AggregateAddressGrouping"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalAfiSafiMaxPaths"
+                    }
+                  ]
+                },
+                "global-ipv6-unicast": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "IPv6 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalBgpDampening"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv6Network"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv6Redistribute"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalIpv6AggregateAddressGrouping"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpGlobalAfiSafiMaxPaths"
+                    }
+                  ]
+                }
+              }
+            },
+            "x-key": [
+              "addressFamily"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalBgpDampening": {
+        "description": "Configuration relating to BGP route-flap dampening.",
+        "properties": {
+          "bgp-dampening": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Parameters relating to BGP route-flap dampening.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "To enable/disable Route-flap dampening"
+              },
+              "half-life": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 45,
+                "x-mandatory": true,
+                "description": "Amount of time (in minutes) that must elapse to reduce\nthe penalty by one half."
+              },
+              "reuse-limit": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 20000,
+                "x-mandatory": true,
+                "description": "If the penalty is greater than the suppress limit,\nthe route is suppressed."
+              },
+              "suppress-limit": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 20000,
+                "x-mandatory": true,
+                "description": "If the penalty is greater than the suppress limit,\nthe route is suppressed."
+              },
+              "max-suppress-time": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 255,
+                "x-mandatory": true,
+                "description": "The maximum amount of time (in minutes) that a route can be suppressed."
+              },
+              "route-map": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 80,
+                "x-patternSources": "route-map-name",
+                "x-patterns": "'[^\\s]*'",
+                "description": "The route-map to be applied for BGP route-flap dampening."
+              }
+            },
+            "required": [
+              "half-life",
+              "reuse-limit",
+              "suppress-limit",
+              "max-suppress-time"
+            ]
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalUseMultiplePaths": {
+        "description": "Grouping which provides configuration parameters relating\nto use of multiple paths",
+        "properties": {
+          "use-multiple-paths": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX"
+            ],
+            "description": "Parameters related to the use of multiple paths for the\nsame NLRI",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpGlobalAfiSafiMaxPaths"
+              }
+            ],
+            "properties": {
+              "enabled": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Whether the use of multiple paths for the same NLRI is\nenabled for BGP neighbors in the same Autonomous System."
+              }
+            }
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv4Network": {
+        "description": "Configurations relating to BGP IPv4 networks.",
+        "properties": {
+          "network": {
+            "description": "Specify a network to announce via BGP",
+            "type": "array",
+            "items": {
+              "properties": {
+                "prefix": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-prefix",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                  "description": "IPv4 BGP network address."
+                },
+                "route-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "description": "Route-map to modify the attributes"
+                }
+              }
+            },
+            "x-key": [
+              "prefix"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv6Network": {
+        "description": "Configurations relating to BGP IPv6 networks.",
+        "properties": {
+          "network": {
+            "description": "Specify a network to announce via BGP",
+            "type": "array",
+            "items": {
+              "properties": {
+                "prefix": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-prefix",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                  "description": "IPv6 BGP network address."
+                },
+                "route-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "description": "Route-map to modify the attributes"
+                }
+              }
+            },
+            "x-key": [
+              "prefix"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv4Redistribute": {
+        "description": "Configurations relating to redistribution rules for IPv4 routes.",
+        "properties": {
+          "redistribute": {
+            "description": "Specify redistribution rule",
+            "type": "array",
+            "items": {
+              "properties": {
+                "route-type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CONNECTED",
+                    "LOCAL_LOOPBACK",
+                    "STATIC",
+                    "RIP",
+                    "HOST_ROUTES",
+                    "OSPF",
+                    "OSPFV3",
+                    "CLOUD_OVERLAY",
+                    "CRYPTO_CFGSET",
+                    "RAPNG_VPN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CONNECTED": "Connected routes",
+                    "LOCAL_LOOPBACK": "Local routes on loopback interfaces",
+                    "STATIC": "Static routes",
+                    "RIP": "Routing Information Protocol routes",
+                    "HOST_ROUTES": "Host routes",
+                    "OSPF": "OSPF routes",
+                    "OSPFV3": "OSPF routes",
+                    "CLOUD_OVERLAY": "Overlay routes",
+                    "CRYPTO_CFGSET": "Crypto-cfgset routes",
+                    "RAPNG_VPN": "RAPNG-VPN(Remote Access Point Next Gen - Virtual Private Network) routes"
+                  },
+                  "x-typeDescription": "Types of redistribute routes to BGP.",
+                  "description": "The type of the route to be redistributed to BGP."
+                },
+                "ospf-id": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "OSPFV2 process ID."
+                },
+                "route-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "description": "Route-map to modify the attributes"
+                }
+              }
+            },
+            "x-key": [
+              "routeType"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv6Redistribute": {
+        "description": "Configurations relating to redistribution rules for IPv6 routes.",
+        "properties": {
+          "redistribute": {
+            "description": "Specify redistribution rule",
+            "type": "array",
+            "items": {
+              "properties": {
+                "route-type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CONNECTED",
+                    "LOCAL_LOOPBACK",
+                    "STATIC",
+                    "RIP",
+                    "HOST_ROUTES",
+                    "OSPF",
+                    "OSPFV3",
+                    "CLOUD_OVERLAY",
+                    "CRYPTO_CFGSET",
+                    "RAPNG_VPN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CONNECTED": "Connected routes",
+                    "LOCAL_LOOPBACK": "Local routes on loopback interfaces",
+                    "STATIC": "Static routes",
+                    "RIP": "Routing Information Protocol routes",
+                    "HOST_ROUTES": "Host routes",
+                    "OSPF": "OSPF routes",
+                    "OSPFV3": "OSPF routes",
+                    "CLOUD_OVERLAY": "Overlay routes",
+                    "CRYPTO_CFGSET": "Crypto-cfgset routes",
+                    "RAPNG_VPN": "RAPNG-VPN(Remote Access Point Next Gen - Virtual Private Network) routes"
+                  },
+                  "x-typeDescription": "Types of redistribute routes to BGP.",
+                  "description": "The type of the route to be redistributed to BGP."
+                },
+                "ospf-id": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "OSPFV3 process ID."
+                },
+                "route-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "description": "Route-map to modify the attributes"
+                },
+                "import-metric": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Import metric for OSPFv3 routes."
+                }
+              }
+            },
+            "x-key": [
+              "routeType"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv4AggregateAddressGrouping": {
+        "description": "Configurations relating to BGP IPv4 aggregate addresses.",
+        "properties": {
+          "aggregate-address": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX"
+            ],
+            "description": "Aggregate addresses keyed by the IPv4 address and mask.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "address": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-prefix",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                  "description": "Aggregate address"
+                },
+                "as-set": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "Generate AS set path information"
+                },
+                "summary-only": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "Filter more specific routes from updates"
+                },
+                "advertise-map": {
+                  "x-supportedDeviceType": [
+                    "Gateway",
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to select the routes to be advertised."
+                },
+                "attribute-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to set attributes of the aggregate-route."
+                },
+                "suppress-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to select the routes to be suppressed."
+                },
+                "aggregate-address-sources": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CLOUD_OVERLAY",
+                    "BGP"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CLOUD_OVERLAY": "Overlay routes",
+                    "BGP": "BGP routes"
+                  },
+                  "x-typeDescription": "Type of source protocol to aggregate.",
+                  "description": "Aggregate the routes sourced by different types of protocols."
+                }
+              }
+            },
+            "x-key": [
+              "address"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpGlobalIpv6AggregateAddressGrouping": {
+        "description": "Configurations relating to BGP IPv6 aggregate addresses.",
+        "properties": {
+          "aggregate-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Aggregate addresses keyed by the IPv6 address and mask.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "address": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-prefix",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                  "description": "Aggregate address"
+                },
+                "as-set": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "Generate AS set path information"
+                },
+                "summary-only": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "Filter more specific routes from updates"
+                },
+                "advertise-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to select the routes to be advertised."
+                },
+                "attribute-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to set attributes of the aggregate-route."
+                },
+                "suppress-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Route-map to select the routes to be suppressed."
+                }
+              }
+            },
+            "x-key": [
+              "address"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighbors": {
+        "description": "The list of BGP neighbors",
+        "properties": {
+          "neighbor": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "List of BGP neighbors configured on the local system,\nuniquely identified by peer IP address.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpPeerBaseGrouping"
+                },
+                {
+                  "properties": {
+                    "neighbor-id": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        }
+                      ],
+                      "description": "Address of the BGP peer, either in IPv4 or IPv6"
+                    },
+                    "peer-group": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "The peer-group with which this neighbor is associated"
+                    },
+                    "peer-as": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "x-typeDescription": "A numeric identifier for an autonomous system (AS). An AS is a\nsingle domain, under common administrative control, which forms\na unit of routing policy. Autonomous systems can be assigned a\n2-byte identifier, or a 4-byte identifier which may have public\nor private scope. Private ASNs are assigned from dedicated\nranges. Public ASNs are assigned from ranges allocated by IANA\nto the regional internet registries (RIRs).",
+                      "description": "AS number of the peer."
+                    },
+                    "slow-peer": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Set to true to indicate that the neighbor is a slow peer.\nslow peers that have same outbound policy gets placed in a\nseparate update-group."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "neighborId"
+            ],
+            "maxItems": 2147483647
+          },
+          "peer-group": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "List of BGP peer-groups configured on the local system,\nuniquely identified by name of the peer-group.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaBgp_BgpPeergroupBaseGrouping"
+                },
+                {
+                  "properties": {
+                    "peer-group-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 80,
+                      "description": "Name of the peer-group"
+                    },
+                    "peer-as": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "x-typeDescription": "A numeric identifier for an autonomous system (AS). An AS is a\nsingle domain, under common administrative control, which forms\na unit of routing policy. Autonomous systems can be assigned a\n2-byte identifier, or a 4-byte identifier which may have public\nor private scope. Private ASNs are assigned from dedicated\nranges. Public ASNs are assigned from ranges allocated by IANA\nto the regional internet registries (RIRs).",
+                      "description": "AS number of the peer."
+                    },
+                    "listen-parameters": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Listen parameters for BGP dynamic neighbors.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "ip-range": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "oneOf": [
+                              {
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "ipv4-prefix",
+                                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                              },
+                              {
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "ipv6-prefix",
+                                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+                              }
+                            ],
+                            "description": "The range of IP addresses that are allowed as BGP dynamic neighbors."
+                          },
+                          "as-range": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "The allowed AS range for BGP dynamic peers, Example 100,65001-65010."
+                          },
+                          "max-limit": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1,
+                            "maximum": 256,
+                            "description": "The allowed max-limit for BGP dynamic peers."
+                          }
+                        }
+                      },
+                      "x-key": [
+                        "ipRange"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "peerGroupName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpPeerBaseGrouping": {
+        "description": "Parameters related to BGP neighbor or BGP peer group.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborCapabilitiesGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborMultihopGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpPeerAfiSafi"
+          }
+        ],
+        "properties": {
+          "timers": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Timers related to a BGP neighbor",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborTimers"
+              }
+            ]
+          },
+          "transport": {
+            "description": "Transport session parameters for the BGP neighbor",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborTransportGrouping"
+              }
+            ]
+          },
+          "error-handling": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Error handling parameters used for the BGP neighbor or\ngroup",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborErrorHandlingGrouping"
+              }
+            ]
+          },
+          "graceful-shutdown": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Graceful shutdown parameters used for the BGP neighbor\nor group",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborGracefulShutdownGrouping"
+              }
+            ]
+          },
+          "tcp-ao-options": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "TCP-AO (TCP Authentication Option) options used for\nthe BGP neighbor or group",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborTcpAoOptionsGrouping"
+              }
+            ]
+          }
+        }
+      },
+      "ArubaBgp_BgpPeergroupBaseGrouping": {
+        "description": "Parameters related to BGP neighbor or BGP peer group.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborCapabilitiesGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpNeighborMultihopGrouping"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaBgp_BgpPeergroupAfiSafi"
+          }
+        ],
+        "properties": {
+          "timers": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Timers related to a BGP neighbor",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborTimers"
+              }
+            ]
+          },
+          "transport": {
+            "description": "Transport session parameters for the BGP neighbor",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborTransportGrouping"
+              }
+            ]
+          },
+          "error-handling": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Error handling parameters used for the BGP neighbor or\ngroup",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborErrorHandlingGrouping"
+              }
+            ]
+          },
+          "graceful-shutdown": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Graceful shutdown parameters used for the BGP neighbor\nor group",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborGracefulShutdownGrouping"
+              }
+            ]
+          },
+          "tcp-ao-options": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "TCP-AO (TCP Authentication Option) options used for\nthe BGP neighbor or group",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaBgp_BgpNeighborTcpAoOptionsGrouping"
+              }
+            ]
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborGrouping": {
+        "description": "Configuration parameters relating to a base BGP neighbor that\nare also applicable to peer group context.",
+        "properties": {
+          "enabled": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Whether the BGP peer is enabled. In cases where the\nenabled leaf is set to false, the local system should not\ninitiate connections to the neighbor, and should not\nrespond to TCP connections attempts from the neighbor. If\nthe state of the BGP session is ESTABLISHED at the time\nthat this leaf is set to false, the BGP session should be\nceased."
+          },
+          "local-as": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "x-typeDescription": "A numeric identifier for an autonomous system (AS). An AS is a\nsingle domain, under common administrative control, which forms\na unit of routing policy. Autonomous systems can be assigned a\n2-byte identifier, or a 4-byte identifier which may have public\nor private scope. Private ASNs are assigned from dedicated\nranges. Public ASNs are assigned from ranges allocated by IANA\nto the regional internet registries (RIRs).",
+            "description": "The local autonomous system number that is to be used\nwhen establishing sessions with the remote peer or peer\ngroup, if this differs from the global BGP router\nautonomous system number."
+          },
+          "local-as-mode": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "NO_PREPEND_REPLACE_AS_DUAL_AS",
+              "NO_PREPEND_REPLACE_AS",
+              "NO_PREPEND"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NO_PREPEND_REPLACE_AS_DUAL_AS": "The session can be established using either primary-as or alternate local-as.\nSelected-as is not prepended to the inbound AS_PATH list,\nbut prepended to outbound AS_PATH list.",
+              "NO_PREPEND_REPLACE_AS": "The session is established via alternate local-as.\nBoth the alternate-as and primary-as are not prepended to the inbound AS_PATH list,\nbut alternate local-as is prepended to the outbound AS_PATH list.",
+              "NO_PREPEND": "The session is established via alternate local-as.\nBoth the alternate-as and primary-as are not prepended to the inbound AS_PATH list,\nbut prepended to the outbound AS_PATH list."
+            },
+            "x-typeDescription": "The modes of using specified ASN as local AS for forming BGP sessions with peers.",
+            "description": "The different modes of using ASN as local AS."
+          },
+          "auth-password": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Configures an MD5 authentication password for use with\nneighboring devices."
+          },
+          "remove-private-as": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Remove private AS numbers from updates sent to peers - when\nthis leaf is not specified, the AS_PATH attribute should be\nsent to the peer unchanged"
+          },
+          "description": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "An optional textual description (intended primarily for use\nwith a peer or group"
+          },
+          "fall-over": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Fall-over the BGP session when route to the peer fails."
+          },
+          "fall-over-bfd": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BFD session with the neighbor and fall-over the BGP\nsession when connectivity with the neighbor is lost."
+          },
+          "ignore-leading-as": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Accept the received routes from the peer even if it does\nnot have their own AS appended to the as-path."
+          },
+          "weight": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "default": "0",
+            "description": "This is the weight for routes from this neighbor."
+          },
+          "use-med": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable the comparison of MED attribute for the same route\nreceived from two different autonomous systems."
+          },
+          "as-override": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Replace all occurrences of the peer AS number with the\nrouter's own AS number before advertising the route."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborCapabilitiesGrouping": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Configuration parameters relating to the advertisement of\ncapabilities to the peer",
+        "properties": {
+          "route-refresh-capability": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable the advertisement of route-refresh capability in\nthe Open message sent to the peer."
+          },
+          "graceful-restart-capability": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable the advertisement of graceful-restart capability in\nthe Open message sent to the peer."
+          },
+          "dynamic-capability": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable the advertisement of dynamic capability in\nthe Open message sent to the peer."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborTransportGrouping": {
+        "description": "Configuration parameters relating to the transport protocol\nused by the BGP session to the peer",
+        "properties": {
+          "tcp-port": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+            "description": "Source TCP port number of the local router when initiating a\nsession to BGP peer"
+          },
+          "passive-mode": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Wait for peers to issue requests to open a BGP session,\nrather than initiating sessions from the local router."
+          },
+          "local-ip-address": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+              }
+            ],
+            "description": "Set the local IP (either IPv4 or IPv6) address to use\nfor the session when sending BGP update messages."
+          },
+          "local-loopback-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nloopback interface to form BGP session with others."
+          },
+          "local-vlan-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Use the IP (either IPv4 or IPv6) address of\nvlan interface to form BGP session with others."
+          },
+          "local-lag-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-port-channel:portchannels/ac-if-port-channel:interface/ac-if-port-channel:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'(\\d+)'",
+            "maxLength": 9999,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nlag interface to form BGP session with others."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborErrorHandlingGrouping": {
+        "description": "Configuration parameters relating to enhanced error handling\nbehaviours for BGP",
+        "properties": {
+          "treat-as-withdraw": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Specify whether erroneous UPDATE messages for which the\nNLRI can be extracted are treated as though the NLRI is\nwithdrawn - avoiding session reset"
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborGracefulShutdownGrouping": {
+        "description": "Configuration parameters relating to graceful shutdown\nbehaviours for BGP sessions",
+        "properties": {
+          "timer": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 10,
+            "maximum": 1200,
+            "default": "180",
+            "description": "Time to wait before shutting down the the BGP neighbor."
+          },
+          "local-preference": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": "0",
+            "description": "The local-preference value to be advertised before graceful shutdown."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborTcpAoOptionsGrouping": {
+        "description": "Configuration parameters relating to TCP-AO options\nfor BGP sessions",
+        "properties": {
+          "keychain-key": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-kc:keychains/ac-kc:keychain/ac-kc:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Configure the keychain key."
+          },
+          "include-tcp-options": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Include the TCP header options for MAC calculation."
+          },
+          "accept-ao-mismatch": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Indicates whether the receiver should accept\nsegments for which the MAC in the incoming TCP AO does\nnot match the MAC generated on the receiver."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborMultihopGrouping": {
+        "description": "Configuration parameters specifying the multihop behaviour for\nBGP sessions to the peer",
+        "properties": {
+          "ebgp-multihop-ttl-enable": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable ebgp-multihop Time-To-Live(TTL)."
+          },
+          "ebgp-multihop-ttl": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 255,
+            "default": "1",
+            "description": "Time-to-live value to use when packets are sent to the\nreferenced eBGP neighbors and ebgp-multihop is enabled"
+          },
+          "ttl-security-hops": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Maximum allowed hops to a neighbor. This, when configured takes\nprecedence over multihop-ttl."
+          },
+          "ebgp-multihop": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Accept or initiate connections to external peers on networks that are not directly connected."
+          }
+        }
+      },
+      "ArubaBgp_BgpPeerAfiSafi": {
+        "description": "Configuration parameters used for all BGP peer AFI-SAFIs",
+        "properties": {
+          "afi-safi": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "AFI,SAFI configuration available for the\nneighbor or group",
+            "type": "array",
+            "items": {
+              "properties": {
+                "address-family": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "IPV4_UNICAST",
+                    "IPV6_UNICAST",
+                    "L2VPN_EVPN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "IPV4_UNICAST": "IPv4 unicast (AFI,SAFI = 1,1)",
+                    "IPV6_UNICAST": "IPv6 unicast (AFI,SAFI = 2,1)",
+                    "L2VPN_EVPN": "L2VPN EVPN (AFI,SAFI = 25,70)"
+                  },
+                  "x-typeDescription": "AFI (Address Family Identifier) and\nSAFI (Sub-Address Family Identifier) combinations",
+                  "description": "AFI-SAFI name used as a key for the AFI-SAFI list"
+                },
+                "ipv4-unicast": {
+                  "description": "IPv4 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpPeerAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiAddPaths"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiTimers"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborIpv4UnicastOrf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiInboundSoftReconfiguration"
+                    }
+                  ],
+                  "properties": {
+                    "default-originate": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Originate default route to the neighbors",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate"
+                        }
+                      ]
+                    },
+                    "max-prefix-options": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "Parameters relating to BGP neighbor specific limit for\nmaximum prefix configuration options.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "ipv6-unicast": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "IPv6 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpPeerAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiAddPaths"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiTimers"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborIpv6UnicastOrf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiInboundSoftReconfiguration"
+                    }
+                  ],
+                  "properties": {
+                    "default-originate": {
+                      "description": "Originate default route to this neighbor",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate"
+                        }
+                      ]
+                    },
+                    "max-prefix-options": {
+                      "description": "Parameters relating to BGP neighbor specific limit for\nmaximum prefix configuration options.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "l2vpn-evpn": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "description": "L2VPN EVPN configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpPeerAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopUnchanged"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborReplaceRtAsn"
+                    }
+                  ]
+                },
+                "vpnv4": {
+                  "description": "VPNv4 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpPeerAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    }
+                  ]
+                }
+              }
+            },
+            "x-key": [
+              "addressFamily"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpPeergroupAfiSafi": {
+        "description": "List of address-families associated with the BGP neighbor",
+        "properties": {
+          "afi-safi": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "AFI,SAFI configuration available for the\nneighbor or group",
+            "type": "array",
+            "items": {
+              "properties": {
+                "address-family": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "IPV4_UNICAST",
+                    "IPV6_UNICAST",
+                    "L2VPN_EVPN"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "IPV4_UNICAST": "IPv4 unicast (AFI,SAFI = 1,1)",
+                    "IPV6_UNICAST": "IPv6 unicast (AFI,SAFI = 2,1)",
+                    "L2VPN_EVPN": "L2VPN EVPN (AFI,SAFI = 25,70)"
+                  },
+                  "x-typeDescription": "AFI (Address Family Identifier) and\nSAFI (Sub-Address Family Identifier) combinations",
+                  "description": "AFI-SAFI name used as a key for the AFI-SAFI list"
+                },
+                "ipv4-unicast": {
+                  "description": "IPv4 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiAddPaths"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiTimers"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborIpv4UnicastOrf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiInboundSoftReconfiguration"
+                    }
+                  ],
+                  "properties": {
+                    "default-originate": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Originate default route to the neighbors",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate"
+                        }
+                      ]
+                    },
+                    "max-prefix-options": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "Parameters relating to BGP neighbor specific limit for\nmaximum prefix configuration options.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "ipv6-unicast": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "IPv6 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiAddPaths"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiTimers"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborIpv6UnicastOrf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiInboundSoftReconfiguration"
+                    }
+                  ],
+                  "properties": {
+                    "default-originate": {
+                      "description": "Originate default route to this neighbor",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiDefaultOriginate"
+                        }
+                      ]
+                    },
+                    "max-prefix-options": {
+                      "description": "Parameters relating to BGP neighbor specific limit for\nmaximum prefix configuration options.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "l2vpn-evpn": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "L2VPN EVPN configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopSelf"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAfiSafiNextHopUnchanged"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborReplaceRtAsn"
+                    }
+                  ]
+                },
+                "vpnv4": {
+                  "description": "VPNv4 unicast configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaBgp_BgpNeighborAllAfiSafi"
+                    }
+                  ]
+                }
+              }
+            },
+            "x-key": [
+              "addressFamily"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpPeerAllAfiSafi": {
+        "description": "Configuration parameters used for all BGP neighbors\nAFI-SAFIs",
+        "properties": {
+          "enabled": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "This leaf indicates whether the AFI-SAFI is\nenabled for the neighbor or group"
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAllAfiSafi": {
+        "description": "Configuration parameters used for all BGP neighbors\nor groups AFI-SAFIs",
+        "properties": {
+          "route-reflector-client": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "description": "Configure the neighbor as a route reflector client."
+          },
+          "send-community": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Send Community attribute to this neighbor",
+            "properties": {
+              "send-community-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Enable sending the community attributes to the peer."
+              },
+              "type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "EXTENDED",
+                  "STANDARD",
+                  "BOTH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "EXTENDED": "Extended communities",
+                  "STANDARD": "Standard communities",
+                  "BOTH": "Both Standard and Extended communities"
+                },
+                "x-typeDescription": "Specifies the types of communities",
+                "description": "Specify which types of community should be sent to the\nneighbor or group."
+              }
+            }
+          },
+          "allow-own-as": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Specify the number of occurrences of the local BGP speaker's\nAS that can occur within the AS_PATH before it is rejected."
+          },
+          "enable-allow-own-as": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow BGP update message even if own is present."
+          },
+          "apply-route-map": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Apply route map to neighbor",
+            "type": "array",
+            "items": {
+              "properties": {
+                "direction": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "INBOUND",
+                    "OUTBOUND"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "INBOUND": "Inbound direction of the route-map for BGP peer",
+                    "OUTBOUND": "Inbound direction of the route-map for BGP peer"
+                  },
+                  "x-typeDescription": "Direction of the route-map for BGP peer",
+                  "description": "Specify the direction of the route-map to be applied."
+                },
+                "route-map": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-routemap-config:route-maps/ac-routemap-config:route-map/ac-routemap-config:route-map-name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "x-mandatory": true,
+                  "description": "Specify the the route-map to be applied."
+                }
+              },
+              "required": [
+                "route-map"
+              ]
+            },
+            "x-key": [
+              "direction"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAfiSafiAddPaths": {
+        "description": "Configuration parameters specfying whether the local system\nwill send or receive multiple paths using ADD_PATHS",
+        "properties": {
+          "add-paths": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Parameters relating to the advertisement and receipt of\nmultiple paths for a single NLRI (add-paths)",
+            "properties": {
+              "direction": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "RECEIVE",
+                  "SEND",
+                  "BOTH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RECEIVE": "Enable capability negotiation to receive multiple path\nadvertisements for an NLRI from the neighbor or group",
+                  "SEND": "Enable capability negotiation to send multiple path\nadvertisements for an NLRI from the neighbor or group",
+                  "BOTH": "Enable capability negotiation to send and receive multiple path\nadvertisements for an NLRI from the neighbor or group"
+                },
+                "x-typeDescription": "Multiple path advertisement capability for an NLRI from peer or group",
+                "description": "Multiple path advertisement capability for an NLRI from peer or group"
+              },
+              "send-max": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4,
+                "default": "1",
+                "description": "The maximum total number of paths to advertise to neighbors\nfor a single NLRI.  This includes the single best path as\nwell as additional paths advertised when add-paths is\nenabled."
+              }
+            }
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAfiSafiTimers": {
+        "description": "Grouping used for configuration parameters relating\nto BGP neighbor specific timers.",
+        "properties": {
+          "minimum-advertisement-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Minimum time which must elapse between subsequent UPDATE\nmessages relating to a common set of NLRI being transmitted\nto a peer. This timer is referred to as\nMinRouteAdvertisementIntervalTimer by RFC 4721 and serves to\nreduce the number of UPDATE messages transmitted when a\nparticular set of NLRI exhibit instability."
+          }
+        }
+      },
+      "ArubaBgp_BgpCommonGlobalNeighborAfiSafiMaxPrefixes": {
+        "description": "Grouping used for configuration parameters relating\nto BGP neighbor specific limit for maximum prefixes.",
+        "properties": {
+          "limit": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "description": "The maximum number of prefixes that can be learnt from\nthe BGP neighbor."
+          },
+          "threshold": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "default": "75",
+            "description": "Threshold at which a warning message has to be generated."
+          },
+          "restart-time": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 30,
+            "maximum": 65535,
+            "description": "Time to wait after maximum prefix limit is reached to restart\nthe session with the BGP neighbor."
+          },
+          "action": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "NONE",
+              "WARNING_ONLY",
+              "RESTART",
+              "BLOCK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NONE": "No action is taken, when the number of prefixes\nexceeds the maximum limit.",
+              "WARNING_ONLY": "Only generate a warning message, when the\nnumber of prefixes exceeds the maximum limit.",
+              "RESTART": "Restart the BGP session, when the number of\nprefixes exceeds the maximum limit.",
+              "BLOCK": "Block the addition of routes, when the number\nof prefixes exceeds the maximum limit."
+            },
+            "x-typeDescription": "The action to be taken when maximum prefix limit is reached.",
+            "description": "The action to be taken when maximum prefix limit is reached."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAfiSafiNextHopSelf": {
+        "description": "Grouping used for configuration parameters relating\nto BGP neighbor next-hop-self behavior.",
+        "properties": {
+          "next-hop-self": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Set the nexthop of the routes to self IP, while advertising\nroutes to BGP neighbor."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborReplaceRtAsn": {
+        "description": "enables the BGP router to replace the ASN portion of the route target\nin the received BGP update message with the local AS number when considering for import."
+      },
+      "ArubaBgp_BgpGlobalAfiSafiMaxPaths": {
+        "description": "Number of BGP Paths to a network destination",
+        "properties": {
+          "maximum-paths": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 32,
+            "default": "4",
+            "description": "Maximum number of parallel paths to consider when using\nBGP multipath. The default is 4."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAfiSafiNextHopUnchanged": {
+        "description": "Grouping used for configuration parameters relating\nto BGP neighbor next-hop-unchanged behavior.",
+        "properties": {
+          "next-hop-unchanged": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Keep the nexthop of the routes unchanged, while advertising\nroutes to BGP neighbor."
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborIpv4UnicastOrf": {
+        "description": "Grouping used for configuration parameters relating\nto ORF configurations of BGP neighbors.",
+        "properties": {
+          "orf-capability": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "SEND",
+              "RECEIVE",
+              "BOTH"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SEND": "This capability enables sending prefix list information\nto the neighbor",
+              "RECEIVE": "This capability enables receiving prefix list information\nfrom the neighbor",
+              "BOTH": "This capability enables both sending and receiving\nprefix list information for the neighbor"
+            },
+            "x-typeDescription": "Outbound Route Filtering (ORF) capability types.",
+            "default": "BOTH",
+            "description": "Advertise ORF prefix-list capability to this neighbor."
+          },
+          "orf": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Apply ORF(Outbound Route Filter) prefix-list to the neighbor",
+            "type": "array",
+            "items": {
+              "properties": {
+                "direction": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "INBOUND"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "INBOUND": "Inbound ORF prefix-list"
+                  },
+                  "x-typeDescription": "Specifies the direction of ORF prefix-list to be applied.",
+                  "description": "Direction of the ORF prefix-list to be applied."
+                },
+                "prefix-list": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "prefix-list-name-address-family",
+                  "x-patterns": "'[^\\s]*'",
+                  "maxLength": 9999,
+                  "x-mandatory": true,
+                  "description": "Prefix-list to be applied."
+                }
+              },
+              "required": [
+                "prefix-list"
+              ]
+            },
+            "x-key": [
+              "direction"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborIpv6UnicastOrf": {
+        "description": "Grouping used for configuration parameters relating\nto ORF configurations of BGP neighbors.",
+        "properties": {
+          "orf-capability": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "SEND",
+              "RECEIVE",
+              "BOTH"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SEND": "This capability enables sending prefix list information\nto the neighbor",
+              "RECEIVE": "This capability enables receiving prefix list information\nfrom the neighbor",
+              "BOTH": "This capability enables both sending and receiving\nprefix list information for the neighbor"
+            },
+            "x-typeDescription": "Outbound Route Filtering (ORF) capability types.",
+            "default": "BOTH",
+            "description": "Advertise ORF prefix-list capability to this neighbor."
+          },
+          "orf": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Apply ORF(Outbound Route Filter) prefix-list to the neighbor",
+            "type": "array",
+            "items": {
+              "properties": {
+                "direction": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "INBOUND"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "INBOUND": "Inbound ORF prefix-list"
+                  },
+                  "x-typeDescription": "Specifies the direction of ORF prefix-list to be applied.",
+                  "description": "Direction of the ORF prefix-list to be applied."
+                },
+                "prefix-list": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "prefix-list-name-address-family",
+                  "x-patterns": "'[^\\s]*'",
+                  "maxLength": 9999,
+                  "x-mandatory": true,
+                  "description": "Specify the the prefix-list to be applied."
+                }
+              },
+              "required": [
+                "prefix-list"
+              ]
+            },
+            "x-key": [
+              "direction"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaBgp_BgpNeighborAfiSafiInboundSoftReconfiguration": {
+        "description": "Grouping used for configuration parameters relating\nto BGP neighbor inbound soft-reconfiguration.",
+        "properties": {
+          "inbound-soft-reconfiguration": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow inbound soft reconfiguration with the BGP neighbor."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

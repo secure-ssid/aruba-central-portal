@@ -1,0 +1,1804 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-management-user API generated from aruba-management-user.yang",
+    "version": "1.0.0",
+    "title": "management-user",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "management-users"
+    }
+  ],
+  "paths": {
+    "/management-users": {
+      "get": {
+        "summary": "Read the management users",
+        "description": "Configure management users with role and authorization. This feature is applicable for all devices.",
+        "operationId": "readManagementUsers",
+        "x-cliParam": {
+          "commandName": "readManagementUsersCmd",
+          "summary": "Read operation for management-users",
+          "commandUse": "management-users",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/management-users/"
+        },
+        "tags": [
+          "management-users"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaManagementUser_ManagementUsersSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management-users/{name}": {
+      "post": {
+        "summary": "Create the management users list",
+        "description": "Management user parameter configuration.\nFor AP, the max-elements of user is 4.",
+        "operationId": "createManagementUsersUserByID",
+        "x-cliParam": {
+          "commandName": "createManagementUsersUserCmd",
+          "summary": "Create operation for user",
+          "commandUse": "user",
+          "parentCommand": "createManagementUsersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/management-users/user/%s/"
+        },
+        "tags": [
+          "management-users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Unique name for the given username on the device, which may either be the same as or different from the username.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaManagementUser_ManagementUsersuserSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read the management users list",
+        "description": "Management user parameter configuration.\nFor AP, the max-elements of user is 4.",
+        "operationId": "readManagementUsersUserByID",
+        "x-cliParam": {
+          "commandName": "readManagementUsersUserCmd",
+          "summary": "Read operation for user",
+          "commandUse": "user",
+          "parentCommand": "readManagementUsersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/management-users/user/%s/"
+        },
+        "tags": [
+          "management-users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Unique name for the given username on the device, which may either be the same as or different from the username.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaManagementUser_ManagementUsersuserSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update the existing management users list",
+        "description": "Management user parameter configuration.\nFor AP, the max-elements of user is 4.",
+        "operationId": "updateManagementUsersUserByID",
+        "x-cliParam": {
+          "commandName": "updateManagementUsersUserCmd",
+          "summary": "Update operation for user",
+          "commandUse": "user",
+          "parentCommand": "updateManagementUsersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/management-users/user/%s/"
+        },
+        "tags": [
+          "management-users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Unique name for the given username on the device, which may either be the same as or different from the username.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaManagementUser_ManagementUsersuserSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the management users list",
+        "description": "Management user parameter configuration.\nFor AP, the max-elements of user is 4.",
+        "operationId": "deleteManagementUsersUserByID",
+        "x-cliParam": {
+          "commandName": "deleteManagementUsersUserCmd",
+          "summary": "Delete operation for user",
+          "commandUse": "user",
+          "parentCommand": "deleteManagementUsersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/management-users/user/%s/"
+        },
+        "tags": [
+          "management-users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Unique name for the given username on the device, which may either be the same as or different from the username.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaManagementUser_ManagementUsersuserSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaManagementUser_ManagementUsersuserSchema"
+            }
+          }
+        },
+        "description": "userbody object"
+      }
+    },
+    "schemas": {
+      "ArubaManagementUser_ManagementUsersSchema": {
+        "description": "Configure management users with role and authorization. This feature is applicable for all devices.",
+        "properties": {
+          "user": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX"
+            ],
+            "description": "Management user parameter configuration.\nFor AP, the max-elements of user is 4.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "Unique name for the given username on the device, which may either be the same as or different from the username."
+                },
+                "username": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "Username of the management user.\n- For a CX device, Maximum length is 32 characters.\n- For a PVOS device, valid length is 1..16.\n- For AP, valid length is 1..32."
+                },
+                "min-password-length": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 8,
+                  "maximum": 64,
+                  "description": "Minimum password length for a user."
+                },
+                "aging-period": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 365,
+                  "description": "Password aging time for a user."
+                },
+                "max-concurrent-sessions": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 32,
+                  "description": "Maximum concurrent session for this management user. A value of 0 will unset it."
+                },
+                "format": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CLEARTEXT",
+                    "CIPHERTEXT",
+                    "SHA1",
+                    "SHA256"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CLEARTEXT": "User password in cleartext format.",
+                    "CIPHERTEXT": "User password in encrypted format",
+                    "SHA1": "User password in SHA1 hash format",
+                    "SHA256": "User password in SHA256 hash format"
+                  },
+                  "x-typeDescription": "Indicate the input password format",
+                  "description": "Enable clear, cipher or hash text as the password input format.\nFor AP, Range: CLEARTEXT, CIPHERTEXT."
+                },
+                "password": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                  "description": "Management user password in plaintext.\n- For a CX device, Maximum length is 64 characters.\nIf not configured, it indicates that the user is created with an empty password"
+                },
+                "ciphertext-password": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Management user password in hash or ciphertext."
+                },
+                "old-password": {
+                  "x-supportedDeviceType": [
+                    "Gateway",
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                  "description": "Management user's old password."
+                },
+                "rolename": {
+                  "x-supportedDeviceType": [
+                    "Gateway",
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "ROOT",
+                    "GUEST_PROVISIONING",
+                    "NETWORK_OPERATIONS",
+                    "READ_ONLY",
+                    "LOCATION_API_MGMT",
+                    "NBAPI_MGMT",
+                    "AP_PROVISIONING",
+                    "STANDARD",
+                    "LOCAL"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ROOT": "Super user role",
+                    "GUEST_PROVISIONING": "Guest provisioning role",
+                    "NETWORK_OPERATIONS": "Network operator role",
+                    "READ_ONLY": "Read-only role",
+                    "LOCATION_API_MGMT": "Location API Management role",
+                    "NBAPI_MGMT": "NBAPI Management role",
+                    "AP_PROVISIONING": "AP Provisioning role",
+                    "STANDARD": "Standard role",
+                    "LOCAL": "Indicate the type of management users with local privilege."
+                  },
+                  "x-typeDescription": "Management user role types.",
+                  "description": "Configure user-role. For example, user with read-only privilege or the guest management user."
+                },
+                "user-group": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-management-user-group:management-user-groups/ac-management-user-group:user-group/ac-management-user-group:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-patternSources": "name",
+                  "x-patterns": "'[a-z0-9_][a-z0-9._-]{0,31}'",
+                  "description": "Management user group name.\n- For a CX device, user group is mandatory for creating a user.\nBuilt-in user groups are as follows:\nadministrators: System-defined group with associated privilege level of 15.\n               Members have access to:\n                 All the CLI commands and bash shell.\n                 All the REST Methods through REST APIs.\noperators:      System-defined group with associated privilege level of 1.\n               Members have access to\n                 All show CLI commands (except those that display sensitive information).\n                 All GET requests through REST APIs.\nauditors:       System-defined group with associated privilege level of 19.\n               Members have access to:\n                 All show CLI commands to display and copy security logs.\n                 All GET requests for security logs through REST APIs.\nOnly users belonging to the above three default groups will be allowed access to REST APIs."
+                },
+                "interface": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "The management interfaces through which the user can access the switch.",
+                  "properties": {
+                    "ssh": {
+                      "type": "boolean",
+                      "default": "true",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Allow SSH login for the user."
+                    },
+                    "telnet": {
+                      "type": "boolean",
+                      "default": "true",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Allow Telnet login for the user."
+                    },
+                    "https-server": {
+                      "type": "boolean",
+                      "default": "true",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Allow REST and WebUI login for the user."
+                    },
+                    "console": {
+                      "type": "boolean",
+                      "default": "true",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Allow console login for the user."
+                    }
+                  }
+                },
+                "authorized-key": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "description": "Public keys for SSH authentication of a user",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "public-key": {
+                        "type": "string",
+                        "format": "const",
+                        "minLength": 1,
+                        "maxLength": 8192,
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "x-mandatory": true,
+                        "description": "SSH public key of the user"
+                      }
+                    },
+                    "required": [
+                      "public-key"
+                    ]
+                  },
+                  "x-key": [
+                    "publicKey"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaManagementUser_ManagementUsersSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaManagementUser_ManagementUsersSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaManagementUser_ManagementUsersuserSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Unique name for the given username on the device, which may either be the same as or different from the username."
+          },
+          "username": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Username of the management user.\n- For a CX device, Maximum length is 32 characters.\n- For a PVOS device, valid length is 1..16.\n- For AP, valid length is 1..32."
+          },
+          "min-password-length": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 8,
+            "maximum": 64,
+            "description": "Minimum password length for a user."
+          },
+          "aging-period": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 365,
+            "description": "Password aging time for a user."
+          },
+          "max-concurrent-sessions": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 32,
+            "description": "Maximum concurrent session for this management user. A value of 0 will unset it."
+          },
+          "format": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "CLEARTEXT",
+              "CIPHERTEXT",
+              "SHA1",
+              "SHA256"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "CLEARTEXT": "User password in cleartext format.",
+              "CIPHERTEXT": "User password in encrypted format",
+              "SHA1": "User password in SHA1 hash format",
+              "SHA256": "User password in SHA256 hash format"
+            },
+            "x-typeDescription": "Indicate the input password format",
+            "description": "Enable clear, cipher or hash text as the password input format.\nFor AP, Range: CLEARTEXT, CIPHERTEXT."
+          },
+          "password": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Management user password in plaintext.\n- For a CX device, Maximum length is 64 characters.\nIf not configured, it indicates that the user is created with an empty password"
+          },
+          "ciphertext-password": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Management user password in hash or ciphertext."
+          },
+          "old-password": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Management user's old password."
+          },
+          "rolename": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "ROOT",
+              "GUEST_PROVISIONING",
+              "NETWORK_OPERATIONS",
+              "READ_ONLY",
+              "LOCATION_API_MGMT",
+              "NBAPI_MGMT",
+              "AP_PROVISIONING",
+              "STANDARD",
+              "LOCAL"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ROOT": "Super user role",
+              "GUEST_PROVISIONING": "Guest provisioning role",
+              "NETWORK_OPERATIONS": "Network operator role",
+              "READ_ONLY": "Read-only role",
+              "LOCATION_API_MGMT": "Location API Management role",
+              "NBAPI_MGMT": "NBAPI Management role",
+              "AP_PROVISIONING": "AP Provisioning role",
+              "STANDARD": "Standard role",
+              "LOCAL": "Indicate the type of management users with local privilege."
+            },
+            "x-typeDescription": "Management user role types.",
+            "description": "Configure user-role. For example, user with read-only privilege or the guest management user."
+          },
+          "user-group": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-management-user-group:management-user-groups/ac-management-user-group:user-group/ac-management-user-group:name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 32,
+            "x-patternSources": "name",
+            "x-patterns": "'[a-z0-9_][a-z0-9._-]{0,31}'",
+            "description": "Management user group name.\n- For a CX device, user group is mandatory for creating a user.\nBuilt-in user groups are as follows:\nadministrators: System-defined group with associated privilege level of 15.\n               Members have access to:\n                 All the CLI commands and bash shell.\n                 All the REST Methods through REST APIs.\noperators:      System-defined group with associated privilege level of 1.\n               Members have access to\n                 All show CLI commands (except those that display sensitive information).\n                 All GET requests through REST APIs.\nauditors:       System-defined group with associated privilege level of 19.\n               Members have access to:\n                 All show CLI commands to display and copy security logs.\n                 All GET requests for security logs through REST APIs.\nOnly users belonging to the above three default groups will be allowed access to REST APIs."
+          },
+          "interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "The management interfaces through which the user can access the switch.",
+            "properties": {
+              "ssh": {
+                "type": "boolean",
+                "default": "true",
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Allow SSH login for the user."
+              },
+              "telnet": {
+                "type": "boolean",
+                "default": "true",
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Allow Telnet login for the user."
+              },
+              "https-server": {
+                "type": "boolean",
+                "default": "true",
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Allow REST and WebUI login for the user."
+              },
+              "console": {
+                "type": "boolean",
+                "default": "true",
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Allow console login for the user."
+              }
+            }
+          },
+          "authorized-key": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Public keys for SSH authentication of a user",
+            "type": "array",
+            "items": {
+              "properties": {
+                "public-key": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 8192,
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-mandatory": true,
+                  "description": "SSH public key of the user"
+                }
+              },
+              "required": [
+                "public-key"
+              ]
+            },
+            "x-key": [
+              "publicKey"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

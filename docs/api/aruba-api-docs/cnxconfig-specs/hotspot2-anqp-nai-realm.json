@@ -1,0 +1,1812 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-hotspot2-anqp-nai-realm API generated from aruba-hotspot2-anqp-nai-realm.yang",
+    "version": "1.0.0",
+    "title": "hotspot2-anqp-nai-realm",
+    "x-tag-group": "Wireless"
+  },
+  "tags": [
+    {
+      "name": "anqp-nai-realm"
+    }
+  ],
+  "paths": {
+    "/anqp-nai-realm": {
+      "get": {
+        "summary": "Read existing ANQP NAI Realm related settings.",
+        "description": "This is used to define a Network Access Identifier (NAI) realm information that\ncan be sent as an Access network Query Protocol (ANQP) information element in a GAS query response.\nThe settings configured in this profile determine the NAI realm elements that are included as part of a GAS Response frame.",
+        "operationId": "readAnqpNaiRealm",
+        "x-cliParam": {
+          "commandName": "readAnqpNaiRealmCmd",
+          "summary": "Read operation for anqp-nai-realm",
+          "commandUse": "anqp-nai-realm",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/anqp-nai-realm/"
+        },
+        "tags": [
+          "anqp-nai-realm"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anqp-nai-realm/{name}": {
+      "post": {
+        "summary": "Create ANQP NAI Realm profile.",
+        "description": "List of NAI realms whose information can be sent as\nan ANQP information element in a GAS query response.",
+        "operationId": "createAnqpNaiRealmAnqpNaiRealmProfileByID",
+        "x-cliParam": {
+          "commandName": "createAnqpNaiRealmAnqpNaiRealmProfileCmd",
+          "summary": "Create operation for anqp-nai-realm-profile",
+          "commandUse": "anqp-nai-realm-profile",
+          "parentCommand": "createAnqpNaiRealmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-nai-realm/anqp-nai-realm-profile/%s/"
+        },
+        "tags": [
+          "anqp-nai-realm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing ANQP NAI Realm profile.",
+        "description": "List of NAI realms whose information can be sent as\nan ANQP information element in a GAS query response.",
+        "operationId": "readAnqpNaiRealmAnqpNaiRealmProfileByID",
+        "x-cliParam": {
+          "commandName": "readAnqpNaiRealmAnqpNaiRealmProfileCmd",
+          "summary": "Read operation for anqp-nai-realm-profile",
+          "commandUse": "anqp-nai-realm-profile",
+          "parentCommand": "readAnqpNaiRealmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-nai-realm/anqp-nai-realm-profile/%s/"
+        },
+        "tags": [
+          "anqp-nai-realm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update anqp-nai-realm-profile by {name}",
+        "description": "List of NAI realms whose information can be sent as\nan ANQP information element in a GAS query response.",
+        "operationId": "updateAnqpNaiRealmAnqpNaiRealmProfileByID",
+        "x-cliParam": {
+          "commandName": "updateAnqpNaiRealmAnqpNaiRealmProfileCmd",
+          "summary": "Update operation for anqp-nai-realm-profile",
+          "commandUse": "anqp-nai-realm-profile",
+          "parentCommand": "updateAnqpNaiRealmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-nai-realm/anqp-nai-realm-profile/%s/"
+        },
+        "tags": [
+          "anqp-nai-realm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete ANQP NAI Realm profile.",
+        "description": "List of NAI realms whose information can be sent as\nan ANQP information element in a GAS query response.",
+        "operationId": "deleteAnqpNaiRealmAnqpNaiRealmProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteAnqpNaiRealmAnqpNaiRealmProfileCmd",
+          "summary": "Delete operation for anqp-nai-realm-profile",
+          "commandUse": "anqp-nai-realm-profile",
+          "parentCommand": "deleteAnqpNaiRealmCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-nai-realm/anqp-nai-realm-profile/%s/"
+        },
+        "tags": [
+          "anqp-nai-realm"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema"
+            }
+          }
+        },
+        "description": "anqp-nai-realm-profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmSchema": {
+        "description": "This is used to define a Network Access Identifier (NAI) realm information that\ncan be sent as an Access network Query Protocol (ANQP) information element in a GAS query response.\nThe settings configured in this profile determine the NAI realm elements that are included as part of a GAS Response frame.",
+        "properties": {
+          "anqp-nai-realm-profile": {
+            "description": "List of NAI realms whose information can be sent as\nan ANQP information element in a GAS query response.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Profile name."
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enable this profile."
+                },
+                "nai-realm-name": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Name of the NAI realm. The realm name is often the domain name of the service provider."
+                },
+                "encoding": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RFC4282",
+                    "UTF8"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RFC4282": "nai-realm-enc type is Rfc4282",
+                    "UTF8": "nai-realm-enc type is Utf8"
+                  },
+                  "x-typeDescription": "The enum define of hotspot nai-realm-enc.",
+                  "default": "UTF8",
+                  "description": "Issue this command if the NAI Realm named\ndefined by nai-realm-name <nai-realm-name> is\na UTF-8 formatted character string that is not\nformatted in accordance with IETF RFC 4282."
+                },
+                "eap-method": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "description": "NAI Realm EAP Auth Method.",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "method": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "NONE_NAI_REALM_EAP_METHOD",
+                          "IDENTITY",
+                          "NOTIFICATION",
+                          "ONE_TIME_PASSWORD",
+                          "GENERIC_TOKEN_CARD",
+                          "EAP_TLS",
+                          "EAP_SIM",
+                          "EAP_AKA",
+                          "EAP_TTLS",
+                          "PEAP",
+                          "CRYPTO_CARD",
+                          "PEAP_MSCHAPV2"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "NONE_NAI_REALM_EAP_METHOD": "None",
+                          "IDENTITY": "Identity",
+                          "NOTIFICATION": "Notification",
+                          "ONE_TIME_PASSWORD": "One-time-password",
+                          "GENERIC_TOKEN_CARD": "Generic-token-card",
+                          "EAP_TLS": "Eap-tls",
+                          "EAP_SIM": "Eap-sim",
+                          "EAP_AKA": "Eap-aka",
+                          "EAP_TTLS": "Eap-ttls",
+                          "PEAP": "Peap",
+                          "CRYPTO_CARD": "Crypto-card",
+                          "PEAP_MSCHAPV2": "Peap-mschapv2"
+                        },
+                        "x-typeDescription": "The enum define of hotspot nai-realm-eap-method.",
+                        "description": "Select one of the options below to identify the EAP authentication method supported by the hotspot Realm."
+                      },
+                      "auth-param": {
+                        "description": "Use the nai-realm-auth-id to send the one of the nai_realm_auth_id methods for the primary NAI Realm ID.",
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": {
+                              "x-supportedDeviceType": [
+                                "Access Point"
+                              ],
+                              "type": "string",
+                              "enum": [
+                                "RESERVED",
+                                "EXPANDED_EAP",
+                                "NON_EAP_INNER_AUTH",
+                                "EAP_INNER_AUTH",
+                                "EXP_INNER_EAP",
+                                "CREDENTIAL",
+                                "TUNNELED_EAP_CREDENTIAL_TYPE"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "RESERVED": "Reserved",
+                                "EXPANDED_EAP": "Expanded-eap",
+                                "NON_EAP_INNER_AUTH": "Non-eap-inner-auth",
+                                "EAP_INNER_AUTH": "Eap-inner-auth",
+                                "EXP_INNER_EAP": "Exp-inner-eap",
+                                "CREDENTIAL": "Credential",
+                                "TUNNELED_EAP_CREDENTIAL_TYPE": "Tunneled-eap-credential-type"
+                              },
+                              "x-typeDescription": "The enum define of hotspot nai-realm-auth-id.",
+                              "description": "NAI Realm Authentication Parameter ID."
+                            },
+                            "value": {
+                              "x-supportedDeviceType": [
+                                "Access Point"
+                              ],
+                              "type": "string",
+                              "enum": [
+                                "NON_EAP_RESERVED",
+                                "EAP_IDENTITY",
+                                "EAP_NOTIFICATION",
+                                "EAP_ONE_TIME_PASSWORD",
+                                "EAP_GENERIC_TOKEN_CARD",
+                                "EAP_METHOD_TLS",
+                                "EAP_METHOD_SIM",
+                                "EAP_METHOD_AKA",
+                                "EAP_METHOD_TTLS",
+                                "EAP_PEAP",
+                                "EAP_CRYPTO_CARD",
+                                "EAP_PEAP_MSCHAPV2",
+                                "NON_EAP_RSVD",
+                                "NON_EAP_PAP",
+                                "NON_EAP_CHAP",
+                                "NON_EAP_MSCHAP",
+                                "NON_EAP_MSCHAPV2",
+                                "CRED_SIM",
+                                "CRED_USIM",
+                                "CRED_NFC",
+                                "CRED_HW_TOKEN",
+                                "CRED_SOFT_TOKEN",
+                                "CRED_CERT",
+                                "CRED_USER_PASS",
+                                "CRED_NONE",
+                                "CRED_RSVD",
+                                "CRED_VENDOR_SPEC",
+                                "TUN_CRED_SIM",
+                                "TUN_CRED_USIM",
+                                "TUN_CRED_NFC",
+                                "TUN_CRED_HW_TOKEN",
+                                "TUN_CRED_SOFT_TOKEN",
+                                "TUN_CRED_CERT",
+                                "TUN_CRED_USER_PASS",
+                                "TUN_CRED_RSVD",
+                                "TUN_CRED_ANON",
+                                "TUN_CRED_VENDOR_SPEC"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "NON_EAP_RESERVED": "Non-eap-reserved",
+                                "EAP_IDENTITY": "Eap-identity",
+                                "EAP_NOTIFICATION": "Eap-notification",
+                                "EAP_ONE_TIME_PASSWORD": "Eap-one-time-password",
+                                "EAP_GENERIC_TOKEN_CARD": "Eap-generic-token-card",
+                                "EAP_METHOD_TLS": "Eap-method-tls",
+                                "EAP_METHOD_SIM": "Eap-method-sim",
+                                "EAP_METHOD_AKA": "Eap-method-aka",
+                                "EAP_METHOD_TTLS": "Eap-method-ttls",
+                                "EAP_PEAP": "Eap-peap",
+                                "EAP_CRYPTO_CARD": "Eap-crypto-card",
+                                "EAP_PEAP_MSCHAPV2": "Eap-peap-mschapv2",
+                                "NON_EAP_RSVD": "Non-eap-rsvd",
+                                "NON_EAP_PAP": "Non-eap-pap",
+                                "NON_EAP_CHAP": "Non-eap-chap",
+                                "NON_EAP_MSCHAP": "Non-eap-mschap",
+                                "NON_EAP_MSCHAPV2": "Non-eap-mschapv2",
+                                "CRED_SIM": "Cred-sim",
+                                "CRED_USIM": "Cred-usim",
+                                "CRED_NFC": "Cred-nfc",
+                                "CRED_HW_TOKEN": "Cred-hw-token",
+                                "CRED_SOFT_TOKEN": "Cred-soft-token",
+                                "CRED_CERT": "Cred-cert",
+                                "CRED_USER_PASS": "Cred-user-pass",
+                                "CRED_NONE": "Cred-none",
+                                "CRED_RSVD": "Cred-rsvd",
+                                "CRED_VENDOR_SPEC": "Cred-vendor-spec",
+                                "TUN_CRED_SIM": "Tun-cred-sim",
+                                "TUN_CRED_USIM": "Tun-cred-usim",
+                                "TUN_CRED_NFC": "Tun-cred-nfc",
+                                "TUN_CRED_HW_TOKEN": "Tun-cred-hw-token",
+                                "TUN_CRED_SOFT_TOKEN": "Tun-cred-soft-token",
+                                "TUN_CRED_CERT": "Tun-cred-cert",
+                                "TUN_CRED_USER_PASS": "Tun-cred-user-pass",
+                                "TUN_CRED_RSVD": "Tun-cred-rsvd",
+                                "TUN_CRED_ANON": "Tun-cred-anon",
+                                "TUN_CRED_VENDOR_SPEC": "Tun-cred-vendor-spec"
+                              },
+                              "x-typeDescription": "The enum define of hotspot nai-realm-auth-value.",
+                              "description": "NAI Realm Authentication Parameter value. The value need to pair to auth-id:\nauth-id                      | auth-value scoped\n-----------------------------|-------------------\nRESERVED_NAI_REALM_AUTH_ID   | All nai_realm_auth_value\nEXPANDED-EAP                 | All nai_realm_auth_value\nNON-EAP-INNER-AUTH           | nai_realm_auth_value should in [NON-EAP-RSVD - NON-EAP-MSCHAPV2]\nEAP-INNER-AUTH               | nai_realm_auth_value should in [EAP-IDENTITY - EAP-PEAP-MSCHAPV2]\nEXP-INNER-EAP                | All nai_realm_auth_value\nCREDENTIAL                   | nai_realm_auth_value should in [CRED-SIM - CRED-VENDOR-SPEC]\nTUNNELED-EAP-CREDENTIAL-TYPE | nai_realm_auth_value should in [TUN-CRED-SIM - TUN-CRED-VENDOR-SPEC]"
+                            }
+                          }
+                        },
+                        "x-key": [
+                          "id"
+                        ],
+                        "maxItems": 2147483647
+                      }
+                    }
+                  },
+                  "x-key": [
+                    "method"
+                  ],
+                  "maxItems": 2147483647
+                },
+                "home-realm": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Marks the Realm in this profile as the NAI Home Realm."
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaHotspot2AnqpNaiRealm_AnqpNaiRealmanqpNaiRealmProfileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Profile name."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable this profile."
+          },
+          "nai-realm-name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Name of the NAI realm. The realm name is often the domain name of the service provider."
+          },
+          "encoding": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "RFC4282",
+              "UTF8"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "RFC4282": "nai-realm-enc type is Rfc4282",
+              "UTF8": "nai-realm-enc type is Utf8"
+            },
+            "x-typeDescription": "The enum define of hotspot nai-realm-enc.",
+            "default": "UTF8",
+            "description": "Issue this command if the NAI Realm named\ndefined by nai-realm-name <nai-realm-name> is\na UTF-8 formatted character string that is not\nformatted in accordance with IETF RFC 4282."
+          },
+          "eap-method": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "description": "NAI Realm EAP Auth Method.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "method": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "NONE_NAI_REALM_EAP_METHOD",
+                    "IDENTITY",
+                    "NOTIFICATION",
+                    "ONE_TIME_PASSWORD",
+                    "GENERIC_TOKEN_CARD",
+                    "EAP_TLS",
+                    "EAP_SIM",
+                    "EAP_AKA",
+                    "EAP_TTLS",
+                    "PEAP",
+                    "CRYPTO_CARD",
+                    "PEAP_MSCHAPV2"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "NONE_NAI_REALM_EAP_METHOD": "None",
+                    "IDENTITY": "Identity",
+                    "NOTIFICATION": "Notification",
+                    "ONE_TIME_PASSWORD": "One-time-password",
+                    "GENERIC_TOKEN_CARD": "Generic-token-card",
+                    "EAP_TLS": "Eap-tls",
+                    "EAP_SIM": "Eap-sim",
+                    "EAP_AKA": "Eap-aka",
+                    "EAP_TTLS": "Eap-ttls",
+                    "PEAP": "Peap",
+                    "CRYPTO_CARD": "Crypto-card",
+                    "PEAP_MSCHAPV2": "Peap-mschapv2"
+                  },
+                  "x-typeDescription": "The enum define of hotspot nai-realm-eap-method.",
+                  "description": "Select one of the options below to identify the EAP authentication method supported by the hotspot Realm."
+                },
+                "auth-param": {
+                  "description": "Use the nai-realm-auth-id to send the one of the nai_realm_auth_id methods for the primary NAI Realm ID.",
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "RESERVED",
+                          "EXPANDED_EAP",
+                          "NON_EAP_INNER_AUTH",
+                          "EAP_INNER_AUTH",
+                          "EXP_INNER_EAP",
+                          "CREDENTIAL",
+                          "TUNNELED_EAP_CREDENTIAL_TYPE"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "RESERVED": "Reserved",
+                          "EXPANDED_EAP": "Expanded-eap",
+                          "NON_EAP_INNER_AUTH": "Non-eap-inner-auth",
+                          "EAP_INNER_AUTH": "Eap-inner-auth",
+                          "EXP_INNER_EAP": "Exp-inner-eap",
+                          "CREDENTIAL": "Credential",
+                          "TUNNELED_EAP_CREDENTIAL_TYPE": "Tunneled-eap-credential-type"
+                        },
+                        "x-typeDescription": "The enum define of hotspot nai-realm-auth-id.",
+                        "description": "NAI Realm Authentication Parameter ID."
+                      },
+                      "value": {
+                        "x-supportedDeviceType": [
+                          "Access Point"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "NON_EAP_RESERVED",
+                          "EAP_IDENTITY",
+                          "EAP_NOTIFICATION",
+                          "EAP_ONE_TIME_PASSWORD",
+                          "EAP_GENERIC_TOKEN_CARD",
+                          "EAP_METHOD_TLS",
+                          "EAP_METHOD_SIM",
+                          "EAP_METHOD_AKA",
+                          "EAP_METHOD_TTLS",
+                          "EAP_PEAP",
+                          "EAP_CRYPTO_CARD",
+                          "EAP_PEAP_MSCHAPV2",
+                          "NON_EAP_RSVD",
+                          "NON_EAP_PAP",
+                          "NON_EAP_CHAP",
+                          "NON_EAP_MSCHAP",
+                          "NON_EAP_MSCHAPV2",
+                          "CRED_SIM",
+                          "CRED_USIM",
+                          "CRED_NFC",
+                          "CRED_HW_TOKEN",
+                          "CRED_SOFT_TOKEN",
+                          "CRED_CERT",
+                          "CRED_USER_PASS",
+                          "CRED_NONE",
+                          "CRED_RSVD",
+                          "CRED_VENDOR_SPEC",
+                          "TUN_CRED_SIM",
+                          "TUN_CRED_USIM",
+                          "TUN_CRED_NFC",
+                          "TUN_CRED_HW_TOKEN",
+                          "TUN_CRED_SOFT_TOKEN",
+                          "TUN_CRED_CERT",
+                          "TUN_CRED_USER_PASS",
+                          "TUN_CRED_RSVD",
+                          "TUN_CRED_ANON",
+                          "TUN_CRED_VENDOR_SPEC"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "NON_EAP_RESERVED": "Non-eap-reserved",
+                          "EAP_IDENTITY": "Eap-identity",
+                          "EAP_NOTIFICATION": "Eap-notification",
+                          "EAP_ONE_TIME_PASSWORD": "Eap-one-time-password",
+                          "EAP_GENERIC_TOKEN_CARD": "Eap-generic-token-card",
+                          "EAP_METHOD_TLS": "Eap-method-tls",
+                          "EAP_METHOD_SIM": "Eap-method-sim",
+                          "EAP_METHOD_AKA": "Eap-method-aka",
+                          "EAP_METHOD_TTLS": "Eap-method-ttls",
+                          "EAP_PEAP": "Eap-peap",
+                          "EAP_CRYPTO_CARD": "Eap-crypto-card",
+                          "EAP_PEAP_MSCHAPV2": "Eap-peap-mschapv2",
+                          "NON_EAP_RSVD": "Non-eap-rsvd",
+                          "NON_EAP_PAP": "Non-eap-pap",
+                          "NON_EAP_CHAP": "Non-eap-chap",
+                          "NON_EAP_MSCHAP": "Non-eap-mschap",
+                          "NON_EAP_MSCHAPV2": "Non-eap-mschapv2",
+                          "CRED_SIM": "Cred-sim",
+                          "CRED_USIM": "Cred-usim",
+                          "CRED_NFC": "Cred-nfc",
+                          "CRED_HW_TOKEN": "Cred-hw-token",
+                          "CRED_SOFT_TOKEN": "Cred-soft-token",
+                          "CRED_CERT": "Cred-cert",
+                          "CRED_USER_PASS": "Cred-user-pass",
+                          "CRED_NONE": "Cred-none",
+                          "CRED_RSVD": "Cred-rsvd",
+                          "CRED_VENDOR_SPEC": "Cred-vendor-spec",
+                          "TUN_CRED_SIM": "Tun-cred-sim",
+                          "TUN_CRED_USIM": "Tun-cred-usim",
+                          "TUN_CRED_NFC": "Tun-cred-nfc",
+                          "TUN_CRED_HW_TOKEN": "Tun-cred-hw-token",
+                          "TUN_CRED_SOFT_TOKEN": "Tun-cred-soft-token",
+                          "TUN_CRED_CERT": "Tun-cred-cert",
+                          "TUN_CRED_USER_PASS": "Tun-cred-user-pass",
+                          "TUN_CRED_RSVD": "Tun-cred-rsvd",
+                          "TUN_CRED_ANON": "Tun-cred-anon",
+                          "TUN_CRED_VENDOR_SPEC": "Tun-cred-vendor-spec"
+                        },
+                        "x-typeDescription": "The enum define of hotspot nai-realm-auth-value.",
+                        "description": "NAI Realm Authentication Parameter value. The value need to pair to auth-id:\nauth-id                      | auth-value scoped\n-----------------------------|-------------------\nRESERVED_NAI_REALM_AUTH_ID   | All nai_realm_auth_value\nEXPANDED-EAP                 | All nai_realm_auth_value\nNON-EAP-INNER-AUTH           | nai_realm_auth_value should in [NON-EAP-RSVD - NON-EAP-MSCHAPV2]\nEAP-INNER-AUTH               | nai_realm_auth_value should in [EAP-IDENTITY - EAP-PEAP-MSCHAPV2]\nEXP-INNER-EAP                | All nai_realm_auth_value\nCREDENTIAL                   | nai_realm_auth_value should in [CRED-SIM - CRED-VENDOR-SPEC]\nTUNNELED-EAP-CREDENTIAL-TYPE | nai_realm_auth_value should in [TUN-CRED-SIM - TUN-CRED-VENDOR-SPEC]"
+                      }
+                    }
+                  },
+                  "x-key": [
+                    "id"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "method"
+            ],
+            "maxItems": 2147483647
+          },
+          "home-realm": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Marks the Realm in this profile as the NAI Home Realm."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

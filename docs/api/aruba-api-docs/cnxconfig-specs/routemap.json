@@ -1,0 +1,2392 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-routemap API generated from aruba-routemap.yang",
+    "version": "1.0.0",
+    "title": "routemap",
+    "x-tag-group": "Routing & Overlays"
+  },
+  "tags": [
+    {
+      "name": "route-maps"
+    }
+  ],
+  "paths": {
+    "/route-maps": {
+      "get": {
+        "summary": "Read existing route-map configuration",
+        "description": "Route-map configuration.",
+        "operationId": "readRouteMaps",
+        "x-cliParam": {
+          "commandName": "readRouteMapsCmd",
+          "summary": "Read operation for route-maps",
+          "commandUse": "route-maps",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/route-maps/"
+        },
+        "tags": [
+          "route-maps"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaRoutemap_RouteMapsSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/route-maps/{routeMapName}": {
+      "post": {
+        "summary": "Create new route-map with name {name}",
+        "description": "Route map",
+        "operationId": "createRouteMapsRouteMapByID",
+        "x-cliParam": {
+          "commandName": "createRouteMapsRouteMapCmd",
+          "summary": "Create operation for route-map",
+          "commandUse": "route-map",
+          "parentCommand": "createRouteMapsCmd",
+          "paramKeys": [
+            {
+              "key": "routeMapName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/route-maps/route-map/%s/"
+        },
+        "tags": [
+          "route-maps"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "routeMapName",
+            "description": "Name of the route map.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaRoutemap_RouteMapsrouteMapSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing route-map with name {name}",
+        "description": "Route map",
+        "operationId": "readRouteMapsRouteMapByID",
+        "x-cliParam": {
+          "commandName": "readRouteMapsRouteMapCmd",
+          "summary": "Read operation for route-map",
+          "commandUse": "route-map",
+          "parentCommand": "readRouteMapsCmd",
+          "paramKeys": [
+            {
+              "key": "routeMapName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/route-maps/route-map/%s/"
+        },
+        "tags": [
+          "route-maps"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "routeMapName",
+            "description": "Name of the route map.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaRoutemap_RouteMapsrouteMapSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing route-map with name {name}",
+        "description": "Route map",
+        "operationId": "updateRouteMapsRouteMapByID",
+        "x-cliParam": {
+          "commandName": "updateRouteMapsRouteMapCmd",
+          "summary": "Update operation for route-map",
+          "commandUse": "route-map",
+          "parentCommand": "updateRouteMapsCmd",
+          "paramKeys": [
+            {
+              "key": "routeMapName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/route-maps/route-map/%s/"
+        },
+        "tags": [
+          "route-maps"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "routeMapName",
+            "description": "Name of the route map.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaRoutemap_RouteMapsrouteMapSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete route-map with name {name}",
+        "description": "Route map",
+        "operationId": "deleteRouteMapsRouteMapByID",
+        "x-cliParam": {
+          "commandName": "deleteRouteMapsRouteMapCmd",
+          "summary": "Delete operation for route-map",
+          "commandUse": "route-map",
+          "parentCommand": "deleteRouteMapsCmd",
+          "paramKeys": [
+            {
+              "key": "routeMapName"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/route-maps/route-map/%s/"
+        },
+        "tags": [
+          "route-maps"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "routeMapName",
+            "description": "Name of the route map.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaRoutemap_RouteMapsrouteMapSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaRoutemap_RouteMapsrouteMapSchema"
+            }
+          }
+        },
+        "description": "route-mapbody object"
+      }
+    },
+    "schemas": {
+      "ArubaRoutemap_RouteMapsSchema": {
+        "description": "Route-map configuration.",
+        "properties": {
+          "route-map": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "Route map",
+            "type": "array",
+            "items": {
+              "properties": {
+                "route-map-name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "x-patternSources": "route-map-name",
+                  "x-patterns": "'[^\\s]*'",
+                  "description": "Name of the route map."
+                },
+                "profile-description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Route-map profile description."
+                },
+                "route-map-entry": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "description": "Route map Entries",
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ArubaRoutemap_RouteMapSet"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ArubaRoutemap_RouteMapMatch"
+                      },
+                      {
+                        "properties": {
+                          "seq-no-op-type": {
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "Key combination of seq-no and op-type separated by ~"
+                          },
+                          "continue": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "integer",
+                            "format": "int64",
+                            "minimum": 2,
+                            "maximum": 4294967295,
+                            "description": "Sequence number to be executed next."
+                          },
+                          "description": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS",
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "description": "Description of the route map."
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "x-key": [
+                    "seqNoOpType"
+                  ],
+                  "maxItems": 2147483647
+                }
+              }
+            },
+            "x-key": [
+              "routeMapName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaRoutemap_RouteMapsSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaRoutemap_RouteMapsSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaRoutemap_RouteMapsrouteMapSchema": {
+        "properties": {
+          "route-map-name": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 80,
+            "x-patternSources": "route-map-name",
+            "x-patterns": "'[^\\s]*'",
+            "description": "Name of the route map."
+          },
+          "profile-description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Route-map profile description."
+          },
+          "route-map-entry": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "Route map Entries",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaRoutemap_RouteMapSet"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaRoutemap_RouteMapMatch"
+                },
+                {
+                  "properties": {
+                    "seq-no-op-type": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Key combination of seq-no and op-type separated by ~"
+                    },
+                    "continue": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 2,
+                      "maximum": 4294967295,
+                      "description": "Sequence number to be executed next."
+                    },
+                    "description": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "Description of the route map."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "seqNoOpType"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaRoutemap_RouteMapSet": {
+        "description": "Set values in destination routing protocols.",
+        "properties": {
+          "set-as-path": {
+            "description": "Modify BGP AS path attribute",
+            "properties": {
+              "prepend-as": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "prepend-as",
+                "x-patterns": "'((0|[1-9][0-9]{0,9}|[1-3][0-9]{9}|4[0-2][0-9]{8}|429[0-4][0-9]{7}|42949[0-67][0-9]{6}|429496[0-2][0-9]{5}|4294967[0-1][0-9]{4}|42949672[0-6][0-9]{3}|429496729[0-5])(\\s(0|[1-9][0-9]{0,9}|[1-3][0-9]{9}|4[0-2][0-9]{8}|429[0-4][0-9]{7}|42949[0-67][0-9]{6}|429496[0-2][0-9]{5}|4294967[0-1][0-9]{4}|42949672[0-6][0-9]{3}|429496729[0-5]))*)'",
+                "maxLength": 9999,
+                "description": "Set the ASes to be prepended for AS path. Please specify the configuration as space separated integers."
+              },
+              "last-as-prepend-count": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 10,
+                "description": "Number of times to prepend the last AS to AS path attribute"
+              },
+              "as-exclude": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "description": "Set AS to be excluded from AS-path."
+              }
+            }
+          },
+          "set-tag": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Tag attribute value to be set"
+          },
+          "set-community": {
+            "description": "Community.",
+            "properties": {
+              "community-value-asnn": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1,
+                    "maximum": 4294967295
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "community-type-asnn-num",
+                    "x-patterns": "'((((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0)))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0):(429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0))|((429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0)))'",
+                    "maxLength": 9999
+                  }
+                ],
+                "description": "Community attribute value."
+              },
+              "community-value-all": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 4294967295
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "community-type-asnn-num",
+                      "x-patterns": "'((((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0)))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0):(429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0))|((429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0)))'",
+                      "maxLength": 9999
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "INTERNET",
+                        "NO_EXPORT",
+                        "NO_ADVERTISE",
+                        "LOCAL_AS",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "INTERNET": "internet community",
+                        "NO_EXPORT": "no-export community",
+                        "NO_ADVERTISE": "no-advertise community",
+                        "LOCAL_AS": "local-as community",
+                        "NONE": "remove BGP community"
+                      }
+                    }
+                  ],
+                  "description": "Community attribute value."
+                },
+                "maxItems": 2147483647
+              },
+              "community-operation": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "ADDITIVE",
+                  "DELETE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ADDITIVE": "Add community.",
+                  "DELETE": "Delete community."
+                },
+                "x-typeDescription": "Community set type.",
+                "description": "Community set operation."
+              }
+            }
+          },
+          "set-community-list": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "description": "BGP community list attribute to be set",
+            "properties": {
+              "community-list-operation": {
+                "type": "string",
+                "enum": [
+                  "APPEND",
+                  "DELETE",
+                  "NONE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "APPEND": "Append community list.",
+                  "DELETE": "Delete community list.",
+                  "NONE": "No community list."
+                },
+                "x-typeDescription": "Community list operation type.",
+                "description": "Community list set operation."
+              },
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Community list name."
+              }
+            }
+          },
+          "set-origin": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "IGP",
+              "EGP",
+              "INCOMPLETE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "IGP": "IGP origin.",
+              "EGP": "EGP origin.",
+              "INCOMPLETE": "Incomplete origin."
+            },
+            "x-typeDescription": "Origin type of the route.",
+            "description": "Origin attribute valueto be set."
+          },
+          "set-local-preference": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Local preference attribute to be set."
+          },
+          "set-metric": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Metric attribute to be set."
+          },
+          "set-metric-type": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "TYPE_1",
+              "TYPE_2"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TYPE_1": "metric type 1.",
+              "TYPE_2": "metric type 2."
+            },
+            "x-typeDescription": "Metric type of the route.",
+            "description": "Metric type to be set."
+          },
+          "set-ipv4-nexthop-address": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Next hop IPv4 address to be set."
+          },
+          "set-weight": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Weight."
+          },
+          "set-ipv6-nexthop": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "IPv6 next hop address to be set."
+          },
+          "set-dampening": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Configurations related to Routemap for Route-flap dampening",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "To enable/disable Route-flap dampening"
+              },
+              "half-life": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 45,
+                "x-mandatory": true,
+                "description": "Amount of time that must elapse to reduce\nthe penalty by one half."
+              },
+              "reuse-limit": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 20000,
+                "x-mandatory": true,
+                "description": "Penalty value at which routes are made active."
+              },
+              "suppress-limit": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 20000,
+                "x-mandatory": true,
+                "description": "If the penalty is greater than the suppress limit,\n the route is suppressed."
+              },
+              "max-suppress-time": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 255,
+                "x-mandatory": true,
+                "description": "The maximum amount of time that a route can be suppressed."
+              }
+            },
+            "required": [
+              "half-life",
+              "reuse-limit",
+              "suppress-limit",
+              "max-suppress-time"
+            ]
+          },
+          "set-extended-community": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Configurations related to setting IP extended communities.",
+            "properties": {
+              "router-mac": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-address",
+                "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                "maxLength": 9999,
+                "x-typeDescription": "The mac-address type represents an IEEE 802 MAC address.\nThe canonical representation uses lowercase characters.\n\nIn the value set and its semantics, this type is equivalent\nto the MacAddress textual convention of the SMIv2.",
+                "description": "Set the Router MAC address extended community."
+              },
+              "route-target": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 4294967295
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "community-type-asnn-num",
+                      "x-patterns": "'((((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0)))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0):(429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0))|((429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0)))'",
+                      "maxLength": 9999
+                    }
+                  ],
+                  "description": "Set route-target extended community."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          },
+          "set-local-broadcast-group": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 128,
+            "description": "Set the local broadcast group id."
+          }
+        }
+      },
+      "ArubaRoutemap_RouteMapMatch": {
+        "description": "Match values from routing table",
+        "properties": {
+          "match-ipv4-prefix-list": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "prefix-list-name-address-family",
+            "x-patterns": "'[^\\s]*'",
+            "maxLength": 9999,
+            "description": "Name of IP prefix list"
+          },
+          "match-ipv4-route-source-prefix-list": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "prefix-list-name-address-family",
+            "x-patterns": "'[^\\s]*'",
+            "maxLength": 9999,
+            "description": "Name of route source prefix list."
+          },
+          "match-as-path-list": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "x-path": "/ac-aspathlist:aspath-lists/ac-aspathlist:as-path-list/ac-aspathlist:aspath-list-name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 32,
+            "x-patternSources": "aspath-list-name",
+            "x-patterns": "'[^\\s]*'",
+            "description": "Name of AS path list"
+          },
+          "match-ipv4-nexthop": {
+            "description": "Description for IPv4 nexthop.",
+            "properties": {
+              "ipv4-nexthop-address": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "Next hop IPv4 address."
+              },
+              "ipv4-nexthop-addresses": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "Next hop IPv4 addresses."
+                },
+                "maxItems": 2147483647
+              },
+              "ipv4-nexthop-prefix-list": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "prefix-list-name-address-family",
+                "x-patterns": "'[^\\s]*'",
+                "maxLength": 9999,
+                "description": "Name of IPv4 nexthop prefix list."
+              }
+            }
+          },
+          "match-community": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 4294967295
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "community-type-asnn-num",
+                "x-patterns": "'((((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0)))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}|0):(429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0))|((429496729[0-5]|42949672[0-8][0-9]|4294967[01][0-9]{2}|429496[0-6][0-9]{3}|42949[0-5][0-9]{4}|4294[0-8][0-9]{5}|429[0-3][0-9]{6}|42[0-8][0-9]{7}|4[01][0-9]{8}|[1-3][0-9]{9}|[1-9][0-9]{0,8}|0)))'",
+                "maxLength": 9999
+              }
+            ],
+            "description": "Community attribute to be matched."
+          },
+          "match-community-list": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Community list.",
+            "properties": {
+              "community-list-name-community-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-commlist:community-lists/ac-commlist:community-list/ac-commlist:community-list-name-community-type",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "community-list-name-community-type",
+                "x-patterns": "'[^\\s]*'",
+                "maxLength": 9999,
+                "description": "Match community list name."
+              },
+              "community-list-name": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "description": "Match community list name."
+              },
+              "exact-match": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Exact match of community."
+              }
+            }
+          },
+          "match-extended-community-list": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Extended community list.",
+            "properties": {
+              "community-list-name-community-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-commlist:community-lists/ac-commlist:community-list/ac-commlist:community-list-name-community-type",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "community-list-name-community-type",
+                "x-patterns": "'[^\\s]*'",
+                "maxLength": 9999,
+                "description": "Match extended community list name."
+              },
+              "exact-match": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Exact match of extended community."
+              }
+            }
+          },
+          "match-tag": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Match tag."
+          },
+          "match-tags": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Gateway"
+              ],
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "maximum": 4294967295,
+              "description": "Tags to be matched. Please specify the configuration as space separated integers"
+            },
+            "maxItems": 2147483647
+          },
+          "match-loopback-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nloopback interface for routemap."
+          },
+          "match-vlan-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Use the IP (either IPv4 or IPv6) address of\nvlan interface for routemap."
+          },
+          "match-portchannel-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-port-channel:portchannels/ac-if-port-channel:interface/ac-if-port-channel:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'(\\d+)'",
+            "maxLength": 9999,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nportchannel interface for routemap."
+          },
+          "match-tunnel-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-tunnel:tunnel/ac-if-tunnel:interface/ac-if-tunnel:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Use the IP (either IPv4 or IPv6) address of\ntunnel interface for routemap."
+          },
+          "match-ethernet-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-eth:ethernet-interfaces/ac-if-eth:interface/ac-if-eth:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'((enet|usb)\\d+)|(\\w+(/\\w+)?(/\\d+)?(:\\d)?)'",
+            "maxLength": 9999,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nethernet interface for routemap."
+          },
+          "match-subinterface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-subinterface:sub-interfaces/ac-if-subinterface:interface/ac-if-subinterface:parent-name-id",
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Use the IP (either IPv4 or IPv6) address of\nsubinterface for routemap."
+          },
+          "match-interface-vlans": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS",
+                "Gateway"
+              ],
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 4094,
+              "x-typeDescription": "Type definition representing a single-tagged VLAN",
+              "description": "Match interface vlans."
+            },
+            "maxItems": 2147483647
+          },
+          "match-vrf-segment": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name-type",
+            "x-patterns": "'([^\\\\/ ]+)'",
+            "maxLength": 9999,
+            "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+            "description": "Match VRF segment."
+          },
+          "match-local-preference": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Match local preference."
+          },
+          "match-metric": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Match metric."
+          },
+          "match-external-route-type": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "TYPE_1",
+              "TYPE_2"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "TYPE_1": "metric type 1.",
+              "TYPE_2": "metric type 2."
+            },
+            "x-typeDescription": "Metric type of the route.",
+            "description": "Match external route type."
+          },
+          "match-route-type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "EVPN_TYPE_1",
+              "EVPN_TYPE_2",
+              "EVPN_TYPE_3",
+              "EVPN_TYPE_4",
+              "EVPN_TYPE_5"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "EVPN_TYPE_1": "EVPN type 1.",
+              "EVPN_TYPE_2": "EVPN type 2.",
+              "EVPN_TYPE_3": "EVPN type 3.",
+              "EVPN_TYPE_4": "EVPN type 4.",
+              "EVPN_TYPE_5": "EVPN type 5."
+            },
+            "x-typeDescription": "Route type.",
+            "description": "Match route type"
+          },
+          "match-source-protocol": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "CONNECTED",
+              "STATIC",
+              "RIP",
+              "OSPF",
+              "OSPFV3",
+              "BGP",
+              "RIPNG"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "CONNECTED": "Connected protocol.",
+              "STATIC": "Static protocol.",
+              "RIP": "RIP protocol.",
+              "OSPF": "OSPF protocol.",
+              "OSPFV3": "OSPFV3 protocol.",
+              "BGP": "BGP protocol.",
+              "RIPNG": "RIPNG protocol."
+            },
+            "x-typeDescription": "Source protocol type.",
+            "description": "Match source protocol."
+          },
+          "match-ipv6-prefix-list": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "prefix-list-name-address-family",
+            "x-patterns": "'[^\\s]*'",
+            "maxLength": 9999,
+            "description": "Name of IPv6 address prefix list."
+          },
+          "match-ipv6-nexthop-address": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "description": "Description for IPv6 nexthop.",
+            "properties": {
+              "ipv6-nexthop-prefix-list": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-pfl:prefix-lists/ac-pfl:prefix-list/ac-pfl:prefix-list-name-address-family",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "prefix-list-name-address-family",
+                "x-patterns": "'[^\\s]*'",
+                "maxLength": 9999,
+                "description": "Name of IPv6 nexthop prefix list."
+              },
+              "ipv6-nexthop-address": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "IPv6 next hop address."
+              },
+              "ipv6-nexthop-addresses": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-address",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                  "description": "IPv6 next hop addresses."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          },
+          "match-ipv6-route-source-prefix-list": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Name of IPv6 route source prefix list."
+          },
+          "match-vni": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 16777214,
+            "description": "Match VxLAN Virtual Network ID (VNI)"
+          },
+          "match-origin": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "IGP",
+              "EGP",
+              "INCOMPLETE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "IGP": "IGP origin.",
+              "EGP": "EGP origin.",
+              "INCOMPLETE": "Incomplete origin."
+            },
+            "x-typeDescription": "Origin type of the route.",
+            "description": "Origin code."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

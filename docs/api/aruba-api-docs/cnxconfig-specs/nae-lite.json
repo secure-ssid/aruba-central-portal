@@ -1,0 +1,2155 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-nae-lite API generated from aruba-nae-lite.yang",
+    "version": "1.0.0",
+    "title": "nae-lite",
+    "x-tag-group": "Network Services"
+  },
+  "tags": [
+    {
+      "name": "nae-lite"
+    }
+  ],
+  "paths": {
+    "/nae-lite": {
+      "get": {
+        "summary": "Read existing nae-lite agent configurations",
+        "description": "NAE Lite parameters.",
+        "operationId": "readNaeLite",
+        "x-cliParam": {
+          "commandName": "readNaeLiteCmd",
+          "summary": "Read operation for nae-lite",
+          "commandUse": "nae-lite",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/nae-lite/"
+        },
+        "tags": [
+          "nae-lite"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaNaeLite_NaeLiteSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/nae-lite/{name}": {
+      "post": {
+        "summary": "Create a new nae-lite agent by unique name",
+        "description": "NAE Lite parameters.",
+        "operationId": "createNaeLiteProfileByID",
+        "x-cliParam": {
+          "commandName": "createNaeLiteProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createNaeLiteCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/nae-lite/profile/%s/"
+        },
+        "tags": [
+          "nae-lite"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the NAE Script.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaNaeLite_NaeLiteprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing nae-lite agent configurations",
+        "description": "NAE Lite parameters.",
+        "operationId": "readNaeLiteProfileByID",
+        "x-cliParam": {
+          "commandName": "readNaeLiteProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readNaeLiteCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/nae-lite/profile/%s/"
+        },
+        "tags": [
+          "nae-lite"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the NAE Script.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaNaeLite_NaeLiteprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing nae-lite agent configurations",
+        "description": "NAE Lite parameters.",
+        "operationId": "updateNaeLiteProfileByID",
+        "x-cliParam": {
+          "commandName": "updateNaeLiteProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateNaeLiteCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/nae-lite/profile/%s/"
+        },
+        "tags": [
+          "nae-lite"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the NAE Script.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaNaeLite_NaeLiteprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the nae-lite agent",
+        "description": "NAE Lite parameters.",
+        "operationId": "deleteNaeLiteProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteNaeLiteProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteNaeLiteCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/nae-lite/profile/%s/"
+        },
+        "tags": [
+          "nae-lite"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the NAE Script.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaNaeLite_NaeLiteprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaNaeLite_NaeLiteprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaNaeLite_NaeLiteSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX"
+        ],
+        "description": "NAE Lite parameters.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "NAE Lite parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_Watches"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_Monitors"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_Conditions"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 3,
+                      "maxLength": 80,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[a-zA-Z0-9_]+'",
+                      "description": "Name of the NAE Script."
+                    },
+                    "description": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 3,
+                      "maxLength": 255,
+                      "description": "NAE Script description."
+                    },
+                    "ready": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "NAE Script configuration is ready for generation."
+                    },
+                    "disable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable this script from being deployed."
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "string",
+                        "format": "const",
+                        "minLength": 3,
+                        "maxLength": 32,
+                        "description": "The list of tags assigned to the NAE Script"
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "agent-type": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "WATCH",
+                        "MONITOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "WATCH": "Watch NAE Lite agent.",
+                        "MONITOR": "Monitor NAE Lite agent."
+                      },
+                      "x-typeDescription": "Type of NAE lite agent.",
+                      "description": "Type of NAE lite agent."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaNaeLite_NaeLiteSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaNaeLite_NaeLiteSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaNaeLite_NaeLiteprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaNaeLite_Watches"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaNaeLite_Monitors"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaNaeLite_Conditions"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "minLength": 3,
+                "maxLength": 80,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9_]+'",
+                "description": "Name of the NAE Script."
+              },
+              "description": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 3,
+                "maxLength": 255,
+                "description": "NAE Script description."
+              },
+              "ready": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "NAE Script configuration is ready for generation."
+              },
+              "disable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable this script from being deployed."
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 3,
+                  "maxLength": 32,
+                  "description": "The list of tags assigned to the NAE Script"
+                },
+                "maxItems": 2147483647
+              },
+              "agent-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "WATCH",
+                  "MONITOR"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "WATCH": "Watch NAE Lite agent.",
+                  "MONITOR": "Monitor NAE Lite agent."
+                },
+                "x-typeDescription": "Type of NAE lite agent.",
+                "description": "Type of NAE lite agent."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaNaeLite_Duration": {
+        "description": "Time duration grouping.",
+        "properties": {
+          "duration": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10000,
+            "description": "The time interval used by the aggregation function or\nGroup over the specified time interval in the past instead of the\ncurrent value."
+          },
+          "dur-unit": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "SECONDS",
+              "MINUTES",
+              "HOURS",
+              "DAYS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SECONDS": "Time duration in seconds.",
+              "MINUTES": "Time duration in minutes.",
+              "HOURS": "Time duration in hours.",
+              "DAYS": "Time duration in days."
+            },
+            "x-typeDescription": "Unit for time duration.",
+            "description": "Unit of time duration."
+          }
+        }
+      },
+      "ArubaNaeLite_NaeConditionMonitor": {
+        "description": "NAE Lite condition monitor grouping.",
+        "properties": {
+          "operator": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "LT",
+              "LE",
+              "EQ",
+              "NE",
+              "GT",
+              "GE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LT": "Monitor value is less than the compared value.",
+              "LE": "Monitor value is less than or equal to the compared value.",
+              "EQ": "Monitor value is equal to the compared value.",
+              "NE": "Monitor value is not equal to the compared value.",
+              "GT": "Monitor value is greater than the compared value.",
+              "GE": "Monitor value is greater than or equal to the compared value."
+            },
+            "x-typeDescription": "Type of operator.",
+            "description": "Arithmetic operator for NAE Lite condition monitor."
+          },
+          "operand": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "default": "0",
+            "description": "Operand for arithmetic operator."
+          },
+          "transition-from": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 3,
+            "maxLength": 255,
+            "description": "Monitors transit from the value."
+          },
+          "transition-to": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 3,
+            "maxLength": 255,
+            "description": "Monitors transit to the value."
+          },
+          "durationmonitor": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10000,
+            "description": "The time interval used by the aggregation function or\nGroup over the specified time interval in the past instead of the\ncurrent value."
+          },
+          "durunit-monitor": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "SECONDS",
+              "MINUTES",
+              "HOURS",
+              "DAYS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SECONDS": "Time duration in seconds.",
+              "MINUTES": "Time duration in minutes.",
+              "HOURS": "Time duration in hours.",
+              "DAYS": "Time duration in days."
+            },
+            "x-typeDescription": "Unit for time duration.",
+            "description": "Unit of time duration."
+          }
+        }
+      },
+      "ArubaNaeLite_NaeConditionWatch": {
+        "description": "NAE Lite watch parameters.",
+        "properties": {
+          "include": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "ALL",
+              "ANY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALL": "Event log messages should include all of the specified lists of\nregular expressions.",
+              "ANY": "Event log messages should include any of the specified lists of\nregular expressions."
+            },
+            "x-typeDescription": "Type of regular expression match.",
+            "description": "Include type"
+          },
+          "include-regex": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "const",
+              "minLength": 3,
+              "maxLength": 255,
+              "description": "List of comma separated regular expressions to include."
+            },
+            "maxItems": 2147483647
+          },
+          "exclude-regex": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "const",
+              "minLength": 3,
+              "maxLength": 255,
+              "description": "List of comma separated regular expressions to exclude."
+            },
+            "maxItems": 2147483647
+          },
+          "count": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "description": "Limits the condition to satisfy once in every specific count."
+          }
+        }
+      },
+      "ArubaNaeLite_Conditions": {
+        "description": "NAE condition grouping.",
+        "properties": {
+          "conditions": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "NAE Lite condition parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_NaeConditionWatch"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_NaeConditionMonitor"
+                },
+                {
+                  "properties": {
+                    "condtype": {
+                      "type": "string",
+                      "enum": [
+                        "CONDITION_0",
+                        "CONDITION_1"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CONDITION_0": "SET_CONDITION type - Provide with Set-condition type payload.",
+                        "CONDITION_1": "CLEAR_CONDITION type - Provide with Clear-condition type payload."
+                      },
+                      "x-typeDescription": "Type of condition.",
+                      "description": "Type of the condition"
+                    },
+                    "name-condition": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 3,
+                      "maxLength": 80,
+                      "description": "Watch or Monitor name."
+                    },
+                    "set-monitor": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "SET_CONDITION",
+                        "CLEAR_CONDITION"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "SET_CONDITION": "Desired system condition.",
+                        "CLEAR_CONDITION": "Remove the set condition used by the NAE agent."
+                      },
+                      "x-typeDescription": "Type of condition.",
+                      "description": "Set or Clear condition type."
+                    },
+                    "set-watch": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "SET_CONDITION",
+                        "CLEAR_CONDITION"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "SET_CONDITION": "Desired system condition.",
+                        "CLEAR_CONDITION": "Remove the set condition used by the NAE agent."
+                      },
+                      "x-typeDescription": "Type of condition.",
+                      "description": "Set or Clear condition type."
+                    },
+                    "status": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "NORMAL",
+                        "MINOR",
+                        "MAJOR",
+                        "CRITICAL"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "NORMAL": "Status normal.",
+                        "MINOR": "Status minor",
+                        "MAJOR": "Status major.",
+                        "CRITICAL": "Status critical."
+                      },
+                      "x-typeDescription": "Status level of the agent.",
+                      "default": "NORMAL",
+                      "description": "NAE Lite action update status."
+                    },
+                    "syslog": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 3,
+                      "maxLength": 255,
+                      "description": "NAE Lite action syslog."
+                    },
+                    "severity": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ALERT",
+                        "CRITICAL",
+                        "DEBUG",
+                        "EMERGENCY",
+                        "ERROR",
+                        "INFO",
+                        "NOTICE",
+                        "WARNING"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ALERT": "Action must be taken immediately. A condition that should be\ncorrected immediately, such as a corrupted system database.",
+                        "CRITICAL": "Critical conditions, such as hard device errors.",
+                        "DEBUG": "Debug-level messages. Messages that contain information normally\nof use only when debugging a program.",
+                        "EMERGENCY": "System is unusable. A panic condition.",
+                        "ERROR": "Error conditions.",
+                        "INFO": "Informational messages.",
+                        "NOTICE": "Normal but significant conditions. Conditions that are not error\nconditions, but that may require special handling.",
+                        "WARNING": "Warning condition."
+                      },
+                      "x-typeDescription": "Logging level upto which, the messages are logged.",
+                      "description": "NAE Lite action syslog severity."
+                    },
+                    "facility": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "AUTH",
+                        "AUTH_PRIV",
+                        "CRON",
+                        "DAEMON",
+                        "FTP",
+                        "KERNEL",
+                        "LPR",
+                        "MAIL",
+                        "SYSLOG",
+                        "USER",
+                        "UUCP"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "AUTH": "Facility AUTH.\nThis facility handles logs related to\nauthentication and authorization.",
+                        "AUTH_PRIV": "Facility AUTH_PRIV.\nThis facility handles logs related to\nauthentication and authorization with more private sensitive\ninformation. This is a subset of facility AUTH.",
+                        "CRON": "Facility CRON",
+                        "DAEMON": "Facility DAEMON",
+                        "FTP": "Facility FTP (File Transfer Protocol)",
+                        "KERNEL": "Facility KERNEL",
+                        "LPR": "Facility LPR (Line Printer Remote)",
+                        "MAIL": "Facility MAIL",
+                        "SYSLOG": "Facility SYSLOG",
+                        "USER": "Facility USER",
+                        "UUCP": "Facility UUCP (Unix-to-Unix Copy Protocol)"
+                      },
+                      "x-typeDescription": "Facility to use when logging to Remote Syslog Server.",
+                      "description": "NAE Lite action syslog facility."
+                    },
+                    "cli": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "NAE Lite action CLI."
+                    },
+                    "redirect": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "redirect",
+                      "x-patterns": "'(\\s*(local-file\\s*)|\\s*(\\s*(local-file\\s+)?(tftp:\\/\\/\\d{1,3}(\\.\\d{1,3}){3}\\/\\S+|(sftp|scp):\\/\\/\\w+@\\d{1,3}(\\.\\d{1,3}){3}\\/\\S+)\\s*))'",
+                      "maxLength": 9999,
+                      "description": "NAE Lite redirect."
+                    },
+                    "nae-schedule": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "NAE Lite schedule CLI."
+                    },
+                    "nae-trap": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "NAE Lite trap CLI."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "condtype"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaNaeLite_Watches": {
+        "description": "watches grouping.",
+        "properties": {
+          "watches": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "NAE Lite watch parameters.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "watch-name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 3,
+                  "maxLength": 80,
+                  "x-patternSources": "watch-name",
+                  "x-patterns": "'[a-zA-Z0-9_]+'",
+                  "description": "Name of NAE Lite watch."
+                },
+                "type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "EVENT_LOG"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "EVENT_LOG": "Event log messages."
+                  },
+                  "x-typeDescription": "Type of the information getting watched.",
+                  "description": "Type of the information getting watched."
+                },
+                "event-id": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 3,
+                  "maxLength": 50,
+                  "description": "List of one or more comma seperated Event IDs."
+                }
+              }
+            },
+            "x-key": [
+              "watchName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaNaeLite_Monitors": {
+        "description": "NAE Lite monitor grouping.",
+        "properties": {
+          "monitors": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "NAE Lite monitor parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaNaeLite_Duration"
+                },
+                {
+                  "properties": {
+                    "monitor-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 3,
+                      "maxLength": 80,
+                      "description": "Name of the NAE Monitor"
+                    },
+                    "alias": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CPU",
+                        "MEMORY",
+                        "STORAGE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CPU": "System CPU.",
+                        "MEMORY": "System memory.",
+                        "STORAGE": "System storage utilization."
+                      },
+                      "x-typeDescription": "Type of resource.",
+                      "description": "Alias that identifies the resource to be monitored.\nEither the *alias* or the *resource* has to be defined.\nIf both are defined, then *resource* takes higher precedence."
+                    },
+                    "storage-location": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "COREDUMP",
+                        "NOS",
+                        "LOGS",
+                        "SECURITY",
+                        "SELFTEST"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "COREDUMP": "Location /fs/coredump .",
+                        "NOS": "Location /fs/nos .",
+                        "LOGS": "Location /fs/logs .",
+                        "SECURITY": "Location /fs/security .",
+                        "SELFTEST": "Location /fs/selftest ."
+                      },
+                      "x-typeDescription": "Storage location.",
+                      "description": "Storage location."
+                    },
+                    "module-mm": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MM_SLOT_1_1",
+                        "MM_SLOT_1_2",
+                        "MM_SLOT_1_5",
+                        "MM_SLOT_1_6"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MM_SLOT_1_1": "Management Module slot number 1/1 .",
+                        "MM_SLOT_1_2": "Management Module slot number 1/2 .",
+                        "MM_SLOT_1_5": "Management Module slot number 1/5 .",
+                        "MM_SLOT_1_6": "Management Module slot number 1/6 ."
+                      },
+                      "x-typeDescription": "Managementmodule slot number.",
+                      "description": "Type of module."
+                    },
+                    "module-lc": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "LC_SLOT_1_1",
+                        "LC_SLOT_1_2",
+                        "LC_SLOT_1_3",
+                        "LC_SLOT_1_4",
+                        "LC_SLOT_1_5",
+                        "LC_SLOT_1_6",
+                        "LC_SLOT_1_7",
+                        "LC_SLOT_1_8",
+                        "LC_SLOT_1_9",
+                        "LC_SLOT_1_10",
+                        "LC_SLOT_1_11",
+                        "LC_SLOT_1_12"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "LC_SLOT_1_1": "Line Card slot number 1/1 .",
+                        "LC_SLOT_1_2": "Line Card slot number 1/2 .",
+                        "LC_SLOT_1_3": "Line Card slot number 1/3 .",
+                        "LC_SLOT_1_4": "Line Card slot number 1/4 .",
+                        "LC_SLOT_1_5": "Line Card slot number 1/5 .",
+                        "LC_SLOT_1_6": "Line Card slot number 1/6 .",
+                        "LC_SLOT_1_7": "Line Card slot number 1/7 .",
+                        "LC_SLOT_1_8": "Line Card slot number 1/8 .",
+                        "LC_SLOT_1_9": "Line Card slot number 1/9 .",
+                        "LC_SLOT_1_10": "Line Card slot number 1/10 .",
+                        "LC_SLOT_1_11": "Line Card slot number 1/11 .",
+                        "LC_SLOT_1_12": "Line Card slot number 1/12 ."
+                      },
+                      "x-typeDescription": "Line Card slot number.",
+                      "description": "Type of module."
+                    },
+                    "vsf-member": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 10,
+                      "description": "VSF member id."
+                    },
+                    "group-by": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "RATE",
+                        "COUNT",
+                        "SUM",
+                        "MIN",
+                        "MAX",
+                        "AVERAGE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "RATE": "Rate of change of the monitored data over the specified time interval.",
+                        "COUNT": "Group by distinct counts of monitored data.",
+                        "SUM": "Group by summing the monitored data",
+                        "MIN": "Minimum of the monitored data.",
+                        "MAX": "Maximum of the monitored data.",
+                        "AVERAGE": "Average of the monitored data."
+                      },
+                      "x-typeDescription": "Various arithmatic functions used in NAE Lite monitor.",
+                      "description": "The function used to aggregate the data of the monitored resource.,\nIf not set then no aggregation is applied to the monitored resource."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "monitorName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

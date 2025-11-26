@@ -1,0 +1,4643 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-interface-vlan API generated from aruba-interface-vlan.yang",
+    "version": "1.0.0",
+    "title": "interface-vlan",
+    "x-tag-group": "Interfaces"
+  },
+  "tags": [
+    {
+      "name": "vlan-interfaces"
+    }
+  ],
+  "paths": {
+    "/vlan-interfaces": {
+      "get": {
+        "summary": "Read VLAN interface(s) configurations",
+        "description": "Layer 3 VLAN (Virtual Local Area Network) configurations.",
+        "operationId": "readVlanInterfaces",
+        "x-cliParam": {
+          "commandName": "readVlanInterfacesCmd",
+          "summary": "Read operation for vlan-interfaces",
+          "commandUse": "vlan-interfaces",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/vlan-interfaces/"
+        },
+        "tags": [
+          "vlan-interfaces"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_VlanInterfacesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vlan-interfaces/{id}": {
+      "post": {
+        "summary": "Create VLAN interface configurations",
+        "description": "VLAN interface configuration.",
+        "operationId": "createVlanInterfacesInterfaceByID",
+        "x-cliParam": {
+          "commandName": "createVlanInterfacesInterfaceCmd",
+          "summary": "Create operation for interface",
+          "commandUse": "interface",
+          "parentCommand": "createVlanInterfacesCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/vlan-interfaces/interface/%s/"
+        },
+        "tags": [
+          "vlan-interfaces"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "VLAN interface identifier.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaInterfaceVlan_VlanInterfacesinterfaceSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read VLAN interface configurations",
+        "description": "VLAN interface configuration.",
+        "operationId": "readVlanInterfacesInterfaceByID",
+        "x-cliParam": {
+          "commandName": "readVlanInterfacesInterfaceCmd",
+          "summary": "Read operation for interface",
+          "commandUse": "interface",
+          "parentCommand": "readVlanInterfacesCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/vlan-interfaces/interface/%s/"
+        },
+        "tags": [
+          "vlan-interfaces"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "VLAN interface identifier.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_VlanInterfacesinterfaceSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update VLAN interface configurations",
+        "description": "VLAN interface configuration.",
+        "operationId": "updateVlanInterfacesInterfaceByID",
+        "x-cliParam": {
+          "commandName": "updateVlanInterfacesInterfaceCmd",
+          "summary": "Update operation for interface",
+          "commandUse": "interface",
+          "parentCommand": "updateVlanInterfacesCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/vlan-interfaces/interface/%s/"
+        },
+        "tags": [
+          "vlan-interfaces"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "VLAN interface identifier.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaInterfaceVlan_VlanInterfacesinterfaceSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete VLAN interface configurations",
+        "description": "VLAN interface configuration.",
+        "operationId": "deleteVlanInterfacesInterfaceByID",
+        "x-cliParam": {
+          "commandName": "deleteVlanInterfacesInterfaceCmd",
+          "summary": "Delete operation for interface",
+          "commandUse": "interface",
+          "parentCommand": "deleteVlanInterfacesCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/vlan-interfaces/interface/%s/"
+        },
+        "tags": [
+          "vlan-interfaces"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "VLAN interface identifier.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaInterfaceVlan_VlanInterfacesinterfaceSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaInterfaceVlan_VlanInterfacesinterfaceSchema"
+            }
+          }
+        },
+        "description": "interfacebody object"
+      }
+    },
+    "schemas": {
+      "ArubaInterfaceVlan_VlanInterfacesSchema": {
+        "x-supportedDeviceType": [
+          "Gateway",
+          "Switch CX"
+        ],
+        "description": "Layer 3 VLAN (Virtual Local Area Network) configurations.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_IfVlanConfig"
+          }
+        ]
+      },
+      "ArubaInterfaceVlan_VlanInterfacesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_VlanInterfacesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaInterfaceVlan_VlanInterfacesinterfaceSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_UrpfCheckConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_PppoeConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_IpConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_Ipv4ConfigVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_Ipv6ConfigVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_TcpMssConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv4RouterDiscovery"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv6NeighborDiscovery"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_IpDirectedBroadcastConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_PolicyReferenceGroup"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_VsxConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_ActiveGatewayConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_NdmdConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfVlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimBidirIfConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaMgmdInterface_MgmdIfConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_Ipv4RelayIf"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_Ipv6RelayIf"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaUdpBroadcastForwarder_UdpBroadcastForwarderServer"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceVlan_Dhcpv6ClientAuth"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaInterfaceCommon_BfdInterface"
+          },
+          {
+            "properties": {
+              "id": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Access Point",
+                  "Gateway"
+                ],
+                "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "VLAN interface identifier."
+              },
+              "is-valid": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Indicates whether the VLAN interface is considered valid on the device.\nSetting it to false to override the inherited configuration will\ndelete the VLAN interface on the device.\nThe default value is true at the time of creating the interface."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Enable the interface."
+              },
+              "description": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Description of the interface."
+              },
+              "bandwidth-contract": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Bandwidth Contract name"
+              },
+              "bcmc-optimization": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Broadcast multicast optimization (BCMC) to prevent flooding. BCMC will drop unwanted broadcast and multicast\nframes on a VLAN."
+              },
+              "mm-auth-lease-time": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 5,
+                "maximum": 3600,
+                "description": "Multimode Authentication lease time in minutes"
+              },
+              "oper-state-up": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Set operational state of the VLAN Interface to be always up."
+              },
+              "ip-neighbor-flood-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable VLAN flooding when a link goes down."
+              },
+              "jumbo": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Jumbo VLAN allowing you to pass packets up to 9216 bytes in size."
+              },
+              "ntp-ipv6-multicast": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "The interface to listen to the NTP multicast packets."
+              },
+              "disable-layer3": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Disable layer3 functionality"
+              },
+              "vrf-forwarding": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "name-type",
+                "x-patterns": "'([^\\\\/ ]+)'",
+                "maxLength": 9999,
+                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                "description": "Add the interface to the VRF instance uniquely identified by its name."
+              },
+              "tcp-adj-mss": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 128,
+                "maximum": 1460,
+                "default": "1460",
+                "description": "TCP Maximum Segment size in bytes"
+              },
+              "ip-access-group-in": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Policy for inbound traffic."
+              },
+              "qos": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "description": "QoS interface vlan parameters.",
+                "properties": {
+                  "dscp": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 63,
+                    "x-typeDescription": "A differentiated services code point (DSCP) marking within the\nIP header.",
+                    "description": "The DSCP remark for the port."
+                  },
+                  "priority": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 7,
+                    "x-typeDescription": "Priority.",
+                    "description": "The 802.1p priority to use."
+                  }
+                }
+              },
+              "mdns-sd": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "description": "Grouping for multicast DNS Service Discovery interface\n configurations.",
+                "properties": {
+                  "mdns-profile": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "x-path": "/ac-mdns:multicast-dns/ac-mdns:profile/ac-mdns:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "description": "Leaf for profile-name must-condition"
+                  },
+                  "enable": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Enable Multicast DNS Service Discovery on an interface vlan."
+                  },
+                  "apply-profile": {
+                    "x-supportedDeviceType": [
+                      "Switch CX",
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "description": "Applies Multicast DNS service discovery profile on an interface vlan."
+                  }
+                }
+              },
+              "vrrp": {
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch PVOS"
+                ],
+                "description": "IPv4 and IPv6 VRRP Configurations",
+                "properties": {
+                  "vrrp-profile-apply": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "x-path": "/ac-vrrp-intf:vrrp/ac-vrrp-intf:profile/ac-vrrp-intf:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "Apply VRRP-interface profile on a VLAN interface."
+                  },
+                  "dual-active-forwarding": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "VRRP dual-active forwarding mode enable"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaInterfaceVlan_Dhcpv6ClientAuth": {
+        "description": "Grouping for DHCPv6 Client Authentication Configuration.",
+        "properties": {
+          "dhcpv6-client-auth": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "DHCPv6 Client Authentication Configuration.",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "MD5"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MD5": "Authentication mode MD5"
+                },
+                "x-typeDescription": "DHCPv6 Client authentication modes.",
+                "default": "MD5",
+                "description": "Set the authentication mode to MD5."
+              },
+              "key-chain": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "The name of the key chain."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceVlan_Ipv4RelayIf": {
+        "description": "Grouping for DHCPv4 Relay Configurations",
+        "properties": {
+          "ipv4-relay": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "DHCPv4 Relay Configurations",
+            "properties": {
+              "bootp-gateway": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "Provides a way to configure a gateway address for the DHCPv4 relay agent to use\nfor DHCP requests. DHCPv4 relay agent uses lowest IP address on the interface,\nwithout this configuration."
+              },
+              "server": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX",
+                  "Gateway",
+                  "Access Point"
+                ],
+                "description": "List of DHCPv4 servers.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "ip-vrf": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Key combination of ip and vrf separated by ~"
+                    }
+                  }
+                },
+                "x-key": [
+                  "ipVrf"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceVlan_Ipv6RelayIf": {
+        "description": "Grouping for DHCPv6 Relay Configurations"
+      },
+      "ArubaInterfaceVlan_IfVlanConfig": {
+        "description": "Grouping for the VLAN Interface.",
+        "properties": {
+          "interface": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "VLAN interface configuration.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_UrpfCheckConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_PppoeConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_IpConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_Ipv4ConfigVlan"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_Ipv6ConfigVlan"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_TcpMssConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv4RouterDiscovery"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv6NeighborDiscovery"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_IpDirectedBroadcastConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_PolicyReferenceGroup"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_VsxConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_ActiveGatewayConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_NdmdConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaPimInterface_PimIfConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaPimInterface_PimIfVlanConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaPimInterface_PimBidirIfConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaMgmdInterface_MgmdIfConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_Ipv4RelayIf"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_Ipv6RelayIf"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaUdpBroadcastForwarder_UdpBroadcastForwarderServer"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceVlan_Dhcpv6ClientAuth"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaInterfaceCommon_BfdInterface"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-vlan:layer2-vlan/ac-vlan:l2-vlan/ac-vlan:vlan",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4094,
+                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                      "description": "VLAN interface identifier."
+                    },
+                    "is-valid": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Indicates whether the VLAN interface is considered valid on the device.\nSetting it to false to override the inherited configuration will\ndelete the VLAN interface on the device.\nThe default value is true at the time of creating the interface."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable the interface."
+                    },
+                    "description": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Description of the interface."
+                    },
+                    "bandwidth-contract": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Bandwidth Contract name"
+                    },
+                    "bcmc-optimization": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Broadcast multicast optimization (BCMC) to prevent flooding. BCMC will drop unwanted broadcast and multicast\nframes on a VLAN."
+                    },
+                    "mm-auth-lease-time": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 5,
+                      "maximum": 3600,
+                      "description": "Multimode Authentication lease time in minutes"
+                    },
+                    "oper-state-up": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Set operational state of the VLAN Interface to be always up."
+                    },
+                    "ip-neighbor-flood-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable VLAN flooding when a link goes down."
+                    },
+                    "jumbo": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Jumbo VLAN allowing you to pass packets up to 9216 bytes in size."
+                    },
+                    "ntp-ipv6-multicast": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "The interface to listen to the NTP multicast packets."
+                    },
+                    "disable-layer3": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Disable layer3 functionality"
+                    },
+                    "vrf-forwarding": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "name-type",
+                      "x-patterns": "'([^\\\\/ ]+)'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                      "description": "Add the interface to the VRF instance uniquely identified by its name."
+                    },
+                    "tcp-adj-mss": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 128,
+                      "maximum": 1460,
+                      "default": "1460",
+                      "description": "TCP Maximum Segment size in bytes"
+                    },
+                    "ip-access-group-in": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 144,
+                      "description": "Policy for inbound traffic."
+                    },
+                    "qos": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "QoS interface vlan parameters.",
+                      "properties": {
+                        "dscp": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 63,
+                          "x-typeDescription": "A differentiated services code point (DSCP) marking within the\nIP header.",
+                          "description": "The DSCP remark for the port."
+                        },
+                        "priority": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 0,
+                          "maximum": 7,
+                          "x-typeDescription": "Priority.",
+                          "description": "The 802.1p priority to use."
+                        }
+                      }
+                    },
+                    "mdns-sd": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Grouping for multicast DNS Service Discovery interface\n configurations.",
+                      "properties": {
+                        "mdns-profile": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "x-path": "/ac-mdns:multicast-dns/ac-mdns:profile/ac-mdns:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 256,
+                          "description": "Leaf for profile-name must-condition"
+                        },
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "Enable Multicast DNS Service Discovery on an interface vlan."
+                        },
+                        "apply-profile": {
+                          "x-supportedDeviceType": [
+                            "Switch CX",
+                            "Switch PVOS"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32,
+                          "description": "Applies Multicast DNS service discovery profile on an interface vlan."
+                        }
+                      }
+                    },
+                    "vrrp": {
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "description": "IPv4 and IPv6 VRRP Configurations",
+                      "properties": {
+                        "vrrp-profile-apply": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "x-path": "/ac-vrrp-intf:vrrp/ac-vrrp-intf:profile/ac-vrrp-intf:name",
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 255,
+                          "description": "Apply VRRP-interface profile on a VLAN interface."
+                        },
+                        "dual-active-forwarding": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "VRRP dual-active forwarding mode enable"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "id"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaInterfaceVlan_ActiveGatewayConfig": {
+        "description": "Active gateway configurations grouping.",
+        "properties": {
+          "active-gateway": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Active gateway config.",
+            "properties": {
+              "ipv4-address": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "List of active gateway IPv4 address."
+                },
+                "maxItems": 2147483647
+              },
+              "mac-address-v4": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-address",
+                "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IEEE 802 MAC address",
+                "description": "virtual gateway MAC address for the corresponding ipv4-address.\nIf active gateway MAC is not configured, the device system MAC will be used as the\ngateway MAC"
+              },
+              "extended-mac-address-v4": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Configure the active gateway MAC as the extended MAC."
+              },
+              "ipv6-address": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-address",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                  "description": "List of active gateway IPv6 address."
+                },
+                "maxItems": 2147483647
+              },
+              "mac-address-v6": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "mac-address",
+                "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IEEE 802 MAC address",
+                "description": "virtual gateway MAC address for the corresponding ipv6-address.\nIf active gateway MAC is not configured, the device system MAC will be used as the\ngateway MAC"
+              },
+              "extended-mac-address-v6": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Configure the active gateway MAC as the extended MAC."
+              },
+              "virtual-gw-l3-src-mac-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables the interface to use the virtual gateway MAC address as the\nsource MAC for routed traffic."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_AccessListPolicies": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Grouping for access-list configurations.",
+        "properties": {
+          "access-list-in": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Access-list Policy for inbound (Ingress) traffic."
+          },
+          "access-list-out": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Access-list Policy for outbound (Egress) traffic."
+          }
+        }
+      },
+      "ArubaInterfaceCommon_PolicyReferenceGroup": {
+        "description": "Grouping for policy references.",
+        "properties": {
+          "policy": {
+            "description": "Container for Policy References.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaInterfaceCommon_AccessListPolicies"
+              }
+            ],
+            "properties": {
+              "access-group-in": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Policy for inbound traffic."
+              },
+              "access-group-out": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Policy for outbound traffic."
+              },
+              "access-group-session": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Session based policy for inbound traffic."
+              },
+              "access-group-vlan-in": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Policy for inbound routed and bridged traffic."
+              },
+              "access-group-vlan-out": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Policy for outbound routed and bridged traffic."
+              },
+              "service-policy-in": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Service policy for inbound traffic."
+              },
+              "service-policy-out": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 144,
+                "description": "Service policy for outbound traffic."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_BfdInterface": {
+        "description": "BFD interface configuration."
+      },
+      "ArubaInterfaceCommon_IpConfig": {
+        "description": "Grouping for IP config.",
+        "properties": {
+          "ip": {
+            "description": "IP configuration. This configuration is valid only on a layer3 interface.",
+            "properties": {
+              "mtu": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 68,
+                "maximum": 9198,
+                "default": "1500",
+                "description": "IP MTU of an interface in bytes. The IP MTU is the largest IP packet that can be sent by the interface.\nThis value should be less than or equal to the overall MTU for the interface."
+              },
+              "l3-counters": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "TX",
+                  "RX",
+                  "RX_TX"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "TX": "Tx L3 counters.",
+                  "RX": "Rx L3 counters.",
+                  "RX_TX": "Rx and Tx L3 counters."
+                },
+                "x-typeDescription": "Enable Rx and Tx L3 counters on Tunnel interface.",
+                "description": "Rx and Tx L3 counters."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_Ipv4ConfigVlan": {
+        "description": "Grouping for IPv4 configurations on VLAN interfaces.",
+        "properties": {
+          "ipv4": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "IPv4 configurations on VLAN interfaces.",
+            "properties": {
+              "address": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Access Point",
+                  "Gateway"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-prefix",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "DHCP",
+                      "PPPOE",
+                      "NO_DHCP",
+                      "NONE"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "DHCP": "Dynamic Host Configuration Protocol.",
+                      "PPPOE": "Point-to-point Protocol over Ethernet.",
+                      "NO_DHCP": "Dynamic Host Configuration Protocol.",
+                      "NONE": "Client/address is not configured."
+                    },
+                    "x-typeDescription": "Dynamic client type to obtain IPv4 address."
+                  }
+                ],
+                "description": "Set an IPv4 address (static) or enable DHCPv4 client (dynamic)."
+              },
+              "address-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for IPv4 address entry, the value could be static, dynamic or NONE."
+              },
+              "secondary-ip-alias": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for the list of secondary IPv4 addresses with netmask specified."
+              },
+              "secondary-ip": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-prefix",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                  "description": "List of secondary IPv4 addresses with netmask specified."
+                },
+                "maxItems": 2147483647
+              },
+              "dhcp-client-id": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "DHCP client identifier, applicable only when address field is configured as DHCP client."
+              },
+              "filter-broadcast-helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Filter DHCP broadcast packets when helper address is configured."
+              },
+              "helper-address": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Gateway",
+                    "Access Point",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "This list is now deprecated. Please use the configuration from aruba-dhcp-relay.yang."
+                },
+                "maxItems": 2147483647
+              },
+              "proxy-arp": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "GATEWAY",
+                  "CLIENT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "GATEWAY": "Gateway responds to ARP requests with its own MAC address.",
+                  "CLIENT": "Gateway responds to ARP requests with client's MAC address."
+                },
+                "x-typeDescription": "Proxy ARP modes.",
+                "description": "Enable proxy ARP.\nPossible values:\nCLIENT: Enables proxy ARP in CLIENT mode.\n        Gateway responds to ARP requests with client's MAC address.\nGATEWAY: Enables proxy ARP in GATEWAY mode.\n         Gateway responds to ARP requests with its own MAC address."
+              },
+              "nat-inside": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "NAT inside for all routed traffic."
+              },
+              "nat-outside": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "NAT outside for all routed traffic."
+              },
+              "option-82": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "description": "DHCPv4 Option 82."
+              },
+              "route-redistribute": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Redistribute the connected route to ORO."
+              },
+              "forwarding": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "IPv4 Forwarding."
+              },
+              "suppress-arp": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Suppress Address Resolution Protocol (ARP), when enabled the device will stop the flooding of unknown\nrequests to other nodes in the same VLAN."
+              },
+              "vrf-forwarding": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "name-type",
+                "x-patterns": "'([^\\\\/ ]+)'",
+                "maxLength": 9999,
+                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                "description": "Add the interface to the VRF instance uniquely identified by its name."
+              },
+              "dhcps-profile-name": {
+                "x-path": "/ac-dhcp-server:dhcp-server/ac-dhcp-server:profile/ac-dhcp-server:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Server profile name configured with DHCPv4 pools."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_Ipv6ConfigVlan": {
+        "description": "Grouping for IPv6 configurations on VLAN interfaces.",
+        "properties": {
+          "ipv6": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "description": "IPv6 configurations on VLAN interfaces.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable IPv6."
+              },
+              "addresses-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "List of IPv6 Addresses, static or dynamic, use aliases."
+              },
+              "addresses": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "description": "List of IPv6 Addresses.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "address": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-prefix",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DHCP",
+                            "DHCP_FULL",
+                            "DHCP_FULL_RAPID_COMMIT",
+                            "NO_DHCP"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "DHCP": "Dynamic Host Configuration Protocol.",
+                            "DHCP_FULL": "Obtain IPv6 address & Configuration information from DHCPv6 server.",
+                            "DHCP_FULL_RAPID_COMMIT": "Obtain IPv6 address quickly from DHCPv6 server.",
+                            "NO_DHCP": "Dynamic Host Configuration Protocol."
+                          },
+                          "x-typeDescription": "Dynamic client type to obtain IPv6 address."
+                        }
+                      ],
+                      "description": "The IPv6 Address."
+                    },
+                    "eui64": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "IPv6 address in the EUI-64 bit format. This config cannot be set when IPv6 DHCP client is enabled."
+                    },
+                    "tag": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "default": "0",
+                      "description": "Route tag for connected routes."
+                    }
+                  }
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "prefix-delegation-mode": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "ADDRESS",
+                  "CLIENT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ADDRESS": "Prefix delegation address identifier.",
+                  "CLIENT": "Prefix delegation client."
+                },
+                "x-typeDescription": "Prefix delegation modes.",
+                "description": "Prefix delegation mode. If an IPv6 helper address configured on this interface,\nit cannot co-exist with powered device (PD) configurations."
+              },
+              "pd-address": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "The IPv6 PD based name and subnet/host ID. Maximum count(3) of configurable IPv6 addresses\nand cannot co-exist with PD based address configurations.",
+                "properties": {
+                  "pd-address-name": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "The IPv6 PD Name and the PD subnet/host ID is required."
+                  },
+                  "subnet-host-id": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 3,
+                    "maxLength": 48,
+                    "description": "The IPv6 PD subnet and host Identifier. The PD based name is required."
+                  }
+                }
+              },
+              "pd-client-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Prefix delegation client name."
+              },
+              "dhcp-pool-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 127,
+                "description": "The IPv6 DHCP pool name."
+              },
+              "filter-multicast-helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Filteration of DHCP multicast\npackets when helper address is configured."
+              },
+              "helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "The IPv6 helper. At least one IPv6 address should be configured to enable helper.\nIf PD mode is enabled on this interface, it cannot co-exist with helper configurations.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "address": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "The IPv6 helper address. Source field is mandatory since multiple IPv6 addresses exist."
+                    },
+                    "source": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "The IPv6 helper source interface address."
+                    }
+                  }
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "autoconfig": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable automatic IPv6 address configuration based on IPv6 RA advertisements."
+              },
+              "link-local-alias": {
+                "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+                "description": "Alias for IPv6 link local address."
+              },
+              "link-local": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "IPv6 link local address configuration."
+              },
+              "enable-default-link-local": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable auto-generated IPv6 link local address."
+              },
+              "dhcps-profile-name": {
+                "x-path": "/ac-dhcp-server:dhcp-server/ac-dhcp-server:profile/ac-dhcp-server:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Server profile name configured with DHCPv6 pools."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_Ipv4Config": {
+        "description": "Grouping for IPv4 config.",
+        "properties": {
+          "ipv4": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX"
+            ],
+            "description": "IPv4 configuration. This configuration is valid only on a layer3 interface.",
+            "properties": {
+              "address": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Access Point",
+                  "Gateway"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-prefix",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "DHCP",
+                      "PPPOE",
+                      "NO_DHCP",
+                      "NONE"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "DHCP": "Dynamic Host Configuration Protocol.",
+                      "PPPOE": "Point-to-point Protocol over Ethernet.",
+                      "NO_DHCP": "Dynamic Host Configuration Protocol.",
+                      "NONE": "Client/address is not configured."
+                    },
+                    "x-typeDescription": "Dynamic client type to obtain IPv4 address."
+                  }
+                ],
+                "description": "Set an IPv4 address (static) or enable DHCPv4 client (dynamic)."
+              },
+              "secondary-ip": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-prefix",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                  "description": "List of secondary IPv4 addresses with netmask specified."
+                },
+                "maxItems": 2147483647
+              },
+              "dhcp-client-id": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "DHCP client identifier, applicable only when address field is configured as DHCP client."
+              },
+              "filter-broadcast-helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Filter DHCP broadcast packets when helper address is configured."
+              },
+              "helper-address": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Gateway",
+                    "Access Point",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "This list is now deprecated. Please use the configuration from aruba-dhcp-relay.yang."
+                },
+                "maxItems": 2147483647
+              },
+              "proxy-arp": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "GATEWAY",
+                  "CLIENT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "GATEWAY": "Gateway responds to ARP requests with its own MAC address.",
+                  "CLIENT": "Gateway responds to ARP requests with client's MAC address."
+                },
+                "x-typeDescription": "Proxy ARP modes.",
+                "description": "Enable proxy ARP.\nPossible values:\nCLIENT: Enables proxy ARP in CLIENT mode.\n        Gateway responds to ARP requests with client's MAC address.\nGATEWAY: Enables proxy ARP in GATEWAY mode.\n         Gateway responds to ARP requests with its own MAC address."
+              },
+              "nat-inside": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "NAT inside for all routed traffic."
+              },
+              "nat-outside": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "NAT outside for all routed traffic."
+              },
+              "route-redistribute": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Redistribute the connected route to ORO."
+              },
+              "forwarding": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "IPv4 Forwarding."
+              },
+              "suppress-arp": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Suppress Address Resolution Protocol (ARP), when enabled the device will stop the flooding of unknown\nrequests to other nodes in the same VLAN."
+              },
+              "vrf-forwarding": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "name-type",
+                "x-patterns": "'([^\\\\/ ]+)'",
+                "maxLength": 9999,
+                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                "description": "Add the interface to the VRF instance uniquely identified by its name."
+              },
+              "dhcps-profile-name": {
+                "x-path": "/ac-dhcp-server:dhcp-server/ac-dhcp-server:profile/ac-dhcp-server:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Server profile name configured with DHCPv4 pools."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_IpDirectedBroadcastConfig": {
+        "description": "IP Directed Broadcast parameters.",
+        "properties": {
+          "ip-directed-broadcast-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable IP Directed Broadcast on the interface. This configuration is valid only on a layer3 interface."
+          }
+        }
+      },
+      "ArubaInterfaceCommon_TcpMssConfig": {
+        "x-supportedDeviceType": [
+          "Switch CX"
+        ],
+        "description": "IPv4 and IPv6 TCP Maximum Segment Size (MSS) Configurations."
+      },
+      "ArubaInterfaceCommon_Ipv6Config": {
+        "description": "Grouping for IPv6 configurations.",
+        "properties": {
+          "ipv6": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "description": "IPv6 configurations. This configuration is valid only on a layer3 interface.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable IPv6."
+              },
+              "addresses": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "description": "List of IPv6 Addresses.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "address": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-prefix",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128)."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DHCP",
+                            "DHCP_FULL",
+                            "DHCP_FULL_RAPID_COMMIT",
+                            "NO_DHCP"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "DHCP": "Dynamic Host Configuration Protocol.",
+                            "DHCP_FULL": "Obtain IPv6 address & Configuration information from DHCPv6 server.",
+                            "DHCP_FULL_RAPID_COMMIT": "Obtain IPv6 address quickly from DHCPv6 server.",
+                            "NO_DHCP": "Dynamic Host Configuration Protocol."
+                          },
+                          "x-typeDescription": "Dynamic client type to obtain IPv6 address."
+                        }
+                      ],
+                      "description": "The IPv6 Address."
+                    },
+                    "eui64": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "IPv6 address in the EUI-64 bit format. This config cannot be set when IPv6 DHCP client is enabled."
+                    },
+                    "tag": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "default": "0",
+                      "description": "Route tag for connected routes."
+                    }
+                  }
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "prefix-delegation-mode": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "ADDRESS",
+                  "CLIENT"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ADDRESS": "Prefix delegation address identifier.",
+                  "CLIENT": "Prefix delegation client."
+                },
+                "x-typeDescription": "Prefix delegation modes.",
+                "description": "Prefix delegation mode. If an IPv6 helper address configured on this interface,\nit cannot co-exist with powered device (PD) configurations."
+              },
+              "pd-address": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "The IPv6 PD based name and subnet/host ID. Maximum count(3) of configurable IPv6 addresses\nand cannot co-exist with PD based address configurations.",
+                "properties": {
+                  "pd-address-name": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "The IPv6 PD Name and the PD subnet/host ID is required."
+                  },
+                  "subnet-host-id": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 3,
+                    "maxLength": 48,
+                    "description": "The IPv6 PD subnet and host Identifier. The PD based name is required."
+                  }
+                }
+              },
+              "pd-client-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Prefix delegation client name."
+              },
+              "dhcp-pool-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 127,
+                "description": "The IPv6 DHCP pool name."
+              },
+              "filter-multicast-helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Filteration of DHCP multicast\npackets when helper address is configured."
+              },
+              "helper": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "The IPv6 helper. At least one IPv6 address should be configured to enable helper.\nIf PD mode is enabled on this interface, it cannot co-exist with helper configurations.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "address": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "The IPv6 helper address. Source field is mandatory since multiple IPv6 addresses exist."
+                    },
+                    "source": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "The IPv6 helper source interface address."
+                    }
+                  }
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "autoconfig": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable automatic IPv6 address configuration based on IPv6 RA advertisements."
+              },
+              "link-local": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                "description": "IPv6 link local address configuration."
+              },
+              "enable-default-link-local": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable auto-generated IPv6 link local address."
+              },
+              "dhcps-profile-name": {
+                "x-path": "/ac-dhcp-server:dhcp-server/ac-dhcp-server:profile/ac-dhcp-server:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Server profile name configured with DHCPv6 pools."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_PppoeConfig": {
+        "description": "Grouping for the IPv4 PPPoE configurations.",
+        "properties": {
+          "pppoe": {
+            "description": "IPv4 PPPoE configurations.",
+            "properties": {
+              "max-segment-size": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 128,
+                "maximum": 1452,
+                "default": "1452",
+                "description": "The TCP maximum segment size in bytes."
+              },
+              "nat-gateway-address": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                "description": "The NAT gateway IPv4 address."
+              },
+              "password": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "The Password Authentication Protocol (PAP) password."
+              },
+              "secret": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "The Challenge-Handshake Authentication Protocol (CHAP) secret."
+              },
+              "service-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "The Point-to-Point Protocol over Ethernet (PPPOE) service name."
+              },
+              "username": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "The Password Authentication Protocol (PAP) username."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_VsxConfig": {
+        "description": "VSX configuration grouping.",
+        "properties": {
+          "vsx": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "VSX configuration.",
+            "properties": {
+              "shutdown-on-split": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Determines whether the port will be shutdown when VSX split occurs.\nThis is only applicable to the ports that are not configured as MCLAG\nand SVIs that do not have any MCLAGs as members."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_UrpfCheckConfig": {
+        "description": "Grouping for Unicast Reverse Path Forwarding (uRPF) configuration.",
+        "properties": {
+          "urpf": {
+            "description": "Unicast Reverse Path Forwarding (uRPF) on the interface to prevent IP address spoofing.",
+            "properties": {
+              "ipv4-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "DISABLE",
+                  "STRICT",
+                  "LOOSE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "DISABLE": "Disable source address validation on incoming packets.",
+                  "STRICT": "Incoming packets are accepted only if they are received on the interface that the router would use to\nreach the source IP address.",
+                  "LOOSE": "Incoming packets are accepted as long as the source IP address is reachable via any interface on the router."
+                },
+                "x-typeDescription": "Unicast Reverse Path Forwarding mode for incoming packets on the interface.",
+                "default": "DISABLE",
+                "description": "Unicast Reverse Path Forwarding (uRPF) mode on the interface to prevent IPv4 address spoofing by validating\nthe source address of incoming packets."
+              }
+            }
+          }
+        }
+      },
+      "ArubaInterfaceCommon_StaticArpConfig": {
+        "description": "Static ARP configuration",
+        "properties": {
+          "address": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "IPv4 address."
+          },
+          "mac-address": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "mac-address",
+            "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IEEE 802 MAC address",
+            "description": "MAC address."
+          }
+        }
+      },
+      "ArubaInterfaceCommon_StaticNeighborConfig": {
+        "description": "Static IPv6 Neighbor configuration",
+        "properties": {
+          "address": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "IPv6 address."
+          },
+          "mac-address": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "mac-address",
+            "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IEEE 802 MAC address",
+            "description": "MAC address."
+          }
+        }
+      },
+      "ArubaInterfaceCommon_NdmdConfig": {
+        "description": "Neighbor Discovery Manager parameters.",
+        "properties": {
+          "arp": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Neighbor Discovery Manager parameters for ipv4.",
+            "properties": {
+              "timeout": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 30,
+                "maximum": 28800,
+                "default": "1800",
+                "description": "ARP timeout."
+              },
+              "neighbor": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Static IPv4 neighbor entry.",
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaInterfaceCommon_StaticArpConfig"
+                    }
+                  ]
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "proxy": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Proxy ARP."
+              },
+              "local-proxy": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Local proxy ARP."
+              },
+              "process-grat": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Process gratuitous ARP packet."
+              }
+            }
+          },
+          "nd": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Neighbor Discovery Manager parameters for ipv6.",
+            "properties": {
+              "timeout": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 10,
+                "maximum": 28800,
+                "default": "1800",
+                "description": "Neighbor timeout."
+              },
+              "neighbor": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Static IPv6 neighbor entry.",
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaInterfaceCommon_StaticNeighborConfig"
+                    }
+                  ]
+                },
+                "x-key": [
+                  "address"
+                ],
+                "maxItems": 2147483647
+              },
+              "local-proxy": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Local proxy ND."
+              }
+            }
+          }
+        }
+      },
+      "ArubaUdpBroadcastForwarder_UdpBroadcastForwarderServer": {
+        "description": "Grouping for UDP Broadcast Forwarder Interface Configurations"
+      },
+      "ArubaPimInterface_PimIfCommonConfig": {
+        "description": "Common configurations for PIM protocol.",
+        "properties": {
+          "hello-delay": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 5,
+            "default": "5",
+            "description": "Maximum time before a triggered PIM Hello message is transmitted on\nthe interface."
+          },
+          "hello-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 5,
+            "maximum": 300,
+            "default": "30",
+            "description": "Interval at which PIM Hello messages are transmitted on the\ninterface."
+          },
+          "override-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 500,
+            "maximum": 6000,
+            "default": "2500",
+            "description": "Value inserted into the Override Interval field of a LAN Prune Delay\noption on the interface."
+          },
+          "propagation-delay": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 250,
+            "maximum": 2000,
+            "default": "500",
+            "description": "Value inserted into the LAN Prune Delay field of a LAN Prune Delay\noption on the interface ."
+          },
+          "lan-prune-delay-disable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable LAN Prune Delay on this interface."
+          }
+        }
+      },
+      "ArubaPimInterface_PimSparseIfCommonConfig": {
+        "description": "PIM-SM protocol common configuration.",
+        "properties": {
+          "dr-priority": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": "1",
+            "description": "Priority value to use on the interface in the Designated Router\nelection process."
+          },
+          "datapath-auto-include": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When set to true, the router forwards multicast data received on the\nvxlan l3 VNI fabric to this interface regardless of whether a multicast\njoin was received."
+          }
+        }
+      },
+      "ArubaPimInterface_PimDenseIfCommonConfig": {
+        "description": "PIM-DM protocol common configuration.",
+        "properties": {
+          "graft-retry-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 10,
+            "default": "3",
+            "description": "Interval for which router waits for Graft Ack before resending\nGraft Request."
+          },
+          "max-graft-retries": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 10,
+            "default": "3",
+            "description": "Specify the max Graft Request retry attempt."
+          },
+          "bfd-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BFD for PIM-DM on the interface."
+          }
+        }
+      },
+      "ArubaPimInterface_PimSparseIfConfig": {
+        "description": "PIM-SM protocol.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfCommonConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimSparseIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "default": "false",
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Enable PIM-SM protocol on the interface."
+          },
+          "source-address-any": {
+            "type": "boolean",
+            "default": "false",
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Any source address to be used for PIM IPv4 packets"
+          },
+          "source-address": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Source address to be used for PIM IPv4 packets"
+          },
+          "bfd-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BFD for PIM-DM on the interface."
+          },
+          "bsr-boundary": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "The interface as BSR boundary."
+          }
+        }
+      },
+      "ArubaPimInterface_PimDenseIfConfig": {
+        "description": "PIM-DM protocol.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfCommonConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimDenseIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable PIM-DM protocol on the interface."
+          },
+          "source-address-any": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Any source address to be used for PIM IPv4 packets"
+          },
+          "source-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Source address to be used for PIM IPv4 packets"
+          },
+          "ttl-threshold": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Multicast datagram TTL threshold for the\ninterface"
+          }
+        }
+      },
+      "ArubaPimInterface_PimBidirConfig": {
+        "description": "PIM-Bidir protocol.",
+        "properties": {
+          "bidir-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable PIM-Bidir protocol on the interface."
+          },
+          "hello-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 5,
+            "maximum": 300,
+            "default": "30",
+            "description": "Interval at which PIM Hello messages are transmitted on the\ninterface."
+          },
+          "hello-delay": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 5,
+            "default": "5",
+            "description": "Maximum time before a triggered PIM Hello message is transmitted on\nthe interface."
+          },
+          "lan-prune-delay": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "LAN prune delay option on the interface for PIM Bidir."
+          },
+          "override-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 500,
+            "maximum": 6000,
+            "default": "2500",
+            "description": "Value inserted into the Override Interval field of a LAN Prune Delay\noption on the interface."
+          },
+          "propagation-delay": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 250,
+            "maximum": 2000,
+            "default": "500",
+            "description": "Value inserted into the LAN Prune Delay field of a LAN Prune Delay\noption on the interface."
+          }
+        }
+      },
+      "ArubaPimInterface_Pim6SparseIfConfig": {
+        "description": "PIM6-SM protocol.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfCommonConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimSparseIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "default": "false",
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Enable PIM6-SM protocol on the interface."
+          },
+          "source-address-any": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Any source address to be used for PIM IPv6 packets"
+          },
+          "source-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "Source address to be used for PIM IPv6 packets"
+          },
+          "bfd-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable BFD for PIM-DM on the interface."
+          }
+        }
+      },
+      "ArubaPimInterface_Pim6DenseIfConfig": {
+        "description": "PIM6-DM protocol.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimIfCommonConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaPimInterface_PimDenseIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable PIM-DM protocol on the interface."
+          },
+          "source-address-any": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Any source address to be used for PIM IPv6 packets"
+          },
+          "source-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "Source address to be used for PIM IPv6 packets"
+          },
+          "ttl-threshold": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 255,
+            "default": "255",
+            "description": "Multicast datagram TTL threshold for the\ninterface"
+          }
+        }
+      },
+      "ArubaPimInterface_PimSparseVlanIfConfig": {
+        "description": "PIM-SM protocol.",
+        "properties": {
+          "vsx-virtual-neighbor-ipv4": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When set to true, the router processes IGMP and PIM IPv4 joins received\non this interface regardless of its DR or Prime Neighbor role."
+          },
+          "vsx-virtual-neighbor-ipv6": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When set to true, the router processes MLD and PIM IPv6 joins received\non this interface regardless of its DR or Prime Neighbor role."
+          }
+        }
+      },
+      "ArubaPimInterface_PimDenseVlanIfConfig": {
+        "description": "PIM-DM protocol on Vlan interface.",
+        "properties": {
+          "enable": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable PIM-DM protocol on vlan interface."
+          }
+        }
+      },
+      "ArubaPimInterface_PimIfVlanConfig": {
+        "description": "Grouping for Protocol Independent Multicast(PIM) config\nfor vlan interface.",
+        "properties": {
+          "pim-sparse-vlan": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_PimSparseVlanIfConfig"
+              }
+            ],
+            "description": "Configure PIM Sparse Mode protocol on vlan interface."
+          },
+          "pim-dense-vlan": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_PimDenseVlanIfConfig"
+              }
+            ],
+            "description": "Configure PIM Dense Mode protocol on vlan interface."
+          }
+        }
+      },
+      "ArubaPimInterface_PimIfConfig": {
+        "description": "Grouping for Protocol Independent Multicast(PIM) config\nfor the interface.",
+        "properties": {
+          "pim-sparse": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_PimSparseIfConfig"
+              }
+            ],
+            "description": "Configure PIM Sparse Mode protocol."
+          },
+          "pim6-sparse": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_Pim6SparseIfConfig"
+              }
+            ],
+            "description": "Configure IPv6 PIM Sparse Mode protocol."
+          },
+          "boundary-acl": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Multicast Boundary ACL to filter all multicast data\nand control packets"
+          },
+          "pim-dense": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_PimDenseIfConfig"
+              }
+            ],
+            "description": "Configure PIM Dense Mode protocol."
+          },
+          "pim6-dense": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_Pim6DenseIfConfig"
+              }
+            ],
+            "description": "Configure IPv6 PIM Dense Mode protocol."
+          }
+        }
+      },
+      "ArubaPimInterface_PimBidirIfConfig": {
+        "description": "Grouping for Protocol Independent Multicast(PIM) Bidirectional\nconfig for the interface.",
+        "properties": {
+          "pim-bidir": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaPimInterface_PimBidirConfig"
+              }
+            ],
+            "description": "PIM Bidirectional Mode protocol configurations."
+          }
+        }
+      },
+      "ArubaMgmdInterface_IgmpStaticGroups": {
+        "description": "IPv4 IGMP Static Group Configurations",
+        "properties": {
+          "static-group": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "ipv4-address",
+              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+              "maxLength": 9999,
+              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+              "description": "IGMP static group address"
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaMgmdInterface_MldStaticGroups": {
+        "description": "IPv6 MLD Static Group Configurations",
+        "properties": {
+          "static-group": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "ipv6-address",
+              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+              "maxLength": 9999,
+              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+              "description": "MLD static group address"
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaMgmdInterface_MgmdIfCommonConfig": {
+        "description": "Grouping for common MGMD Configurations on interface",
+        "properties": {
+          "querier-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable IGMP/MLD Querier on this device."
+          },
+          "query-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 5,
+            "maximum": 31744,
+            "default": "125",
+            "description": "Sets the interval in seconds between IGMP/MLD queries."
+          },
+          "last-member-query-interval": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 2,
+            "default": "1",
+            "description": "The number of seconds between successive group-specific\nquery messages."
+          },
+          "robustness": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 8,
+            "default": "2",
+            "description": "Set the number of times to retry a IGMP query."
+          },
+          "query-max-response-time": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 10,
+            "maximum": 128,
+            "default": "10",
+            "description": "The number of seconds to wait for a response to an\nIGMP query."
+          },
+          "policy-in": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Ingress ACL to filter processing of IGMP reports\nand leave messages received"
+          },
+          "ssm-map-policy-in": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Configure Source Specific Multicast map ACL on this\ninterface."
+          }
+        }
+      },
+      "ArubaMgmdInterface_IgmpIfConfig": {
+        "description": "Grouping for IGMP Configurations on interface",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaMgmdInterface_IgmpStaticGroups"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaMgmdInterface_MgmdIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "snooping": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable IGMP snooping. Only one of igmp snooping, igmp proxy gigabit ethernet,\nigmp proxy port channel or igmp proxy vxlan can be enabled"
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable IGMP on the interface"
+          },
+          "igmp-proxy": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-mgmd:mgmd-global/ac-mgmd:profile/ac-mgmd:igmp/ac-mgmd:proxy-domains/ac-mgmd:proxy-domain-name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This leaf associates the interface with a globally configured IGMP proxy domain by reference."
+          },
+          "querier-wait-time": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 300,
+            "default": "260",
+            "description": "Sets the interval in seconds between IGMP queries."
+          },
+          "router-alert-check": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": " Enables or disables IGMP Router alert check"
+          },
+          "version": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 2,
+            "maximum": 3,
+            "default": "3",
+            "description": "The IGMP protocol version to use."
+          },
+          "strict-version": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Process only the selected IGMP version packets."
+          },
+          "filter-unknown-multicast": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Block Flooding of IPv4 Unknown Multicast Packets"
+          }
+        }
+      },
+      "ArubaMgmdInterface_MldIfConfig": {
+        "description": "MLD Configurations on the interface",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaMgmdInterface_MldStaticGroups"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaMgmdInterface_MgmdIfCommonConfig"
+          }
+        ],
+        "properties": {
+          "snooping": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable IPv6 MLD snooping. Only one out of mld snooping, mld proxy gigabit ethernet,\nor mld proxy port channel can be configured."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable MLD on the interface"
+          },
+          "querier-wait-time": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 300,
+            "default": "260",
+            "description": "Sets the interval in seconds between MLD queries."
+          },
+          "version": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 2,
+            "default": "2",
+            "description": "The MLD protocol version to use."
+          },
+          "strict-version": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Process only the selected MLD version packets."
+          }
+        }
+      },
+      "ArubaMgmdInterface_MgmdIfConfig": {
+        "description": "Grouping for Multicast Group Membership Discovery(MGMD) config\nfor the interface.",
+        "properties": {
+          "igmp": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaMgmdInterface_IgmpIfConfig"
+              }
+            ],
+            "description": "Internet Group Management Protocol(IGMP).",
+            "properties": {
+              "igmp-proxy-eth": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "Interface IGMP proxy on ethernet interface. Only one out of igmp snooping,\nigmp proxy gigabit ethernet, igmp proxy port channel or igmp proxy vxlan\ncan be configured.",
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999
+              },
+              "igmp-proxy-pchannel": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "Interface IGMP proxy on port channel inteface. Only one out of igmp snooping,\nigmp proxy gigabit ethernet, igmp proxy port channel or igmp proxy vxlan\ncan be configured",
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999
+              },
+              "igmp-proxy-vxlan": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "Interface IGMP proxy on VXLAN interface. Only one out of igmp snooping,\nigmp proxy gigabit ethernet, igmp proxy port channel or igmp proxy vxlan\ncan be configured",
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999
+              }
+            }
+          },
+          "mld": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaMgmdInterface_MldIfConfig"
+              }
+            ],
+            "description": "Multicast Listener Discovery(MLD) protocol.",
+            "properties": {
+              "mld-proxy-eth": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "Interface MLD proxy on ethernet interface. Only one out of mld snooping,\nmld proxy gigabit ethernet, mld proxy port channel can be configured.",
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999
+              },
+              "mld-proxy-pchannel": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "description": "Interface MLD proxy on port channel inteface. Only one out of mld snoping,\nmld proxy gigabit ethernet or mlod proxy port channel can be configured.",
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999
+              }
+            }
+          }
+        }
+      },
+      "ArubaRouterDiscovery_Ipv4RouterDiscovery": {
+        "description": "Grouping of ICMP router discovery configurations for IPv4."
+      },
+      "ArubaRouterDiscovery_Ipv6RaPrefixOptions": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Grouping of IPv6 Router Advertisement prefix options.",
+        "properties": {
+          "valid-lifetime": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "x-typeDescription": "IPv6 Router Advertisement life time in seconds."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ra-lifetime-absolute",
+                "x-patterns": "'\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}'",
+                "maxLength": 9999,
+                "x-typeDescription": "IPv6 Router Advertisement life time in absolute date and time."
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "INFINITE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "INFINITE": "Infinite IPv6 Router Advertisement life time."
+                },
+                "x-typeDescription": "Infinite IPv6 Router Advertisement life time."
+              }
+            ],
+            "description": "Valid lifetime of the IPv6 prefix being advertised. After the valid lifetime expiry,\nthe address becomes invalid."
+          },
+          "preferred-lifetime": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "x-typeDescription": "IPv6 Router Advertisement life time in seconds."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ra-lifetime-absolute",
+                "x-patterns": "'\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}'",
+                "maxLength": 9999,
+                "x-typeDescription": "IPv6 Router Advertisement life time in absolute date and time."
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "INFINITE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "INFINITE": "Infinite IPv6 Router Advertisement life time."
+                },
+                "x-typeDescription": "Infinite IPv6 Router Advertisement life time."
+              }
+            ],
+            "description": "Preferred lifetime of the IPv6 prefix being advertised. After the preferred lifetime expiry,\nthe address becomes deprecated."
+          },
+          "advertise": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "description": "Enable advertisement of the IPv6 prefix."
+          },
+          "autoconfig": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Set address auto-configuration option in the advertisements."
+          },
+          "onlink": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Set on-link property of the IPv6 prefix in the advertisements."
+          }
+        }
+      },
+      "ArubaRouterDiscovery_Ipv6RaDefaultPrefix": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Grouping of IPv6 default Prefix configurations in the Router Advertisement.",
+        "properties": {
+          "default-prefix": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "IPv6 default Prefix configurations in the Router Advertisement.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv6RaPrefixOptions"
+              }
+            ],
+            "properties": {
+              "default": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Default IPv6 prefix options, applicable to all on-link IPv6 prefixes that are not individually set."
+              }
+            }
+          }
+        }
+      },
+      "ArubaRouterDiscovery_Ipv6RaPrefix": {
+        "description": "Grouping of IPv6 Prefix configurations in the Router Advertisement.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv6RaDefaultPrefix"
+          }
+        ],
+        "properties": {
+          "prefixes": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "description": "List of IPv6 prefixes to be advertised.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "prefix": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-prefix",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                  "description": "IPv6 prefix to be advertised."
+                },
+                "prefix-option": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "description": "IPv6 Prefix option configurations in the Router Advertisement.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaRouterDiscovery_Ipv6RaPrefixOptions"
+                    }
+                  ]
+                }
+              }
+            },
+            "x-key": [
+              "prefix"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaRouterDiscovery_Ipv6NeighborDiscovery": {
+        "description": "Grouping of IPv6 Neighbor Discovery and Router Advertisement configurations."
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2054 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-cda-identity-store API generated from aruba-cda-identity-store.yang",
+    "version": "1.0.0",
+    "title": "cda-identity-store",
+    "x-tag-group": "Central NAC"
+  },
+  "tags": [
+    {
+      "name": "identity-stores"
+    }
+  ],
+  "paths": {
+    "/identity-stores": {
+      "get": {
+        "summary": "Read identity stores configuration(s).",
+        "description": "Identity stores to be used for Central NAC.\nThese stores can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nThey can be referenced in authentication profiles and authorization policies and used for authentication and authorization.\nIdentity stores must be configured with default query parameters.",
+        "operationId": "readIdentityStores",
+        "x-cliParam": {
+          "commandName": "readIdentityStoresCmd",
+          "summary": "Read operation for identity-stores",
+          "commandUse": "identity-stores",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/identity-stores/"
+        },
+        "tags": [
+          "identity-stores"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_IdentityStoresSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identity-stores/{id}": {
+      "post": {
+        "summary": "Create identity store configuration.",
+        "description": "Identity store to be used for Central NAC.\nThis store can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nIt can be referenced in authentication profiles and authorization policies and used for authentication and authorization.",
+        "operationId": "createIdentityStoresStoreByID",
+        "x-cliParam": {
+          "commandName": "createIdentityStoresStoreCmd",
+          "summary": "Create operation for store",
+          "commandUse": "store",
+          "parentCommand": "createIdentityStoresCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/identity-stores/store/%s/"
+        },
+        "tags": [
+          "identity-stores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Unique immutable identifier for identity store.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaIdentityStore_IdentityStoresstoreSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read identity store configuration.",
+        "description": "Identity store to be used for Central NAC.\nThis store can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nIt can be referenced in authentication profiles and authorization policies and used for authentication and authorization.",
+        "operationId": "readIdentityStoresStoreByID",
+        "x-cliParam": {
+          "commandName": "readIdentityStoresStoreCmd",
+          "summary": "Read operation for store",
+          "commandUse": "store",
+          "parentCommand": "readIdentityStoresCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/identity-stores/store/%s/"
+        },
+        "tags": [
+          "identity-stores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Unique immutable identifier for identity store.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_IdentityStoresstoreSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update identity store configuration.",
+        "description": "Identity store to be used for Central NAC.\nThis store can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nIt can be referenced in authentication profiles and authorization policies and used for authentication and authorization.",
+        "operationId": "updateIdentityStoresStoreByID",
+        "x-cliParam": {
+          "commandName": "updateIdentityStoresStoreCmd",
+          "summary": "Update operation for store",
+          "commandUse": "store",
+          "parentCommand": "updateIdentityStoresCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/identity-stores/store/%s/"
+        },
+        "tags": [
+          "identity-stores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Unique immutable identifier for identity store.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaIdentityStore_IdentityStoresstoreSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete identity store configuration.",
+        "description": "Identity store to be used for Central NAC.\nThis store can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nIt can be referenced in authentication profiles and authorization policies and used for authentication and authorization.",
+        "operationId": "deleteIdentityStoresStoreByID",
+        "x-cliParam": {
+          "commandName": "deleteIdentityStoresStoreCmd",
+          "summary": "Delete operation for store",
+          "commandUse": "store",
+          "parentCommand": "deleteIdentityStoresCmd",
+          "paramKeys": [
+            {
+              "key": "id"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/identity-stores/store/%s/"
+        },
+        "tags": [
+          "identity-stores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Unique immutable identifier for identity store.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaCdaIdentityStore_IdentityStoresstoreSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaCdaIdentityStore_IdentityStoresstoreSchema"
+            },
+            "examples": {
+              "common-Microsoft_Entity": {
+                "$ref": "#/components/examples/common-Microsoft_Entity"
+              },
+              "common-Google_Entity": {
+                "$ref": "#/components/examples/common-Google_Entity"
+              },
+              "common-Okta_Entity": {
+                "$ref": "#/components/examples/common-Okta_Entity"
+              }
+            }
+          }
+        },
+        "description": "storebody object"
+      }
+    },
+    "schemas": {
+      "ArubaCdaIdentityStore_IdentityStoresSchema": {
+        "description": "Identity stores to be used for Central NAC.\nThese stores can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nThey can be referenced in authentication profiles and authorization policies and used for authentication and authorization.\nIdentity stores must be configured with default query parameters.",
+        "properties": {
+          "store": {
+            "description": "Identity store to be used for Central NAC.\nThis store can be configured for Identity providers like Azure, Microsoft, Okta and local user or MAC based stores.\nIt can be referenced in authentication profiles and authorization policies and used for authentication and authorization.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_MicrosoftConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_GoogleConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_OktaConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_GoogleSocialConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_FacebookConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_LinkedinConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_OpenidConnectConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaCdaIdentityStore_XConfig"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "id",
+                      "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                      "maxLength": 9999,
+                      "description": "Unique immutable identifier for identity store."
+                    },
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-mandatory": true,
+                      "description": "Identity Store name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 0,
+                      "maxLength": 255,
+                      "x-typeDescription": "Add Description to the entity.",
+                      "description": "Identity Store description."
+                    },
+                    "id-store-type": {
+                      "type": "string",
+                      "enum": [
+                        "MICROSOFT",
+                        "GOOGLE",
+                        "OKTA",
+                        "NAMED_MPSK",
+                        "REGISTERED_MACS",
+                        "LOCAL",
+                        "GOOGLE_SOCIAL",
+                        "FACEBOOK",
+                        "LINKEDIN",
+                        "OPENID_CONNECT",
+                        "X",
+                        "REGISTERED_DPP"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MICROSOFT": "Microsoft Entra ID.",
+                        "GOOGLE": "Google workspace.",
+                        "OKTA": "Okta workspace.",
+                        "NAMED_MPSK": "Unowned MPSK Store",
+                        "REGISTERED_MACS": "Local registered MACs",
+                        "LOCAL": "Local identity store.",
+                        "GOOGLE_SOCIAL": "Sign-in with a Google account (social login).",
+                        "FACEBOOK": "Sign-in with a Facebook account (social login).",
+                        "LINKEDIN": "Sign-in with a LinkedIn account (social login).",
+                        "OPENID_CONNECT": "Sign-in with an OpenID Connect provider.",
+                        "X": "Sign-in with an X (formerly Twitter) account (social login).",
+                        "REGISTERED_DPP": "Local Wi-Fi Easy Connect (DPP) registrations."
+                      },
+                      "x-typeDescription": "External ID store type.",
+                      "x-mandatory": true,
+                      "description": "Identity Store type."
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "name",
+                    "id-store-type"
+                  ]
+                }
+              ]
+            },
+            "x-key": [
+              "id"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_IdentityStoresSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_IdentityStoresSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaCdaIdentityStore_IdentityStoresstoreSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_MicrosoftConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_GoogleConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_OktaConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_GoogleSocialConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_FacebookConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_LinkedinConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_OpenidConnectConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaIdentityStore_XConfig"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "id",
+                "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                "maxLength": 9999,
+                "description": "Unique immutable identifier for identity store."
+              },
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-mandatory": true,
+                "description": "Identity Store name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 0,
+                "maxLength": 255,
+                "x-typeDescription": "Add Description to the entity.",
+                "description": "Identity Store description."
+              },
+              "id-store-type": {
+                "type": "string",
+                "enum": [
+                  "MICROSOFT",
+                  "GOOGLE",
+                  "OKTA",
+                  "NAMED_MPSK",
+                  "REGISTERED_MACS",
+                  "LOCAL",
+                  "GOOGLE_SOCIAL",
+                  "FACEBOOK",
+                  "LINKEDIN",
+                  "OPENID_CONNECT",
+                  "X",
+                  "REGISTERED_DPP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MICROSOFT": "Microsoft Entra ID.",
+                  "GOOGLE": "Google workspace.",
+                  "OKTA": "Okta workspace.",
+                  "NAMED_MPSK": "Unowned MPSK Store",
+                  "REGISTERED_MACS": "Local registered MACs",
+                  "LOCAL": "Local identity store.",
+                  "GOOGLE_SOCIAL": "Sign-in with a Google account (social login).",
+                  "FACEBOOK": "Sign-in with a Facebook account (social login).",
+                  "LINKEDIN": "Sign-in with a LinkedIn account (social login).",
+                  "OPENID_CONNECT": "Sign-in with an OpenID Connect provider.",
+                  "X": "Sign-in with an X (formerly Twitter) account (social login).",
+                  "REGISTERED_DPP": "Local Wi-Fi Easy Connect (DPP) registrations."
+                },
+                "x-typeDescription": "External ID store type.",
+                "x-mandatory": true,
+                "description": "Identity Store type."
+              }
+            }
+          },
+          {
+            "required": [
+              "name",
+              "id-store-type"
+            ]
+          }
+        ]
+      },
+      "ArubaCdaIdentityStore_OauthCommon": {
+        "description": "OAuth credentials required by any identity store providers to identify the Cloud Authentication and Policy application.",
+        "properties": {
+          "client-id": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "OAuth client ID is issued by identity store provider and is used to identify the Cloud Authentication and Policy application.",
+            "x-mandatory": true
+          },
+          "client-secret": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "OAuth client secret is issued by the identity store provider and is used to authenticate the Cloud Authentication and Policy application.",
+            "x-mandatory": true
+          }
+        },
+        "required": [
+          "client-id",
+          "client-secret"
+        ]
+      },
+      "ArubaCdaIdentityStore_MicrosoftConfig": {
+        "description": "Microsoft Entra ID configuration.",
+        "properties": {
+          "microsoft": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "Microsoft Entra ID store configuration. To configure Microsoft Entra ID, id-store-type field should be set to MICROSOFT.",
+            "properties": {
+              "tenant-id": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Microsoft Entra Tenant ID.",
+                "x-mandatory": true
+              }
+            },
+            "required": [
+              "tenant-id"
+            ]
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_GoogleConfig": {
+        "description": "Google Workspace config.",
+        "properties": {
+          "google": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_GoogleServiceAccountKey"
+              }
+            ],
+            "description": "Google Workspace store configuration. To configure Google Workspace, id-store-type field should be set to GOOGLE.",
+            "properties": {
+              "customer-id": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Customer ID for Google Workspace account.",
+                "x-mandatory": true
+              },
+              "domain": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Domain in Google Workspace account.",
+                "x-mandatory": true
+              },
+              "admin-email": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 320,
+                "x-patternSources": "email-type",
+                "x-patterns": "'[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]+'",
+                "x-typeDescription": "Email format.",
+                "description": "Admin email for Google Workspace account.",
+                "x-mandatory": true
+              }
+            },
+            "required": [
+              "customer-id",
+              "domain",
+              "admin-email"
+            ]
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_GoogleServiceAccountKey": {
+        "description": "Represents fields from the Google Developers service account JSON key file.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'type' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "project-id": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'project_id' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "private-key-id": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'private_key_id' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "private-key": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "This field maps to the 'private_key' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "client-email": {
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 320,
+            "x-patternSources": "email-type",
+            "x-patterns": "'[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]+'",
+            "x-typeDescription": "Email format.",
+            "description": "This field maps to the 'client_email' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "service-client-id": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'client_id' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "auth-uri": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'auth_uri' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "token-uri": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'token_uri' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "auth-provider-x509-cert-url": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'auth_provider_x509_cert_url' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "client-x509-cert-url": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'client_x509_cert_url' field in the Google Developers service account JSON file.",
+            "x-mandatory": true
+          },
+          "universe-domain": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "This field maps to the 'universe_domain' field in the Google Developers service account JSON file."
+          }
+        },
+        "required": [
+          "type",
+          "project-id",
+          "private-key-id",
+          "private-key",
+          "client-email",
+          "service-client-id",
+          "auth-uri",
+          "token-uri",
+          "auth-provider-x509-cert-url",
+          "client-x509-cert-url"
+        ]
+      },
+      "ArubaCdaIdentityStore_OktaConfig": {
+        "description": "Okta config.",
+        "properties": {
+          "okta": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "Okta Workforce Identity store configuration. To configure Okta Workforce Identity, id-store-type field should be set to OKTA.",
+            "properties": {
+              "domain": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "Okta domain is also called Okta URL. Okta domain can be obtained from the Okta Workforce Identity Cloud Administration Console.",
+                "x-mandatory": true
+              },
+              "service-client-id": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "This maps to the client ID in Client credential section of the Okta Workforce Identity Cloud administration console.",
+                "x-mandatory": true
+              },
+              "service-client-secret": {
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Service Client Secret are obtained from the Okta Workforce Identity Cloud administration console.",
+                "x-mandatory": true
+              }
+            },
+            "required": [
+              "domain",
+              "service-client-id",
+              "service-client-secret"
+            ]
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_GoogleSocialConfig": {
+        "description": "Additional configuration for a Google (social login) identity store.",
+        "properties": {
+          "google-social": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "Google (social login) identity store configuration. To configure Google (social login) Workforce Identity, id-store-type field should be set to GOOGLE_SOCIAL.",
+            "properties": {
+              "hosted-domain": {
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 512,
+                "x-patternSources": "cda-cg-domain-name",
+                "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)'",
+                "x-typeDescription": "A domain name (as supported by Cloud Guest) according to RFC 952 and RFC 1123.",
+                "description": "The google hosted domain that users must be members of, to allow authorization"
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_FacebookConfig": {
+        "description": "Additional configuration for a Facebook social login identity store.",
+        "properties": {
+          "facebook": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "Facebook social login identity store configuration. To configure Facebook social login, id-store-type field should be set to FACEBOOK."
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_LinkedinConfig": {
+        "description": "Additional configuration for a LinkedIn social login identity store.",
+        "properties": {
+          "linkedin": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "LinkedIn social login identity store configuration. To configure LinkedIn social login, id-store-type field should be set to LINKEDIN."
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_OpenidConnectConfig": {
+        "description": "Additional configuration for an OpenID Connect provider.",
+        "properties": {
+          "openid-connect": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "OpenID Connect identity store configuration. To configure an OpenID Connect provider, id-store-type field should be set to OPENID_CONNECT.",
+            "properties": {
+              "authorization-url": {
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+                "description": "The Authorization Endpoint URL to which the user will be redirected for authentication",
+                "x-mandatory": true
+              },
+              "token-url": {
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+                "description": "The Token Endpoint URL from which the ID token will be retrieved (after successful authentication)",
+                "x-mandatory": true
+              }
+            },
+            "required": [
+              "authorization-url",
+              "token-url"
+            ]
+          }
+        }
+      },
+      "ArubaCdaIdentityStore_XConfig": {
+        "description": "Additional configuration for an X, formerly Twitter, social login identity store.",
+        "properties": {
+          "x": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaIdentityStore_OauthCommon"
+              }
+            ],
+            "description": "X social login identity store configuration. To configure X social login, id-store-type field should be set to X."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    },
+    "examples": {
+      "common-Microsoft_Entity": {
+        "value": {
+          "id": "string",
+          "name": "string ",
+          "description": "string ",
+          "id-store-type": "MICROSOFT",
+          "microsoft": {
+            "client-id": "string",
+            "client-secret": "string",
+            "tenant-id": "string"
+          }
+        }
+      },
+      "common-Microsoft-Example": {
+        "value": {
+          "client-id": "string",
+          "client-secret": "string",
+          "tenant-id": "string"
+        }
+      },
+      "common-Google_Entity": {
+        "value": {
+          "id": "string",
+          "name": "string",
+          "description": "string",
+          "id-store-type": "GOOGLE",
+          "google": {
+            "client-id": "string",
+            "client-secret": "string",
+            "type": "string",
+            "project-id": "string",
+            "private-key-id": "string",
+            "private-key": "string",
+            "client-email": "string",
+            "service-client-id": "string",
+            "auth-uri": "string",
+            "token-uri": "string",
+            "auth-provider-x509-cert-url": "string",
+            "client-x509-cert-url": "string",
+            "universe-domain": "string",
+            "customer-id": "string",
+            "domain": "string",
+            "admin-email": "string"
+          }
+        }
+      },
+      "common-Microsoft": {
+        "value": {
+          "store": [
+            {
+              "id": "string",
+              "name": "string",
+              "description": "string",
+              "id-store-type": "MICROSOFT",
+              "microsoft": {
+                "client-id": "string",
+                "client-secret": "string",
+                "tenant-id": "string"
+              }
+            }
+          ]
+        }
+      },
+      "common-Okta-Example": {
+        "value": {
+          "client-id": "string",
+          "client-secret": "string",
+          "domain": "string",
+          "service-client-id": "string",
+          "service-client-secret": "string"
+        }
+      },
+      "common-Okta": {
+        "value": {
+          "store": [
+            {
+              "id": "string",
+              "name": "string",
+              "description": "string",
+              "id-store-type": "OKTA",
+              "okta": {
+                "client-id": "string",
+                "client-secret": "string",
+                "domain": "string",
+                "service-client-id": "string",
+                "service-client-secret": "string"
+              }
+            }
+          ]
+        }
+      },
+      "common-Okta_Entity": {
+        "value": {
+          "id": "string",
+          "name": "string",
+          "description": "string",
+          "id-store-type": "OKTA",
+          "okta": {
+            "client-id": "string",
+            "client-secret": "string",
+            "domain": "string",
+            "service-client-id": "string",
+            "service-client-secret": "string"
+          }
+        }
+      },
+      "common-Google-Example": {
+        "value": {
+          "client-id": "string",
+          "client-secret": "string",
+          "type": "string",
+          "project-id": "string",
+          "private-key-id": "string",
+          "private-key": "string",
+          "client-email": "string",
+          "service-client-id": "string",
+          "auth-uri": "string",
+          "token-uri": "string",
+          "auth-provider-x509-cert-url": "string",
+          "client-x509-cert-url": "string",
+          "universe-domain": "string",
+          "customer-id": "string",
+          "domain": "string",
+          "admin-email": "string"
+        }
+      },
+      "common-Google": {
+        "value": {
+          "store": [
+            {
+              "id": "string",
+              "name": "string",
+              "description": "string",
+              "id-store-type": "GOOGLE",
+              "google": {
+                "client-id": "string",
+                "client-secret": "string",
+                "type": "string",
+                "project-id": "string",
+                "private-key-id": "string",
+                "private-key": "string",
+                "client-email": "string",
+                "service-client-id": "string",
+                "auth-uri": "string",
+                "token-uri": "string",
+                "auth-provider-x509-cert-url": "string",
+                "client-x509-cert-url": "string",
+                "universe-domain": "string",
+                "customer-id": "string",
+                "domain": "string",
+                "admin-email": "string"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

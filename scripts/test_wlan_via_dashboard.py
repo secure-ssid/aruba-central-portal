@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 """
 Test WLAN creation via Dashboard API
-Uses the running dashboard backend which is already authenticated
+
+Comprehensive end-to-end testing of WLAN creation via the dashboard backend.
+Tests multiple authentication types, forward modes, and configurations.
+
+Usage:
+    python scripts/test_wlan_via_dashboard.py
 """
 
-import requests
 import json
 import time
+import traceback
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
+from utils.test_helpers import login_to_dashboard, TEST_WLAN_PASSWORD, DASHBOARD_API, api_request
 
 console = Console()
-
-# Dashboard API base URL
-DASHBOARD_API = "http://localhost:5000/api"
 
 # Test configurations (keep names short - max 32 chars for WLAN name)
 TEST_CONFIGS = [
@@ -32,7 +35,7 @@ TEST_CONFIGS = [
             "scopeName": "Global",
             "securityLevel": "Personal",
             "authType": "WPA2-Personal",
-            "passphrase": "TestPassword123!",
+            "passphrase": TEST_WLAN_PASSWORD,
             "vlanId": "1",
             "forwardMode": "FORWARD_MODE_BRIDGE",
             "gatewaySerial": "",
@@ -52,7 +55,7 @@ TEST_CONFIGS = [
             "scopeName": "Global",
             "securityLevel": "Personal",
             "authType": "WPA2/WPA3-Personal",
-            "passphrase": "TestPassword123!",
+            "passphrase": TEST_WLAN_PASSWORD,
             "vlanId": "1",
             "forwardMode": "FORWARD_MODE_BRIDGE",
             "gatewaySerial": "",
@@ -72,7 +75,7 @@ TEST_CONFIGS = [
             "scopeName": "Global",
             "securityLevel": "Personal",
             "authType": "WPA3-Personal",
-            "passphrase": "TestPassword123!",
+            "passphrase": TEST_WLAN_PASSWORD,
             "vlanId": "1",
             "forwardMode": "FORWARD_MODE_BRIDGE",
             "gatewaySerial": "",
@@ -133,7 +136,7 @@ TEST_CONFIGS = [
             "scopeName": "Global",
             "securityLevel": "Personal",
             "authType": "WPA2-Personal",
-            "passphrase": "TestPassword123!",
+            "passphrase": TEST_WLAN_PASSWORD,
             "vlanId": "2",  # Use VLAN 2 (configured on gateway)
             "forwardMode": "FORWARD_MODE_L2",  # L2 Tunnel mode
             "gatewaySerial": "",  # Will be filled with actual gateway
@@ -153,7 +156,7 @@ TEST_CONFIGS = [
             "scopeName": "Global",
             "securityLevel": "Personal",
             "authType": "WPA3-Personal",
-            "passphrase": "TestPassword123!",
+            "passphrase": TEST_WLAN_PASSWORD,
             "vlanId": "2",  # Use VLAN 2 (configured on gateway)
             "forwardMode": "FORWARD_MODE_L2",  # L2 Tunnel mode
             "gatewaySerial": "",  # Will be filled with actual gateway
@@ -334,7 +337,7 @@ def create_wlan_via_wizard(config, timestamp, session_id, gateway=None):
             try:
                 error_data = wlan_response.json()
                 error_msg += f" - {error_data.get('error', error_data)}"
-            except:
+            except Exception:
                 error_msg += f" - {wlan_response.text[:100]}"
 
             console.print(f"[red]✗[/red] {error_msg}")
@@ -354,7 +357,7 @@ def cleanup_wlan(wlan_name, session_id):
         headers = {'X-Session-ID': session_id}
         response = requests.delete(f"{DASHBOARD_API}/config/wlan/{wlan_name}", headers=headers)
         return response.status_code in [200, 204]
-    except:
+    except Exception:
         return False
 
 def main():
@@ -368,20 +371,29 @@ def main():
 
     # Login to dashboard
     console.print("\n[cyan]Step 1: Authenticating...[/cyan]")
-    session_id = login_to_dashboard()
+    session_id, error = login_to_dashboard()
 
-    if not session_id:
-        console.print("[red]Failed to authenticate. Ensure dashboard backend is running.[/red]")
+    if error:
+        console.print(f"[red]Authentication failed:[/red] {error}")
         console.print("[dim]Start backend: cd dashboard/backend && python app.py[/dim]")
         return
 
-    # Get gateways for tunnel mode tests
-    console.print("\n[cyan]Step 2: Getting infrastructure info...[/cyan]")
-    gateways = get_gateways(session_id)
+    console.print("[green]✓[/green] Authenticated\n")
 
-    if gateways:
+    # Get gateways for tunnel mode tests
+    console.print("[cyan]Step 2: Getting infrastructure info...[/cyan]")
+
+    # Import get_gateways from utils (note: we need to add this to imports since it's not imported)
+    from utils.test_helpers import get_gateways
+    gateways, error = get_gateways(session_id)
+
+    if error:
+        console.print(f"[yellow]Warning - could not fetch gateways:[/yellow] {error}")
+        console.print("[dim]Tunnel mode tests will be skipped[/dim]")
+        gateways = []
+    elif gateways:
         gateway = gateways[0]
-        console.print(f"[green]✓[/green] Found gateway: {gateway.get('name', 'Unknown')}")
+        console.print(f"[green]✓[/green] Found gateway: {gateway.get('deviceName', gateway.get('name', 'Unknown'))}")
     else:
         gateway = None
         console.print(f"[yellow]![/yellow] No gateways found - tunnel mode tests will use bridge mode")
@@ -475,6 +487,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         console.print("\n\n[yellow]Test interrupted[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]Error:[/red] {str(e)}")
-        import traceback
+        console.print(f"\n[red]Unexpected error:[/red] {str(e)}")
         console.print(f"[dim]{traceback.format_exc()}[/dim]")

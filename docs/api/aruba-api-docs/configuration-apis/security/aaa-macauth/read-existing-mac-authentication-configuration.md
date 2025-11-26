@@ -1,0 +1,300 @@
+# Read existing MAC authentication configuration
+
+## Request
+
+**Method:** `GET`
+
+**URL:** `{{baseUrl}}/network-config/v1alpha1/macauth`
+
+### Query Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+
+### Headers
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| Accept | application/json |  |
+
+### Response Examples
+
+#### Successful operation
+
+**Status:** 200 OK
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "profile": [
+    {
+      "enable": "false",
+      "case-type": "LOWER",
+      "address-format": "NONE",
+      "max-retries": "<integer>",
+      "quiet-period": "<integer>",
+      "reauth-enable": "false",
+      "reauth-period": "<long>",
+      "cached-reauth-enable": "false",
+      "cached-reauth-period": "<long>",
+      "enforce-cached-reauth-enable": "false",
+      "auth-vlan-id": "<integer>",
+      "unauth-vlan-id": "<integer>",
+      "unauth-period": "0",
+      "server-timeout": "300",
+      "logoff-period": "300",
+      "mac-pin": "false",
+      "addr-limit": "1",
+      "use-server-reauth-period": "false",
+      "name": "<string>",
+      "description": "<string>"
+    },
+    {
+      "enable": "false",
+      "case-type": "LOWER",
+      "address-format": "NONE",
+      "max-retries": "<integer>",
+      "quiet-period": "<integer>",
+      "reauth-enable": "false",
+      "reauth-period": "<long>",
+      "cached-reauth-enable": "false",
+      "cached-reauth-period": "<long>",
+      "enforce-cached-reauth-enable": "false",
+      "auth-vlan-id": "<integer>",
+      "unauth-vlan-id": "<integer>",
+      "unauth-period": "0",
+      "server-timeout": "300",
+      "logoff-period": "300",
+      "mac-pin": "false",
+      "addr-limit": "1",
+      "use-server-reauth-period": "false",
+      "name": "<string>",
+      "description": "<string>"
+    }
+  ],
+  "metadata": {
+    "count_objects_in_module": {
+      "LOCAL": 0,
+      "SHARED": 0,
+      "ANY": 0
+    }
+  }
+}
+```
+---
+
+#### Bad Request
+
+**Status:** 400 Bad Request
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Unauthorized Access
+
+**Status:** 401 Unauthorized
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Forbidden
+
+**Status:** 403 Forbidden
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Found
+
+**Status:** 404 Not Found
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Acceptable
+
+**Status:** 406 Not Acceptable
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Request Timeout
+
+**Status:** 408 Request Timeout
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Precondition Failed
+
+**Status:** 412 Precondition Failed
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Rate limit exceeded
+
+**Status:** 429 Too Many Requests
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Internal Server Error
+
+**Status:** 500 Internal Server Error
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+

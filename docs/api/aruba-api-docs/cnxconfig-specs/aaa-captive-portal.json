@@ -1,0 +1,2119 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-aaa-captive-portal API generated from aruba-aaa-captive-portal.yang",
+    "version": "1.0.0",
+    "title": "aaa-captive-portal",
+    "x-tag-group": "Security"
+  },
+  "tags": [
+    {
+      "name": "captive-portal"
+    }
+  ],
+  "paths": {
+    "/captive-portal": {
+      "get": {
+        "summary": "Read configuration of external captive portal",
+        "description": "Use this API to configure external captive portal profiles for guest users. For AP and GW, When the captive portal profile is applied to an SSID or a wired profile, the users connecting\nto the SSID or wired network are assigned a role with the captive portal rule. For CX, when the client is 802.1x or MAC authenticated through RADIUS-server, the redirect parameters in this\nprofile can be applied through user-role, Downloadable User Role and RADIUS Vendor Specific Attribute. This feature is applicable for AP, CX and GW.",
+        "operationId": "readCaptivePortal",
+        "x-cliParam": {
+          "commandName": "readCaptivePortalCmd",
+          "summary": "Read operation for captive-portal",
+          "commandUse": "captive-portal",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/captive-portal/"
+        },
+        "tags": [
+          "captive-portal"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAaaCaptivePortal_CaptivePortalSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/captive-portal/{name}": {
+      "post": {
+        "summary": "Create a new external captive profile by unique name",
+        "description": "Captive portal profile configuration.",
+        "operationId": "createCaptivePortalProfileByID",
+        "x-cliParam": {
+          "commandName": "createCaptivePortalProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createCaptivePortalCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/captive-portal/profile/%s/"
+        },
+        "tags": [
+          "captive-portal"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the captive portal profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAaaCaptivePortal_CaptivePortalprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing external captive profile configuration",
+        "description": "Captive portal profile configuration.",
+        "operationId": "readCaptivePortalProfileByID",
+        "x-cliParam": {
+          "commandName": "readCaptivePortalProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readCaptivePortalCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/captive-portal/profile/%s/"
+        },
+        "tags": [
+          "captive-portal"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the captive portal profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAaaCaptivePortal_CaptivePortalprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing external captive profile configuration",
+        "description": "Captive portal profile configuration.",
+        "operationId": "updateCaptivePortalProfileByID",
+        "x-cliParam": {
+          "commandName": "updateCaptivePortalProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateCaptivePortalCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/captive-portal/profile/%s/"
+        },
+        "tags": [
+          "captive-portal"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the captive portal profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAaaCaptivePortal_CaptivePortalprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the external captive profile",
+        "description": "Captive portal profile configuration.",
+        "operationId": "deleteCaptivePortalProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteCaptivePortalProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteCaptivePortalCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/captive-portal/profile/%s/"
+        },
+        "tags": [
+          "captive-portal"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the captive portal profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaAaaCaptivePortal_CaptivePortalprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaAaaCaptivePortal_CaptivePortalprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaAaaCaptivePortal_CaptivePortalSchema": {
+        "description": "Use this API to configure external captive portal profiles for guest users. For AP and GW, When the captive portal profile is applied to an SSID or a wired profile, the users connecting\nto the SSID or wired network are assigned a role with the captive portal rule. For CX, when the client is 802.1x or MAC authenticated through RADIUS-server, the redirect parameters in this\nprofile can be applied through user-role, Downloadable User Role and RADIUS Vendor Specific Attribute. This feature is applicable for AP, CX and GW.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Captive portal profile configuration.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Access Point",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "The name of the captive portal profile."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Description, or comment, for the Captive Portal profile."
+                },
+                "external-cp-server-url": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 1024,
+                  "description": "The URL for the external captive portal server, URL format:http(s)://<server>:<port>/path."
+                },
+                "use-https": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enforce clients to use HTTPS to communicate with the authentication server"
+                },
+                "redirect-url": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+                  "description": "Specify a redirect URL to redirect users to another URL."
+                },
+                "server-failthrough": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Allow the guest clients to access Internet when the external captive portal server is not available."
+                },
+                "server-offload": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enables the server-offload feature to reduce the load on the external captive portal server by allowing the Instant AP to use a Meta tag to redirect HTTP and HTTPS requests from the client."
+                },
+                "switch-ip": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Sends the IP address of the virtual controller in the redirection URL when external captive portal servers are used."
+                },
+                "prevent-frame-overlay": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "When the Prevent frame overlay option is enabled, a frame can display a page only if it is in the same domain as the main page."
+                },
+                "out-of-service-page": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "description": "Configures a URL to redirect the users when the internet uplink is down."
+                },
+                "default-role": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 63,
+                  "description": "Default user role."
+                },
+                "default-guest-role": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 63,
+                  "description": "Default guest user role."
+                },
+                "server-group": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "description": "Associate to a server group."
+                },
+                "redirect-pause": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 60,
+                  "default": "10",
+                  "description": "Pause time for automatic redirect.Range: 1-60, 0 to disable. Default: 10."
+                },
+                "user-logon": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Allow registered user login."
+                },
+                "guest-logon": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Allow guest user login."
+                },
+                "logout-popup-window": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Open popup window for logout after authentication."
+                },
+                "logon-wait-min-delay": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 10,
+                  "default": "5",
+                  "description": "Logon wait when CPU is overloaded, minimum wait (secs)."
+                },
+                "logon-wait-max-delay": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 10,
+                  "default": "10",
+                  "description": "Logon wait when CPU is overloaded,Maximum wait (secs)."
+                },
+                "logon-wait-cpu-threshold": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "default": "60",
+                  "description": "Logon wait when CPU is overloaded, CPU utilization threshold (%). Range: 1-100. Default: 60."
+                },
+                "max-authentication-failures": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 10,
+                  "default": "0",
+                  "description": "Maximum auth failures before user is added to denylist.Range: 0-10. Default: 0."
+                },
+                "show-fqdn": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Allow user to see and select FQDN."
+                },
+                "auth-protocol": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "PAP",
+                    "MSCHAPv2",
+                    "CHAP"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "PAP": "Use PAP to authenticate user.",
+                    "MSCHAPv2": "Use MSCHAPv2 to authenticate user.",
+                    "CHAP": "Use CHAP (non-standard) to authenticate user."
+                  },
+                  "x-typeDescription": "Auth procotocols to authenticate user.",
+                  "default": "PAP",
+                  "description": "Authentication Protocol to be used."
+                },
+                "welcome-page": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "default": "/auth/welcome.html",
+                  "description": "Alternate welcome page to show after authentication."
+                },
+                "enable-welcome-page": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enable the welcome page before redirection to original destination."
+                },
+                "user-vlan-in-redirection-url": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Add user VLAN in redirection URL."
+                },
+                "ap-mac-in-redirection-url": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Add AP's MAC address in redirection URL."
+                },
+                "single-session": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Allow only one active user session at a time."
+                },
+                "ip-addr-in-redirection-url": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Add one of the controller interfaces in the redirection URL."
+                },
+                "allow-list": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "x-path": "/ac-netgroup:net-groups/ac-netgroup:net-group/ac-netgroup:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 63,
+                    "description": "Allow List of Netdestinations."
+                  },
+                  "maxItems": 2147483647
+                },
+                "deny-list": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Gateway"
+                    ],
+                    "x-path": "/ac-netgroup:net-groups/ac-netgroup:net-group/ac-netgroup:name",
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 63,
+                    "description": "Deny List of Netdestinations."
+                  },
+                  "maxItems": 2147483647
+                },
+                "show-acceptable-use-policy": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Show the acceptable use policy page before the logon page."
+                },
+                "user-idle-timeout": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 30,
+                  "maximum": 1296000,
+                  "x-typeDescription": "User idle timeout for Captive Portal in seconds. Valid range is 30-1296000 seconds in multiples of 30 seconds.",
+                  "description": "User idle timeout value. Valid range is 30-1296000 seconds in multiples of 30 seconds"
+                },
+                "apple-cna-bypass": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "To bypass Apple CNA on iOS devices like iPad, iPhone, iPod."
+                },
+                "url-hash-key-value": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                  "description": "Hash the redirection URL using this key."
+                },
+                "url-hash-key-format": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "PLAIN_TEXT",
+                    "CIPHER_TEXT"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "PLAIN_TEXT": "Configure hash-key in plaintext.",
+                    "CIPHER_TEXT": "Configure hash-key in ciphertext."
+                  },
+                  "x-typeDescription": "Hash key type",
+                  "description": "Hash Key format."
+                },
+                "url-hash-key-ciphertext-value": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 224,
+                  "description": "Hash the redirection URL using this key in ciphertext format."
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAaaCaptivePortal_CaptivePortalSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAaaCaptivePortal_CaptivePortalSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAaaCaptivePortal_CaptivePortalprofileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "The name of the captive portal profile."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Description, or comment, for the Captive Portal profile."
+          },
+          "external-cp-server-url": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 1024,
+            "description": "The URL for the external captive portal server, URL format:http(s)://<server>:<port>/path."
+          },
+          "use-https": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enforce clients to use HTTPS to communicate with the authentication server"
+          },
+          "redirect-url": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "An ASCII-encoded Uniform Resource Locator (URL) as defined\nin RFC 3986, section 1.1.3",
+            "description": "Specify a redirect URL to redirect users to another URL."
+          },
+          "server-failthrough": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow the guest clients to access Internet when the external captive portal server is not available."
+          },
+          "server-offload": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enables the server-offload feature to reduce the load on the external captive portal server by allowing the Instant AP to use a Meta tag to redirect HTTP and HTTPS requests from the client."
+          },
+          "switch-ip": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Sends the IP address of the virtual controller in the redirection URL when external captive portal servers are used."
+          },
+          "prevent-frame-overlay": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "When the Prevent frame overlay option is enabled, a frame can display a page only if it is in the same domain as the main page."
+          },
+          "out-of-service-page": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Configures a URL to redirect the users when the internet uplink is down."
+          },
+          "default-role": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Default user role."
+          },
+          "default-guest-role": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Default guest user role."
+          },
+          "server-group": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Associate to a server group."
+          },
+          "redirect-pause": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 60,
+            "default": "10",
+            "description": "Pause time for automatic redirect.Range: 1-60, 0 to disable. Default: 10."
+          },
+          "user-logon": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Allow registered user login."
+          },
+          "guest-logon": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow guest user login."
+          },
+          "logout-popup-window": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Open popup window for logout after authentication."
+          },
+          "logon-wait-min-delay": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 10,
+            "default": "5",
+            "description": "Logon wait when CPU is overloaded, minimum wait (secs)."
+          },
+          "logon-wait-max-delay": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 10,
+            "default": "10",
+            "description": "Logon wait when CPU is overloaded,Maximum wait (secs)."
+          },
+          "logon-wait-cpu-threshold": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 100,
+            "default": "60",
+            "description": "Logon wait when CPU is overloaded, CPU utilization threshold (%). Range: 1-100. Default: 60."
+          },
+          "max-authentication-failures": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 10,
+            "default": "0",
+            "description": "Maximum auth failures before user is added to denylist.Range: 0-10. Default: 0."
+          },
+          "show-fqdn": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow user to see and select FQDN."
+          },
+          "auth-protocol": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "PAP",
+              "MSCHAPv2",
+              "CHAP"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PAP": "Use PAP to authenticate user.",
+              "MSCHAPv2": "Use MSCHAPv2 to authenticate user.",
+              "CHAP": "Use CHAP (non-standard) to authenticate user."
+            },
+            "x-typeDescription": "Auth procotocols to authenticate user.",
+            "default": "PAP",
+            "description": "Authentication Protocol to be used."
+          },
+          "welcome-page": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "default": "/auth/welcome.html",
+            "description": "Alternate welcome page to show after authentication."
+          },
+          "enable-welcome-page": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable the welcome page before redirection to original destination."
+          },
+          "user-vlan-in-redirection-url": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Add user VLAN in redirection URL."
+          },
+          "ap-mac-in-redirection-url": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Add AP's MAC address in redirection URL."
+          },
+          "single-session": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Allow only one active user session at a time."
+          },
+          "ip-addr-in-redirection-url": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Add one of the controller interfaces in the redirection URL."
+          },
+          "allow-list": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Gateway"
+              ],
+              "x-path": "/ac-netgroup:net-groups/ac-netgroup:net-group/ac-netgroup:name",
+              "type": "string",
+              "format": "const",
+              "minLength": 1,
+              "maxLength": 63,
+              "description": "Allow List of Netdestinations."
+            },
+            "maxItems": 2147483647
+          },
+          "deny-list": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Gateway"
+              ],
+              "x-path": "/ac-netgroup:net-groups/ac-netgroup:net-group/ac-netgroup:name",
+              "type": "string",
+              "format": "const",
+              "minLength": 1,
+              "maxLength": 63,
+              "description": "Deny List of Netdestinations."
+            },
+            "maxItems": 2147483647
+          },
+          "show-acceptable-use-policy": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Show the acceptable use policy page before the logon page."
+          },
+          "user-idle-timeout": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 30,
+            "maximum": 1296000,
+            "x-typeDescription": "User idle timeout for Captive Portal in seconds. Valid range is 30-1296000 seconds in multiples of 30 seconds.",
+            "description": "User idle timeout value. Valid range is 30-1296000 seconds in multiples of 30 seconds"
+          },
+          "apple-cna-bypass": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "To bypass Apple CNA on iOS devices like iPad, iPhone, iPod."
+          },
+          "url-hash-key-value": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Hash the redirection URL using this key."
+          },
+          "url-hash-key-format": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure hash-key in plaintext.",
+              "CIPHER_TEXT": "Configure hash-key in ciphertext."
+            },
+            "x-typeDescription": "Hash key type",
+            "description": "Hash Key format."
+          },
+          "url-hash-key-ciphertext-value": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 224,
+            "description": "Hash the redirection URL using this key in ciphertext format."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

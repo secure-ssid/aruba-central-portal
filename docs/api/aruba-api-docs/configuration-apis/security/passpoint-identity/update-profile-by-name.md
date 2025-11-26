@@ -1,0 +1,335 @@
+# Update profile by {name}
+
+## Request
+
+**Method:** `PATCH`
+
+**URL:** `{{baseUrl}}/network-config/v1alpha1/passpoint-identity/:name`
+
+### Query Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+
+### Headers
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| Content-Type | application/json |  |
+| Accept | application/json |  |
+
+### Request Body
+
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "enable": "<boolean>",
+  "enable-alias": "<string>",
+  "identity-type": "SIM",
+  "nai-realm-name": [
+    {
+      "value": "<string>"
+    },
+    {
+      "value": "<string>"
+    }
+  ],
+  "encoding": "UTF8",
+  "eap-method": [
+    {
+      "index": "<integer>",
+      "method": "ONE_TIME_PASSWORD",
+      "auth-param": [
+        {
+          "id-value": "<string>",
+          "id": "EXPANDED_EAP",
+          "value": "CRED_SIM"
+        },
+        {
+          "id-value": "<string>",
+          "id": "NON_EAP_INNER_AUTH",
+          "value": "CRED_NFC"
+        }
+      ]
+    },
+    {
+      "index": "<integer>",
+      "method": "IDENTITY",
+      "auth-param": [
+        {
+          "id-value": "<string>",
+          "id": "CREDENTIAL",
+          "value": "EAP_METHOD_TLS"
+        },
+        {
+          "id-value": "<string>",
+          "id": "TUNNELED_EAP_CREDENTIAL_TYPE",
+          "value": "TUN_CRED_USIM"
+        }
+      ]
+    }
+  ],
+  "home-realm": "false",
+  "anqp-3gpp": [
+    {
+      "anqp-3gpp-profile-name": "<string>",
+      "mno": "VRZ",
+      "plmn": [
+        "<string>",
+        "<string>"
+      ]
+    },
+    {
+      "anqp-3gpp-profile-name": "<string>",
+      "mno": "TMO",
+      "plmn": [
+        "<string>",
+        "<string>"
+      ]
+    }
+  ],
+  "anqp-roam-cons": [
+    {
+      "anqp-roam-cons-name": "<string>",
+      "org-id": "<string>"
+    },
+    {
+      "anqp-roam-cons-name": "<string>",
+      "org-id": "<string>"
+    }
+  ]
+}
+```
+### Response Examples
+
+#### Successful Operation
+
+**Status:** 200 OK
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Bad Request
+
+**Status:** 400 Bad Request
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Unauthorized Access
+
+**Status:** 401 Unauthorized
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Forbidden
+
+**Status:** 403 Forbidden
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Found
+
+**Status:** 404 Not Found
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Not Acceptable
+
+**Status:** 406 Not Acceptable
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Request Timeout
+
+**Status:** 408 Request Timeout
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Precondition Failed
+
+**Status:** 412 Precondition Failed
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Rate limit exceeded
+
+**Status:** 429 Too Many Requests
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+
+#### Internal Server Error
+
+**Status:** 500 Internal Server Error
+
+**Response Headers:**
+
+- `Content-Type`: application/json
+- `X-RateLimit-Limit`: 
+- `X-RateLimit-Remaining`: 
+- `X-RateLimit-Reset`: 
+
+**Response Body:**
+
+```json
+{
+  "httpStatusCode": "<long>",
+  "errorCode": "<string>",
+  "message": "<string>",
+  "debugId": "<string>"
+}
+```
+---
+

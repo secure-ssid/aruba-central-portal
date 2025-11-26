@@ -1,0 +1,2323 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-aaa-profile API generated from aruba-aaa-profile.yang",
+    "version": "1.0.0",
+    "title": "aaa-profile",
+    "x-tag-group": "Security"
+  },
+  "tags": [
+    {
+      "name": "aaa-profile"
+    }
+  ],
+  "paths": {
+    "/aaa-profile": {
+      "get": {
+        "summary": "Read an existing AAA profile",
+        "description": "AAA profile configurations.",
+        "operationId": "readAaaProfile",
+        "x-cliParam": {
+          "commandName": "readAaaProfileCmd",
+          "summary": "Read operation for aaa-profile",
+          "commandUse": "aaa-profile",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/aaa-profile/"
+        },
+        "tags": [
+          "aaa-profile"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_AaaProfileSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aaa-profile/{name}": {
+      "post": {
+        "summary": "Configure a new AAA profile",
+        "description": "List of AAA profiles.",
+        "operationId": "createAaaProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "createAaaProfileProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createAaaProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aaa-profile/profile/%s/"
+        },
+        "tags": [
+          "aaa-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the AAA profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAaaProfile_AaaProfileprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read an exiting AAA profile",
+        "description": "List of AAA profiles.",
+        "operationId": "readAaaProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "readAaaProfileProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readAaaProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aaa-profile/profile/%s/"
+        },
+        "tags": [
+          "aaa-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the AAA profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_AaaProfileprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an exiting AAA profile",
+        "description": "List of AAA profiles.",
+        "operationId": "updateAaaProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "updateAaaProfileProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateAaaProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aaa-profile/profile/%s/"
+        },
+        "tags": [
+          "aaa-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the AAA profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAaaProfile_AaaProfileprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an exiting AAA profile",
+        "description": "List of AAA profiles.",
+        "operationId": "deleteAaaProfileProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteAaaProfileProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteAaaProfileCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/aaa-profile/profile/%s/"
+        },
+        "tags": [
+          "aaa-profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Name of the AAA profile.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaAaaProfile_AaaProfileprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaAaaProfile_AaaProfileprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaAaaProfile_AaaProfileSchema": {
+        "x-supportedDeviceType": [
+          "Gateway",
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "AAA profile configurations.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of AAA profiles.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationConfigGroup"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_AuthorizationConfigGroup"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_SecurityViolationConfigGroup"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaAaaProfile_MiscellaneousConfigGroup"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "name",
+                      "x-patterns": "'[^\\s].*[^\\s]|[^\\s]'",
+                      "description": "Name of the AAA profile."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "AAA profile description."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAaaProfile_AaaProfileSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_AaaProfileSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAaaProfile_AaaProfileprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationConfigGroup"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_AuthorizationConfigGroup"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_SecurityViolationConfigGroup"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_MiscellaneousConfigGroup"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "minLength": 1,
+                "maxLength": 256,
+                "x-patternSources": "name",
+                "x-patterns": "'[^\\s].*[^\\s]|[^\\s]'",
+                "description": "Name of the AAA profile."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "AAA profile description."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAaaProfile_AuthenticationLagAttributesGroup": {
+        "description": "Group for authentication attributes which are supported on lag interface.",
+        "properties": {
+          "auth-mode": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "DEVICE_MODE",
+              "CLIENT_MODE",
+              "MULTI_DOMAIN"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DEVICE_MODE": "The first authenticated client grants network access to all the other\nclients.",
+              "CLIENT_MODE": "Each client must be authenticated separately to be granted network\naccess.",
+              "MULTI_DOMAIN": "Limit the number of authenticated clients to one 'voice' client and a\nconfigured number of 'data' clients."
+            },
+            "x-typeDescription": "Authentication modes.",
+            "default": "CLIENT_MODE",
+            "description": "The mode determining how each client on the interface can gain access\nto the network."
+          },
+          "allow-flood-traffic": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable transmission of flood traffic (broadcast, multicast and\nunknown unicast) out authentication enabled interfaces with no\nauthenticated client."
+          },
+          "client-limit": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 256,
+            "description": "Maximum number of clients that can be authenticated on the interface."
+          },
+          "bpdu-auth": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "BPDUs that can trigger authentication.",
+            "properties": {
+              "lldp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable LLDP packets to trigger authentication."
+              },
+              "cdp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Enable CDP packets to trigger authentication."
+              },
+              "mac-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "CHASSIS_MAC",
+                  "SOURCE_MAC"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "CHASSIS_MAC": "Use the chassis MAC in LLDP TLV",
+                  "SOURCE_MAC": "Use the source MAC in LLDP frame"
+                },
+                "x-typeDescription": "LLDP MAC address types",
+                "default": "CHASSIS_MAC",
+                "description": "MAC address to use when authentication is triggered by an\nLLDP frame. This is applicable only when LLDP packets are\nallowed to trigger authentication."
+              }
+            }
+          },
+          "bpdu-bypass": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "BPDUs to be serviced by the device before authentication is\nsuccessful on the interface.",
+            "properties": {
+              "lldp": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable LLDP packets to be serviced by the device before\nauthentication is successful on the interface."
+              },
+              "cdp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable CDP packets to be serviced by the device before\nauthentication is successful on the interface."
+              }
+            }
+          },
+          "bpdu-proxy-logoff": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Proxy logoff the client based on the interface status in BPDU packets.\nDevice will clear authentication session of the client if it receives\nan interface down status in the BPDU packet.\nWhen not configured, no action is taken.",
+            "properties": {
+              "cdp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable CDP based proxy-logoff."
+              }
+            }
+          },
+          "device-profile-secure": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "description": "Enable device-profile with security."
+          }
+        }
+      },
+      "ArubaAaaProfile_AuthenticationAttributesGroup": {
+        "description": "Group for authentication attributes.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationLagAttributesGroup"
+          }
+        ],
+        "properties": {
+          "dot1xauth-server-group": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "802.1X authentication server group."
+          },
+          "macauth-server-group": {
+            "x-supportedDeviceType": [
+              "Gateway",
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "MAC authentication server group"
+          },
+          "auth-precedence": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX",
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "enum": [
+                "DOT1X",
+                "MAC_AUTH"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "DOT1X": "IEEE 802.1X Authentication Protocol.",
+                "MAC_AUTH": "MAC Authentication Protocol."
+              },
+              "x-typeDescription": "Authentication methods.",
+              "default": "MAC_AUTH",
+              "description": "Precedence order for port-access authentication. Auth-precedence must\ncontain either 0 or 2 elements. If empty, the default precedence\norder of dot1x followed by mac-auth will be used."
+            },
+            "maxItems": 2147483647
+          },
+          "auth-priority": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX",
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "enum": [
+                "DOT1X",
+                "MAC_AUTH"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "DOT1X": "IEEE 802.1X Authentication Protocol.",
+                "MAC_AUTH": "MAC Authentication Protocol."
+              },
+              "x-typeDescription": "Authentication methods.",
+              "description": "Priority order for port-access authentication. Auth-priority must\ncontain either 0 or 2 elements. If not set, priority will follow\nthe 'auth-precedence' order."
+            },
+            "maxItems": 2147483647
+          },
+          "onboarding-precedence": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "enum": [
+                "AAA",
+                "DEVICE_PROFILE"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "AAA": "Onboard clients based on AAA authentication.",
+                "DEVICE_PROFILE": "Onboard clients based on device-profile."
+              },
+              "x-typeDescription": "Onboarding methods.",
+              "description": "Precedence order when onboarding a client. Onboarding-precedence must\ncontain either 0 or 2 elements. If empty, the default precedence order\nof AAA followed by device-profile will be used."
+            },
+            "maxItems": 2147483647
+          },
+          "concurrent-onboarding": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable authentication methods to start concurrently for faster\nonboarding. If not set, clients are onboarded based on the order\nspecified by 'onboarding-precedence'."
+          },
+          "mda-data-clients-limit": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 5,
+            "default": "1",
+            "description": "Maximum number of 'data' clients that can be authenticated on the\ninterface when multi-domain is enabled. If the number of 'data' clients\non the interface exceeds this client limit, it will be considered as a\nviolation and the configured threshold-violation action is taken."
+          },
+          "client-move": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "DISABLED",
+              "ENABLED",
+              "SECURE_ENABLED"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DISABLED": "Client cannot move between interfaces.",
+              "ENABLED": "Client can move between interfaces without authentication itself\non the new interface.",
+              "SECURE_ENABLED": "Client can move between interfaces but only after authenticating\nitself on the new interface."
+            },
+            "x-typeDescription": "Client move types.",
+            "description": "The client move configuration."
+          },
+          "client-auto-logoff-enable": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "enum": [
+                "FINAL_AUTHENTICATION_FAILURE"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "FINAL_AUTHENTICATION_FAILURE": "The device automatically logs-off a client if it fails\nauthentication with all the enabled authentication methods.\nThe authentication failure reason should not be one of server-reject\nor server-timeout server-reject or server-timeout."
+              },
+              "x-typeDescription": "Client auto logff reasons.",
+              "description": "The list of reasons when a client can be automatically logged off by\nthe device."
+            },
+            "maxItems": 2147483647
+          },
+          "cloud-auth": {
+            "type": "boolean",
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "default": "false",
+            "description": "Enable cloud authentication."
+          }
+        }
+      },
+      "ArubaAaaProfile_AuthorizationAttributesGroup": {
+        "description": "Group for authorization attributes.",
+        "properties": {
+          "critical-auth-role": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role to be applied for clients, that failed authentication\ndue to unreachable authentication servers.\nWhen not set, no role is applied for clients that could not\ncomplete authentication due to RADIUS server being unreachable."
+          },
+          "critical-voice-vlan": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Configure critical-auth VLAN as voice VLAN."
+          },
+          "critical-data-vlan": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Configure critical-auth VLAN as data VLAN."
+          },
+          "critical-voice-role": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role to be applied to 'voice' client that have failed\nre-authentication due to servers being unreachable.\nWhen not set, no role will be applied for voice clients when they\nfail re-authentication due to server being unreachable."
+          },
+          "reject-role": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role to be applied for clients that failed authentication.\nWhen not set, for AOS-CX devices, no role is applied for clients that fail authentication.\nA default denyall role is applied on AOS-S devices."
+          },
+          "pre-auth-role": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role to be applied for clients that are yet to be authenticated.\nWhen not set, no role is applied for clients while the\nauthentication is in progress for the client."
+          },
+          "open-voice-vlan": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Configure open-auth VLAN as voice VLAN."
+          },
+          "open-data-vlan": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Configure open-auth VLAN as data VLAN."
+          },
+          "default-vlan-type": {
+            "type": "string",
+            "enum": [
+              "NAMED_VLAN",
+              "VLAN_RANGES"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "NAMED_VLAN": "Configure the VLAN(s) using a named-VLAN",
+              "VLAN_RANGES": "Configure the VLAN(s) as a list of VLAN ranges"
+            },
+            "x-typeDescription": "VLAN ID configuration Types.",
+            "description": "Type of default vlan."
+          },
+          "auth-role": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role to be applied for clients that have been authenticated\nbut not received any specific role or attribute from the authentication\nserver.\nWhen not set, no role is applied for clients that successfully\nauthenticated without a role assigned from the RADIUS server."
+          },
+          "fallback-role": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The role that will be applied to clients that have not been\nassigned a role via any of the onboarding methods.\nWhen not set, no role is applied for the client."
+          },
+          "ubt-fallback-role": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "For any client,for which the corresponding UBT zone reachability\nis failed, ubt-fallback role is applied. The client on ubt-fallback\nrole is automatically reverted to the previous role whenever UBT zone\nstatus is back to reachable state."
+          },
+          "radius-override-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable RADIUS override support. When enabled, RADIUS attributes\nreceived from the server will override corresponding attributes\nconfigured in the role assigned to the client."
+          },
+          "auto-vlan-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable automatic creation of a VLAN for authenticated clients if the\nVLAN is not already available on the device."
+          },
+          "cached-critical-role-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "description": "Enables caching authenticated clients and their associated\nrole information on the interface. Clients are assigned to their\npreviously authenticated role."
+          }
+        }
+      },
+      "ArubaAaaProfile_AuthenticationConfigGroup": {
+        "description": "Group for authentication configurations.",
+        "properties": {
+          "authentication": {
+            "description": "Authentication attributes.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaAaaProfile_AuthenticationAttributesGroup"
+              }
+            ],
+            "properties": {
+              "dot1x-auth": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "x-path": "/ac-aaa-dot1xauth:dot1xauth/ac-aaa-dot1xauth:profile/ac-aaa-dot1xauth:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "802.1X authentication profile."
+              },
+              "dot1x-supp": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-aaa-dot1xsupp:dot1xsupp/ac-aaa-dot1xsupp:profile/ac-aaa-dot1xsupp:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "802.1x supplicant profile."
+              },
+              "dot1x-default-role": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "802.1x Authentication Default Role."
+              },
+              "mac-auth": {
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "x-path": "/ac-aaa-macauth:macauth/ac-aaa-macauth:profile/ac-aaa-macauth:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "MAC based authentication profile."
+              },
+              "web-auth": {
+                "x-path": "/ac-aaa-webauth:webauth/ac-aaa-webauth:profile/ac-aaa-webauth:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Web based authentication profile."
+              },
+              "lma": {
+                "x-path": "/ac-aaa-lma:localmacauth/ac-aaa-lma:profile/ac-aaa-lma:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Local mac based authentication profile."
+              },
+              "mac-default-role": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "MAC Authentication Default Role."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAaaProfile_AuthorizationConfigGroup": {
+        "description": "Group for authorization configurations.",
+        "properties": {
+          "authorization": {
+            "description": "Authorization attributes.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaAaaProfile_AuthorizationAttributesGroup"
+              }
+            ]
+          }
+        }
+      },
+      "ArubaAaaProfile_SecurityViolationConfigGroup": {
+        "description": "Group for security violation configurations.",
+        "properties": {
+          "security-violation": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Security violation configuration.",
+            "properties": {
+              "action": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "NOTIFY",
+                  "SHUTDOWN"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "Prevent an SNMP trap from being sent.",
+                  "NOTIFY": "Send an SNMP trap and log an event on a violation.",
+                  "SHUTDOWN": "Send an SNMP trap, log an event and shut the interface down on a\nviolation."
+                },
+                "x-typeDescription": "Violation action type.",
+                "description": "Action to take on a security violation (notify or shutdown).\nThis is only supported on physical ports."
+              },
+              "shutdown-recovery-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable auto-recovery of the interface. This is only applicable when\nthe violation action is set to shutdown.\nThe interface is re-enabled after the recovery timer has expired."
+              },
+              "recovery-timer": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 600,
+                "default": "10",
+                "description": "Time in seconds after which the interface is re-enabled if it was\nshutdown in response to a violation event.\nThis is only applicable if shutdown recovery is enabled."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAaaProfile_RadiusAccountingConfigGroup": {
+        "description": "Group for Radius accounting related configurations",
+        "properties": {
+          "open-system-accounting": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Open system SSID radius accounting."
+          },
+          "acct-server-group": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Server group for radius accounting."
+          },
+          "radius-station-based-acct-session": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Station-based RADIUS accounting session for Wireless."
+          },
+          "roam-accounting": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Roaming RADIUS accounting service."
+          },
+          "interim-accounting": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Send RADIUS interim accounting records."
+          },
+          "acct-session-id-in-access": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Include Acct-Session-Id in RADIUS Access-Request."
+          },
+          "multiple-server-accounting": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Send RADIUS Accounting to all servers in RADIUS accounting server group."
+          }
+        }
+      },
+      "ArubaAaaProfile_MiscellaneousConfigGroup": {
+        "description": "Group for miscellaneous configurations.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAaaProfile_RadiusAccountingConfigGroup"
+          }
+        ],
+        "properties": {
+          "dpp-netaccess-default-role": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "DPP NetAccess Default Role."
+          },
+          "dpp-netaccess-server-group": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-auth-server-group:server-groups/ac-auth-server-group:server-group/ac-auth-server-group:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Associate to a DPP NetAccess server group."
+          },
+          "download-role": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Download Role from CPPM if not defined."
+          },
+          "username-from-dhcp-opt12": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Username from dhcp option 12 for non-802.1x users."
+          },
+          "l2-auth-fail-through": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Continue with other authentication schemes even if one fails."
+          },
+          "user-idle-timeout": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 15300,
+            "x-typeDescription": "User idle timeout in seconds. Value of 0 deletes the user immediately on disassoc/disconnect. Valid range is 30-15300 seconds in multiples of 30 seconds.",
+            "description": "User idle timeout value. Value of 0 deletes the user immediately on disassoc/disconnect."
+          },
+          "max-ipv4-ip-wireless": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 32,
+            "default": "2",
+            "description": "Number of IPv4 addresse allowed."
+          },
+          "rfc3576-profile": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-auth-server:auth-servers/ac-auth-server:auth-server/ac-auth-server:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "This leaf will get deprecated. Please use the leaf-list rfc3576-server-list to send user disconnect, CoA."
+          },
+          "rfc3576-server-list": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Gateway"
+              ],
+              "type": "string",
+              "format": "const",
+              "minLength": 1,
+              "maxLength": 64,
+              "description": "RFC3576 server to send user disconnect, CoA.\nThis field should only refer the auth servers with type RADIUS and mode as AUTH_AND_COA or COA_ONLY"
+            },
+            "maxItems": 2147483647
+          },
+          "wired-to-wireless-roam": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Keep user authenticated when roaming from wired side."
+          },
+          "reauth-wired-user-vlan-change": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Reauthenticate wired user when changing VLANs."
+          },
+          "denylist-sco-attack": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Denylist client when Security-Context-Override attack."
+          },
+          "devtype-classification": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Device Type Classification."
+          },
+          "enforce-dhcp": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Require IP address to be obtained using DHCP."
+          },
+          "pan-integration": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Require IP mapping at Palo Alto Networks firewalls."
+          },
+          "ageout-bridge-user": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Ageout mechanism on bridge mode wireless clients."
+          },
+          "dl3-radius-proxy-mode": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Distributed L3 mode for radproxy in microbranch."
+          },
+          "dh-groups": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "DIFFIE_HELLMAN_GRP_19",
+              "DIFFIE_HELLMAN_GRP_20",
+              "DIFFIE_HELLMAN_GRP_21"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DIFFIE_HELLMAN_GRP_19": "Diffie-Hellman Group 19.",
+              "DIFFIE_HELLMAN_GRP_20": "Diffie-Hellman Group 20.",
+              "DIFFIE_HELLMAN_GRP_21": "Diffie-Hellman Group 21."
+            },
+            "x-typeDescription": "Diffie Hellman groups.",
+            "default": "DIFFIE_HELLMAN_GRP_19",
+            "description": "Diffie-Hellman Groups Supported for EnhancedOpen."
+          },
+          "webserver": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable webserver access"
+          },
+          "user-derivation-rule": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "x-path": "/ac-udr:user-derivation-rules/ac-udr:user-rule/ac-udr:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "user derivation rule"
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

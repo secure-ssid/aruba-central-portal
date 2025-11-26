@@ -1,0 +1,2256 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-cda-authz-policy API generated from aruba-cda-authz-policy.yang",
+    "version": "1.0.0",
+    "title": "cda-authz-policy",
+    "x-tag-group": "Central NAC"
+  },
+  "tags": [
+    {
+      "name": "authz-policies"
+    }
+  ],
+  "paths": {
+    "/authz-policies": {
+      "get": {
+        "summary": "Read authorization policy configuration(s).",
+        "description": "Authorization policies to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.\n\nAuthorization policies must be configured with default query parameters.",
+        "operationId": "readAuthzPolicies",
+        "x-cliParam": {
+          "commandName": "readAuthzPoliciesCmd",
+          "summary": "Read operation for authz-policies",
+          "commandUse": "authz-policies",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/authz-policies/"
+        },
+        "tags": [
+          "authz-policies"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPoliciesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authz-policies/{policyId}": {
+      "post": {
+        "summary": "Create authorization policy configuration.",
+        "description": "Authorization Policy to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+        "operationId": "createAuthzPoliciesPolicyByID",
+        "x-cliParam": {
+          "commandName": "createAuthzPoliciesPolicyCmd",
+          "summary": "Create operation for policy",
+          "commandUse": "policy",
+          "parentCommand": "createAuthzPoliciesCmd",
+          "paramKeys": [
+            {
+              "key": "policyId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/authz-policies/policy/%s/"
+        },
+        "tags": [
+          "authz-policies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "policyId",
+            "description": "Unique immutable identifier for policy.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read authorization policy configuration.",
+        "description": "Authorization Policy to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+        "operationId": "readAuthzPoliciesPolicyByID",
+        "x-cliParam": {
+          "commandName": "readAuthzPoliciesPolicyCmd",
+          "summary": "Read operation for policy",
+          "commandUse": "policy",
+          "parentCommand": "readAuthzPoliciesCmd",
+          "paramKeys": [
+            {
+              "key": "policyId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/authz-policies/policy/%s/"
+        },
+        "tags": [
+          "authz-policies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "policyId",
+            "description": "Unique immutable identifier for policy.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update authorization policy configuration.",
+        "description": "Authorization Policy to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+        "operationId": "updateAuthzPoliciesPolicyByID",
+        "x-cliParam": {
+          "commandName": "updateAuthzPoliciesPolicyCmd",
+          "summary": "Update operation for policy",
+          "commandUse": "policy",
+          "parentCommand": "updateAuthzPoliciesCmd",
+          "paramKeys": [
+            {
+              "key": "policyId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/authz-policies/policy/%s/"
+        },
+        "tags": [
+          "authz-policies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "policyId",
+            "description": "Unique immutable identifier for policy.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete authorization policy configuration.",
+        "description": "Authorization Policy to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+        "operationId": "deleteAuthzPoliciesPolicyByID",
+        "x-cliParam": {
+          "commandName": "deleteAuthzPoliciesPolicyCmd",
+          "summary": "Delete operation for policy",
+          "commandUse": "policy",
+          "parentCommand": "deleteAuthzPoliciesCmd",
+          "paramKeys": [
+            {
+              "key": "policyId"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/authz-policies/policy/%s/"
+        },
+        "tags": [
+          "authz-policies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "policyId",
+            "description": "Unique immutable identifier for policy.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema"
+            },
+            "examples": {
+              "common-user_policy": {
+                "$ref": "#/components/examples/common-user_policy"
+              }
+            }
+          }
+        },
+        "description": "policybody object"
+      }
+    },
+    "schemas": {
+      "ArubaCdaAuthzPolicy_AuthzPoliciesSchema": {
+        "description": "Authorization policies to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.\n\nAuthorization policies must be configured with default query parameters.",
+        "properties": {
+          "policy": {
+            "description": "Authorization Policy to be used for Central NAC.\n\nAuthorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPolicyConfig"
+                }
+              ]
+            },
+            "x-key": [
+              "policyId"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaAuthzPolicy_AuthzPoliciesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPoliciesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaCdaAuthzPolicy_AuthzPoliciespolicySchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_AuthzPolicyConfig"
+          }
+        ]
+      },
+      "ArubaCdaAuthzPolicy_AuthzPolicyConfig": {
+        "description": "Authorization policy defines authorization sources and rules that determine the enforcement profile that is assigned to user or device upon authorization.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_PolicyConditionsConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_PolicyRulesConfig"
+          }
+        ],
+        "properties": {
+          "policy-id": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "policy-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "Unique immutable identifier for policy."
+          },
+          "name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-mandatory": true,
+            "description": "Name of authorization policy."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-typeDescription": "Add Description to the entity."
+          },
+          "ci-cache-max-age": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 43200,
+            "default": "4320",
+            "description": "Maximum time in minutes after which cached client attributes are dropped."
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "x-mandatory": true,
+            "description": "Position determines the order in which the policies are evaluated."
+          },
+          "enable": {
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable policy."
+          },
+          "policy-type": {
+            "type": "string",
+            "enum": [
+              "DEVICE",
+              "USER",
+              "DPP",
+              "VISITOR",
+              "CUSTOM"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DEVICE": "Client device or MAC based authorization policy.",
+              "USER": "User based authorization policy.",
+              "DPP": "Authorization policy for DPP.",
+              "VISITOR": "Authorization policy for visitors.",
+              "CUSTOM": "Custom authorization policy that provides complete flexibility in configuration.\nThis is only allowed with premium license."
+            },
+            "x-typeDescription": "Type of Authorization policy that defines the kind of pre-conditions,\nidentity stores, policy rules and enforcement profiles that can be configured.",
+            "description": "Authorization policy type that defines the kind of pre-conditions,\nidentity stores, policy rules and enforcement profiles that can be configured."
+          },
+          "identity-stores": {
+            "type": "array",
+            "items": {
+              "x-path": "/ac-cda-is:identity-stores/ac-cda-is:store/ac-cda-is:id",
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "id",
+              "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+              "maxLength": 9999,
+              "description": "Reference to the identity store(s) to be used for policy evaluation."
+            },
+            "maxItems": 2147483647
+          },
+          "default-enf-profile": {
+            "description": "Default enforcement profile that is inherited by all configured rules.\n\nA union of enforcement attributes from default profile and enforcement profile from matching rule will be applied.\n\nEnforcement Attributes from matching rule have precedence over default attributes",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCdaEnforcementProfile_EnforcementProfilesConfig"
+                }
+              ]
+            },
+            "x-key": [
+              "profileId"
+            ],
+            "maxItems": 2147483647
+          },
+          "dpp-network": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Name of the DPP network."
+          }
+        },
+        "required": [
+          "name",
+          "position"
+        ]
+      },
+      "ArubaCdaAuthzPolicy_PolicyConditionsConfig": {
+        "properties": {
+          "conditions": {
+            "description": "Policy conditions under which the policy or rule can be applied.",
+            "properties": {
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 0,
+                "maxLength": 255,
+                "x-typeDescription": "Add Description to the entity."
+              },
+              "combinator-operator": {
+                "type": "string",
+                "enum": [
+                  "COMB_OP_AND",
+                  "COMB_OP_OR"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "COMB_OP_AND": "AND condition for use in Cloud Auth policy rules.",
+                  "COMB_OP_OR": "OR condition for use in Cloud Auth policy rules."
+                },
+                "x-typeDescription": "Policy combinator operator type",
+                "description": "Policy combination operator type."
+              },
+              "condition": {
+                "description": "List of policy conditions under which the policy or rule can be applied.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "condition-id": {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "condition-id",
+                      "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                      "maxLength": 9999,
+                      "description": "Unique immutable identifier for condition."
+                    },
+                    "position": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 10,
+                      "x-mandatory": true,
+                      "description": "Position determines the order in which the conditions are evaluated."
+                    },
+                    "combinator-operator": {
+                      "type": "string",
+                      "enum": [
+                        "COMB_OP_AND",
+                        "COMB_OP_OR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "COMB_OP_AND": "AND condition for use in Cloud Auth policy rules.",
+                        "COMB_OP_OR": "OR condition for use in Cloud Auth policy rules."
+                      },
+                      "x-typeDescription": "Policy combinator operator type",
+                      "description": "Policy combination operator type."
+                    },
+                    "condition-group": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_ConditionsGroupConfig"
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "conditionGroupId"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  },
+                  "required": [
+                    "position"
+                  ]
+                },
+                "x-key": [
+                  "conditionId"
+                ],
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaCdaAuthzPolicy_ConditionsGroupConfig": {
+        "description": "Policy condition group.",
+        "properties": {
+          "condition-group-id": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "condition-group-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "Unique immutable identifier for condition group."
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 10,
+            "x-mandatory": true,
+            "description": "Position determines the order in which the condition groups are evaluated."
+          },
+          "attr": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-typeDescription": "Specifies the policy condition name.",
+            "x-mandatory": true,
+            "description": "Attribute name."
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "OP_EQUALS",
+              "OP_EQUALS_IC",
+              "OP_NOT_EQUALS",
+              "OP_NOT_EQUALS_IC",
+              "OP_GREATER_THAN",
+              "OP_LESS_THAN",
+              "OP_BELONGS_TO",
+              "OP_NOT_BELONGS_TO",
+              "OP_BEGINS_WITH",
+              "OP_BEGINS_WITH_IGNORE_CASE",
+              "OP_ENDS_WITH",
+              "OP_ENDS_WITH_IGNORE_CASE",
+              "OP_CONTAINS",
+              "OP_NOT_CONTAINS",
+              "OP_CONTAINS_ELEM",
+              "OP_NOT_CONTAINS_ELEM",
+              "OP_CONTAINS_ANY",
+              "OP_NOT_CONTAINS_ANY",
+              "OP_CONTAINS_ALL",
+              "OP_CONTAINS_NONE",
+              "OP_NOT_CONTAINS_ALL",
+              "OP_EXISTS",
+              "OP_NOT_EXISTS",
+              "OP_IS_MAC_ADDRESS",
+              "OP_MATCHES_REGEX"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "OP_EQUALS": "Condition: String equals.\nExample: 'Hello' EQUALS 'Hello'.",
+              "OP_EQUALS_IC": "Condition : String equals with case ignored\nExample : 'Hello' EQUALS 'HELLO' ",
+              "OP_NOT_EQUALS": "Condition: String not equals.\nExample: 'Hello' NOT_EQUALS 'World!'",
+              "OP_NOT_EQUALS_IC": "String not equals with case ignored\nExample: 'Hello' NOT_EQUALS 'World!'",
+              "OP_GREATER_THAN": "GREATER_THAN operand for use in Cloud Auth policy rules.\neg. 25 > 10",
+              "OP_LESS_THAN": "LESS_THAN operand for use in Cloud Auth policy rules.\neg. 25 < 110",
+              "OP_BELONGS_TO": "String present in a List.\nExample: 'v1' BELONGS_TO ['v1', 'v2']",
+              "OP_NOT_BELONGS_TO": "String not present in a List.\nExample: 'v3' NOT_BELONGS_TO ['v1', 'v2']",
+              "OP_BEGINS_WITH": "BEGINS_WITH condition for use in Cloud Auth policy rules.\nExample: 'Hello' BEGINS_WITH 'Hel'",
+              "OP_BEGINS_WITH_IGNORE_CASE": "String has prefix with case ignored.\nExample: 'Hello' BEGINS_WITH_IGNORE_CASE 'heL'",
+              "OP_ENDS_WITH": "ENDS_WITH condition for use in Cloud Auth policy rules.\nExample: 'Hello' ENDS_WITH 'llo'",
+              "OP_ENDS_WITH_IGNORE_CASE": "String has suffix with case ignored.\nExample: 'Hello' ENDS_WITH_IGNORE_CASE 'LlO'",
+              "OP_CONTAINS": "Condition: String contains a substring.\nExample: 'Hello' CONTAINS 'ell'.",
+              "OP_NOT_CONTAINS": "Condition: String not contains a substring.\nExample: 'Hello' NOT_CONTAINS 'World!'.",
+              "OP_CONTAINS_ELEM": "Condition: List contains a string.\nExample: ['hello', 'world'] CONTAINS_ELEM 'world'",
+              "OP_NOT_CONTAINS_ELEM": "Condition: List not contains a string.\nExample: ['hello', 'world'] NOT_CONTAINS_ELEM 'cat'",
+              "OP_CONTAINS_ANY": "Condition: List contains a sublist.\nExample: ['a', 'b', 'c'] CONTAINS_ANY ['z', 'c']",
+              "OP_NOT_CONTAINS_ANY": "Condition: List not contains a sublist.\nExample: ['a', 'b', 'c'] NOT_CONTAINS_ANY ['z', 'x']",
+              "OP_CONTAINS_ALL": "List contains all elements of another list.\nExample: ['a', 'b'] CONTAINS_ALL ['a', 'b']",
+              "OP_CONTAINS_NONE": "List contains none of the elements of another list\nExample: ['a', 'b'] CONTAINS_NONE ['a', 'd']",
+              "OP_NOT_CONTAINS_ALL": "List not contains a sublist.\nExample: ['a', 'b', 'c'] NOT_CONTAINS_ALL ['a', 'b']",
+              "OP_EXISTS": "True if field is present in input.",
+              "OP_NOT_EXISTS": "True if field is not present in input.",
+              "OP_IS_MAC_ADDRESS": "True if the input is a valid MAC address.",
+              "OP_MATCHES_REGEX": "True if the input matches regex."
+            },
+            "x-typeDescription": "Policy condition operator type",
+            "x-mandatory": true,
+            "description": "Policy operator type."
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "const",
+              "minLength": 1,
+              "maxLength": 255,
+              "x-typeDescription": "Specifies the policy condition value.",
+              "description": "list of values for operators associated with list"
+            },
+            "maxItems": 2147483647
+          },
+          "value": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-typeDescription": "Specifies the policy condition value.",
+            "description": "value "
+          }
+        },
+        "required": [
+          "position",
+          "attr",
+          "operator"
+        ]
+      },
+      "ArubaCdaAuthzPolicy_PolicyRulesConfig": {
+        "description": "Policy rules configuration.",
+        "properties": {
+          "rule": {
+            "description": "Policy rule is collection of logical conditions and actions that are evaluated against the configured attributes.\n\nPolicy rules are evaluated in the order of their position.\n\nA union of enforcement attributes from the first matching rule and default enforcement profile is applied.\n\nEnforcement Attributes from matching rule have precedence over default attributes.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCdaAuthzPolicy_PolicyConditionsConfig"
+                },
+                {
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 0,
+                      "maxLength": 255,
+                      "x-typeDescription": "Add Description to the entity."
+                    },
+                    "rule-id": {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "rule-id",
+                      "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                      "maxLength": 9999,
+                      "description": "Unique immutable identifier for rule."
+                    },
+                    "rule-name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "Name of policy rule."
+                    },
+                    "enable": {
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "Enable policy rule."
+                    },
+                    "position": {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 2000,
+                      "x-mandatory": true,
+                      "description": "Position determines the order in which the rules are evaluated."
+                    },
+                    "enf-profile": {
+                      "description": "List of enforcement profiles.",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaCdaEnforcementProfile_EnforcementProfilesConfig"
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "profileId"
+                      ],
+                      "maxItems": 2147483647
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "position"
+                  ]
+                }
+              ]
+            },
+            "x-key": [
+              "ruleId"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaEnforcementProfile_EnforcementProfilesConfig": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCdaEnforcementProfile_EnfProfileRadiusConfig"
+          }
+        ],
+        "properties": {
+          "profile-id": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "profile-id",
+            "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+            "maxLength": 9999,
+            "description": "Unique immutable identifier for enforcement profile."
+          },
+          "profile-name": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Name of enforcement profile."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 0,
+            "maxLength": 255,
+            "x-typeDescription": "Add Description to the entity."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ENF_RADIUS"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ENF_RADIUS": "Enforcement profile of type RADIUS."
+            },
+            "x-typeDescription": "Specifies the type of enforcement profile.",
+            "description": "Enforcement profile type."
+          }
+        }
+      },
+      "ArubaCdaEnforcementProfile_AttributeMap": {
+        "description": "List of enforcement attribute key-value pairs.",
+        "properties": {
+          "defined-attr": {
+            "description": "List of pre-defined attribute key-value pairs.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "attr-name": {
+                  "type": "string",
+                  "enum": [
+                    "ATTR_ARUBA_ROLE",
+                    "ATTR_VLAN_ID",
+                    "ATTR_VLAN_NAME",
+                    "ATTR_REAUTH_TIMER",
+                    "ATTR_SSID",
+                    "ATTR_POLICY_ACTION"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ATTR_ARUBA_ROLE": "Aruba Role",
+                    "ATTR_VLAN_ID": "VLAN ID",
+                    "ATTR_VLAN_NAME": "VLAN NAME",
+                    "ATTR_REAUTH_TIMER": "Session reauth timer",
+                    "ATTR_SSID": "SSID NAME",
+                    "ATTR_POLICY_ACTION": "Policy Action result with possible values of Accept or Reject"
+                  },
+                  "description": "Attribute name."
+                },
+                "value": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Specifies the attribute value.",
+                  "description": "Attribute value."
+                }
+              }
+            },
+            "x-key": [
+              "attrName"
+            ],
+            "maxItems": 2147483647
+          },
+          "custom-attr": {
+            "description": "List of attribute key-value pairs.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "custom-attr-name": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "x-typeDescription": "Specifies the attribute name.",
+                  "description": "VSA attribute name to be passed to device."
+                },
+                "value": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Specifies the attribute value.",
+                  "description": "Attribute value."
+                }
+              }
+            },
+            "x-key": [
+              "customAttrName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCdaEnforcementProfile_EnfProfileRadiusConfig": {
+        "properties": {
+          "radius-profile": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCdaEnforcementProfile_AttributeMap"
+              }
+            ],
+            "description": "RADIUS enforcement profile composed of a list of pre-defined and custom attribute key-value pairs."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    },
+    "examples": {
+      "common-policy-default-enf-profile": {
+        "value": {
+          "profile-id": "string",
+          "profile-name": "string",
+          "description": "string",
+          "type": "ENF_RADIUS",
+          "radius-profile": {
+            "defined-attr": [
+              {
+                "attr-name": "ATTR_ARUBA_ROLE",
+                "value": "string"
+              }
+            ],
+            "custom-attr": [
+              {
+                "custom-attr-name": "string",
+                "value": "string"
+              }
+            ]
+          }
+        }
+      },
+      "common-policy-condition": {
+        "value": {
+          "condition-id": "string",
+          "position": 1,
+          "combinator-operator": "COMB_OP_AND",
+          "condition-group": [
+            {
+              "condition-group-id": "string",
+              "position": 1,
+              "attr": "string",
+              "operator": "OP_EQUALS",
+              "values": [
+                "string"
+              ],
+              "value": "string"
+            }
+          ]
+        }
+      },
+      "common-policy-rule": {
+        "value": {
+          "description": "string",
+          "rule-id": "string",
+          "rule-name": "string",
+          "enable": true,
+          "position": 1,
+          "conditions": {
+            "description": "string",
+            "combinator-operator": "COMB_OP_AND",
+            "condition": [
+              {
+                "condition-id": "string",
+                "position": 1,
+                "combinator-operator": "COMB_OP_AND",
+                "condition-group": [
+                  {
+                    "condition-group-id": "string",
+                    "position": 1,
+                    "attr": "string",
+                    "operator": "OP_EQUALS",
+                    "values": [
+                      "string"
+                    ],
+                    "value": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          "enf-profile": [
+            {
+              "radius-profile": {
+                "defined-attr": [
+                  {
+                    "attr-name": "ATTR_ARUBA_ROLE",
+                    "value": "string"
+                  }
+                ],
+                "custom-attr": [
+                  {
+                    "custom-attr-name": "string",
+                    "value": "string"
+                  }
+                ]
+              },
+              "profile-id": "string",
+              "profile-name": "string",
+              "description": "string",
+              "type": "ENF_RADIUS"
+            }
+          ]
+        }
+      },
+      "common-policy-rule-conditions": {
+        "value": {
+          "description": "string",
+          "combinator-operator": "COMB_OP_AND",
+          "condition": [
+            {
+              "condition-id": "string",
+              "position": 1,
+              "combinator-operator": "COMB_OP_AND",
+              "condition-group": [
+                {
+                  "condition-group-id": "string",
+                  "position": 1,
+                  "attr": "string",
+                  "operator": "OP_EQUALS",
+                  "values": [
+                    "string"
+                  ],
+                  "value": "string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "common-policy-conditions": {
+        "value": {
+          "description": "string",
+          "combinator-operator": "COMB_OP_AND",
+          "condition": [
+            {
+              "condition-id": "string",
+              "position": 1,
+              "combinator-operator": "COMB_OP_AND",
+              "condition-group": [
+                {
+                  "condition-group-id": "string",
+                  "position": 1,
+                  "attr": "string",
+                  "operator": "OP_EQUALS",
+                  "values": [
+                    "string"
+                  ],
+                  "value": "string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "common-user_policies": {
+        "value": {
+          "policy": [
+            {
+              "policy-id": "string",
+              "name": "string",
+              "description": "string",
+              "position": 1,
+              "enable": true,
+              "policy-type": "USER",
+              "conditions": {
+                "description": "string",
+                "combinator-operator": "COMB_OP_AND",
+                "condition": [
+                  {
+                    "condition-id": "string",
+                    "position": 1,
+                    "combinator-operator": "COMB_OP_AND",
+                    "condition-group": [
+                      {
+                        "condition-group-id": "string",
+                        "position": 1,
+                        "attr": "string",
+                        "operator": "OP_EQUALS",
+                        "value": "string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rule": [
+                {
+                  "conditions": {
+                    "description": "string",
+                    "combinator-operator": "COMB_OP_AND",
+                    "condition": [
+                      {
+                        "condition-id": "string",
+                        "position": 1,
+                        "combinator-operator": "COMB_OP_AND",
+                        "condition-group": [
+                          {
+                            "condition-group-id": "string",
+                            "position": 1,
+                            "attr": "string",
+                            "operator": "OP_BELONGS_TO",
+                            "values": [
+                              "string"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "description": "string",
+                  "rule-id": "string",
+                  "rule-name": "string",
+                  "enable": true,
+                  "position": 1,
+                  "enf-profile": [
+                    {
+                      "radius-profile": {
+                        "defined-attr": [
+                          {
+                            "attr-name": "ATTR_ARUBA_ROLE",
+                            "value": "string"
+                          }
+                        ]
+                      },
+                      "profile-id": "string",
+                      "profile-name": "string",
+                      "description": "string",
+                      "type": "ENF_RADIUS"
+                    }
+                  ]
+                }
+              ],
+              "identity-stores": [
+                "string"
+              ],
+              "default-enf-profile": [
+                {
+                  "profile-id": "string",
+                  "profile-name": "string",
+                  "description": "string",
+                  "type": "ENF_RADIUS"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "common-user_policy": {
+        "value": {
+          "policy-id": "string",
+          "name": "string",
+          "description": "string",
+          "position": 1,
+          "enable": true,
+          "policy-type": "USER",
+          "conditions": {
+            "description": "string",
+            "combinator-operator": "COMB_OP_AND",
+            "condition": [
+              {
+                "condition-id": "string",
+                "position": 1,
+                "combinator-operator": "COMB_OP_AND",
+                "condition-group": [
+                  {
+                    "condition-group-id": "string",
+                    "position": 1,
+                    "attr": "string",
+                    "operator": "OP_EQUALS",
+                    "value": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          "rule": [
+            {
+              "conditions": {
+                "description": "string",
+                "combinator-operator": "COMB_OP_AND",
+                "condition": [
+                  {
+                    "condition-id": "string",
+                    "position": 1,
+                    "combinator-operator": "COMB_OP_AND",
+                    "condition-group": [
+                      {
+                        "condition-group-id": "string",
+                        "position": 1,
+                        "attr": "string",
+                        "operator": "OP_BELONGS_TO",
+                        "values": [
+                          "string"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "description": "string",
+              "rule-id": "string",
+              "rule-name": "string",
+              "enable": true,
+              "position": 1,
+              "enf-profile": [
+                {
+                  "radius-profile": {
+                    "defined-attr": [
+                      {
+                        "attr-name": "ATTR_ARUBA_ROLE",
+                        "value": "string"
+                      }
+                    ]
+                  },
+                  "profile-id": "string",
+                  "profile-name": "string",
+                  "description": "string",
+                  "type": "ENF_RADIUS"
+                }
+              ]
+            }
+          ],
+          "identity-stores": [
+            "string"
+          ],
+          "default-enf-profile": [
+            {
+              "profile-id": "string",
+              "profile-name": "string",
+              "description": "string",
+              "type": "ENF_RADIUS"
+            }
+          ]
+        }
+      },
+      "common-policy-idStores": {
+        "value": [
+          "string"
+        ]
+      },
+      "common-policy-radius-profile": {
+        "value": {
+          "defined-attr": [
+            {
+              "attr-name": "ATTR_ARUBA_ROLE",
+              "value": "string"
+            }
+          ],
+          "custom-attr": [
+            {
+              "custom-attr-name": "string",
+              "value": "string"
+            }
+          ]
+        }
+      },
+      "common-policy-rule-enf-profile": {
+        "value": {
+          "profile-id": "string",
+          "profile-name": "string",
+          "description": "string",
+          "type": "ENF_RADIUS",
+          "radius-profile": {
+            "defined-attr": [
+              {
+                "attr-name": "ATTR_ARUBA_ROLE",
+                "value": "string"
+              }
+            ],
+            "custom-attr": [
+              {
+                "custom-attr-name": "string",
+                "value": "string"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

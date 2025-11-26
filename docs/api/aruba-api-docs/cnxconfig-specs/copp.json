@@ -1,0 +1,1846 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-copp API generated from aruba-copp.yang",
+    "version": "1.0.0",
+    "title": "copp",
+    "x-tag-group": "Security"
+  },
+  "tags": [
+    {
+      "name": "copp"
+    }
+  ],
+  "paths": {
+    "/copp": {
+      "get": {
+        "summary": "Get CoPP configuration",
+        "description": "A list of profiles defining the CoPP configuration.",
+        "operationId": "readCopp",
+        "x-cliParam": {
+          "commandName": "readCoppCmd",
+          "summary": "Read operation for copp",
+          "commandUse": "copp",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/copp/"
+        },
+        "tags": [
+          "copp"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCopp_CoppSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/copp/{name}": {
+      "post": {
+        "summary": "Create CoPP profile, which describes all CoPP policies configured on the switch",
+        "description": "profile",
+        "operationId": "createCoppProfileByID",
+        "x-cliParam": {
+          "commandName": "createCoppProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createCoppCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/copp/profile/%s/"
+        },
+        "tags": [
+          "copp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCopp_CoppprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get CoPP profile, which describes all CoPP policies configured on the switch",
+        "description": "profile",
+        "operationId": "readCoppProfileByID",
+        "x-cliParam": {
+          "commandName": "readCoppProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readCoppCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/copp/profile/%s/"
+        },
+        "tags": [
+          "copp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaCopp_CoppprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "profile",
+        "operationId": "updateCoppProfileByID",
+        "x-cliParam": {
+          "commandName": "updateCoppProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateCoppCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/copp/profile/%s/"
+        },
+        "tags": [
+          "copp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaCopp_CoppprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete CoPP profile, which describes all CoPP policies configured on the switch",
+        "description": "profile",
+        "operationId": "deleteCoppProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteCoppProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteCoppCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/copp/profile/%s/"
+        },
+        "tags": [
+          "copp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaCopp_CoppprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaCopp_CoppprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaCopp_CoppSchema": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "A list of profiles defining the CoPP configuration.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "x-patternSources": "name",
+                  "x-patterns": "INVERT-MATCH('default|factory-default')",
+                  "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Profile describing a CoPP policy."
+                },
+                "log": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enable CoPP logging."
+                },
+                "copp-policy": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaCopp_CoppPolicy"
+                    }
+                  ],
+                  "description": "The CoPP policy."
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaCopp_CoppSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaCopp_CoppSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaCopp_CoppprofileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-patternSources": "name",
+            "x-patterns": "INVERT-MATCH('default|factory-default')",
+            "description": "The name of the profile describing configured CoPP policies. (AOS-CX) Also the name of the CoPP policy as configured on the device."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Profile describing a CoPP policy."
+          },
+          "log": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable CoPP logging."
+          },
+          "copp-policy": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaCopp_CoppPolicy"
+              }
+            ],
+            "description": "The CoPP policy."
+          }
+        }
+      },
+      "ArubaCopp_CoppUserDefinedClass": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "CoPP user-defined class",
+        "properties": {
+          "user-defined-class-index": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 8,
+            "description": "The index of the user-defined class. Can be 1-8."
+          },
+          "ip-match": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "IPV4",
+              "IPV6",
+              "IPV4_ANY",
+              "IPV6_ANY"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "IPV4": "User defined class match IPv4 address",
+              "IPV6": "User defined class match IPv6 address",
+              "IPV4_ANY": "User defined class match any IPv4",
+              "IPV6_ANY": "User defined class match any IPv6"
+            },
+            "x-typeDescription": "User defined class IP version",
+            "description": "User class IP match type"
+          },
+          "ip-address": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv4-address",
+                "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "ipv6-address",
+                "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                "maxLength": 9999,
+                "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+              }
+            ],
+            "description": "IPv4 or IPv6 adddress"
+          },
+          "ip-protocol": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "UDP",
+              "TCP"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "UDP": "User defined class protocol UDP",
+              "TCP": "User defined class protocol TCP"
+            },
+            "x-typeDescription": "User defined class IP protocol",
+            "description": "User class IP protocol: UDP/TCP"
+          },
+          "l4-port": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+            "description": "Layer 4 TCP/UDP port number"
+          },
+          "rate": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "rate",
+                "x-patterns": "'default|none'",
+                "maxLength": 9999
+              }
+            ],
+            "description": "Rate limit for an entry in the CoPP policy."
+          },
+          "drop": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Class is dropped in the CoPP policy."
+          }
+        }
+      },
+      "ArubaCopp_CoppPolicyEntry": {
+        "description": "CoPP policy entry",
+        "properties": {
+          "class": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "ACL_LOGGING",
+              "ARP_BROADCAST",
+              "ARP_PROTECT",
+              "ARP_UNICAST",
+              "BFD",
+              "BFD_CONTROL",
+              "BGP",
+              "BGP_IPV4",
+              "BGP_IPV6",
+              "BROADCAST",
+              "CAPTIVE_PORTAL",
+              "CLIENT_ONBOARD",
+              "DFP_COLLECTOR",
+              "DHCP",
+              "DHCP_IPV4",
+              "DHCP_IPV6",
+              "DSS",
+              "ERPS",
+              "EXCEPTION",
+              "FIB_OPTIMIZATION",
+              "FLOW_TELEMETRY",
+              "HYPERTEXT",
+              "ICMP_BROADCAST_IPV4",
+              "ICMP_MULTICAST_IPV6",
+              "ICMP_REDIRECT",
+              "ICMP_SECURITY_IPV6",
+              "ICMP_UNICAST",
+              "ICMP_UNICAST_IPV4",
+              "ICMP_UNICAST_IPV6",
+              "IEEE_8021X",
+              "IGMP",
+              "IP_EXCEPTIONS",
+              "IPFIX",
+              "IP_LOCKDOWN",
+              "IPSEC",
+              "IP_TRACKER",
+              "IP_UNICAST",
+              "IPV4_OPTIONS",
+              "IPV6_OPTIONS",
+              "LACP",
+              "LAYER2_CONTROL",
+              "LLDP",
+              "LOOP_PROTECT",
+              "MAC_LEARN_MOVE",
+              "MAC_LOCKOUT",
+              "MANAGEABILITY",
+              "MDNS",
+              "MIRROR_TO_CPU",
+              "MLD",
+              "MSTP",
+              "MULTICAST_ROUTE_CTRL",
+              "MULTICAST_SW_FORWARD",
+              "MVRP",
+              "NAE_PACKET_MONITOR",
+              "NTP",
+              "OSPF",
+              "OSPF_MULTICAST",
+              "OSPF_MULTICAST_IPV4",
+              "OSPF_MULTICAST_IPV6",
+              "OSPF_UNICAST",
+              "OSPF_UNICAST_IPV4",
+              "OSPF_UNICAST_IPV6",
+              "PIM",
+              "PTP",
+              "PVST",
+              "RIP",
+              "SECURE_LEARN",
+              "SFLOW",
+              "SMARTLINK",
+              "SSH",
+              "STP",
+              "TELNET",
+              "UDLD",
+              "UNICAST_SW_FORWARD",
+              "UNKNOWN_MULTICAST",
+              "UNRESOLVED_IP_UNICAST",
+              "VRRP",
+              "VRRP_IPV4",
+              "VRRP_IPV6",
+              "DEFAULT_CLASS",
+              "ALL"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ACL_LOGGING": "CoPP policy entry for the ACL Logging class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 83260, 8400, 9300, 10000",
+              "ARP_BROADCAST": "CoPP policy entry for the ARP Broadcast class. ",
+              "ARP_PROTECT": "CoPP policy entry for the ARP Protect class. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8360.",
+              "ARP_UNICAST": "CoPP policy entry for the arp-unicast (AOS_CX) or station-arp (AOS_S) class.",
+              "BFD": "CoPP policy entry for the BFD class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "BFD_CONTROL": "CoPP policy entry for the BFD Control class. Supported platforms: 6300, 6400, 8100, 8360, 8400.",
+              "BGP": "CoPP policy entry for the BGP class. Supported platforms: 6300, 6400, 8100, 8360.",
+              "BGP_IPV4": "CoPP policy entry for the BGP IPv4 class. Supported platforms: 8320, 8325, 8400, 9300, 10000.",
+              "BGP_IPV6": "CoPP policy entry for the BGP IPv6 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "BROADCAST": "CoPP policy entry for broadcast",
+              "CAPTIVE_PORTAL": "CoPP policy entry for the Captive Portal class. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400.",
+              "CLIENT_ONBOARD": "CoPP policy entry for the Client Onboard class. Supported platforms: 4100, 5420, 6200, 6300, 6400.",
+              "DFP_COLLECTOR": "CoPP policy entry for the DFP Collector class. Supported platforms: 4100, 5420, 6200, 6300, 6400.",
+              "DHCP": "CoPP policy entry for the DHCP class. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8360, 8400.",
+              "DHCP_IPV4": "CoPP policy entry for the DHCP IPv4 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "DHCP_IPV6": "CoPP policy entry for the DHCP IPv6 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "DSS": "CoPP policy entry for the DSS class. Supported platforms: 10000.",
+              "ERPS": "CoPP policy entry for the ERPS class. Supported platforms: 4100, 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 9300, 10000.",
+              "EXCEPTION": "CoPP policy entry for exception",
+              "FIB_OPTIMIZATION": "CoPP policy entry for the FIB Optimization class. Supported platforms: 6300, 6400, 8100, 8360.",
+              "FLOW_TELEMETRY": "CoPP policy entry for the Flow Telemetry class. Supported platforms: 8325, 9300, 10000.",
+              "HYPERTEXT": "CoPP policy entry for the Hypertext class. Supported platforms: 8320, 8325, 8400, 9300, 10000.",
+              "ICMP_BROADCAST_IPV4": "CoPP policy entry for icmp-broadcast-ipv4",
+              "ICMP_MULTICAST_IPV6": "CoPP policy entry for icmp-multicast-ipv6",
+              "ICMP_REDIRECT": "CoPP policy entry for icmp-redirect",
+              "ICMP_SECURITY_IPV6": "CoPP policy entry for the ICMP Security IPv6 class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360.",
+              "ICMP_UNICAST": "CoPP policy entry for icmp-unicast (AOS_CX) or station-icmp (AOS_S)",
+              "ICMP_UNICAST_IPV4": "CoPP policy entry for icmp-unicast-ipv4",
+              "ICMP_UNICAST_IPV6": "CoPP policy entry for icmp-unicast-ipv6",
+              "IEEE_8021X": "CoPP policy entry for the IEEE 802.1x class. Supported plaforms: 4100, 5420, 6000, 6100, 6200, 5300, 6400, 8100, 8325, 8360, 10000.",
+              "IGMP": "CoPP policy entry for igmp",
+              "IP_EXCEPTIONS": "CoPP policy entry for the IP Exceptions class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 8400, 9300, 10000.",
+              "IPFIX": "CoPP policy entry for the IPFix class. Supported platforms: 6300, 6400, 8100, 8325, 8360.",
+              "IP_LOCKDOWN": "CoPP policy entry for the IP Lockdown class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8325, 8360, 10000.",
+              "IPSEC": "CoPP policy entry for the IPSec class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 9300, 10000.",
+              "IP_TRACKER": "CoPP policy entry for the IP Tracker class. Supported platforms: 5420, 6200, 6300, 6400.",
+              "IP_UNICAST": "CoPP policy entry for ip-unicast (AOS_CX) or station-ip (AOS_S)",
+              "IPV4_OPTIONS": "CoPP policy entry for the IPv4 Options class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 8400, 9300, 10000.",
+              "IPV6_OPTIONS": "CoPP policy entry for the IPv6 Options class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "LACP": "CoPP policy entry for the LACP class.",
+              "LAYER2_CONTROL": "CoPP policy entry for the layer2-control class.",
+              "LLDP": "CoPP policy entry for LLDP",
+              "LOOP_PROTECT": "CoPP policy entry for the loop-protect (AOS_CX) or loop-ctrl-loop-protect (AOS_S) class.",
+              "MAC_LEARN_MOVE": "CoPP policy entry for mac-learn-move (AOS_CX) or mac-notification (AOS_S)",
+              "MAC_LOCKOUT": "CoPP policy entry for MAC Lockout class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360.",
+              "MANAGEABILITY": "CoPP policy entry for the Manageability class. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8360.",
+              "MDNS": "CoPP policy entry for the MDNS class. Supported platforms: 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8325, 8360, 9300, 10000.",
+              "MIRROR_TO_CPU": "CoPP policy entry for the Mirror-to-CPU class. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 9300, 10000.",
+              "MLD": "CoPP policy entry for the MLD class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 9300, 10000.",
+              "MSTP": "CoPP policy entry for mstp (AOS_CX) or loop-ctrl-mstp (AOS_S)",
+              "MULTICAST_ROUTE_CTRL": "CoPP policy entry for multicast-route-ctrl",
+              "MULTICAST_SW_FORWARD": "CoPP policy entry for multicast-sw-forward",
+              "MVRP": "CoPP policy entry for mvrp",
+              "NAE_PACKET_MONITOR": "CoPP policy entry for the NAE Packet Monitor class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360.",
+              "NTP": "CoPP policy entry for ntp",
+              "OSPF": "CoPP policy entry for ospf",
+              "OSPF_MULTICAST": "CoPP policy entry for the OSPF multicast class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360, 8400.",
+              "OSPF_MULTICAST_IPV4": "CoPP policy entry for the OSPF Multicast IPv4 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "OSPF_MULTICAST_IPV6": "CoPP policy entry for the OSPF Multicast IPv6 class.",
+              "OSPF_UNICAST": "CoPP policy entry for the OSPF unicast class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360, 8400.",
+              "OSPF_UNICAST_IPV4": "CoPP policy entry for the OSPF Unicast IPv4 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "OSPF_UNICAST_IPV6": "CoPP policy entry for the OSPF Unicast IPv6 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "PIM": "CoPP policy entry for the PIM class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 8400, 9300, 10000.",
+              "PTP": "CoPP policy entry for the PTP class. Supported platforms: 6300, 6400, 8100, 8360, 9300.",
+              "PVST": "CoPP policy entry for pvst (AOS_CX) or loop-ctrl-pvst (AOS_S)",
+              "RIP": "CoPP policy entry for rip",
+              "SECURE_LEARN": "CoPP policy entry for the Secure Learn class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8325, 8360, 10000.",
+              "SFLOW": "CoPP policy entry for the Sflow (AOS_CX) or sampling (AOS_S) class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 8400, 9300, 10000.",
+              "SMARTLINK": "CoPP policy entry for the Smartlink (AOS_CX) or loop-ctrl-smart-links (AOS_S) class. Supported platforms: 4100, 6000, 6100.",
+              "SSH": "CoPP policy entry for the SSH class. Supported platforms: 8320, 8325, 8400, 9300, 10000.",
+              "STP": "CoPP policy entry for stp",
+              "TELNET": "CoPP policy entry for the Telnet class. Supported platforms: 8320, 8325, 8400, 9300, 10000.",
+              "UDLD": "CoPP policy entry for the udld (AOS_CX) or udld-control (AOS_S) class",
+              "UNICAST_SW_FORWARD": "CoPP policy entry for unicast-sw-forward",
+              "UNKNOWN_MULTICAST": "CoPP policy entry for the Unknown Multicast class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 8400, 9300, 10000.",
+              "UNRESOLVED_IP_UNICAST": "CoPP policy entry for unresolved-ip-unicast",
+              "VRRP": "CoPP policy entry for the VRRP (AOS_CX) or ip-gateway-control (AOS_S) class. Supported platforms: 5420, 6200, 6300, 6400, 8100, 8360, 8400.",
+              "VRRP_IPV4": "CoPP policy entry for the VRRP IPv4 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "VRRP_IPV6": "CoPP policy entry for the VRRP IPv6 class. Supported platforms: 8320, 8325, 9300, 10000.",
+              "DEFAULT_CLASS": "CoPP policy entry for default-class (AOS_CX) or unclassified (AOS_S) class.",
+              "ALL": "CoPP policy entry for all"
+            },
+            "description": "The name of the CoPP class"
+          },
+          "priority": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Local priority for an entry in the CoPP policy. Min: 0; Max: 6 (5420, 6200, 6300, 6400, 8100, 8360, 9300), 7 (4100, 6000, 6100, 8320, 8325, 10000), 10 (8400)"
+          },
+          "rate-pps": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              {
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "rate-pps",
+                "x-patterns": "'default|none'",
+                "maxLength": 9999
+              }
+            ],
+            "description": "Rate limit for an entry in the CoPP policy, in packets per second (PPS). Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 10000. Min: 25 (4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8360), 1 (8320, 8325, 10000); Max: 99999"
+          },
+          "rate-kbits": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Rate limit for an entry in the CoPP policy, in kilobits per second (kbps). Supported platforms: 8400, 9300. Min: 1; Max: 999999"
+          },
+          "burst-pkts": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Burst limit for an entry in the CoPP policy, in packets. Supported platforms: 4100, 5420, 6000, 6100, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 10000. Min: 0 (4100, 6000, 6100), 1 (5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 10000) Max: 0 (4100, 6000, 6100), 9999 (5420, 6200, 6300, 6400, 8100, 8320, 8325, 8360, 10000)"
+          },
+          "burst-kbytes": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "description": "Burst limit for an entry in the CoPP policy, in kilobytes (kB). Supported platforms: 8400, 9300. Min: 1; Max: 130"
+          },
+          "drop": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "description": "Sets packets for the given class to be dropped. Standalone parameter - cannot be set to true if any of priority/rate/burst are set."
+          }
+        }
+      },
+      "ArubaCopp_CoppPolicy": {
+        "description": "A CoPP policy",
+        "properties": {
+          "configured-copp-policy-entries": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "List of configured policy entries. (AOS-CX) The default class must be configured.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCopp_CoppPolicyEntry"
+                }
+              ]
+            },
+            "x-key": [
+              "class"
+            ],
+            "maxItems": 2147483647
+          },
+          "user-defined-class-entries": {
+            "description": "List of the user defined classes. PVOS only.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaCopp_CoppUserDefinedClass"
+                }
+              ]
+            },
+            "x-key": [
+              "userDefinedClassIndex"
+            ],
+            "maxItems": 2147483647
+          },
+          "applied": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "description": "Whether or not this is the applied CoPP policy"
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

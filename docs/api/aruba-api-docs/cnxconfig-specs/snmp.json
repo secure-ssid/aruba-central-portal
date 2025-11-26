@@ -1,0 +1,4104 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-snmp API generated from aruba-snmp.yang",
+    "version": "1.0.0",
+    "title": "snmp",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "snmp"
+    }
+  ],
+  "paths": {
+    "/snmp": {
+      "get": {
+        "summary": "Read configured SNMP profiles",
+        "description": "Profile for SNMP configuration.\nSNMP user-table, trap receivers, community strings,\nnotify groups, targets, etc. can be configured.\nBoth Informs and Traps are supported.\nHandles configuration for SNMP v1, v2c, v3 versions.",
+        "operationId": "readSnmp",
+        "x-cliParam": {
+          "commandName": "readSnmpCmd",
+          "summary": "Read operation for snmp",
+          "commandUse": "snmp",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/snmp/"
+        },
+        "tags": [
+          "snmp"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSnmp_SnmpSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snmp/{name}": {
+      "post": {
+        "summary": "Create a new SNMP profile by unique profile name",
+        "description": "SNMP profile to configure SNMP parameters.",
+        "operationId": "createSnmpProfileByID",
+        "x-cliParam": {
+          "commandName": "createSnmpProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createSnmpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/snmp/profile/%s/"
+        },
+        "tags": [
+          "snmp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "SNMP profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSnmp_SnmpprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing SNMP profile configurations",
+        "description": "SNMP profile to configure SNMP parameters.",
+        "operationId": "readSnmpProfileByID",
+        "x-cliParam": {
+          "commandName": "readSnmpProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readSnmpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/snmp/profile/%s/"
+        },
+        "tags": [
+          "snmp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "SNMP profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaSnmp_SnmpprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing SNMP profile configurations",
+        "description": "SNMP profile to configure SNMP parameters.",
+        "operationId": "updateSnmpProfileByID",
+        "x-cliParam": {
+          "commandName": "updateSnmpProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateSnmpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/snmp/profile/%s/"
+        },
+        "tags": [
+          "snmp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "SNMP profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaSnmp_SnmpprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the SNMP profile",
+        "description": "SNMP profile to configure SNMP parameters.",
+        "operationId": "deleteSnmpProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteSnmpProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteSnmpCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/snmp/profile/%s/"
+        },
+        "tags": [
+          "snmp"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "SNMP profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaSnmp_SnmpprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaSnmp_SnmpprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaSnmp_SnmpSchema": {
+        "description": "Profile for SNMP configuration.\nSNMP user-table, trap receivers, community strings,\nnotify groups, targets, etc. can be configured.\nBoth Informs and Traps are supported.\nHandles configuration for SNMP v1, v2c, v3 versions.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "SNMP profile to configure SNMP parameters.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaSnmp_NotifyGroup"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "SNMP profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "SNMP profile description."
+                    },
+                    "v1-enable": {
+                      "type": "boolean",
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "default": "true",
+                      "description": "SNMPv1 version."
+                    },
+                    "v2c-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "SNMPv2c Version."
+                    },
+                    "v3-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "SNMPv3 version."
+                    },
+                    "trap-enable": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "To enable SNMP traps in system. By default traps are enabled."
+                    },
+                    "inform-queue-length": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 100,
+                      "maximum": 350,
+                      "default": "250",
+                      "description": "To set inform queue length. By default inform queue length set to 250."
+                    },
+                    "enable-snmpv3-only": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Enables only the SNMPv3 mode of operation and disallows SNMP v1 and v2c."
+                    },
+                    "unique-req-id-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable SNMP unique request-id check."
+                    },
+                    "agent-port": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "default": "161",
+                      "description": "The SNMP server agent port"
+                    },
+                    "auth-privacy-security-level": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "description": "SNMPv3 Security Level."
+                    },
+                    "auth-security-level": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "description": "SNMPv3 Security Level."
+                    },
+                    "response-source": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DEST_IP_ADDRESS",
+                            "LOOPBACK"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "DEST_IP_ADDRESS": "The destination ip address of the SNMP request is used\nas the source IP address in the SNMP response.",
+                            "LOOPBACK": "For the specified loopback interface, lexicographically\nminimum configured ip address will be used as the source\nip address in the snmp response pdu."
+                          }
+                        },
+                        {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32
+                        }
+                      ],
+                      "description": "Source IP address of the SNMP response PDU."
+                    },
+                    "loopback-interface": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "description": "Loopback interface."
+                    },
+                    "trap-interface": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "description": "Loopback interface."
+                    },
+                    "stats-enable": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable SNMP stats."
+                    },
+                    "snmp-source-controller-ip": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "On enabling this parameter source address of SNMP responses will be set to Controller IP."
+                    },
+                    "trap-source": {
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DEST_IP_ADDRESS",
+                            "LOOPBACK"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "DEST_IP_ADDRESS": "The destination ip address of the SNMP request is used\nas the source IP address in the SNMP response.",
+                            "LOOPBACK": "For the specified loopback interface, lexicographically\nminimum configured ip address will be used as the source\nip address in the snmp response pdu."
+                          }
+                        },
+                        {
+                          "type": "string",
+                          "format": "const",
+                          "minLength": 1,
+                          "maxLength": 32
+                        }
+                      ],
+                      "description": "Source address of SNMP notification responses.\nOnly ip-address type is supported for gateways"
+                    },
+                    "listen": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MANAGEMENT_INTERFACE",
+                        "DATA",
+                        "BOTH"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MANAGEMENT_INTERFACE": "Enable SNMP Server on Management Interface only.",
+                        "DATA": "Enable SNMP Server on Data Plane only.",
+                        "BOTH": "Enable SNMP Server on both OOBM and Data planes."
+                      },
+                      "x-typeDescription": "SNMP server listen mode.",
+                      "description": "SNMP server listen mode."
+                    },
+                    "context": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "List of SNMP contexts.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "context-name": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMP context name."
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "VRF",
+                              "OSPFV2",
+                              "OSPFV3"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "VRF": "A VRF context type.",
+                              "OSPFV2": "A OSPFv2 context type.",
+                              "OSPFV3": "A OSPFv3 context type."
+                            },
+                            "x-typeDescription": "SNMP MIB view type.",
+                            "description": "Type of the SNMP context."
+                          },
+                          "community": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMP community associated with this context."
+                          },
+                          "vrf": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                            "type": "string",
+                            "format": "pattern",
+                            "x-patternSources": "name-type",
+                            "x-patterns": "'([^\\\\/ ]+)'",
+                            "maxLength": 9999,
+                            "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                            "x-mandatory": true,
+                            "description": "The VRF associated with this context."
+                          }
+                        },
+                        "required": [
+                          "vrf"
+                        ]
+                      },
+                      "x-key": [
+                        "contextName"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "view": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "List of SNMP MIB views.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "view-name-oid-tree-mask": {
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "The key combination consists of the SNMP view name, OID tree, and mask, separated by '~'. If the mask is empty, use 'EMPTY' as its value."
+                          },
+                          "type": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "INCLUDE",
+                              "EXCLUDE"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "INCLUDE": "MIB subtree included in SNMP view.",
+                              "EXCLUDE": "MIB subtree excluded in SNMP view."
+                            },
+                            "x-typeDescription": "SNMP MIB view type.",
+                            "x-mandatory": true,
+                            "description": "INCLUDE - Include an OID tree.\nEXCLUDE - Exclude an OID tree."
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      "x-key": [
+                        "viewNameOidTreeMask"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "community": {
+                      "description": "List of SNMP communities.",
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch CX",
+                        "Access Point"
+                      ],
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "community": {
+                            "x-supportedDeviceType": [
+                              "Access Point",
+                              "Switch CX",
+                              "Gateway",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMP Community string."
+                          },
+                          "access-level": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "RO",
+                              "RW"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "RO": "read-only access for snmpv3 user.",
+                              "RW": "read-write access for snmpv3 user."
+                            },
+                            "x-typeDescription": "SNMP V3 user access level.",
+                            "description": "ro - read-only access for SNMP community.\nrw - read-write access for SNMP community."
+                          },
+                          "policy-ipv4": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 144,
+                            "description": "IPv4 policy associated with this community string."
+                          },
+                          "policy-ipv6": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 144,
+                            "description": "IPv6 policy associated with this community string."
+                          },
+                          "access-mode": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "MANAGER",
+                              "OPERATOR"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "MANAGER": "manager level access for snmp user.",
+                              "OPERATOR": "operator level access for snmp user."
+                            },
+                            "x-typeDescription": "SNMP user access mode.",
+                            "description": "SNMP community access mode."
+                          },
+                          "view-name": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 33,
+                            "description": "SNMP view name."
+                          }
+                        }
+                      },
+                      "x-key": [
+                        "community"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "user": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Gateway",
+                        "Switch CX",
+                        "Access Point"
+                      ],
+                      "description": "List of SNMPv3 users.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "user-name": {
+                            "x-supportedDeviceType": [
+                              "Access Point",
+                              "Switch CX",
+                              "Gateway",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMPv3 user Name."
+                          },
+                          "auth-protocol": {
+                            "x-supportedDeviceType": [
+                              "Access Point",
+                              "Switch CX",
+                              "Gateway",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "MD5",
+                              "SHA1",
+                              "SHA224",
+                              "SHA256",
+                              "SHA384",
+                              "SHA512"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "MD5": "MD5 authentication",
+                              "SHA1": "SHA1 authentication",
+                              "SHA224": "SHA224 authentication",
+                              "SHA256": "SHA256 authentication",
+                              "SHA384": "SHA384 authentication",
+                              "SHA512": "SHA512 authentication"
+                            },
+                            "x-typeDescription": "SNMP Authentication types.",
+                            "description": "Auth Protocols supported for SNMP user.\nRange for AP: MD5 and SHA."
+                          },
+                          "auth-password": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Gateway",
+                              "Access Point",
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                            "x-mandatory": true,
+                            "description": "Auth Protocol Password. This parameter to be configured along with auth-protocol."
+                          },
+                          "auth-pass-text": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "PLAINTEXT",
+                              "CIPHERTEXT"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "PLAINTEXT": "Password input in plaintext format.",
+                              "CIPHERTEXT": "Password input in ciphertext format"
+                            },
+                            "x-typeDescription": "SNMP authentication password text type",
+                            "description": "Authentication and privacy-protocol password text format"
+                          },
+                          "auth-pass-cypher": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 256,
+                            "description": "Auth protocol ciphertext password."
+                          },
+                          "privacy-protocol": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Gateway",
+                              "Switch PVOS",
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "ENCR_3DES",
+                              "AES",
+                              "DES",
+                              "AES192",
+                              "AES256"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "ENCR_3DES": "3DES encryption method",
+                              "AES": "AES encryption method",
+                              "DES": "DES encryption method",
+                              "AES192": "AES-192 encryption method",
+                              "AES256": "AES-256 encryption method"
+                            },
+                            "x-typeDescription": "IPsec encryption type",
+                            "description": "Privacy Protocols supported for SNMP user.\nRange for AP: DES and AES."
+                          },
+                          "privacy-password": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Gateway",
+                              "Switch PVOS",
+                              "Access Point"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                            "x-mandatory": true,
+                            "description": "Privacy Protocol Password. This parameter to be configured along with privacy-protocol."
+                          },
+                          "priv-pass-cypher": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 256,
+                            "description": "Privacy protocol cyphertext password."
+                          },
+                          "access-level": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "RO",
+                              "RW"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "RO": "read-only access for snmpv3 user.",
+                              "RW": "read-write access for snmpv3 user."
+                            },
+                            "x-typeDescription": "SNMP V3 user access level.",
+                            "description": "ro - read-only access for snmpv3 user.\nrw - read-write access for snmpv3 user."
+                          },
+                          "access-mode": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "MANAGER",
+                              "OPERATOR"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "MANAGER": "manager level access for snmp user.",
+                              "OPERATOR": "operator level access for snmp user."
+                            },
+                            "x-typeDescription": "SNMP user access mode.",
+                            "description": "Access mode of user."
+                          },
+                          "auth-required": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "boolean",
+                            "description": "Authentication required for user to communicate."
+                          },
+                          "privacy-required": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "boolean",
+                            "description": "Privacy required for user to communicate."
+                          },
+                          "view-name": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 33,
+                            "description": "SNMP view name."
+                          },
+                          "context": {
+                            "x-supportedDeviceType": [
+                              "Switch CX"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMP view name."
+                          }
+                        },
+                        "required": [
+                          "auth-password",
+                          "privacy-password"
+                        ]
+                      },
+                      "x-key": [
+                        "userName"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "remote-user": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "List of users on a remote SNMP engine who receives the inform notifications.",
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "engine-id-username": {
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "Key combination of engine-id and username separated by ~"
+                          },
+                          "engine-id": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 6,
+                            "maxLength": 38,
+                            "x-typeDescription": "Engine ID of SNMP host in HEX eg. 8000052301A9FEA484.",
+                            "description": "Engine id of the remote system for V3 informs."
+                          },
+                          "username": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 31,
+                            "description": "The user name that receives inform notifications on a remote device."
+                          },
+                          "auth-protocol": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "MD5",
+                              "SHA1",
+                              "SHA224",
+                              "SHA256",
+                              "SHA384",
+                              "SHA512"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "MD5": "MD5 authentication",
+                              "SHA1": "SHA1 authentication",
+                              "SHA224": "SHA224 authentication",
+                              "SHA256": "SHA256 authentication",
+                              "SHA384": "SHA384 authentication",
+                              "SHA512": "SHA512 authentication"
+                            },
+                            "x-typeDescription": "SNMP Authentication types.",
+                            "description": "Auth protocols supported for SNMP inform notifications."
+                          },
+                          "auth-password": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                            "x-mandatory": true,
+                            "description": "Auth protocol password for SNMP inform notifications."
+                          },
+                          "privacy-protocol": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "ENCR_3DES",
+                              "AES",
+                              "DES",
+                              "AES192",
+                              "AES256"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "ENCR_3DES": "3DES encryption method",
+                              "AES": "AES encryption method",
+                              "DES": "DES encryption method",
+                              "AES192": "AES-192 encryption method",
+                              "AES256": "AES-256 encryption method"
+                            },
+                            "x-typeDescription": "IPsec encryption type",
+                            "description": "Privacy protocols supported for SNMP inform notifications."
+                          },
+                          "privacy-password": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                            "x-mandatory": true,
+                            "description": "Privacy protocol password for SNMP inform notifications."
+                          }
+                        },
+                        "required": [
+                          "auth-password",
+                          "privacy-password"
+                        ]
+                      },
+                      "x-key": [
+                        "engineIdUsername"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "restricted-access": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable SNMPv1 and SNMPv2c access properties."
+                    },
+                    "vrf": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "name-type",
+                        "x-patterns": "'([^\\\\/ ]+)'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                        "description": "The VRF on which SNMP server is enabled."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "notification-receiver": {
+                      "description": "List of SNMP Notification receivers (traps or informs).",
+                      "x-supportedDeviceType": [
+                        "Gateway",
+                        "Switch CX",
+                        "Access Point",
+                        "Switch PVOS"
+                      ],
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "host-port-version-receiver-name-vrf": {
+                            "type": "string",
+                            "format": "const",
+                            "maxLength": 9999,
+                            "description": "Key combination of host,port,version and receiver-name separated by ~"
+                          },
+                          "management-interface": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "boolean",
+                            "default": "false",
+                            "description": "Enable management port usage for SNMP notification receiver."
+                          },
+                          "trap-level": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "ALL",
+                              "CRITICAL",
+                              "NOTINFO",
+                              "DEBUG",
+                              "NONE"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "ALL": "All log events.",
+                              "CRITICAL": "Only critical level log events.",
+                              "NOTINFO": "Only critical, warn and debug level log events.",
+                              "DEBUG": "Only debug level events.",
+                              "NONE": "No log events."
+                            },
+                            "x-typeDescription": "SNMP trap level type.",
+                            "description": "Trap level used for logging events to notification receiver."
+                          },
+                          "inform": {
+                            "x-supportedDeviceType": [
+                              "Switch CX",
+                              "Switch PVOS",
+                              "Access Point"
+                            ],
+                            "type": "boolean",
+                            "x-mandatory": true,
+                            "description": "Acknowledgement will be received from SNMP server for inform notification type.\nIf inform is not set, notifcation type is trap.\nThis parameter is applicable for v2c & v3 version host only."
+                          },
+                          "interval": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "integer",
+                            "format": "int64",
+                            "minimum": 0,
+                            "maximum": 4294967295,
+                            "description": "Inform retry interval duration in seconds."
+                          },
+                          "retrycount": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "integer",
+                            "format": "int64",
+                            "minimum": 0,
+                            "maximum": 4294967295,
+                            "description": "Number of retries to this host before giving up on the Inform."
+                          },
+                          "host-engineid": {
+                            "x-supportedDeviceType": [
+                              "Gateway"
+                            ],
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 6,
+                            "maxLength": 38,
+                            "x-typeDescription": "Engine ID of SNMP host in HEX eg. 8000052301A9FEA484.",
+                            "description": "Engine ID of SNMP notification host.\nThis parameter is applicable for v3 trap host type only."
+                          },
+                          "trap-profile": {
+                            "x-supportedDeviceType": [
+                              "Gateway"
+                            ],
+                            "x-path": "/ac-snmp-trap:snmp-trap/ac-snmp-trap:profile/ac-snmp-trap:name",
+                            "type": "string",
+                            "format": "const",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "description": "SNMP Traps profile name"
+                          },
+                          "trap-group": {
+                            "type": "array",
+                            "items": {
+                              "x-supportedDeviceType": [
+                                "Gateway"
+                              ],
+                              "type": "string",
+                              "format": "const",
+                              "minLength": 1,
+                              "maxLength": 255,
+                              "description": "List of trap groups."
+                            },
+                            "maxItems": 2147483647
+                          },
+                          "notification-type": {
+                            "type": "array",
+                            "items": {
+                              "x-supportedDeviceType": [
+                                "Switch CX"
+                              ],
+                              "type": "string",
+                              "enum": [
+                                "AAA_SERVER_NOTF",
+                                "ALARM_NOTF",
+                                "BGP_NOTF",
+                                "CARD_NOTF",
+                                "CONFIG_NOTF",
+                                "ENTITY_NOTF",
+                                "FAN_NOTF",
+                                "INTERFACE_NOTF",
+                                "LLDP_NOTF",
+                                "LOOP_PROTECT_NOTF",
+                                "MAC_NOCTIFY_NOTF",
+                                "MSTP_NOTF",
+                                "MVRP_NOTF",
+                                "OSPF_NOTF",
+                                "OSPFV3_NOTF",
+                                "PORT_SECURITY_NOTF",
+                                "POWER_NOTF",
+                                "POWER_ETHERNET_NOTF",
+                                "RMON_NOTF",
+                                "RPVST_NOTF",
+                                "SNMP_NOTF",
+                                "STP_NOTF",
+                                "TEMPERATURE_NOTF",
+                                "VRRP_NOTF",
+                                "VSF_NOTF",
+                                "VSX_NOTF"
+                              ],
+                              "format": "enum",
+                              "x-enumDescriptions": {
+                                "AAA_SERVER_NOTF": "Send AAA notifications.",
+                                "ALARM_NOTF": "Send Alarm notifications.",
+                                "BGP_NOTF": "Send BGP state change notifications.",
+                                "CARD_NOTF": "Send Line-Card notifications.",
+                                "CONFIG_NOTF": "Send Config change notifications.",
+                                "ENTITY_NOTF": "Send Entity notifications.",
+                                "FAN_NOTF": "Send Fan notifications.",
+                                "INTERFACE_NOTF": "Send Interface notifications.",
+                                "LLDP_NOTF": "Send LLDP notifications.",
+                                "LOOP_PROTECT_NOTF": "Send Loop Protect notifications.",
+                                "MAC_NOCTIFY_NOTF": "Send MAC Notify notifications.",
+                                "MSTP_NOTF": "Send MSTP notifications.",
+                                "MVRP_NOTF": "Send MVRP notifications.",
+                                "OSPF_NOTF": "Send OSPFv2 notifications.",
+                                "OSPFV3_NOTF": "Send OSPFv3 notifications.",
+                                "PORT_SECURITY_NOTF": "Send Port Security notifications.",
+                                "POWER_NOTF": "Send Power notifications.",
+                                "POWER_ETHERNET_NOTF": "Send Power over Ethernet notifications.",
+                                "RMON_NOTF": "Send RMON notifications.",
+                                "RPVST_NOTF": "Send RPVST notifications.",
+                                "SNMP_NOTF": "Send SNMP notifications.",
+                                "STP_NOTF": "Send STP notifications.",
+                                "TEMPERATURE_NOTF": "Send Temperature notifications.",
+                                "VRRP_NOTF": "Send VRRP notifications.",
+                                "VSF_NOTF": "Send VSF notifications.",
+                                "VSX_NOTF": "Send VSX notifications."
+                              },
+                              "x-typeDescription": "SNMP notification types.",
+                              "description": "The type of this notification"
+                            },
+                            "maxItems": 2147483647
+                          }
+                        },
+                        "required": [
+                          "inform"
+                        ]
+                      },
+                      "x-key": [
+                        "hostPortVersionReceiverNameVrf"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "snmp-response-source": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Source IP/interface for SNMP responses",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaSnmp_InterfaceGroup"
+                          },
+                          {
+                            "properties": {
+                              "vrf": {
+                                "x-supportedDeviceType": [
+                                  "Switch CX"
+                                ],
+                                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "name-type",
+                                "x-patterns": "'([^\\\\/ ]+)'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                                "description": "The VRF associated with this trap-source."
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "vrf"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "snmp-trap-source": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Source IP/interface for SNMP traps",
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/ArubaSnmp_InterfaceGroup"
+                          },
+                          {
+                            "properties": {
+                              "vrf": {
+                                "x-supportedDeviceType": [
+                                  "Switch CX"
+                                ],
+                                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                                "type": "string",
+                                "format": "pattern",
+                                "x-patternSources": "name-type",
+                                "x-patterns": "'([^\\\\/ ]+)'",
+                                "maxLength": 9999,
+                                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                                "description": "The VRF associated with this trap-source."
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "x-key": [
+                        "vrf"
+                      ],
+                      "maxItems": 2147483647
+                    },
+                    "vrrp-id": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "description": "VRRP instance ID. This enables to use VRRP IP address\nas source address in SNMP traps.\nOnly VRRP-ID or IP address as SNMP trap-source can be configured and not both."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaSnmp_SnmpSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSnmp_SnmpSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSnmp_SnmpprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaSnmp_NotifyGroup"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "SNMP profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "SNMP profile description."
+              },
+              "v1-enable": {
+                "type": "boolean",
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "default": "true",
+                "description": "SNMPv1 version."
+              },
+              "v2c-enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "SNMPv2c Version."
+              },
+              "v3-enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "SNMPv3 version."
+              },
+              "trap-enable": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "To enable SNMP traps in system. By default traps are enabled."
+              },
+              "inform-queue-length": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 100,
+                "maximum": 350,
+                "default": "250",
+                "description": "To set inform queue length. By default inform queue length set to 250."
+              },
+              "enable-snmpv3-only": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Enables only the SNMPv3 mode of operation and disallows SNMP v1 and v2c."
+              },
+              "unique-req-id-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Enable SNMP unique request-id check."
+              },
+              "agent-port": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "default": "161",
+                "description": "The SNMP server agent port"
+              },
+              "auth-privacy-security-level": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "SNMPv3 Security Level."
+              },
+              "auth-security-level": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "SNMPv3 Security Level."
+              },
+              "response-source": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "DEST_IP_ADDRESS",
+                      "LOOPBACK"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "DEST_IP_ADDRESS": "The destination ip address of the SNMP request is used\nas the source IP address in the SNMP response.",
+                      "LOOPBACK": "For the specified loopback interface, lexicographically\nminimum configured ip address will be used as the source\nip address in the snmp response pdu."
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                ],
+                "description": "Source IP address of the SNMP response PDU."
+              },
+              "loopback-interface": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 255,
+                "description": "Loopback interface."
+              },
+              "trap-interface": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 255,
+                "description": "Loopback interface."
+              },
+              "stats-enable": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable SNMP stats."
+              },
+              "snmp-source-controller-ip": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "On enabling this parameter source address of SNMP responses will be set to Controller IP."
+              },
+              "trap-source": {
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch PVOS"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "DEST_IP_ADDRESS",
+                      "LOOPBACK"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "DEST_IP_ADDRESS": "The destination ip address of the SNMP request is used\nas the source IP address in the SNMP response.",
+                      "LOOPBACK": "For the specified loopback interface, lexicographically\nminimum configured ip address will be used as the source\nip address in the snmp response pdu."
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                ],
+                "description": "Source address of SNMP notification responses.\nOnly ip-address type is supported for gateways"
+              },
+              "listen": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "MANAGEMENT_INTERFACE",
+                  "DATA",
+                  "BOTH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MANAGEMENT_INTERFACE": "Enable SNMP Server on Management Interface only.",
+                  "DATA": "Enable SNMP Server on Data Plane only.",
+                  "BOTH": "Enable SNMP Server on both OOBM and Data planes."
+                },
+                "x-typeDescription": "SNMP server listen mode.",
+                "description": "SNMP server listen mode."
+              },
+              "context": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "List of SNMP contexts.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "context-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMP context name."
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "VRF",
+                        "OSPFV2",
+                        "OSPFV3"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "VRF": "A VRF context type.",
+                        "OSPFV2": "A OSPFv2 context type.",
+                        "OSPFV3": "A OSPFv3 context type."
+                      },
+                      "x-typeDescription": "SNMP MIB view type.",
+                      "description": "Type of the SNMP context."
+                    },
+                    "community": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMP community associated with this context."
+                    },
+                    "vrf": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "name-type",
+                      "x-patterns": "'([^\\\\/ ]+)'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                      "x-mandatory": true,
+                      "description": "The VRF associated with this context."
+                    }
+                  },
+                  "required": [
+                    "vrf"
+                  ]
+                },
+                "x-key": [
+                  "contextName"
+                ],
+                "maxItems": 2147483647
+              },
+              "view": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "List of SNMP MIB views.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "view-name-oid-tree-mask": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "The key combination consists of the SNMP view name, OID tree, and mask, separated by '~'. If the mask is empty, use 'EMPTY' as its value."
+                    },
+                    "type": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "INCLUDE",
+                        "EXCLUDE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "INCLUDE": "MIB subtree included in SNMP view.",
+                        "EXCLUDE": "MIB subtree excluded in SNMP view."
+                      },
+                      "x-typeDescription": "SNMP MIB view type.",
+                      "x-mandatory": true,
+                      "description": "INCLUDE - Include an OID tree.\nEXCLUDE - Exclude an OID tree."
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                },
+                "x-key": [
+                  "viewNameOidTreeMask"
+                ],
+                "maxItems": 2147483647
+              },
+              "community": {
+                "description": "List of SNMP communities.",
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch CX",
+                  "Access Point"
+                ],
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "community": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch CX",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMP Community string."
+                    },
+                    "access-level": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "RO",
+                        "RW"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "RO": "read-only access for snmpv3 user.",
+                        "RW": "read-write access for snmpv3 user."
+                      },
+                      "x-typeDescription": "SNMP V3 user access level.",
+                      "description": "ro - read-only access for SNMP community.\nrw - read-write access for SNMP community."
+                    },
+                    "policy-ipv4": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 144,
+                      "description": "IPv4 policy associated with this community string."
+                    },
+                    "policy-ipv6": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 144,
+                      "description": "IPv6 policy associated with this community string."
+                    },
+                    "access-mode": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MANAGER",
+                        "OPERATOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MANAGER": "manager level access for snmp user.",
+                        "OPERATOR": "operator level access for snmp user."
+                      },
+                      "x-typeDescription": "SNMP user access mode.",
+                      "description": "SNMP community access mode."
+                    },
+                    "view-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 33,
+                      "description": "SNMP view name."
+                    }
+                  }
+                },
+                "x-key": [
+                  "community"
+                ],
+                "maxItems": 2147483647
+              },
+              "user": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Gateway",
+                  "Switch CX",
+                  "Access Point"
+                ],
+                "description": "List of SNMPv3 users.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "user-name": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch CX",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMPv3 user Name."
+                    },
+                    "auth-protocol": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch CX",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MD5",
+                        "SHA1",
+                        "SHA224",
+                        "SHA256",
+                        "SHA384",
+                        "SHA512"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MD5": "MD5 authentication",
+                        "SHA1": "SHA1 authentication",
+                        "SHA224": "SHA224 authentication",
+                        "SHA256": "SHA256 authentication",
+                        "SHA384": "SHA384 authentication",
+                        "SHA512": "SHA512 authentication"
+                      },
+                      "x-typeDescription": "SNMP Authentication types.",
+                      "description": "Auth Protocols supported for SNMP user.\nRange for AP: MD5 and SHA."
+                    },
+                    "auth-password": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Gateway",
+                        "Access Point",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "x-mandatory": true,
+                      "description": "Auth Protocol Password. This parameter to be configured along with auth-protocol."
+                    },
+                    "auth-pass-text": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "PLAINTEXT",
+                        "CIPHERTEXT"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "PLAINTEXT": "Password input in plaintext format.",
+                        "CIPHERTEXT": "Password input in ciphertext format"
+                      },
+                      "x-typeDescription": "SNMP authentication password text type",
+                      "description": "Authentication and privacy-protocol password text format"
+                    },
+                    "auth-pass-cypher": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Auth protocol ciphertext password."
+                    },
+                    "privacy-protocol": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Gateway",
+                        "Switch PVOS",
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ENCR_3DES",
+                        "AES",
+                        "DES",
+                        "AES192",
+                        "AES256"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ENCR_3DES": "3DES encryption method",
+                        "AES": "AES encryption method",
+                        "DES": "DES encryption method",
+                        "AES192": "AES-192 encryption method",
+                        "AES256": "AES-256 encryption method"
+                      },
+                      "x-typeDescription": "IPsec encryption type",
+                      "description": "Privacy Protocols supported for SNMP user.\nRange for AP: DES and AES."
+                    },
+                    "privacy-password": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Gateway",
+                        "Switch PVOS",
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "x-mandatory": true,
+                      "description": "Privacy Protocol Password. This parameter to be configured along with privacy-protocol."
+                    },
+                    "priv-pass-cypher": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Privacy protocol cyphertext password."
+                    },
+                    "access-level": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "RO",
+                        "RW"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "RO": "read-only access for snmpv3 user.",
+                        "RW": "read-write access for snmpv3 user."
+                      },
+                      "x-typeDescription": "SNMP V3 user access level.",
+                      "description": "ro - read-only access for snmpv3 user.\nrw - read-write access for snmpv3 user."
+                    },
+                    "access-mode": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MANAGER",
+                        "OPERATOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MANAGER": "manager level access for snmp user.",
+                        "OPERATOR": "operator level access for snmp user."
+                      },
+                      "x-typeDescription": "SNMP user access mode.",
+                      "description": "Access mode of user."
+                    },
+                    "auth-required": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Authentication required for user to communicate."
+                    },
+                    "privacy-required": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Privacy required for user to communicate."
+                    },
+                    "view-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 33,
+                      "description": "SNMP view name."
+                    },
+                    "context": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMP view name."
+                    }
+                  },
+                  "required": [
+                    "auth-password",
+                    "privacy-password"
+                  ]
+                },
+                "x-key": [
+                  "userName"
+                ],
+                "maxItems": 2147483647
+              },
+              "remote-user": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "description": "List of users on a remote SNMP engine who receives the inform notifications.",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "engine-id-username": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Key combination of engine-id and username separated by ~"
+                    },
+                    "engine-id": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 6,
+                      "maxLength": 38,
+                      "x-typeDescription": "Engine ID of SNMP host in HEX eg. 8000052301A9FEA484.",
+                      "description": "Engine id of the remote system for V3 informs."
+                    },
+                    "username": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 31,
+                      "description": "The user name that receives inform notifications on a remote device."
+                    },
+                    "auth-protocol": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "MD5",
+                        "SHA1",
+                        "SHA224",
+                        "SHA256",
+                        "SHA384",
+                        "SHA512"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "MD5": "MD5 authentication",
+                        "SHA1": "SHA1 authentication",
+                        "SHA224": "SHA224 authentication",
+                        "SHA256": "SHA256 authentication",
+                        "SHA384": "SHA384 authentication",
+                        "SHA512": "SHA512 authentication"
+                      },
+                      "x-typeDescription": "SNMP Authentication types.",
+                      "description": "Auth protocols supported for SNMP inform notifications."
+                    },
+                    "auth-password": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "x-mandatory": true,
+                      "description": "Auth protocol password for SNMP inform notifications."
+                    },
+                    "privacy-protocol": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ENCR_3DES",
+                        "AES",
+                        "DES",
+                        "AES192",
+                        "AES256"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ENCR_3DES": "3DES encryption method",
+                        "AES": "AES encryption method",
+                        "DES": "DES encryption method",
+                        "AES192": "AES-192 encryption method",
+                        "AES256": "AES-256 encryption method"
+                      },
+                      "x-typeDescription": "IPsec encryption type",
+                      "description": "Privacy protocols supported for SNMP inform notifications."
+                    },
+                    "privacy-password": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "x-mandatory": true,
+                      "description": "Privacy protocol password for SNMP inform notifications."
+                    }
+                  },
+                  "required": [
+                    "auth-password",
+                    "privacy-password"
+                  ]
+                },
+                "x-key": [
+                  "engineIdUsername"
+                ],
+                "maxItems": 2147483647
+              },
+              "restricted-access": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable SNMPv1 and SNMPv2c access properties."
+              },
+              "vrf": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "name-type",
+                  "x-patterns": "'([^\\\\/ ]+)'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                  "description": "The VRF on which SNMP server is enabled."
+                },
+                "maxItems": 2147483647
+              },
+              "notification-receiver": {
+                "description": "List of SNMP Notification receivers (traps or informs).",
+                "x-supportedDeviceType": [
+                  "Gateway",
+                  "Switch CX",
+                  "Access Point",
+                  "Switch PVOS"
+                ],
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "host-port-version-receiver-name-vrf": {
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "description": "Key combination of host,port,version and receiver-name separated by ~"
+                    },
+                    "management-interface": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable management port usage for SNMP notification receiver."
+                    },
+                    "trap-level": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ALL",
+                        "CRITICAL",
+                        "NOTINFO",
+                        "DEBUG",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ALL": "All log events.",
+                        "CRITICAL": "Only critical level log events.",
+                        "NOTINFO": "Only critical, warn and debug level log events.",
+                        "DEBUG": "Only debug level events.",
+                        "NONE": "No log events."
+                      },
+                      "x-typeDescription": "SNMP trap level type.",
+                      "description": "Trap level used for logging events to notification receiver."
+                    },
+                    "inform": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS",
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "x-mandatory": true,
+                      "description": "Acknowledgement will be received from SNMP server for inform notification type.\nIf inform is not set, notifcation type is trap.\nThis parameter is applicable for v2c & v3 version host only."
+                    },
+                    "interval": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "Inform retry interval duration in seconds."
+                    },
+                    "retrycount": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "Number of retries to this host before giving up on the Inform."
+                    },
+                    "host-engineid": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 6,
+                      "maxLength": 38,
+                      "x-typeDescription": "Engine ID of SNMP host in HEX eg. 8000052301A9FEA484.",
+                      "description": "Engine ID of SNMP notification host.\nThis parameter is applicable for v3 trap host type only."
+                    },
+                    "trap-profile": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-snmp-trap:snmp-trap/ac-snmp-trap:profile/ac-snmp-trap:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "SNMP Traps profile name"
+                    },
+                    "trap-group": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Gateway"
+                        ],
+                        "type": "string",
+                        "format": "const",
+                        "minLength": 1,
+                        "maxLength": 255,
+                        "description": "List of trap groups."
+                      },
+                      "maxItems": 2147483647
+                    },
+                    "notification-type": {
+                      "type": "array",
+                      "items": {
+                        "x-supportedDeviceType": [
+                          "Switch CX"
+                        ],
+                        "type": "string",
+                        "enum": [
+                          "AAA_SERVER_NOTF",
+                          "ALARM_NOTF",
+                          "BGP_NOTF",
+                          "CARD_NOTF",
+                          "CONFIG_NOTF",
+                          "ENTITY_NOTF",
+                          "FAN_NOTF",
+                          "INTERFACE_NOTF",
+                          "LLDP_NOTF",
+                          "LOOP_PROTECT_NOTF",
+                          "MAC_NOCTIFY_NOTF",
+                          "MSTP_NOTF",
+                          "MVRP_NOTF",
+                          "OSPF_NOTF",
+                          "OSPFV3_NOTF",
+                          "PORT_SECURITY_NOTF",
+                          "POWER_NOTF",
+                          "POWER_ETHERNET_NOTF",
+                          "RMON_NOTF",
+                          "RPVST_NOTF",
+                          "SNMP_NOTF",
+                          "STP_NOTF",
+                          "TEMPERATURE_NOTF",
+                          "VRRP_NOTF",
+                          "VSF_NOTF",
+                          "VSX_NOTF"
+                        ],
+                        "format": "enum",
+                        "x-enumDescriptions": {
+                          "AAA_SERVER_NOTF": "Send AAA notifications.",
+                          "ALARM_NOTF": "Send Alarm notifications.",
+                          "BGP_NOTF": "Send BGP state change notifications.",
+                          "CARD_NOTF": "Send Line-Card notifications.",
+                          "CONFIG_NOTF": "Send Config change notifications.",
+                          "ENTITY_NOTF": "Send Entity notifications.",
+                          "FAN_NOTF": "Send Fan notifications.",
+                          "INTERFACE_NOTF": "Send Interface notifications.",
+                          "LLDP_NOTF": "Send LLDP notifications.",
+                          "LOOP_PROTECT_NOTF": "Send Loop Protect notifications.",
+                          "MAC_NOCTIFY_NOTF": "Send MAC Notify notifications.",
+                          "MSTP_NOTF": "Send MSTP notifications.",
+                          "MVRP_NOTF": "Send MVRP notifications.",
+                          "OSPF_NOTF": "Send OSPFv2 notifications.",
+                          "OSPFV3_NOTF": "Send OSPFv3 notifications.",
+                          "PORT_SECURITY_NOTF": "Send Port Security notifications.",
+                          "POWER_NOTF": "Send Power notifications.",
+                          "POWER_ETHERNET_NOTF": "Send Power over Ethernet notifications.",
+                          "RMON_NOTF": "Send RMON notifications.",
+                          "RPVST_NOTF": "Send RPVST notifications.",
+                          "SNMP_NOTF": "Send SNMP notifications.",
+                          "STP_NOTF": "Send STP notifications.",
+                          "TEMPERATURE_NOTF": "Send Temperature notifications.",
+                          "VRRP_NOTF": "Send VRRP notifications.",
+                          "VSF_NOTF": "Send VSF notifications.",
+                          "VSX_NOTF": "Send VSX notifications."
+                        },
+                        "x-typeDescription": "SNMP notification types.",
+                        "description": "The type of this notification"
+                      },
+                      "maxItems": 2147483647
+                    }
+                  },
+                  "required": [
+                    "inform"
+                  ]
+                },
+                "x-key": [
+                  "hostPortVersionReceiverNameVrf"
+                ],
+                "maxItems": 2147483647
+              },
+              "snmp-response-source": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Source IP/interface for SNMP responses",
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaSnmp_InterfaceGroup"
+                    },
+                    {
+                      "properties": {
+                        "vrf": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "name-type",
+                          "x-patterns": "'([^\\\\/ ]+)'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                          "description": "The VRF associated with this trap-source."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "x-key": [
+                  "vrf"
+                ],
+                "maxItems": 2147483647
+              },
+              "snmp-trap-source": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Source IP/interface for SNMP traps",
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaSnmp_InterfaceGroup"
+                    },
+                    {
+                      "properties": {
+                        "vrf": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "name-type",
+                          "x-patterns": "'([^\\\\/ ]+)'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                          "description": "The VRF associated with this trap-source."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "x-key": [
+                  "vrf"
+                ],
+                "maxItems": 2147483647
+              },
+              "vrrp-id": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 255,
+                "description": "VRRP instance ID. This enables to use VRRP IP address\nas source address in SNMP traps.\nOnly VRRP-ID or IP address as SNMP trap-source can be configured and not both."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaSnmp_InterfaceGroup": {
+        "description": "SNMP trap and response source interface",
+        "properties": {
+          "source-ipv4": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "trap/response source IPv4 address."
+          },
+          "source-ipv6": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "trap/response source IPv6 address."
+          },
+          "ethernet-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-eth:ethernet-interfaces/ac-if-eth:interface/ac-if-eth:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'((enet|usb)\\d+)|(\\w+(/\\w+)?(/\\d+)?(:\\d)?)'",
+            "maxLength": 9999,
+            "description": "trap/response source ethernet interfaces (Ex. '1/1/1')."
+          },
+          "lag-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-lag:portchannels/ac-if-lag:interface/ac-if-lag:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'(\\d+)'",
+            "maxLength": 9999,
+            "description": "trap/response source lag interfaces (Ex. 'lag10')."
+          },
+          "vlan-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "trap/response source vlan interfaces (Ex. 'vlan10')."
+          },
+          "loopback-interface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "trap/response source loopback interfaces (Ex. 'loopback1')."
+          }
+        }
+      },
+      "ArubaSnmp_NotifyGroup": {
+        "description": "SNMPv3 notify parameters.",
+        "properties": {
+          "notify-group": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "List of SNMPv3 notify groups.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "notify-name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 notify name."
+                },
+                "tag": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 tag value."
+                },
+                "notify": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "TRAP",
+                    "INFORM"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "TRAP": "SNMPv3 notify type is trap.",
+                    "INFORM": "SNMPv3 notify type is inform."
+                  },
+                  "x-typeDescription": "Notification type",
+                  "description": "Notification type"
+                }
+              }
+            },
+            "x-key": [
+              "notifyName"
+            ],
+            "maxItems": 2147483647
+          },
+          "target": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "List of SNMPv3 targets.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "target-name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 target name."
+                },
+                "params": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-mandatory": true,
+                  "description": "SNMPv3 param value."
+                },
+                "address": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                    }
+                  ],
+                  "x-mandatory": true,
+                  "description": "SNMPv3 target address."
+                },
+                "address-mask": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "SNMPv3 range of target addresses with this mask."
+                },
+                "filter": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "ALL",
+                    "CRITICAL",
+                    "NOTINFO",
+                    "DEBUG",
+                    "NONE"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "ALL": "All log events.",
+                    "CRITICAL": "Only critical level log events.",
+                    "NOTINFO": "Only critical, warn and debug level log events.",
+                    "DEBUG": "Only debug level events.",
+                    "NONE": "No log events."
+                  },
+                  "x-typeDescription": "SNMP trap level type.",
+                  "description": "Log filter level."
+                },
+                "max-message-size": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 484,
+                  "maximum": 65535,
+                  "default": "1472",
+                  "description": "Maximum message size value."
+                },
+                "udp-port": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 65535,
+                  "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                  "default": "162",
+                  "description": "UDP port number to which the messages are sent."
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 65535,
+                    "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                    "description": "Range of UDP ports to which the messages are sent."
+                  },
+                  "maxItems": 2147483647
+                },
+                "retries": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 255,
+                  "default": "3",
+                  "description": "Number of times a notification is retransmitted if no response is received."
+                },
+                "timeout": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 2147483647,
+                  "default": "1500",
+                  "description": "The retransmission interval in milliseconds."
+                },
+                "management-interface": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Use the Management interface to send notification."
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "description": "SNMP notify tag values."
+                  },
+                  "maxItems": 2147483647
+                }
+              },
+              "required": [
+                "params",
+                "address"
+              ]
+            },
+            "x-key": [
+              "targetName"
+            ],
+            "maxItems": 2147483647
+          },
+          "group": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "SNMPv3 User to Group entry.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "group-name-user": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Key combination of group-name and user separated by ~"
+                },
+                "snmp-version": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "V1",
+                    "V2C",
+                    "V3"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "V1": "SNMP version 1.",
+                    "V2C": "SNMP version 2c.",
+                    "V3": "SNMP version 3."
+                  },
+                  "x-typeDescription": "SNMP versions supported.",
+                  "description": "SNMPv3 version associated with this group."
+                }
+              }
+            },
+            "x-key": [
+              "groupNameUser"
+            ],
+            "maxItems": 2147483647
+          },
+          "macsecmib": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "BLOCK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALLOW": "Allow the unsecured access to this MIB.",
+              "BLOCK": "Block the unsecured access to this MIB."
+            },
+            "x-typeDescription": "SNMP MIB access type.",
+            "description": "SNMP access restrictions for the hpicfMACsec MIB"
+          },
+          "switchauthmib": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "INCLUDE",
+              "EXCLUDE"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "INCLUDE": "MIB subtree included in SNMP view.",
+              "EXCLUDE": "MIB subtree excluded in SNMP view."
+            },
+            "x-typeDescription": "SNMP MIB view type.",
+            "description": "SNMP access restrictions for the switchauthmib MIB"
+          },
+          "ieee8021mib": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "BLOCK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "ALLOW": "Allow the unsecured access to this MIB.",
+              "BLOCK": "Block the unsecured access to this MIB."
+            },
+            "x-typeDescription": "SNMP MIB access type.",
+            "description": "SNMP access restrictions for the ieee8021mib MIB"
+          },
+          "param": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "List of SNMPv3 params.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "param-name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 param name."
+                },
+                "user": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-mandatory": true,
+                  "description": "SNMPv3 user associated with this param."
+                },
+                "version": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "V1",
+                    "V2C",
+                    "V3"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "V1": "SNMP version 1.",
+                    "V2C": "SNMP version 2c.",
+                    "V3": "SNMP version 3."
+                  },
+                  "x-typeDescription": "SNMP versions supported.",
+                  "x-mandatory": true,
+                  "description": "SNMPv3 version associated with this param."
+                },
+                "msg-processing": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "V1",
+                    "V2C",
+                    "V3"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "V1": "SNMP version 1.",
+                    "V2C": "SNMP version 2c.",
+                    "V3": "SNMP version 3."
+                  },
+                  "x-typeDescription": "SNMP versions supported.",
+                  "x-mandatory": true,
+                  "description": "SNMPv3 message processing associated with this param."
+                },
+                "method": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "NO_AUTH_NO_PRIV",
+                    "AUTH_NO_PRIV",
+                    "AUTH_PRIV"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "NO_AUTH_NO_PRIV": "No authentication and no data encryption.",
+                    "AUTH_NO_PRIV": "Authentication and no data encryption.",
+                    "AUTH_PRIV": "Authentication and data encryption."
+                  },
+                  "x-typeDescription": "SNMP authentication and data encryption security level.",
+                  "x-mandatory": true,
+                  "description": "Level of validation required."
+                }
+              },
+              "required": [
+                "user",
+                "version",
+                "msg-processing",
+                "method"
+              ]
+            },
+            "x-key": [
+              "paramName"
+            ],
+            "maxItems": 2147483647
+          },
+          "v3-community": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "List of SNMPv3 community.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "index": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 community index."
+                },
+                "v3-community-name": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-mandatory": true,
+                  "description": "SNMPv3 community name."
+                },
+                "security": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "x-mandatory": true,
+                  "description": "SNMPv3 security name."
+                },
+                "tag": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 32,
+                  "description": "SNMPv3 tag value."
+                }
+              },
+              "required": [
+                "v3-community-name",
+                "security"
+              ]
+            },
+            "x-key": [
+              "index"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

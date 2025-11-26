@@ -1,0 +1,133 @@
+  var feedbackform_fc = document.getElementById('feedbackcontainer')
+  var feedbackform_fb = document.getElementById('feedbackbutton')
+  var feedbackform_ff = document.getElementById('feedbackform')
+  var feedbackform_fe = document.getElementById('feedbackemail')
+  var feedbackform_fm = document.getElementById('feedbackmessage')
+  var ratingRadios = document.getElementsByName('rating');
+
+  function extendFeedback() {
+    feedbackform_fc.style.width = '320px'
+    feedbackform_fc.style.height = '240px'
+    feedbackform_fc.style.bottom = '35vh'
+    feedbackform_fb.style.marginRight = '272px'
+    feedbackform_ff.style.display = 'block'
+    feedbackform_fc.style.background = '#fff'
+    feedbackform_fc.style.border = '2px solid #ccc'
+    feedbackform_fc.style.borderRadius = '8px'
+    feedbackform_fc.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)'
+    feedbackform_fb.onclick = function () {
+      closeFeedback()
+    }
+  }
+
+  function closeFeedback() {
+    feedbackform_fc.style.width = '30px'
+    feedbackform_fc.style.height = '119px'
+    feedbackform_fc.style.bottom = '35vh'
+    feedbackform_fb.style.marginRight = '-45px'
+    feedbackform_fc.style.background = 'inherit'
+    feedbackform_ff.style.display = 'none' 
+    feedbackform_fc.style.borderRadius = 'none' 
+    feedbackform_fc.style.boxShadow = 'none'
+    feedbackform_fb.onclick = function () {
+      extendFeedback()
+    }
+  }
+
+var selectedPageRating; 
+
+function getRating() {
+  for (var i = 0; i < ratingRadios.length; i++) {
+    if (ratingRadios[i].checked) {
+      selectedPageRating = ratingRadios[i].value;
+      break; 
+    }
+  }
+}
+
+function submitFeedback() {
+    getRating();
+    // Construct the feedback data object
+    var feedbackData = {
+        location: country,
+        page: window.location.href,
+        feedback_description: feedbackform_fm.value,
+        rating: selectedPageRating
+    };
+
+    // Alert message and console logs
+    var alertMessage = '\nThank you for your feedback';
+    alert(alertMessage);
+    console.log(alertMessage);
+    console.log("Selected value:", selectedPageRating);
+    console.log("Feedback data:", feedbackData);
+    console.log("Country:", country);
+    
+    // Function to send feedback data to the API
+    async function sendFeedback(data) {
+        const url = 'https://mwkpwii9kd.execute-api.us-east-1.amazonaws.com/prod/update-sheet';
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Success:', result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Call the function to send feedback
+    sendFeedback(feedbackData);
+
+    // Close feedback form
+    closeFeedback();
+}
+
+// Get current page URL
+var currentPageUrl = window.location.href;
+console.log("Page URL:" + currentPageUrl);
+
+// Get user's country and store it in a variable
+var country = '';
+fetch('https://ipapi.co/json/')
+    .then(response => response.json())
+    .then(data => {
+        country = data.country_name;
+        console.log("Country: " + country);
+    })
+    .catch(error => {
+        console.error("Error getting user's country: ", error);
+    });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.rating-label input[type="radio"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            // Add the 'selected' class to the body or parent container when a selection is made
+            document.body.classList.add('selected');
+            
+            // Apply styles to each image based on whether its radio button is checked
+            document.querySelectorAll('.rating-label input[type="radio"]').forEach((input) => {
+                const img = input.nextElementSibling.querySelector('img');
+                if (input.checked) {
+                    img.style.transform = 'scale(1.8)';
+                    img.style.filter = 'none';
+                } else {
+                    img.style.transform = 'scale(1)';
+                    img.style.filter = 'grayscale(100%)';
+                }
+            });
+        });
+    });
+});

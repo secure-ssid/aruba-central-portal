@@ -1,0 +1,1758 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-hotspot2-anqp-venue-name API generated from aruba-hotspot2-anqp-venue-name.yang",
+    "version": "1.0.0",
+    "title": "hotspot2-anqp-venue-name",
+    "x-tag-group": "Wireless"
+  },
+  "tags": [
+    {
+      "name": "anqp-venue-name"
+    }
+  ],
+  "paths": {
+    "/anqp-venue-name": {
+      "get": {
+        "summary": "Read existing ANQP venue information related settings.",
+        "description": "List of venue information be sent in an Access network Query Protocol (ANQP)\ninformation element in a Generic Advertisement Service (GAS) query response.\nUse this to configure the venue group and venue type in an ANQP Venue Name profile.\nIf a client uses the GAS to post an ANQP query to an Access\nPoint, the AP will return ANQP Information Elements with the values configured in this profile.",
+        "operationId": "readAnqpVenueName",
+        "x-cliParam": {
+          "commandName": "readAnqpVenueNameCmd",
+          "summary": "Read operation for anqp-venue-name",
+          "commandUse": "anqp-venue-name",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/anqp-venue-name/"
+        },
+        "tags": [
+          "anqp-venue-name"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2AnqpVenueName_AnqpVenueNameSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anqp-venue-name/{name}": {
+      "post": {
+        "summary": "Create ANQP venue information profile.",
+        "description": "List of venue information be sent in an ANQP information element in a GAS query response.",
+        "operationId": "createAnqpVenueNameAnqpVenueNameProfileByID",
+        "x-cliParam": {
+          "commandName": "createAnqpVenueNameAnqpVenueNameProfileCmd",
+          "summary": "Create operation for anqp-venue-name-profile",
+          "commandUse": "anqp-venue-name-profile",
+          "parentCommand": "createAnqpVenueNameCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-venue-name/anqp-venue-name-profile/%s/"
+        },
+        "tags": [
+          "anqp-venue-name"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing ANQP venue information profile.",
+        "description": "List of venue information be sent in an ANQP information element in a GAS query response.",
+        "operationId": "readAnqpVenueNameAnqpVenueNameProfileByID",
+        "x-cliParam": {
+          "commandName": "readAnqpVenueNameAnqpVenueNameProfileCmd",
+          "summary": "Read operation for anqp-venue-name-profile",
+          "commandUse": "anqp-venue-name-profile",
+          "parentCommand": "readAnqpVenueNameCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-venue-name/anqp-venue-name-profile/%s/"
+        },
+        "tags": [
+          "anqp-venue-name"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update anqp-venue-name-profile by {name}",
+        "description": "List of venue information be sent in an ANQP information element in a GAS query response.",
+        "operationId": "updateAnqpVenueNameAnqpVenueNameProfileByID",
+        "x-cliParam": {
+          "commandName": "updateAnqpVenueNameAnqpVenueNameProfileCmd",
+          "summary": "Update operation for anqp-venue-name-profile",
+          "commandUse": "anqp-venue-name-profile",
+          "parentCommand": "updateAnqpVenueNameCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-venue-name/anqp-venue-name-profile/%s/"
+        },
+        "tags": [
+          "anqp-venue-name"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete ANQP venue information profile.",
+        "description": "List of venue information be sent in an ANQP information element in a GAS query response.",
+        "operationId": "deleteAnqpVenueNameAnqpVenueNameProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteAnqpVenueNameAnqpVenueNameProfileCmd",
+          "summary": "Delete operation for anqp-venue-name-profile",
+          "commandUse": "anqp-venue-name-profile",
+          "parentCommand": "deleteAnqpVenueNameCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/anqp-venue-name/anqp-venue-name-profile/%s/"
+        },
+        "tags": [
+          "anqp-venue-name"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema"
+            }
+          }
+        },
+        "description": "anqp-venue-name-profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaHotspot2AnqpVenueName_AnqpVenueNameSchema": {
+        "description": "List of venue information be sent in an Access network Query Protocol (ANQP)\ninformation element in a Generic Advertisement Service (GAS) query response.\nUse this to configure the venue group and venue type in an ANQP Venue Name profile.\nIf a client uses the GAS to post an ANQP query to an Access\nPoint, the AP will return ANQP Information Elements with the values configured in this profile.",
+        "properties": {
+          "anqp-venue-name-profile": {
+            "description": "List of venue information be sent in an ANQP information element in a GAS query response.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Profile name."
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "Enable this profile."
+                },
+                "group-type": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "UNSPECIFIED_UNSPECIFIED",
+                    "ASSEMBLY_UNSPECIFIED",
+                    "ASSEMBLY_ARENA",
+                    "ASSEMBLY_STADIUM",
+                    "ASSEMBLY_PASSENGER_TERMINAL",
+                    "ASSEMBLY_AMPHITHEATER",
+                    "ASSEMBLY_AMUSEMENT_PARK",
+                    "ASSEMBLY_PLACE_OF_WORSHIP",
+                    "ASSEMBLY_CONVENTION_CENTER",
+                    "ASSEMBLY_LIBRARY",
+                    "ASSEMBLY_MUSEUM",
+                    "ASSEMBLY_RESTAURANT",
+                    "ASSEMBLY_THEATER",
+                    "ASSEMBLY_BAR",
+                    "ASSEMBLY_COFFEE_SHOP",
+                    "ASSEMBLY_ZOO_OR_AQUARIUM",
+                    "ASSEMBLY_EMERGENCY_CORD_CENTER",
+                    "BUSINESS_UNSPECIFIED",
+                    "BUSINESS_DOCTOR",
+                    "BUSINESS_BANK",
+                    "BUSINESS_FIRE_STATION",
+                    "BUSINESS_POLICE_STATION",
+                    "BUSINESS_POST_OFFICE",
+                    "BUSINESS_PROFESSIONAL_OFFICE",
+                    "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+                    "BUSINESS_ATTORNEY_OFFICE",
+                    "EDUCATIONAL_UNSPECIFIED",
+                    "EDUCATIONAL_SCHOOL_PRIMARY",
+                    "EDUCATIONAL_SCHOOL_SECONDARY",
+                    "EDUCATIONAL_UNIV_OR_COLLEGE",
+                    "FACTORY_AND_INDUSTRIAL_UNSPECIFIED",
+                    "FACTORY_AND_INDUSTRIAL_FACTORY",
+                    "INSTITUTIONAL_UNSPECIFIED",
+                    "INSTITUTIONAL_HOSPITAL",
+                    "INSTITUTIONAL_LONG_TERM_CARE",
+                    "INSTITUTIONAL_ALC_DRUG_REHAB",
+                    "INSTITUTIONAL_GROUP_HOME",
+                    "INSTITUTIONAL_PRISON_OR_JAIL",
+                    "MERCANTILE_UNSPECIFIED",
+                    "MERCANTILE_RETAIL_STORE",
+                    "MERCANTILE_GROCERY_MARKET",
+                    "MERCANTILE_AUTO_SERVICE_STATION",
+                    "MERCANTILE_SHOPPING_MALL",
+                    "MERCANTILE_GAS_STATION",
+                    "RESIDENTIAL_UNSPECIFIED",
+                    "RESIDENTIAL_PRIVATE_RESIDENCE",
+                    "RESIDENTIAL_HOTEL",
+                    "RESIDENTIAL_DORMITORY",
+                    "RESIDENTIAL_BOARDING_HOUSE",
+                    "STORAGE_UNSPECIFIED",
+                    "UTILITY_AND_MISC_UNSPECIFIED",
+                    "VEHICULAR_UNSPECIFIED",
+                    "VEHICULAR_AUTOMOBILE_OR_TRUCK",
+                    "VEHICULAR_AIRPLANE",
+                    "VEHICULAR_BUS",
+                    "VEHICULAR_FERRY",
+                    "VEHICULAR_SHIP",
+                    "VEHICULAR_TRAIN",
+                    "VEHICULAR_MOTOR_BIKE",
+                    "OUTDOOR_UNSPECIFIED",
+                    "OUTDOOR_MUNI_MESH_NETWORK",
+                    "OUTDOOR_CITY_PARK",
+                    "OUTDOOR_REST_AREA",
+                    "OUTDOOR_TRAFFIC_CONTROL",
+                    "OUTDOOR_BUS_STOP",
+                    "OUTDOOR_KIOSK"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "UNSPECIFIED_UNSPECIFIED": "venue-group is Unspecified, venue-type is Unspecified",
+                    "ASSEMBLY_UNSPECIFIED": "venue-group is Assembly, venue-type is Unspecified",
+                    "ASSEMBLY_ARENA": "venue-group is Assembly, venue-type is Arena",
+                    "ASSEMBLY_STADIUM": "venue-group is Assembly, venue-type is Stadium",
+                    "ASSEMBLY_PASSENGER_TERMINAL": "venue-group is Assembly, venue-type is Passenger-terminal",
+                    "ASSEMBLY_AMPHITHEATER": "venue-group is Assembly, venue-type is Amphitheater",
+                    "ASSEMBLY_AMUSEMENT_PARK": "venue-group is Assembly, venue-type is Amusement-park",
+                    "ASSEMBLY_PLACE_OF_WORSHIP": "venue-group is Assembly, venue-type is Place-of-worship",
+                    "ASSEMBLY_CONVENTION_CENTER": "venue-group is Assembly, venue-type is Convention-center",
+                    "ASSEMBLY_LIBRARY": "venue-group is Assembly, venue-type is Library",
+                    "ASSEMBLY_MUSEUM": "venue-group is Assembly, venue-type is Museum",
+                    "ASSEMBLY_RESTAURANT": "venue-group is Assembly, venue-type is Restaurant",
+                    "ASSEMBLY_THEATER": "venue-group is Assembly, venue-type is Theater",
+                    "ASSEMBLY_BAR": "venue-group is Assembly, venue-type is Bar",
+                    "ASSEMBLY_COFFEE_SHOP": "venue-group is Assembly, venue-type is Coffee-shop",
+                    "ASSEMBLY_ZOO_OR_AQUARIUM": "venue-group is Assembly, venue-type is Zoo-or-aquarium",
+                    "ASSEMBLY_EMERGENCY_CORD_CENTER": "venue-group is Assembly, venue-type is Emergency-cord-center",
+                    "BUSINESS_UNSPECIFIED": "venue-group is Business, venue-type is Unspecified",
+                    "BUSINESS_DOCTOR": "venue-group is Business, venue-type is Doctor",
+                    "BUSINESS_BANK": "venue-group is Business, venue-type is Bank",
+                    "BUSINESS_FIRE_STATION": "venue-group is Business, venue-type is Fire-station",
+                    "BUSINESS_POLICE_STATION": "venue-group is Business, venue-type is Police-station",
+                    "BUSINESS_POST_OFFICE": "venue-group is Business, venue-type is Post-office",
+                    "BUSINESS_PROFESSIONAL_OFFICE": "venue-group is Business, venue-type is Professional-office",
+                    "BUSINESS_RESEARCH_AND_DEV_FACILITY": "venue-group is Business, venue-type is Research-and-dev-facility",
+                    "BUSINESS_ATTORNEY_OFFICE": "venue-group is Business, venue-type is Attorney-office",
+                    "EDUCATIONAL_UNSPECIFIED": "venue-group is Educational, venue-type is Unspecified",
+                    "EDUCATIONAL_SCHOOL_PRIMARY": "venue-group is Educational, venue-type is School-primary",
+                    "EDUCATIONAL_SCHOOL_SECONDARY": "venue-group is Educational, venue-type is School-secondary",
+                    "EDUCATIONAL_UNIV_OR_COLLEGE": "venue-group is Educational, venue-type is Univ-or-college",
+                    "FACTORY_AND_INDUSTRIAL_UNSPECIFIED": "venue-group is Factory-and-industrial, venue-type is Unspecified",
+                    "FACTORY_AND_INDUSTRIAL_FACTORY": "venue-group is Factory-and-industrial, venue-type is Factory",
+                    "INSTITUTIONAL_UNSPECIFIED": "venue-group is Institutional, venue-type is Unspecified",
+                    "INSTITUTIONAL_HOSPITAL": "venue-group is Institutional, venue-type is Hospital",
+                    "INSTITUTIONAL_LONG_TERM_CARE": "venue-group is Institutional, venue-type is Long-term-care",
+                    "INSTITUTIONAL_ALC_DRUG_REHAB": "venue-group is Institutional, venue-type is Alc-drug-rehab",
+                    "INSTITUTIONAL_GROUP_HOME": "venue-group is Institutional, venue-type is Group-home",
+                    "INSTITUTIONAL_PRISON_OR_JAIL": "venue-group is Institutional, venue-type is Prison-or-jail",
+                    "MERCANTILE_UNSPECIFIED": "venue-group is Mercantile, venue-type is Unspecified",
+                    "MERCANTILE_RETAIL_STORE": "venue-group is Mercantile, venue-type is Retail-store",
+                    "MERCANTILE_GROCERY_MARKET": "venue-group is Mercantile, venue-type is Grocery-market",
+                    "MERCANTILE_AUTO_SERVICE_STATION": "venue-group is Mercantile, venue-type is Auto-service-station",
+                    "MERCANTILE_SHOPPING_MALL": "venue-group is Mercantile, venue-type is Shopping-mall",
+                    "MERCANTILE_GAS_STATION": "venue-group is Mercantile, venue-type is Gas-station",
+                    "RESIDENTIAL_UNSPECIFIED": "venue-group is Residential, venue-type is Unspecified",
+                    "RESIDENTIAL_PRIVATE_RESIDENCE": "venue-group is Residential, venue-type is Private-residence",
+                    "RESIDENTIAL_HOTEL": "venue-group is Residential, venue-type is Hotel",
+                    "RESIDENTIAL_DORMITORY": "venue-group is Residential, venue-type is Dormitory",
+                    "RESIDENTIAL_BOARDING_HOUSE": "venue-group is Residential, venue-type is Boarding-house",
+                    "STORAGE_UNSPECIFIED": "venue-group is Storage, venue-type is Unspecified",
+                    "UTILITY_AND_MISC_UNSPECIFIED": "venue-group is Utility-and-misc, venue-type is Unspecified",
+                    "VEHICULAR_UNSPECIFIED": "venue-group is Vehicular, venue-type is Unspecified",
+                    "VEHICULAR_AUTOMOBILE_OR_TRUCK": "venue-group is Vehicular, venue-type is Automobile-or-truck",
+                    "VEHICULAR_AIRPLANE": "venue-group is Vehicular, venue-type is Airplane",
+                    "VEHICULAR_BUS": "venue-group is Vehicular, venue-type is Bus",
+                    "VEHICULAR_FERRY": "venue-group is Vehicular, venue-type is Ferry",
+                    "VEHICULAR_SHIP": "venue-group is Vehicular, venue-type is Ship",
+                    "VEHICULAR_TRAIN": "venue-group is Vehicular, venue-type is Train",
+                    "VEHICULAR_MOTOR_BIKE": "venue-group is Vehicular, venue-type is Motor-bike",
+                    "OUTDOOR_UNSPECIFIED": "venue-group is Outdoor, venue-type is Unspecified",
+                    "OUTDOOR_MUNI_MESH_NETWORK": "venue-group is Outdoor, venue-type is Muni-mesh-network",
+                    "OUTDOOR_CITY_PARK": "venue-group is Outdoor, venue-type is City-park",
+                    "OUTDOOR_REST_AREA": "venue-group is Outdoor, venue-type is Rest-area",
+                    "OUTDOOR_TRAFFIC_CONTROL": "venue-group is Outdoor, venue-type is Traffic-control",
+                    "OUTDOOR_BUS_STOP": "venue-group is Outdoor, venue-type is Bus-stop",
+                    "OUTDOOR_KIOSK": "venue-group is Outdoor, venue-type is Kiosk"
+                  },
+                  "x-typeDescription": "The enum define of hotspot venue group and venue type.",
+                  "default": "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+                  "description": "Network Venue Group"
+                },
+                "lang-code": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 0,
+                  "maxLength": 3,
+                  "description": "An ISO 639 language code that identifies the language used in the Venue Name field."
+                },
+                "name-hex": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "minLength": 1,
+                  "maxLength": 504,
+                  "x-patternSources": "name-hex",
+                  "x-patterns": "'[0-9a-fA-F]+'",
+                  "description": "Network Venue Name in HEX for non-english."
+                },
+                "venue-name": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 252,
+                  "description": "Network Venue Name"
+                },
+                "url": {
+                  "x-supportedDeviceType": [
+                    "Access Point"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Venue URL where customer may go to get additional info related to the venue."
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaHotspot2AnqpVenueName_AnqpVenueNameSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaHotspot2AnqpVenueName_AnqpVenueNameSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaHotspot2AnqpVenueName_AnqpVenueNameanqpVenueNameProfileSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Profile name."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Enable this profile."
+          },
+          "group-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "UNSPECIFIED_UNSPECIFIED",
+              "ASSEMBLY_UNSPECIFIED",
+              "ASSEMBLY_ARENA",
+              "ASSEMBLY_STADIUM",
+              "ASSEMBLY_PASSENGER_TERMINAL",
+              "ASSEMBLY_AMPHITHEATER",
+              "ASSEMBLY_AMUSEMENT_PARK",
+              "ASSEMBLY_PLACE_OF_WORSHIP",
+              "ASSEMBLY_CONVENTION_CENTER",
+              "ASSEMBLY_LIBRARY",
+              "ASSEMBLY_MUSEUM",
+              "ASSEMBLY_RESTAURANT",
+              "ASSEMBLY_THEATER",
+              "ASSEMBLY_BAR",
+              "ASSEMBLY_COFFEE_SHOP",
+              "ASSEMBLY_ZOO_OR_AQUARIUM",
+              "ASSEMBLY_EMERGENCY_CORD_CENTER",
+              "BUSINESS_UNSPECIFIED",
+              "BUSINESS_DOCTOR",
+              "BUSINESS_BANK",
+              "BUSINESS_FIRE_STATION",
+              "BUSINESS_POLICE_STATION",
+              "BUSINESS_POST_OFFICE",
+              "BUSINESS_PROFESSIONAL_OFFICE",
+              "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+              "BUSINESS_ATTORNEY_OFFICE",
+              "EDUCATIONAL_UNSPECIFIED",
+              "EDUCATIONAL_SCHOOL_PRIMARY",
+              "EDUCATIONAL_SCHOOL_SECONDARY",
+              "EDUCATIONAL_UNIV_OR_COLLEGE",
+              "FACTORY_AND_INDUSTRIAL_UNSPECIFIED",
+              "FACTORY_AND_INDUSTRIAL_FACTORY",
+              "INSTITUTIONAL_UNSPECIFIED",
+              "INSTITUTIONAL_HOSPITAL",
+              "INSTITUTIONAL_LONG_TERM_CARE",
+              "INSTITUTIONAL_ALC_DRUG_REHAB",
+              "INSTITUTIONAL_GROUP_HOME",
+              "INSTITUTIONAL_PRISON_OR_JAIL",
+              "MERCANTILE_UNSPECIFIED",
+              "MERCANTILE_RETAIL_STORE",
+              "MERCANTILE_GROCERY_MARKET",
+              "MERCANTILE_AUTO_SERVICE_STATION",
+              "MERCANTILE_SHOPPING_MALL",
+              "MERCANTILE_GAS_STATION",
+              "RESIDENTIAL_UNSPECIFIED",
+              "RESIDENTIAL_PRIVATE_RESIDENCE",
+              "RESIDENTIAL_HOTEL",
+              "RESIDENTIAL_DORMITORY",
+              "RESIDENTIAL_BOARDING_HOUSE",
+              "STORAGE_UNSPECIFIED",
+              "UTILITY_AND_MISC_UNSPECIFIED",
+              "VEHICULAR_UNSPECIFIED",
+              "VEHICULAR_AUTOMOBILE_OR_TRUCK",
+              "VEHICULAR_AIRPLANE",
+              "VEHICULAR_BUS",
+              "VEHICULAR_FERRY",
+              "VEHICULAR_SHIP",
+              "VEHICULAR_TRAIN",
+              "VEHICULAR_MOTOR_BIKE",
+              "OUTDOOR_UNSPECIFIED",
+              "OUTDOOR_MUNI_MESH_NETWORK",
+              "OUTDOOR_CITY_PARK",
+              "OUTDOOR_REST_AREA",
+              "OUTDOOR_TRAFFIC_CONTROL",
+              "OUTDOOR_BUS_STOP",
+              "OUTDOOR_KIOSK"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "UNSPECIFIED_UNSPECIFIED": "venue-group is Unspecified, venue-type is Unspecified",
+              "ASSEMBLY_UNSPECIFIED": "venue-group is Assembly, venue-type is Unspecified",
+              "ASSEMBLY_ARENA": "venue-group is Assembly, venue-type is Arena",
+              "ASSEMBLY_STADIUM": "venue-group is Assembly, venue-type is Stadium",
+              "ASSEMBLY_PASSENGER_TERMINAL": "venue-group is Assembly, venue-type is Passenger-terminal",
+              "ASSEMBLY_AMPHITHEATER": "venue-group is Assembly, venue-type is Amphitheater",
+              "ASSEMBLY_AMUSEMENT_PARK": "venue-group is Assembly, venue-type is Amusement-park",
+              "ASSEMBLY_PLACE_OF_WORSHIP": "venue-group is Assembly, venue-type is Place-of-worship",
+              "ASSEMBLY_CONVENTION_CENTER": "venue-group is Assembly, venue-type is Convention-center",
+              "ASSEMBLY_LIBRARY": "venue-group is Assembly, venue-type is Library",
+              "ASSEMBLY_MUSEUM": "venue-group is Assembly, venue-type is Museum",
+              "ASSEMBLY_RESTAURANT": "venue-group is Assembly, venue-type is Restaurant",
+              "ASSEMBLY_THEATER": "venue-group is Assembly, venue-type is Theater",
+              "ASSEMBLY_BAR": "venue-group is Assembly, venue-type is Bar",
+              "ASSEMBLY_COFFEE_SHOP": "venue-group is Assembly, venue-type is Coffee-shop",
+              "ASSEMBLY_ZOO_OR_AQUARIUM": "venue-group is Assembly, venue-type is Zoo-or-aquarium",
+              "ASSEMBLY_EMERGENCY_CORD_CENTER": "venue-group is Assembly, venue-type is Emergency-cord-center",
+              "BUSINESS_UNSPECIFIED": "venue-group is Business, venue-type is Unspecified",
+              "BUSINESS_DOCTOR": "venue-group is Business, venue-type is Doctor",
+              "BUSINESS_BANK": "venue-group is Business, venue-type is Bank",
+              "BUSINESS_FIRE_STATION": "venue-group is Business, venue-type is Fire-station",
+              "BUSINESS_POLICE_STATION": "venue-group is Business, venue-type is Police-station",
+              "BUSINESS_POST_OFFICE": "venue-group is Business, venue-type is Post-office",
+              "BUSINESS_PROFESSIONAL_OFFICE": "venue-group is Business, venue-type is Professional-office",
+              "BUSINESS_RESEARCH_AND_DEV_FACILITY": "venue-group is Business, venue-type is Research-and-dev-facility",
+              "BUSINESS_ATTORNEY_OFFICE": "venue-group is Business, venue-type is Attorney-office",
+              "EDUCATIONAL_UNSPECIFIED": "venue-group is Educational, venue-type is Unspecified",
+              "EDUCATIONAL_SCHOOL_PRIMARY": "venue-group is Educational, venue-type is School-primary",
+              "EDUCATIONAL_SCHOOL_SECONDARY": "venue-group is Educational, venue-type is School-secondary",
+              "EDUCATIONAL_UNIV_OR_COLLEGE": "venue-group is Educational, venue-type is Univ-or-college",
+              "FACTORY_AND_INDUSTRIAL_UNSPECIFIED": "venue-group is Factory-and-industrial, venue-type is Unspecified",
+              "FACTORY_AND_INDUSTRIAL_FACTORY": "venue-group is Factory-and-industrial, venue-type is Factory",
+              "INSTITUTIONAL_UNSPECIFIED": "venue-group is Institutional, venue-type is Unspecified",
+              "INSTITUTIONAL_HOSPITAL": "venue-group is Institutional, venue-type is Hospital",
+              "INSTITUTIONAL_LONG_TERM_CARE": "venue-group is Institutional, venue-type is Long-term-care",
+              "INSTITUTIONAL_ALC_DRUG_REHAB": "venue-group is Institutional, venue-type is Alc-drug-rehab",
+              "INSTITUTIONAL_GROUP_HOME": "venue-group is Institutional, venue-type is Group-home",
+              "INSTITUTIONAL_PRISON_OR_JAIL": "venue-group is Institutional, venue-type is Prison-or-jail",
+              "MERCANTILE_UNSPECIFIED": "venue-group is Mercantile, venue-type is Unspecified",
+              "MERCANTILE_RETAIL_STORE": "venue-group is Mercantile, venue-type is Retail-store",
+              "MERCANTILE_GROCERY_MARKET": "venue-group is Mercantile, venue-type is Grocery-market",
+              "MERCANTILE_AUTO_SERVICE_STATION": "venue-group is Mercantile, venue-type is Auto-service-station",
+              "MERCANTILE_SHOPPING_MALL": "venue-group is Mercantile, venue-type is Shopping-mall",
+              "MERCANTILE_GAS_STATION": "venue-group is Mercantile, venue-type is Gas-station",
+              "RESIDENTIAL_UNSPECIFIED": "venue-group is Residential, venue-type is Unspecified",
+              "RESIDENTIAL_PRIVATE_RESIDENCE": "venue-group is Residential, venue-type is Private-residence",
+              "RESIDENTIAL_HOTEL": "venue-group is Residential, venue-type is Hotel",
+              "RESIDENTIAL_DORMITORY": "venue-group is Residential, venue-type is Dormitory",
+              "RESIDENTIAL_BOARDING_HOUSE": "venue-group is Residential, venue-type is Boarding-house",
+              "STORAGE_UNSPECIFIED": "venue-group is Storage, venue-type is Unspecified",
+              "UTILITY_AND_MISC_UNSPECIFIED": "venue-group is Utility-and-misc, venue-type is Unspecified",
+              "VEHICULAR_UNSPECIFIED": "venue-group is Vehicular, venue-type is Unspecified",
+              "VEHICULAR_AUTOMOBILE_OR_TRUCK": "venue-group is Vehicular, venue-type is Automobile-or-truck",
+              "VEHICULAR_AIRPLANE": "venue-group is Vehicular, venue-type is Airplane",
+              "VEHICULAR_BUS": "venue-group is Vehicular, venue-type is Bus",
+              "VEHICULAR_FERRY": "venue-group is Vehicular, venue-type is Ferry",
+              "VEHICULAR_SHIP": "venue-group is Vehicular, venue-type is Ship",
+              "VEHICULAR_TRAIN": "venue-group is Vehicular, venue-type is Train",
+              "VEHICULAR_MOTOR_BIKE": "venue-group is Vehicular, venue-type is Motor-bike",
+              "OUTDOOR_UNSPECIFIED": "venue-group is Outdoor, venue-type is Unspecified",
+              "OUTDOOR_MUNI_MESH_NETWORK": "venue-group is Outdoor, venue-type is Muni-mesh-network",
+              "OUTDOOR_CITY_PARK": "venue-group is Outdoor, venue-type is City-park",
+              "OUTDOOR_REST_AREA": "venue-group is Outdoor, venue-type is Rest-area",
+              "OUTDOOR_TRAFFIC_CONTROL": "venue-group is Outdoor, venue-type is Traffic-control",
+              "OUTDOOR_BUS_STOP": "venue-group is Outdoor, venue-type is Bus-stop",
+              "OUTDOOR_KIOSK": "venue-group is Outdoor, venue-type is Kiosk"
+            },
+            "x-typeDescription": "The enum define of hotspot venue group and venue type.",
+            "default": "BUSINESS_RESEARCH_AND_DEV_FACILITY",
+            "description": "Network Venue Group"
+          },
+          "lang-code": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 0,
+            "maxLength": 3,
+            "description": "An ISO 639 language code that identifies the language used in the Venue Name field."
+          },
+          "name-hex": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 504,
+            "x-patternSources": "name-hex",
+            "x-patterns": "'[0-9a-fA-F]+'",
+            "description": "Network Venue Name in HEX for non-english."
+          },
+          "venue-name": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 252,
+            "description": "Network Venue Name"
+          },
+          "url": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Venue URL where customer may go to get additional info related to the venue."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

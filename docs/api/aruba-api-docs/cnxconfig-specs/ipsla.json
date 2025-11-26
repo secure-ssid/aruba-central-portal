@@ -1,0 +1,2449 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-ipsla API generated from aruba-ipsla.yang",
+    "version": "1.0.0",
+    "title": "ipsla",
+    "x-tag-group": "Network Services"
+  },
+  "tags": [
+    {
+      "name": "ipsla"
+    }
+  ],
+  "paths": {
+    "/ipsla": {
+      "get": {
+        "summary": "Read ipsla",
+        "description": "Internet Protocol Service Level Agreement (IPSLA) configuration.\nThis feature is not supported.",
+        "operationId": "readIpsla",
+        "x-cliParam": {
+          "commandName": "readIpslaCmd",
+          "summary": "Read operation for ipsla",
+          "commandUse": "ipsla",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/ipsla/"
+        },
+        "tags": [
+          "ipsla"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaIpsla_IpslaSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ipsla/{name}": {
+      "post": {
+        "summary": "Create profile by {name}",
+        "description": "IPSLA Profile.",
+        "operationId": "createIpslaProfileByID",
+        "x-cliParam": {
+          "commandName": "createIpslaProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createIpslaCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipsla/profile/%s/"
+        },
+        "tags": [
+          "ipsla"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPSLA profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaIpsla_IpslaprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read profile by {name}",
+        "description": "IPSLA Profile.",
+        "operationId": "readIpslaProfileByID",
+        "x-cliParam": {
+          "commandName": "readIpslaProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readIpslaCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipsla/profile/%s/"
+        },
+        "tags": [
+          "ipsla"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPSLA profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaIpsla_IpslaprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile by {name}",
+        "description": "IPSLA Profile.",
+        "operationId": "updateIpslaProfileByID",
+        "x-cliParam": {
+          "commandName": "updateIpslaProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateIpslaCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipsla/profile/%s/"
+        },
+        "tags": [
+          "ipsla"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPSLA profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaIpsla_IpslaprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete profile by {name}",
+        "description": "IPSLA Profile.",
+        "operationId": "deleteIpslaProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteIpslaProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteIpslaCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/ipsla/profile/%s/"
+        },
+        "tags": [
+          "ipsla"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "IPSLA profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaIpsla_IpslaprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaIpsla_IpslaprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaIpsla_IpslaSchema": {
+        "x-supportedDeviceType": [
+          "Switch PVOS"
+        ],
+        "description": "Internet Protocol Service Level Agreement (IPSLA) configuration.\nThis feature is not supported.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "IPSLA Profile.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_IpslaResponderConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_IpslaSourceConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_IpslaWanConfig"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "IPSLA profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "IPSLA profile description."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaIpsla_IpslaSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaIpsla_IpslaSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaIpsla_IpslaprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaIpsla_IpslaResponderConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaIpsla_IpslaSourceConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaIpsla_IpslaWanConfig"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "IPSLA profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "IPSLA profile description."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaIpsla_SourceConfig": {
+        "description": "Grouping for the Source config.",
+        "properties": {
+          "ipv4-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Source IPv4 address."
+          },
+          "ipv6-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "Source IPv6 address."
+          },
+          "interface-ethernet": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-eth:ethernet-interfaces/ac-if-eth:interface/ac-if-eth:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'((enet|usb)\\d+)|(\\w+(/\\w+)?(/\\d+)?(:\\d)?)'",
+            "maxLength": 9999,
+            "description": "Source ethernet interface name."
+          },
+          "interface-portchannel": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-lag:portchannels/ac-if-lag:interface/ac-if-lag:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'(\\d+)'",
+            "maxLength": 9999,
+            "description": "Source port channel"
+          },
+          "interface-vlan": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Source interface vlan"
+          },
+          "interface-loopback": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Source interface loopback"
+          },
+          "interface-tunnel": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-tunnel:tunnel/ac-if-tunnel:interface/ac-if-tunnel:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Source interface tunnel"
+          },
+          "interface-subinterface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-subi:sub-interfaces/ac-if-subi:interface/ac-if-subi:parent-name-id",
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Source subinterface"
+          },
+          "port": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+            "description": "Source port."
+          }
+        }
+      },
+      "ArubaIpsla_ResponderSourceConfig": {
+        "description": "Grouping for the Source config.",
+        "properties": {
+          "ipv4-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv4-address",
+            "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+            "description": "Responder source IPv4 address."
+          },
+          "ipv6-address": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "ipv6-address",
+            "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+            "maxLength": 9999,
+            "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+            "description": "Responder source IPv6 address."
+          },
+          "interface-ethernet": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-eth:ethernet-interfaces/ac-if-eth:interface/ac-if-eth:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'((enet|usb)\\d+)|(\\w+(/\\w+)?(/\\d+)?(:\\d)?)'",
+            "maxLength": 9999,
+            "description": "Source ethernet interface name."
+          },
+          "interface-portchannel": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-lag:portchannels/ac-if-lag:interface/ac-if-lag:name",
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "name",
+            "x-patterns": "'(\\d+)'",
+            "maxLength": 9999,
+            "description": "Source port channel"
+          },
+          "interface-vlan": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 4094,
+            "x-typeDescription": "Type definition representing a single-tagged VLAN",
+            "description": "Source interface vlan"
+          },
+          "interface-loopback": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-loopback:loopback-interfaces/ac-if-loopback:interface/ac-if-loopback:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Source interface loopback"
+          },
+          "interface-tunnel": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-tunnel:tunnel/ac-if-tunnel:interface/ac-if-tunnel:id",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Source interface tunnel"
+          },
+          "interface-subinterface": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-if-subi:sub-interfaces/ac-if-subi:interface/ac-if-subi:parent-name-id",
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Source subinterface"
+          }
+        }
+      },
+      "ArubaIpsla_VoipConfig": {
+        "description": "Grouping for the Voice Over IP (VOIP) config.",
+        "properties": {
+          "voip": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Voice Over IP (VOIP) configuration.",
+            "properties": {
+              "advantage-factor": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 20,
+                "description": "Advantage factor for VOIP."
+              },
+              "codec-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "G_711A",
+                  "G_711U",
+                  "G_729A"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "G_711A": "g711a codec type for the VoIP SLA test.",
+                  "G_711U": "g711u codec type for the VoIP SLA test.",
+                  "G_729A": "g729a codec type for the VoIP SLA test."
+                },
+                "x-typeDescription": "Codec-type for the VoIP SLA test.",
+                "description": "Codec-type for the VOIP SLA test."
+              }
+            }
+          }
+        }
+      },
+      "ArubaIpsla_ScheduleConfig": {
+        "description": "Grouping for the schedule config.",
+        "properties": {
+          "schedule": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "Session schedule configuration.",
+            "properties": {
+              "start": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "NOW",
+                  "START_TIME"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NOW": "Start the session immediately.",
+                  "START_TIME": "Start time for the IPSLA session."
+                },
+                "x-typeDescription": "IPSLA schedule session start type.",
+                "description": "Schedule type to start the session."
+              },
+              "start-value": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "date-and-time",
+                "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])[Tt](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-5][0-9]|60)(\\.[0-9]+)?([Zz]|([+-](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9])))'",
+                "maxLength": 9999,
+                "x-typeDescription": "A date and time, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DDTHH:MM:SSZ+-hh:mm\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value. T is the literal character 'T',\nHH is the hour of the day expressed as a two digit number, using\nthe 24-hour clock, MM is the minute of the hour expressed as a\ntwo digit number. Z is the literal character 'Z', followed by a\ntimezone offset expressed in hours (hh) and minutes (mm), both\nexpressed as two digit numbers. The time offset is specified as\na positive or negative offset to UTC using the '+' or '-'\ncharacter preceding the offset.\n\nOptionally, fractional seconds can be expressed after the minute\nof the hour as a decimal number of unspecified precision\nreflecting fractions of a second.",
+                "description": "Config to schedule session start."
+              },
+              "stop": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "FOREVER",
+                  "REPEAT",
+                  "STOP_TIME"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "FOREVER": "Schedule to run the IP SLA forever.",
+                  "REPEAT": "Number of times the IP SLA tests to be repeated.",
+                  "STOP_TIME": "Stop time for the IPSLA session."
+                },
+                "x-typeDescription": "IPSLA schedule session stop type.",
+                "description": "Schedule type to stop the session."
+              },
+              "repetitions": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 65535,
+                "description": "The number of times the operation will be repeated.\nThis leaf is only valid when the end-condition is 'repetitions'."
+              },
+              "stop-value": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "date-and-time",
+                "x-patterns": "'[0-9]{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|[12][0-9]|3[01])[Tt](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-5][0-9]|60)(\\.[0-9]+)?([Zz]|([+-](0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9])))'",
+                "maxLength": 9999,
+                "x-typeDescription": "A date and time, expressed in the format described in RFC3339.\nThat is to say:\n\nYYYY-MM-DDTHH:MM:SSZ+-hh:mm\n\nwhere YYYY is the year, MM is the month expressed as a two-digit\nmonth (zero padding if required), DD is the day of the month,\nexpressed as a two digit value. T is the literal character 'T',\nHH is the hour of the day expressed as a two digit number, using\nthe 24-hour clock, MM is the minute of the hour expressed as a\ntwo digit number. Z is the literal character 'Z', followed by a\ntimezone offset expressed in hours (hh) and minutes (mm), both\nexpressed as two digit numbers. The time offset is specified as\na positive or negative offset to UTC using the '+' or '-'\ncharacter preceding the offset.\n\nOptionally, fractional seconds can be expressed after the minute\nof the hour as a decimal number of unspecified precision\nreflecting fractions of a second.",
+                "description": "Config to schedule session stop."
+              }
+            }
+          }
+        }
+      },
+      "ArubaIpsla_ThresholdConfig": {
+        "description": "Grouping for the IPSLA threshold config.",
+        "properties": {
+          "thresholds": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "description": "List of threshold configurations per metric type.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "metric-type": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "DS_JITTER_POS",
+                    "DST_TO_SRC_TIME",
+                    "ICPIF",
+                    "MOS",
+                    "PACKET_LOSS",
+                    "RTT",
+                    "SD_JITTER_POS",
+                    "SRC_TO_DST_TIME",
+                    "TEST_COMPLETION"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "DS_JITTER_POS": "Monitor the destination to source positive jitter.",
+                    "DST_TO_SRC_TIME": "Monitor the destination to source time (one way).",
+                    "ICPIF": "Monitor the Calculated Planning Impairment Factor (ICPIF).",
+                    "MOS": "Monitor the Mean Opinion Score (MOS).",
+                    "PACKET_LOSS": "Monitor the packet loss.",
+                    "RTT": "Monitor the Round Trip Time (RTT).",
+                    "SD_JITTER_POS": "Monitor the source to destination positive jitter.",
+                    "SRC_TO_DST_TIME": "Monitor the source to destination time (one way).",
+                    "TEST_COMPLETION": "Monitor the test completion."
+                  },
+                  "x-typeDescription": "SLA metric type to be monitored.",
+                  "description": "SLA metric type to be monitored."
+                },
+                "upper-limit": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 1024,
+                  "description": "Acceptable upper-limit of threshold value for SLA."
+                },
+                "lower-limit": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 1024,
+                  "description": "Acceptable lower-limit of threshold value for SLA."
+                },
+                "type": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "AGGREGATED",
+                    "CONSECUTIVE",
+                    "IMMEDIATE"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "AGGREGATED": "Trigger action when aggregated probes hit the threshold.",
+                    "CONSECUTIVE": "Trigger action after threshold is hit consecutively for n times.",
+                    "IMMEDIATE": "Trigger action immediately after threshold is hit."
+                  },
+                  "x-typeDescription": "Threshold type based on which action will be triggered.",
+                  "description": "Threshold type."
+                },
+                "count": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 2,
+                  "maximum": 1024,
+                  "description": "Maximum number of consecutive times the upper or lower threshold limit\nmay be violated before the threshold action is triggered."
+                },
+                "action": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "LOG",
+                    "NONE",
+                    "TRAP",
+                    "TRAP_LOG"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "LOG": "Log an event when the threshold is hit.",
+                    "NONE": "Take no action when the threshold is hit.",
+                    "TRAP": "Send an SNMP trap when the threshold is hit.",
+                    "TRAP_LOG": "Send an SNMP trap and log an event when the threshold is hit."
+                  },
+                  "x-typeDescription": "Action to be triggered when configured threshold is hit.",
+                  "description": "Threshold action."
+                }
+              }
+            },
+            "x-key": [
+              "metricType"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaIpsla_HttpConfig": {
+        "description": "Grouping for the HTTP/s IPSLA config.",
+        "properties": {
+          "http": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "HTTP/s IPSLA configuration.",
+            "properties": {
+              "request-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "RAW"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "GET": "HTTP payload is generated by the system.",
+                  "RAW": "HTTP payload is generated by the user."
+                },
+                "x-typeDescription": "HTTP request type.",
+                "description": "Request type for HTTP/s SLA."
+              },
+              "url": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 2000,
+                "description": "Uniform Resource Locator (URL) address to reach the HTTP/s server."
+              },
+              "cache-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "description": "Enable caching of web pages."
+              },
+              "raw-payload": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 1024,
+                "description": "Raw payload in the HTTP/s request."
+              },
+              "proxy-url": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 2000,
+                "description": "URL address of the proxy server."
+              },
+              "version": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "HTTP_1_0",
+                  "HTTP_1_1"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "HTTP_1_0": "HTTP version 1.0 in the payload.",
+                  "HTTP_1_1": "HTTP version 1.1 in the payload."
+                },
+                "x-typeDescription": "HTTP request type.",
+                "description": "Version number for HTTP/s request."
+              }
+            }
+          }
+        }
+      },
+      "ArubaIpsla_IpslaSourceConfig": {
+        "description": "Grouping for IPSLA source configuration.",
+        "properties": {
+          "source-sessions": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of IPSLA source sessions.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_HttpConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_ScheduleConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_ThresholdConfig"
+                },
+                {
+                  "$ref": "#/components/schemas/ArubaIpsla_VoipConfig"
+                },
+                {
+                  "properties": {
+                    "source-name": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "IPSLA session name."
+                    },
+                    "vrf": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "name-type",
+                      "x-patterns": "'([^\\\\/ ]+)'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                      "description": "VRF for sending probes"
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable the IPSLA session."
+                    },
+                    "type": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "DHCP",
+                        "DNS",
+                        "HTTP",
+                        "HTTPS",
+                        "ICMP_ECHO",
+                        "TCP_CONNECT",
+                        "UDP_ECHO",
+                        "UDP_JITTER",
+                        "UDP_JITTER_VOIP"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "DHCP": "IPSLA session for Dynamic Host Configuration Protocol (DHCP).",
+                        "DNS": "IPSLA session for DNS (Domain Name System).",
+                        "HTTP": "IPSLA session for Hypertext Transfer Protocol (HTTP).",
+                        "HTTPS": "IPSLA session for Hypertext Transfer Protocol Secure (HTTPS).",
+                        "ICMP_ECHO": "IPSLA session for Internet Control Message Protocol (ICMP) Echo.",
+                        "TCP_CONNECT": "IPSLA session for Transmission Control Protocol (TCP) Connect.",
+                        "UDP_ECHO": "IPSLA session for User Datagram Protocol (UDP) Echo.",
+                        "UDP_JITTER": "IPSLA session for UDP Jitter.",
+                        "UDP_JITTER_VOIP": "IPSLA session for UDP Jitter Voice over Internet Protocol (VOIP)."
+                      },
+                      "x-typeDescription": "IPSLA probe type.",
+                      "description": "IPSLA mechanism type."
+                    },
+                    "history-size": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 50,
+                      "description": "Size of the payload to add to ICMP echo and UDP echo probes."
+                    },
+                    "payload-size": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 8100,
+                      "description": "Size of the payload to add to ICMP echo and UDP echo probes."
+                    },
+                    "tos": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "description": "Type of Service (TOS) to add to ICMP echo and UDP echo probes."
+                    },
+                    "frequency": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 5,
+                      "maximum": 604800,
+                      "description": "Time gap between two consecutive probes of the SLA session."
+                    },
+                    "destination-ipv4": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address-prefix",
+                      "x-patterns": "'((([1-9]|[1-9][0-9]|1[0-2][0-6]|12[8-9]|1[3-9][0-9]|2[0-1][0-9]|22[0-3]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Valid IPv4 address type for interface",
+                      "description": "IPv4 address of the destination."
+                    },
+                    "destination-ipv6": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address-prefix",
+                      "x-patterns": "'(([1-9A-Fa-f]|[1-9A-Fa-f][0-9A-Ea-e]|[1-9A-Fa-f][0-9A-Ea-e][0-9A-Fa-f]|[1-9][0-9]{0,3}|[1-9a-fA-F][0-9a-eA-E][0-7][0-9a-fA-F]|fe[0-7c-fC-F][0-9a-fA-F]|FE[0-7c-fC-F][0-9a-fA-F])(:[0-9a-fA-F]{0,4}){0,7})'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Valid IPv6 address type for interface",
+                      "description": "IP address of the destination."
+                    },
+                    "destination-port": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "description": "Port number of the destination."
+                    },
+                    "destination-hostname": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "destination-hostname",
+                      "x-patterns": "'([a-zA-Z0-9]([a-zA-Z0-9\\-]*[a-zA-Z0-9])?\\.)*([a-zA-Z0-9]([a-zA-Z0-9\\-]*[a-zA-Z0-9])?)'",
+                      "description": "Host name of the destination."
+                    },
+                    "domain-name-server-ipv4": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                      "description": "IPv4 address of the DNS server."
+                    },
+                    "domain-name-server-ipv6": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+                      "description": "IPv6 address of the DNS server."
+                    },
+                    "num-of-packets": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 10,
+                      "maximum": 1000,
+                      "description": "Number of packets to be sent out for a single probe for UDP Jitter SLA type."
+                    },
+                    "packet-interval": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 10,
+                      "maximum": 60000,
+                      "description": "Inter packet interval in milliseconds, which is to be used for packets\nthat are sent out for a single probe for UDP Jitter SLA type"
+                    },
+                    "source": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "description": "Source configuration for IPSLA source.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaIpsla_SourceConfig"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "sourceName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaIpsla_IpslaResponderConfig": {
+        "description": "Grouping for IPSLA responder configuration.",
+        "properties": {
+          "responder-sessions": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "List of IPSLA responder sessions.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "responder-name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "IPSLA responder name."
+                },
+                "responder-ipv4-address": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv4-address",
+                  "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+                  "description": "Responder IP address."
+                },
+                "responder-port": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 65535,
+                  "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                  "x-mandatory": true,
+                  "description": "TCP/UDP port number on which the responder needs to listen to."
+                },
+                "responder-vrf": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "name-type",
+                  "x-patterns": "'([^\\\\/ ]+)'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                  "description": "VRF name in SLA will send or receive packets"
+                },
+                "responder-type": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "RESP_TCP_CONNECT",
+                    "RESP_UDP_ECHO",
+                    "RESP_UDP_JITTER",
+                    "RESP_UDP_JITTER_VOIP"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "RESP_TCP_CONNECT": "IPSLA responder for TCP Connect.",
+                    "RESP_UDP_ECHO": "IPSLA responder for UDP Echo.",
+                    "RESP_UDP_JITTER": "IPSLA responder for UDP Jitter.",
+                    "RESP_UDP_JITTER_VOIP": "IPSLA responder for UDP Jitter VOIP."
+                  },
+                  "x-typeDescription": "IPSLA responder type.",
+                  "x-mandatory": true,
+                  "description": "IPSLA responder type."
+                },
+                "ipv6-responder-enable": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "IPv6 IPSLA responder."
+                },
+                "responder-source": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "description": "Source configuration for IPSLA responder.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaIpsla_ResponderSourceConfig"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "responder-port",
+                "responder-type"
+              ]
+            },
+            "x-key": [
+              "responderName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaIpsla_IpslaWanConfig": {
+        "description": "Grouping for WAN IPSLA configuration",
+        "properties": {
+          "wan": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "description": "WAN IPSLA profile.",
+            "properties": {
+              "sla-destination": {
+                "type": "string",
+                "enum": [
+                  "SLA_DESTINATION_MANUAL",
+                  "SLA_DESTINATION_TUNNEL"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "SLA_DESTINATION_MANUAL": "Perform IPSLA on manually configured destination",
+                  "SLA_DESTINATION_TUNNEL": "Perform IPSLA on IPSec tunnel destination"
+                },
+                "x-typeDescription": "SLA destination type",
+                "description": "IPSLA destination type"
+              },
+              "probe-mode": {
+                "type": "string",
+                "enum": [
+                  "DHCP",
+                  "DNS",
+                  "HTTP",
+                  "HTTPS",
+                  "ICMP_ECHO",
+                  "TCP_CONNECT",
+                  "UDP_ECHO",
+                  "UDP_JITTER",
+                  "UDP_JITTER_VOIP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "DHCP": "IPSLA session for Dynamic Host Configuration Protocol (DHCP).",
+                  "DNS": "IPSLA session for DNS (Domain Name System).",
+                  "HTTP": "IPSLA session for Hypertext Transfer Protocol (HTTP).",
+                  "HTTPS": "IPSLA session for Hypertext Transfer Protocol Secure (HTTPS).",
+                  "ICMP_ECHO": "IPSLA session for Internet Control Message Protocol (ICMP) Echo.",
+                  "TCP_CONNECT": "IPSLA session for Transmission Control Protocol (TCP) Connect.",
+                  "UDP_ECHO": "IPSLA session for User Datagram Protocol (UDP) Echo.",
+                  "UDP_JITTER": "IPSLA session for UDP Jitter.",
+                  "UDP_JITTER_VOIP": "IPSLA session for UDP Jitter Voice over Internet Protocol (VOIP)."
+                },
+                "x-typeDescription": "IPSLA probe type.",
+                "description": "IPSLA mechanism for probing"
+              },
+              "probe-destination": {
+                "description": "configure probe destination",
+                "properties": {
+                  "destination-type": {
+                    "type": "string",
+                    "enum": [
+                      "SLA_DEST_STATIC_IP",
+                      "SLA_DEST_FQDN"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "SLA_DEST_STATIC_IP": "Use static IP for SLA probing",
+                      "SLA_DEST_FQDN": "Use Fully Qualified Domain Name (FQDN) for SLA probing"
+                    },
+                    "x-typeDescription": "Probe destination type",
+                    "description": "Select probe destination type"
+                  },
+                  "ip": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                      },
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv6-address",
+                        "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                      }
+                    ],
+                    "description": "IP address probe destination"
+                  },
+                  "uri": {
+                    "type": "string",
+                    "format": "const",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "description": "FQDN probe destination"
+                  }
+                }
+              },
+              "sla-behavior": {
+                "type": "string",
+                "enum": [
+                  "SLA_BEHAVIOR_LIVENESS",
+                  "SLA_BEHAVIOR_PERFORMANCE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "SLA_BEHAVIOR_LIVENESS": "SLA compliance depends on liveness of probe destination",
+                  "SLA_BEHAVIOR_PERFORMANCE": "SLA compliance depends on the configured performance metrics"
+                },
+                "x-typeDescription": "SLA behavior type for Liveness/Performance",
+                "description": "SLA compliance depends on Liveness/Performance"
+              },
+              "latency": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 500,
+                "description": "SLA threshold value in milliseconds"
+              },
+              "packet-loss": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 100,
+                "description": "SLA threshold value in percentage"
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

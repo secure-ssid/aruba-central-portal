@@ -1,0 +1,2063 @@
+function _hpe_mini_cart($) {
+
+	/* check if we are called with test-cart-code=1 param, if yes, load test version of cart codei */
+	if(typeof window.hpe_mini_cart_included === 'undefined') {
+		window.hpe_mini_cart_included = true;
+		if (document.location.href.indexOf("test-cart-code=1")!=-1) {
+			console.log('Including test mini-cart code...');
+			jQuery.ajax({
+				url: '//h50007.www5.hpe.com/hfws-static/5-test/js/hpe-mini-cart.js',
+				dataType: 'script',
+				cache: true
+			}).done(function() {
+				console.log('Test mini-cart code loaded...');
+			});
+			return;
+		}
+	}
+
+/*********************************************************/
+
+	/*
+	 * HPE Mini Cart Configuration object
+	 */
+	window.HPE_MINI_CART_CFG = {
+		'cartMaxItems': 4,
+		'productNameMaxChars': 100,
+		'purchaseStoreEnabledLocales': ['us/en', 'ca/en', 'ca/fr'/*, 'uk/en', 'sg/en', 'nz/en', 'au/en', 'in/en', 'fr/fr', 'de/de', 'nl/en'*/],	// list of locales on which to enable the purchase tab
+		'redirectLocales': {
+			'tw/zh': {'target': 'tw/en'},
+			'be/nl': {'target': 'be/en'},
+			'nl/nl': {'target': 'nl/en'},
+			'pl/pl': {'target': 'pl/en'},
+			'ru/ru': {'target': 'emea_europe/en'},
+			'se/sv': {'target': 'se/en'},
+			'tr/tr': {'target': 'tr/en'},
+			'sa/ar': {'target': 'sa/en'},
+			'ae/ar': {'target': 'ae/en'},
+			'emea_middle_east/ar': {'target': 'emea_middle_east/en'},
+			'br/pt': { 'target': 'br/en' }
+		},
+		'removedTranslations': ['zh-tw', 'nl', 'pl', 'ru', 'sv', 'tr', 'ar', 'pt'],
+		/* Template for individual product listing */
+		'product_template': '###RESELLER_INFO###<div class= "hpehf-cart-item" ><img class="cart_product_img" src="___PRODUCT_IMAGE___" title="___PRODUCT_TITLE___" /><div class="hpehf-cart-item-details"><div class="hpehf-cart-item-details-row bottom-space"><div class="hpehf-cart-item-name">____product____: ___PRODUCT_ID___</div><!-- <div class="hpehf-cart-item-remove">____remove____</div> --></div><div class="hpehf-cart-item-details-row bottom-space"><div class="hpehf-cart-item-description" title="___PRODUCT_DESCRIPTION_TITLE___">___PRODUCT_DESCRIPTION___</div></div><div class="hpehf-cart-item-details-row"><div class="hpehf-cart-item-quantity"><span class="grey">____quantity_short____ </span><span class="black">___PRODUCT_QTY___</span></div><div class="hpehf-cart-item-price">###PRODUCT_PRICING###</div></div></div></div> ',
+
+		/* template to show reseller name */
+		'reseller_template': '<p class="cart_product_reseller">____fulfilled_by____ ###RESELLER_NAME###</p>',
+
+		/* template to show simple price */
+		'simple_price_template': '___PRODUCT_PRICE___',
+
+		/* template to show promo price */
+		'promo_price_template': '<span class="promo-price">___PRODUCT_PRICE___</span><span class="old-price">___PRODUCT_OLD_PRICE___</span>',
+
+		/* Template for more items in cart */
+		'more_items_template': '<div class="hpehf-cart-more-items ___cart_more_items_active___"><div class="hpehf-cart-more-items-icon"><?xml version="1.0" encoding="utf-8"?><!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  --><a href="____STORE_BASE_URL____/___CC___/___LL___/cart?cartTabIdentifier=____purchase_identifier________quote_identifier____"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="25px" height="25px" viewBox="0 0 25 25" style="enable-background:new 0 0 25 25;" xml:space="preserve"><style type="text/css">.st0 {fill: none;stroke: #01A982;stroke-width: 1.575;stroke-miterlimit: 10;}</style><path class="st0" d="M5.7,9.4l6.8,4.2l-3.7,2.6L2,12L5.7,9.4z M19.3,9.4l-6.8,4.2l3.7,2.6L23,12L19.3,9.4z M5.7,8.8l6.8-4.2L8.8,2L2,6.2L5.7,8.8z M19.3,8.8l-6.8-4.2L16.2,2L23,6.2L19.3,8.8z M12.5,23v-8.9 M19.9,14.1v4.2L12.5,23l-7.3-4.7v-4.2" /></svg></a></div><a href="____STORE_BASE_URL____/___CC___/___LL___/cart?cartTabIdentifier=____purchase_identifier________quote_identifier____" class="hpehf-cart-more-items-text">____pre_more_items_text____ ___PURCHASE_PRODUCT_NUMBER______QUOTE_PRODUCT_NUMBER___ ____more_items_text____ <span class="hpehf-arrow visible"></span></a></div>',
+
+		/* Template for no items in cart tab */
+		'no_items_in_tab_template': '<div class="hpehf-cart-more-items ___cart_more_items_active___"><a onclick="return false;" class="hpehf-cart-more-items-text">____no_purchase_items_text________no_quote_items_text____</a></div>',
+
+		/* Below is HTML template for purchase and quote tabs */
+		'purchase_quote_template': '<div class="hpehf-cart-tabs" id="hpehf-cart-tabs"><ul><li class="active" id="purchase_tab_button">____purchase_tab____</li><li id="quote_tab_button">____quote_tab____</li></ul><p class="cart-tab-text active" id="purchase_tab_text">____purchase_text____</p><p class="cart-tab-text" id="quote_tab_text">____quote_text____</p></div>',
+
+		/* Below is the HTML template for the cart tabs content */
+		'product_tabs_template': '<div class="___PURCHASE_TAB___" id="purchase_tab">###PURCHASE_LIST######MORE_PURCHASE_ITEMS_TEMPLATE###</div><div class="___QUOTE_TAB___" id="quote_tab">###QUOTE_LIST######MORE_QUOTE_ITEMS_TEMPLATE###</div>',
+
+		/* Below is HTML template for mini cart */
+		'template': '<div class="hpe-cart-flex"><div class="hpehf-cart-top-gradient"></div><div class="hpehf-cart-contents">###PURCHASE-QUOTE_TABS######PRODUCTS_LIST###</div><div class="hpehf-cart-bottom-gradient"></div><div class="hpehf-cart-take-action"> <div class="hpehf-cart-purchase-total active" id="hpehf-cart-purchase-total"><div class="light">____subtotal____ (___CART_NO_ITEMS___ ____items____)____SPACE_BEFORE_SEMICOLON____:</div><div class="semibold">____PRODUCT_TOTAL_PRICING____</div></div> <div class="hpehf-cart-quote-total" id="hpehf-cart-quote-total"><div class="light">____total_quote_items____ ____SPACE_BEFORE_SEMICOLON____:</div><div class="semibold">___QUOTE_NO_ITEMS___</div></div> <div class="hpehf-cart-buttons"><a href="____STORE_BASE_URL____/___CC___/___LL___/cart?cartTabIdentifier=true" class="view-cart active" id="view-cart_purchase" data-analytics-region-id="gmenu_Cart" data-analytics-link-id="View cart">____view_cart____<span class="hpehf-arrow visible"></span></a><a href="____STORE_BASE_URL____/___CC___/___LL___/cart?cartTabIdentifier=false" class="view-cart" id="view-cart_quote" data-analytics-region-id="gmenu_Cart" data-analytics-link-id="View cart">____view_cart____<span class="hpehf-arrow visible"></span></a><a href="____STORE_BASE_URL____/___CC___/___LL___/cart/checkout?cartTabIdentifier=true" class="checkout active ____purchase_disable____" id="request_checkout"  data-analytics-region-id="gmenu_Cart" data-analytics-link-id="Check out">____check_out____<span class="hpehf-white-arrow visible"></span></a><a href="____STORE_BASE_URL____/___CC___/___LL___/getquotepage/quoterequest?cartTabIdentifier=false" class="checkout ____quote_disable____" id="request_quote"  data-analytics-region-id="gmenu_Cart" data-analytics-link-id="Request quote">____request_quote____<span class="hpehf-white-arrow visible"></span></a></div></div></div>',
+
+		/* template to show simple total price */
+		'total_simple_price_template': '___CART_TOTAL___',
+
+		/* template to show promo total price */
+		'total_promo_price_template': '<span class="promo-price">___CART_TOTAL___</span><span class="old-price">___CART_OLD_TOTAL___</span>',
+
+		/* Below is HTML template for My Account flyout. TODO: right now it is solid piece of html, we have to make it more dynamic and translateable */
+		'my_account_flyout_template': '<div class="hpehf-myaccount-content"> ____my_account____ <div class="hpehf-myaccount-indicator"> </div> <div class="hpehf-myaccount-logins" id="hpehf-myaccount-logins"> <span>____my_account_description____</span> <div class="hpehf-myaccount-store-login"> <div class="hpehf-cart-buttons"> <a href="____STORE_BASE_URL____/___CC___/___LL___/login" class="checkout" data-analytics-region-id="gmenu_My Account" data-analytics-link-id="HPE Store Login">____store_account_login_btn____ <span class="hpehf-white-arrow visible"></span></a> </div> ____store_account_text____ <a href="____STORE_BASE_URL____/___CC___/___LL___/register" data-analytics-region-id="gmenu_My Account" data-analytics-link-id="Create an account">____store_account_anchor_text____</a>.  </div> <div class="hpehf-myaccount-ent-login"> <div class="hpehf-cart-buttons"> <a href="https://buy.hpe.com/shop/login" class="view-cart" data-analytics-region-id="gmenu_My Account" data-analytics-link-id="Enterprise Account Login">____ent_account_login_btn____ <span class="hpehf-arrow visible"></span></a> </div> ____ent_account_text____ </div> </div> <div class="hpehf-myaccount-logged-in hidden" id="hpehf-myaccount-logged-in"> <span>____logged_in_description____</span> <a href="____STORE_BASE_URL____/___CC___/___LL___/logout" class="hpehf-myaccount-logout-link" data-analytics-region-id="gmenu_Logout" data-analytics-link-id="Logout">____logout_btn_text____ <div class="hpehf-arrow"></div> </a> </div> <div class="hpehf-myaccount-order-status"> ____order_status_text____ <form> <div class="hpehf-myaccount-order-status-form"> <label id="hpehf-myaccount-input-label" for="hpehf-myaccount-input-on"> ____order_number____ </label> <input class="hpehf-myaccount-input-on" id="hpehf-myaccount-input-on" name="hpehf-myaccount-input-on" type="text" aria-required="true" aria-labelledby="hpehf-myaccount-input-label" placeholder="____order_number____" aria-describedby="hpehf-myaccount-input-on-error" aria-invalid="true" maxlength="10"> <a href="#" id="hpehf-myaccount-track" class="hpehf-myaccount-track" data-analytics-region-id="gmenu_My Account" data-analytics-link-id="Track my order">____track_my_order____<div class="hpehf-myaccount-arrow"></div></a> </div> <div class="hpehf-myaccount-input-on-validate" id="hpehf-myaccount-input-on-validate" aria-hidden="true" aria-label="____order_not_found_msg____"> <span id="hpehf-myaccount-input-on-error" class="error-message">____order_not_found_msg____</span> </div> </form> </div> </div>',
+
+		/* CSS for cart */
+		'css': '/* general styling for cart contents */#hpehf-cart-flyout {padding: 0 !important;}.hpehf-flyout-title {margin: 25px !important;line-height: 27px !important;}.hpe-cart-flex {margin: 0;padding: 0;box-sizing: content-box;height: 100%;width: 100%;}.hpehf-cart-contents {display: flex;flex-flow: column;margin: 0px;width: 100%;/*height: 100%;*/min-height: 100px;max-height: 430px;overflow-x: hidden;overflow-y: scroll;box-sizing: border-box;}.hpehf-cart-contents .cart_tab {display: none;}.hpehf-cart-contents .cart_tab.active {display: block;}.hpehf-cart-top-gradient {height: 16px;background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);}.hpehf-cart-bottom-gradient {height: 16px;background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);transform: rotate(-180deg);}.hpehf-cart-tabs {display: flex;flex-flow: column;width: 100%;padding: 0;margin: 0;/* min-height: 145px; */box-sizing: content-box;}.hpehf-cart-tabs ul {display: flex;flex-direction: row;flex-wrap: nowrap;overflow: hidden;position: relative;white-space: nowrap;margin: 0 auto;}.hpehf-cart-tabs ul li {cursor: pointer;list-style-type: none;box-sizing: border-box;background-color: #f4f1f1;font-family: \'MetricBold\', Arial, sans-serif;font-size: 18px;font-weight: 600;height: 58px;line-height: 28px;text-align: center;padding: 15px 20px 20px;}.hpehf-cart-tabs ul li.active {border-bottom: 5px solid #01A982;background-color: #fdfdfd;}.hpehf-cart-tabs p {display: none;font-family: \'MetricBold\', Arial, sans-serif;font-size: 25px;margin: 15px 0 0 15px;}.hpehf-cart-tabs p.active {display: block;}p.cart_product_reseller {margin: 5px 0 0 15px;font-family: \'MetricLight\', Arial, sans-serif;font-size: 16px;}.hpehf-cart-item {display: flex;flex-flow: row;padding: 0;margin: 15px 25px 0 25px;/* min-height: 145px; */box-sizing: content-box;border-bottom: 2px solid #f6f6f6;}.hpehf-cart-item:first-child {margin-top: 4px;}.hpehf-cart-item:last-child {border: 0;}.hpehf-cart-item img {width: 150px;max-height: 150px;margin: 0;padding: 0;background: #fff;object-fit: contain;vertical-align: top;}.hpehf-cart-item .hpehf-cart-item-details {display: flex;flex-flow: column;margin: 10px 0 0 25px;padding: 0;width: calc(100% - 141px);box-sizing: border-box;}.hpehf-cart-item .hpehf-cart-item-details .hpehf-cart-item-details-row {display: flex;flex-flow: row;justify-content: space-between;padding: 0;margin: 0;width: 100%;box-sizing: border-box;}.hpehf-cart-item.hpehf-cart-item-details.hpehf-cart-item-details-row.bottom-space {padding: 0 0 12px 0;margin: 0;width: 100%;box-sizing: border-box;}.hpehf-cart-item-details-row .hpehf-cart-item-name {display: flex;padding: 0;margin: 0;font-family: \'MetricLight\', \'Metric Light\';font-style: normal;font-weight: 400;font-size: 16px;line-height: 19px;color: #000000;}.hpehf-cart-item-details-row .hpehf-cart-item-remove {display: flex;padding: 0;margin: 0;text-transform: uppercase;text-decoration: underline;text-decoration-color: #01a982;font-family: \'MetricSemiBold\', \'Metric Semibold\';font-size: 14px;line-height: 14px;cursor: pointer;}.hpehf-cart-item-details-row .hpehf-cart-item-description {display: flex;padding: 0;margin: 0;text-align: left;font-family: \'MetricSemiBold\', \'Metric Semibold\';font-style: normal;font-weight: 700;font-size: 18px;line-height: 22px;color: #01a982;min-height: 57px;max-height: 57px;overflow: hidden;}.hpehf-cart-item-description a {fill: #01a982;color: #01a982;text-decoration: none;}.hpehf-cart-item-description a:hover,.hpehf-cart-item-description a:focus {fill: #01a982;color: #01a982;text-decoration: none;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity {display: flex;padding: 0;margin: 0;text-align: left;font-family: \'Metric Light\';font-size: 16px;line-height: 24px;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity .grey {font-style: normal;font-weight: 400;font-size: 14px;line-height: 17px;color: #000000;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity .black {font-family: \'Metric Bold\';font-style: normal;font-weight: 700;font-size: 14px;line-height: 17px;margin-left: 5px;text-align: center;color: #000000;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity .box {border: 1px solid #8f8f8f;padding: 0 10px;height: 24px;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity .plus {padding: 0 0 0 10px;cursor: pointer;}.hpehf-cart-item-details-row .hpehf-cart-item-quantity .minus {padding: 0 10px 0 0;cursor: pointer;}.hpehf-cart-item-details-row .hpehf-cart-item-price {display: flex;padding: 0;margin: 0;text-align: left;font-weight: 700;font-style: normal;font-family: \'MetricSemiBold\', \'Metric Semibold\';font-size: 22px;line-height: 118%;color: #000;}.hpehf-cart-item-price {flex-direction: column;}.hpehf-cart-item-price .promo-price {color: red;}.hpehf-cart-item-price .old-price {color: #8f8f8f;text-decoration: line-through;text-align: right;font-size: 20px;line-height: 20px;}.hpehf-cart-more-items {display: none;flex-flow: column;padding: 0;margin: 20px 0 0 0;min-height: 450px;box-sizing: content-box;/*border-bottom: 2px solid #F6F6F6;*/width: 100%;}.hpehf-cart-more-items.active {display: flex;}.hpehf-cart-more-items .hpehf-cart-more-items-icon {display: flex;height: 40px;margin: 0 0 20px 0;justify-content: center;}.hpehf-cart-more-items .hpehf-cart-more-items-icon svg {width: 40px;height: 40px;}.hpehf-cart-more-items .hpehf-cart-more-items-text {display: flex;padding: 0;margin: 0;justify-content: center;text-align: center;width: 100%;font-family: \'MetricSemiBold\', \'Metric Semibold\';font-size: 18px;line-height: 18px;color: #01a982;}.hpehf-cart-more-items .hpehf-cart-more-items-text span.visible {visibility: visible;height: 18px;margin: 0 0 0 10px;flex: none;}.hpehf-cart-more-items .hpehf-cart-more-items-text:hover span.visible {transform: translateX(5px);}.hpehf-cart-take-action {display: flex;flex-flow: column;padding: 30px 35px 30px 35px;width: 100%;min-height: 157px;border-top: 2px solid #f6f6f6;box-sizing: border-box;justify-content: space-between;}.hpehf-cart-take-action .hpehf-cart-purchase-total {display: none;flex-flow: row;padding: 0;padding: 0;font-size: 22px;line-height: 118%;font-weight: 700;font-style: normal;width: 100%;justify-content: flex-end;}.hpehf-cart-take-action .hpehf-cart-purchase-total.active {display: flex;}.hpehf-cart-take-action .hpehf-cart-quote-total {display: none;flex-flow: row;padding: 0;padding: 0;font-size: 22px;line-height: 118%;font-weight: 700;font-style: normal;width: 100%;justify-content: flex-end;}.hpehf-cart-take-action .hpehf-cart-quote-total.active {display: flex;}.hpehf-cart-take-action .hpehf-cart-purchase-total .light {font-family: \'MetricLight\', \'Metric Light\' !important;font-size: 22px;line-height: 118%;font-weight: 400;font-style: normal;padding: 0 10px 0 0;}.hpehf-cart-take-action .hpehf-cart-quote-total .light {font-family: \'MetricLight\', \'Metric Light\' !important;font-size: 22px;line-height: 118%;font-weight: 400;font-style: normal;padding: 0 10px 0 0;}.hpehf-cart-take-action .hpehf-cart-purchase-total .semibold {font-family: \'MetricSemiBold\', \'Metric Semibold\';font-size: 22px;line-height: 118%;font-weight: 700;font-style: normal;}.hpehf-cart-take-action .hpehf-cart-quote-total .semibold {font-family: \'MetricSemiBold\', \'Metric Semibold\';font-size: 22px;line-height: 118%;font-weight: 700;font-style: normal;}.hpehf-cart-purchase-total .semibold {display: flex;flex-direction: column;}.hpehf-cart-quote-total .semibold {display: flex;flex-direction: column;}.hpehf-cart-purchase-total .semibold .promo-price {color: red;}.hpehf-cart-purchase-total .semibold .old-price {color: #8f8f8f;text-decoration: line-through;text-align: right;font-size: 20px;line-height: 20px;}.hpehf-myaccount-logins .hpehf-cart-buttons,.hpehf-cart-take-action .hpehf-cart-buttons {display: flex;flex-flow: row;justify-content: flex-end;width: 100%;padding: 0;}.hpehf-cart-take-action .hpehf-cart-buttons {margin: 25px 0 0 0;gap: 25px;}.hpehf-cart-take-action .hpehf-cart-buttons a span.visible,.hpehf-myaccount-logins .hpehf-cart-buttons a span.visible {visibility: visible;height: 18px;width: 18px;margin: 0;margin-right: 1em;min-height: 18px;max-height: 18px;max-width: 18px;min-width: 18px;}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart,.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart {font-family: \'MetricSemiBold\', \'Metric Semibold\';font-style: normal;font-weight: 700;font-size: 17px;line-height: 22px;color: #000000;display: flex;flex-direction: row;align-items: center;padding: 12px 36px 12px 64px;gap: 5px;width: fit-content;height: fit-content;background: #f5f5f5;border: 0;border-radius: 100px;}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart {/*margin-right: 25px;*/}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart:hover,.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart:hover {background: #ededed;}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart {display: none;}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart.active {display: flex;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout,.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout {font-family: \'MetricSemiBold\', \'Metric Semibold\';font-style: normal;font-weight: 700;font-size: 17px;line-height: 22px;color: #ffffff;display: flex;flex-direction: row;align-items: center;padding: 12px 36px 12px 64px;gap: 5px;width: fit-content;height: fit-content;background: #01a982;border: 0;border-radius: 100px;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout:hover,.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout:hover {background: #008567;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout {display: none;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout.active {display: flex;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout.disable {background: #d5d5d5;color: #a5a5a5;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout.disable span {filter: invert(0.4);}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout.disable:hover {cursor: default;}.hpehf-myaccount-logins {flex-wrap: wrap;}/* My account for desktop - see also reused button styles above */.hpehf-myaccount-content {padding-left: 30px;padding-right: 30px;padding-bottom: 30px;font-size: 18px;width: 100%;}.hpehf-myaccount-content .hidden {display: none;}.hpehf-myaccount-indicator {height: 4px;background-color: #01a982;width: 91px;position: relative;margin-bottom: 20px;}.hpehf-myaccount-logins {margin-top: 20px;display: flex;text-align: right;font-family: \'MetricLight\', \'Metric Light\';font-size: 12px;color: #707070;flex-wrap: wrap;/* TEMP: This is commented to disable order status – uncomment to enable back *//* border-bottom: 1px solid #DBDBDB;padding-bottom: 20px;*/}.hpehf-myaccount-logins span {display: block;width: 100%;font-size: 18px;margin: 0 0 20px 0;color: #000;text-align: left;}.hpehf-myaccount-logins a,.hpehf-myaccount-logins a:visited {text-decoration: none;color: inherit;border-bottom: 1px solid #01a982;}.hpehf-myaccount-logins a:focus,.hpehf-myaccount-logins a:hover {text-decoration: none;color: inherit;border-bottom: 1px solid #707070;}.hpehf-myaccount-store-login {margin-right: 30px;width: calc(50% - 40px);}.hpehf-myaccount-ent-login {width: calc(50% + 10px);}.hpehf-myaccount-logged-in span {margin: 0 0 20px 0;display: block;width: 100%;}.hpehf-myaccount-logged-in a {color: #000;}.hpehf-myaccount-logged-in span a {border-bottom: 1px solid #01a982;}.hpehf-myaccount-logged-in span a:hover {border-bottom: 1px solid #707070;}.hpehf-myaccount-logout-link:hover {color: #01a982;}.hpehf-arrow {display: inline-block;width: 1em;height: 1em;margin-left: 5px;vertical-align: text-bottom;transition: transform 150ms ease-in-out;background-image: url("data:image/svg+xml, %3Csvg version=\'1.1\' xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 471.2 471.2\' fill=\'%2301A982\' xml:space=\'preserve\'%3E %3Cpath d=\'M456.57,248.48a18.45,18.45,0,0,0,5.43-12.9,17.88,17.88,0,0,0-5.43-12.9L340.08,106.19a18.34,18.34,0,0,0-25.93,25.93l85.26,85.13H27.53a18.33,18.33,0,1,0,0,36.66H399.41l-85.26,85.26a18.34,18.34,0,0,0,25.93,25.93Z\'%3E%3C/path%3E %3C/svg%3E");}.hpehf-white-arrow {display: inline-block;width: 1em;height: 1em;margin-left: 5px;vertical-align: text-bottom;transition: transform 150ms ease-in-out;background-image: url("data:image/svg+xml, %3Csvg version=\'1.1\' xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 471.2 471.2\' fill=\'%23ffffff\' xml:space=\'preserve\'%3E %3Cpath d=\'M456.57,248.48a18.45,18.45,0,0,0,5.43-12.9,17.88,17.88,0,0,0-5.43-12.9L340.08,106.19a18.34,18.34,0,0,0-25.93,25.93l85.26,85.13H27.53a18.33,18.33,0,1,0,0,36.66H399.41l-85.26,85.26a18.34,18.34,0,0,0,25.93,25.93Z\'%3E%3C/path%3E %3C/svg%3E");}.hpehf-myaccount-logout-link .hpehf-arrow {display: inline-block;width: 1em;height: 1em;margin-left: 5px;vertical-align: text-bottom;transition: transform 150ms ease-in-out;background-image: url("data:image/svg+xml, %3Csvg version=\'1.1\' xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 471.2 471.2\' fill=\'%2301A982\' xml:space=\'preserve\'%3E %3Cpath d=\'M456.57,248.48a18.45,18.45,0,0,0,5.43-12.9,17.88,17.88,0,0,0-5.43-12.9L340.08,106.19a18.34,18.34,0,0,0-25.93,25.93l85.26,85.13H27.53a18.33,18.33,0,1,0,0,36.66H399.41l-85.26,85.26a18.34,18.34,0,0,0,25.93,25.93Z\'%3E%3C/path%3E %3C/svg%3E");}.hpehf-myaccount-logout-link .hpehf-arrow:hover {transform: translateX(5px);}.hpehf-myaccount-logout-link:hover .hpehf-arrow {transform: translateX(5px);}.hpehf-myaccount-order-status {margin-top: 20px;/* TEMP: This is added to disable order status – remove to enable back */display: none;}.hpehf-myaccount-order-status-form {position: relative;margin-top: 20px;padding: 0 0 5px;border: 1px solid #c6c9ca;border-top: 0;border-left: 0;border-right: 0;transition: 250ms ease-in;}.hpehf-myaccount-order-status-form:hover {border-bottom: 1px solid #333333;}.hpehf-myaccount-order-status-focused .hpehf-myaccount-order-status-form {border-bottom: 1px solid #01a982;}.hpehf-myaccount-has-error .hpehf-myaccount-order-status-form {border-bottom: 1px solid #d93a09;}.hpehf-myaccount-has-error .hpehf-myaccount-order-status-form:hover {border-bottom: 1px solid #d93a09;}.hpehf-myaccount-input-on {font-size: 18px;line-height: 1.22222222em;color: #333;background: 0 0;border: none;display: block;height: 22px;margin: 0;outline: 0;padding: 0;width: 100%;font-family: MetricLight, \'Metric Light\', Arial, sans-serif;transition: 250ms ease-in;}.hpehf-myaccount-order-status-focused .hpehf-myaccount-input-on {caret-color: #01a982 !important;}#hpehf-myaccount-input-on-error {color: #d93a09 !important;opacity: 0;transition: 250ms ease-in;}.hpehf-myaccount-has-error #hpehf-myaccount-input-on-error {opacity: 1;}.hpehf-myaccount-input-on::placeholder {font-weight: normal !important;}.hpehf-myaccount-input-on:-ms-input-placeholder {font-weight: normal !important;}.hpehf-myaccount-input-on::-ms-input-placeholder {font-weight: normal !important;}.hpehf-myaccount-has-error .hpehf-myaccount-input-on {color: #d93a09;caret-color: #d93a09 !important;}.hpehf-myaccount-has-error .hpehf-myaccount-input-on:-ms-input-placeholder {color: #d93a09 !important;}.hpehf-myaccount-has-error .hpehf-myaccount-input-on::-ms-input-placeholder {color: #d93a09 !important;}.hpehf-myaccount-has-error.hpehf-myaccount-input-on::-webkit-input-placeholder {color: #d93a09 !important;caret-color: #d93a09 !important;}.hpehf-myaccount-input-on::-ms-clear {display: none;}.hpehf-myaccount-order-status-form label {font-size: 12px;line-height: 1.33333333em;font-family: MetricLight, \'Metric Light\', Arial, sans-serif;font-weight: 400;color: #707070;height: 16px;position: relative;top: 0;display: block;transition: 250ms ease-in;}.hpehf-myaccount-has-error #hpehf-myaccount-input-label {color: #d93a09 !important;}.hpehf-myaccount-input-on-validate {height: 16px;display: block;transition: 250ms ease-in;font-size: 12px;line-height: 1.33333333em;font-family: \'Metric Light\', Arial, sans-serif;font-weight: 400;color: #d93a09;margin: 0;margin-top: 5px;}.hpehf-myaccount-track {position: absolute;top: 16px;right: 0;text-decoration: none;font-family: \'MetricSemibold\', \'Metric Semibold\', Arial, sans-serif;font-size: 20px;line-height: 1.1em;color: #01a982;}.hpehf-myaccount-track:hover,.hpehf-myaccount-track:focus {text-decoration: none;color: #01a982;}.hpehf-myaccount-arrow {display: inline-block;width: 1em;height: 1em;margin-left: 5px;vertical-align: text-bottom;transition: transform 150ms ease-in-out;background-image: url("data:image/svg+xml, %3Csvg version=\'1.1\' xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 471.2 471.2\' fill=\'%2301A982\' xml:space=\'preserve\'%3E %3Cpath d=\'M456.57,248.48a18.45,18.45,0,0,0,5.43-12.9,17.88,17.88,0,0,0-5.43-12.9L340.08,106.19a18.34,18.34,0,0,0-25.93,25.93l85.26,85.13H27.53a18.33,18.33,0,1,0,0,36.66H399.41l-85.26,85.26a18.34,18.34,0,0,0,25.93,25.93Z\'%3E%3C/path%3E %3C/svg%3E");}.hpehf-myaccount-track:hover .hpehf-myaccount-arrow {transform: translateX(5px);}/* Small brakepoint and smaller */@media only screen and (max-width: 767px) {.hpe-cart-flex {display: flex;flex-flow: column-reverse;justify-content: space-between;margin: 0;padding: 0;box-sizing: content-box;}.hpehf-flyout-body {height: calc(100% - 100px);}.hpehf-centered-content {height: 100%;}.hpehf-flyout {height: 100%;}.hpehf-flyout-header {padding: 0 5px !important;}.hpehf-flyout-content {height: 100%;}.hpehf-cart-take-action {display: block;min-height: 155px;border: 0px !important;padding: 0 0 20px 0;margin: 0 5px;width: calc(100% - 10px);box-sizing: border-box;}.hpehf-cart-take-action .hpehf-cart-buttons {flex-direction: column;margin: 20px 0/*0 0*/;justify-content: center;gap: unset;}.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart {margin: 0 10px 10px 10px;display: none;width: auto;text-align: center;}.hpehf-cart-take-action .hpehf-cart-buttons a.checkout {margin: 0 10px 0 10px;display: none;width: auto;text-align: center;}.hpehf-cart-contents {margin: 0;padding: 0;max-height: 100%;height: 100%;}.hpehf-cart-contents .cart_tab .hpehf-cart-item {margin: 20px 15px 0 20px;}.hpehf-cart-contents .cart_tab .hpehf-cart-item img {display: none;}.hpehf-cart-contents .cart_tab .hpehf-cart-item .hpehf-cart-item-details {margin: 0;width: 100%;}.hpehf-cart-item.hpehf-cart-item-details.hpehf-cart-item-details-row.bottom-space {padding-bottom: 13px;}.hpehf-cart-item-details-row .hpehf-cart-item-description {max-height: 72px;}.hpehf-cart-take-action .hpehf-cart-purchase-total {justify-content: flex-start !important;width: auto;margin: 0 15px 25px 15px !important;}.hpehf-cart-take-action .hpehf-cart-quote-total {justify-content: flex-start !important;width: auto;margin: 0 15px 25px 15px !important;}.hpehf-cart-take-action .hpehf-cart-purchase-total .light {flex-grow: 1;}.hpehf-cart-take-action .hpehf-cart-quote-total .light {flex-grow: 1;}.hpehf-cart-take-action .hpehf-cart-purchase-total .semibold {flex-grow: 30;text-align: right;}.hpehf-cart-take-action .hpehf-cart-quote-total .semibold {flex-grow: 30;text-align: right;}/* START for small, break login buttons to be shown on two lines */.hpehf-myaccount-logins {flex-wrap: wrap;}.hpehf-myaccount-store-login {margin-right: 0px;margin-bottom: 20px;width: 100%;}.hpehf-myaccount-ent-login {width: 100%;}/* STOP for small, break login buttons to be shown on two lines */}@media only screen and (max-width: 353px) {.hpehf-myaccount-order-status-form {display: flex;flex-flow: column;flex-wrap: wrap;margin-bottom: 33px;}.hpehf-myaccount-track {right: 0;top: 50px;}}@media (max-width: 1199px) {#hpehf-cart-flyout #hpehf-header .hpehf-flyout-header .hpehf-flyout-title {margin: 35px 25px 25px 25px !important;}.hpehf-cart-take-action .hpehf-cart-purchase-total {/* margin: 0 25px 25px 25px !important;*/margin: unset;}.hpehf-cart-take-action .hpehf-cart-quote-total {/* margin: 0 25px 25px 25px !important;*/margin: unset;}#hpehf-header .hpehf-flyout-header .hpehf-close-btn {margin: 2px 25px 2px 0 !important;}#hpehf-header .hpehf-flyout-header .hpehf-close-text {display: none;}}@media (max-width: 1199px) and (min-width: 992px) {.hpehf-cart-contents {max-height: 600px !important;height: auto;}}@media (max-width: 991px) and (min-width: 768px) {.hpe-cart-flex {display: flex;flex-flow: column-reverse;justify-content: space-between;margin: 0;padding: 0;box-sizing: content-box;}.hpehf-flyout-body {height: calc(100% - 100px);}.hpehf-centered-content {height: 100%;}.hpehf-flyout {height: 100%;}.hpehf-flyout-header {/*padding: 0 5px !important;*/padding: 0 !important;}.hpehf-flyout-content {height: 100%;}.hpehf-cart-contents {margin: 0;padding: 0;max-height: 100%;height: 100%;}.hpehf-cart-item.hpehf-cart-item-details.hpehf-cart-item-details-row.bottom-space {padding-bottom: 13px;}.hpehf-cart-take-action .hpehf-cart-purchase-total {justify-content: flex-start !important;margin: 0 0 25px 0 !important;}.hpehf-cart-take-action .hpehf-cart-quote-total {justify-content: flex-start !important;margin: 0 0 25px 0 !important;}.hpehf-cart-more-items {border: 0px;}.hpehf-cart-take-action {border-top: 0px !important;min-height: 120px;padding: 0 35px 20px 35px;}.hpehf-cart-take-action .hpehf-cart-buttons {margin: 20px 0/*0 0*/;}}@media (max-height: 800px) and (min-height: 100px) and (min-width: 992px) {.hpehf-cart-contents {max-height: 200px !important;}}@media (min-width: 992px) and (max-height: 800px) and (min-height: 100px) {.hpehf-cart-contents {max-height: 252px !important;}}@media (min-width: 992px) and (max-height: 950px) and (min-height: 801px) {.hpehf-cart-contents {/*max-height: 335px !important;*/}}@media (min-width: 992px) and (min-height: 951px) {.hpehf-cart-contents {max-height: 501px !important;}}#hpe-my-account-container {display: flex;flex-flow: row wrap;width: 100%;box-sizing: content-box;max-width: 668px;}@media only screen and (max-width: 370px) {.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart,.hpehf-cart-take-action .hpehf-cart-buttons a.view-cart {font-size: 14px;}.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout,.hpehf-cart-take-action .hpehf-cart-buttons a.checkout {font-size: 14px;}}',
+
+		/* Replace CSS fonts */
+		'replace_css': {
+			'ru': {
+				'search': 'Metric(Light|Semibold|Reg|Bold| Semibold)',
+				'replace': 'Arial Narrow'
+			},
+			'ja': {
+				'search': 'Metric(Light|Semibold|Reg|Bold| Semibold| Medium)',
+				'replace': 'AxisProN-Regular'
+			},
+			'ko': {
+				'search': 'Metric(Light|Semibold|Reg|Bold| Semibold| Medium)',
+				'replace': 'YDGothic-120 Pro'
+			},
+			'zh-cn': {
+				'search': 'Metric(Light|Semibold|Reg|Bold| Semibold| Medium)',
+				'replace': 'Arial\', \'SimSun'
+			},
+			'zh-tw': {
+				'search': 'Metric(Light|Semibold|Reg|Bold| Semibold| Medium)',
+				'replace': 'Arial\', \'SimSun'
+			}
+		},
+
+		/* Overwrite CSS for locales */
+		'overwrite_css': {
+			'ja': '.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart, .hpehf-cart-take-action .hpehf-cart-buttons a.view-cart { font-size: 15px; } \
+			@media only screen and (max-width: 390px) { \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart, .hpehf-cart-take-action .hpehf-cart-buttons a.view-cart { font-size: 10px; } \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout, .hpehf-cart-take-action .hpehf-cart-buttons a.checkout { font-size: 10px; } \
+			}',
+			'nl': '\
+			@media only screen and (max-width: 440px) { \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart, .hpehf-cart-take-action .hpehf-cart-buttons a.view-cart { font-size: 16px; } \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout, .hpehf-cart-take-action .hpehf-cart-buttons a.checkout { font-size: 16px; } \
+			} \
+			@media only screen and (max-width: 400px) { \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart, .hpehf-cart-take-action .hpehf-cart-buttons a.view-cart { font-size: 14px; } \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout, .hpehf-cart-take-action .hpehf-cart-buttons a.checkout { font-size: 14px; } \
+			} \
+			@media only screen and (max-width: 355px) { \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.view-cart, .hpehf-cart-take-action .hpehf-cart-buttons a.view-cart { font-size: 12px; } \
+				.hpehf-myaccount-logins .hpehf-cart-buttons a.checkout, .hpehf-cart-take-action .hpehf-cart-buttons a.checkout { font-size: 12px; } \
+			}'
+		},
+
+		/* Below we're storing translations for cart */
+		'cart_translation': {
+			'ar': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'الإجمالي الفرعي',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'عرض العربة',
+				'check_out': 'تسجيل الخروج',
+				'request_quote': 'Request Quote',
+				'item': 'العنصر',
+				'items': 'العناصر',
+				'pre_more_items_text': '',
+				'more_items_text': 'المزيد من العناصر في سلة التسوق',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'العربة',
+				'product': 'المنتج',
+				'quantity_short': 'الكمية:',
+				'shopping_cart': 'عربة التسوق',
+				'remove': 'إزالة',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'de': {
+				'purchase_tab': 'Einkauf',
+				'quote_tab': 'Zitat',
+				'purchase_text': 'Online kaufen',
+				'quote_text': 'Angebotsanfrage',
+				'fulfilled_by': 'Erfüllt von',
+				'sold_by': 'Sold by',
+				'subtotal': 'Zwischensumme',
+				'total_quote_items': 'Artikel zitieren',
+				'view_cart': 'Warenkorb anzeigen',
+				'check_out': 'Zur Kasse',
+				'request_quote': 'Angebot anfordern',
+				'item': 'Artikel',
+				'items': 'Artikel',
+				'pre_more_items_text': '',
+				'more_items_text': 'weitere Artikel in Ihrem Warenkorb',
+				'no_purchase_items_text': 'Ihr Warenkorb ist leer',
+				'no_quote_items_text': 'Ihr Warenkorb ist leer',
+				'cart': 'Warenkorb',
+				'product': 'Produkt',
+				'quantity_short': 'Menge:',
+				'shopping_cart': 'Warenkorb',
+				'remove': 'Entfernen',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'en': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Subtotal',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'View Cart',
+				'check_out': 'Check Out',
+				'request_quote': 'Request Quote',
+				'item': 'item',
+				'items': 'items',
+				'pre_more_items_text': '',
+				'more_items_text': 'more items in your cart',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'My cart',
+				'product': 'Product',
+				'quantity_short': 'Qty:',
+				'shopping_cart': 'Shopping Cart',
+				'remove': 'Remove',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'es': {
+				'purchase_tab': 'Comprar',
+				'quote_tab': 'Presupuesto',
+				'purchase_text': 'Comprar en línea',
+				'quote_text': 'Solicitud de presupuesto',
+				'fulfilled_by': 'Proporcionado por',
+				'sold_by': 'Sold by',
+				'subtotal': 'Subtotal',
+				'total_quote_items': 'Artículos del presupuesto',
+				'view_cart': 'Ver carro',
+				'check_out': 'Pagar',
+				'request_quote': 'Solicitar un presupuesto',
+				'item': 'artículo',
+				'items': 'artículos',
+				'pre_more_items_text': '',
+				'more_items_text': 'más artículos en tu cesta',
+				'no_purchase_items_text': 'El carro de la compra estÃ¡ vacÃ­o',
+				'no_quote_items_text': 'El carro de la compra estÃ¡ vacÃ­o',
+				'cart': 'Carro',
+				'product': 'Producto',
+				'quantity_short': 'Cant:',
+				'shopping_cart': 'Carro',
+				'remove': 'Eliminar',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'fr': {
+				'purchase_tab': 'Achat',
+				'quote_tab': 'Devis',
+				'purchase_text': 'Acheter en ligne',
+				'quote_text': 'Demande de devis',
+				'fulfilled_by': 'Rempli par',
+				'sold_by': 'Sold by',
+				'subtotal': 'Sous-total',
+				'total_quote_items': 'Articles du devis',
+				'view_cart': 'Afficher le panier',
+				'check_out': 'Paiement',
+				'request_quote': 'Demander un devis',
+				'item': 'article',
+				'items': 'articles',
+				'pre_more_items_text': '',
+				'more_items_text': 'articles de plus dans votre panier',
+				'no_purchase_items_text': 'Votre panier d’achat est vide',
+				'no_quote_items_text': 'Votre panier d’achat est vide',
+				'cart': 'Panier',
+				'product': 'Produit ',
+				'quantity_short': 'Qté :',
+				'shopping_cart': 'Panier',
+				'remove': 'Supprimer',
+				'SPACE_BEFORE_SEMICOLON': ' '
+			},
+			'it': {
+				'purchase_tab': 'Acquista',
+				'quote_tab': 'Preventivo',
+				'purchase_text': 'Acquista online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Completato da',
+				'sold_by': 'Sold by',
+				'subtotal': 'Subtotale',
+				'total_quote_items': 'Elementi preventivo',
+				'view_cart': 'Visualizza carrello',
+				'check_out': 'Finalizza ordine',
+				'request_quote': 'Richiesta di preventivo',
+				'item': 'articolo',
+				'items': 'articoli',
+				'pre_more_items_text': '',
+				'more_items_text': 'altri articoli nel tuo carrello',
+				'no_purchase_items_text': 'Il carrello Ã¨ vuoto',
+				'no_quote_items_text': 'Il carrello Ã¨ vuoto',
+				'cart': 'Carrello',
+				'product': 'Prodotto',
+				'quantity_short': 'Q.tà:',
+				'shopping_cart': 'Carrello acquisti',
+				'remove': 'Elimina',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'ja': {
+				'purchase_tab': '購入',
+				'quote_tab': '見積',
+				'purchase_text': 'オンライン購入',
+				'quote_text': '見積依頼',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': '小計',
+				'total_quote_items': '商品見積',
+				'view_cart': 'カートを見る',
+				'check_out': '注文画面に進む',
+				'request_quote': '見積依頼',
+				'item': 'アイテム',
+				'items': 'アイテム',
+				'pre_more_items_text': 'カート内に',
+				'more_items_text': '個のアイテムが残っています',
+				'no_purchase_items_text': 'ショッピングカートには何も入っていません',
+				'no_quote_items_text': 'ショッピングカートには何も入っていません',
+				'cart': 'カート',
+				'product': '製品',
+				'quantity_short': '数量:',
+				'shopping_cart': 'ショッピングカート',
+				'remove': '削除',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'ko': {
+				'purchase_tab': '구매',
+				'quote_tab': '견적',
+				'purchase_text': '온라인 구입',
+				'quote_text': '견적 요청',
+				'fulfilled_by': '이행 대상',
+				'sold_by': 'Sold by',
+				'subtotal': '소계',
+				'total_quote_items': '견적 항목',
+				'view_cart': '장바구니 보기',
+				'check_out': '결제',
+				'request_quote': '견적 요청',
+				'item': '항목',
+				'items': '항목',
+				'pre_more_items_text': '장바구니에',
+				'more_items_text': '장개의 추가 항목이 있습니다',
+				'no_purchase_items_text': '장바구니가 비어 있습니다',
+				'no_quote_items_text': '장바구니가 비어 있습니다',
+				'cart': '장바구니',
+				'product': '제품',
+				'quantity_short': '수량:',
+				'shopping_cart': '장바구니',
+				'remove': '제거',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'nl': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Subtotaal',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Winkelwagen weergeven',
+				'check_out': 'Afrekenen',
+				'request_quote': 'Request Quote',
+				'item': 'artikel',
+				'items': 'artikelen',
+				'pre_more_items_text': 'nog',
+				'more_items_text': 'artikelen in uw winkelwagen',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Winkelwagen',
+				'product': 'Product',
+				'quantity_short': 'Aantal:',
+				'shopping_cart': 'Winkelwagen',
+				'remove': 'Verwijderen',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'pl': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Suma częściowa',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Przeglądaj koszyk',
+				'check_out': 'Do kasy',
+				'request_quote': 'Request Quote',
+				'item': 'pozycja',
+				'items': 'pozycje',
+				'pre_more_items_text': 'Pozostało produktów w koszyku:',
+				'more_items_text': '',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Koszyk',
+				'product': 'Produkt',
+				'quantity_short': 'Ilość:',
+				'shopping_cart': 'Koszyk sklepowy',
+				'remove': 'Usuń',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'pt': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Subtotal',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Exibir carrinho',
+				'check_out': 'Comprar',
+				'request_quote': 'Request Quote',
+				'item': 'item',
+				'items': 'itens',
+				'pre_more_items_text': 'Mais',
+				'more_items_text': 'itens no seu carrinho',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Carrinho',
+				'product': 'Produto',
+				'quantity_short': 'Qtd.:',
+				'shopping_cart': 'Carrinho de compras',
+				'remove': 'Remover',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'ru': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Промежуточная сумма',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Смотреть корзину',
+				'check_out': 'Оформить заказ',
+				'request_quote': 'Request Quote',
+				'item': 'товар',
+				'items': 'товары',
+				'pre_more_items_text': 'Еще товаров в вашей корзине —',
+				'more_items_text': '',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Корзина',
+				'product': 'Продукт',
+				'quantity_short': 'Количество:',
+				'shopping_cart': 'Корзина покупок',
+				'remove': 'Удалить',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'sv': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Delsumma',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Visa kundvagnen',
+				'check_out': 'Betala',
+				'request_quote': 'Request Quote',
+				'item': 'artikel',
+				'items': 'artiklar',
+				'pre_more_items_text': 'ytterligare',
+				'more_items_text': 'artiklar i din kundvagn',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Kundvagn',
+				'product': 'Produkt',
+				'quantity_short': 'Antal:',
+				'shopping_cart': 'Kundvagn',
+				'remove': 'Ta bort',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'tr': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': 'Ara toplam',
+				'total_quote_items': 'Quote items',
+				'view_cart': 'Sepeti Görüntüle',
+				'check_out': 'Kasaya Git',
+				'request_quote': 'Request Quote',
+				'item': 'öge',
+				'items': 'öge',
+				'pre_more_items_text': 'Sepetinizde',
+				'more_items_text': 'ürün daha var',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': 'Sepet',
+				'product': 'Ürün',
+				'quantity_short': 'Miktar:',
+				'shopping_cart': 'Alışveriş Sepeti',
+				'remove': 'Kaldır',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'zh-cn': {
+				'purchase_tab': '采购',
+				'quote_tab': '报价',
+				'purchase_text': '在线购买',
+				'quote_text': '报价请求',
+				'fulfilled_by': '负责人',
+				'sold_by': 'Sold by',
+				'subtotal': '小计',
+				'total_quote_items': '报价项目',
+				'view_cart': '查看购物车',
+				'check_out': '结账',
+				'request_quote': '请求报价',
+				'item': '件',
+				'items': '件',
+				'pre_more_items_text': '您的购物车中还有',
+				'more_items_text': '项',
+				'no_purchase_items_text': '您的购物车是空的',
+				'no_quote_items_text': '您的购物车是空的',
+				'cart': '购物车',
+				'product': '产品',
+				'quantity_short': '数量：',
+				'shopping_cart': '购物车',
+				'remove': '移除',
+				'SPACE_BEFORE_SEMICOLON': ''
+			},
+			'zh-tw': {
+				'purchase_tab': 'Purchase',
+				'quote_tab': 'Quote',
+				'purchase_text': 'Buy Online',
+				'quote_text': 'Quote Requests',
+				'fulfilled_by': 'Fulfilled by',
+				'sold_by': 'Sold by',
+				'subtotal': '小計',
+				'total_quote_items': 'Quote items',
+				'view_cart': '檢視購物車',
+				'check_out': '結帳',
+				'request_quote': 'Request Quote',
+				'item': '件',
+				'items': '件',
+				'pre_more_items_text': '您的購物車中還有',
+				'more_items_text': '件商品',
+				'no_purchase_items_text': 'Your shopping cart is empty',
+				'no_quote_items_text': 'Your shopping cart is empty',
+				'cart': '購物車',
+				'product': '產品',
+				'quantity_short': '數量：',
+				'shopping_cart': '購物車',
+				'remove': '移除',
+				'SPACE_BEFORE_SEMICOLON': ''
+			}
+		},
+		/* Translations for my account flyout */
+		'my_account_flyout_translation' : {
+			'ar': {
+				'my_account': 'حسابي',
+				'view_my_account': 'عرض حسابي',
+				'my_account_description': 'سجِّل الدخول إلى حسابك للوصول إلى معلومات تتبع الطلبات وسجل الطلبات والمزيد.',
+				'store_account_login_btn': 'تسجيل الدخول إلى متجر HPE',
+				'store_account_text': 'أليس لديك حساب؟',
+				'store_account_anchor_text': 'إنشاء حساب',
+				'ent_account_login_btn': 'تسجيل الدخول إلى حساب المؤسسة',
+				'ent_account_text': '*لأعضاء HPE Elite ',
+				'logged_in_description': 'تتيح <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">صفحة الدعم</a> الوصول إلى معلومات تتبع الطلبات وسجل الطلبات والمزيد.',
+				'logout_btn_text': 'تسجيل الخروج',
+				'sign_in': 'تسجيل الدخول',
+				'sign_out': 'تسجيل الخروج',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'de': {
+				'my_account': 'Mein Konto',
+				'view_my_account': 'Mein Konto anzeigen',
+				'my_account_description': 'Melden Sie sich bei Ihrem Konto an, um auf Informationen zur Bestellverfolgung, zur Bestellhistorie und mehr zuzugreifen.',
+				'store_account_login_btn': 'HPE Store Anmeldung',
+				'store_account_text': 'Sie haben noch kein Konto?',
+				'store_account_anchor_text': 'Konto erstellen',
+				'ent_account_login_btn': 'Anmeldung mit Enterprise-Konto',
+				'ent_account_text': '* Für HPE Elite Mitglieder',
+				'logged_in_description': 'Ihre <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">Seite „Konto“</a> bietet Zugang zu Informationen zur Bestellverfolgung, zur Bestellhistorie und mehr.',
+				'logout_btn_text': 'Abmelden',
+				'sign_in': 'Anmelden',
+				'sign_out': 'Abmelden',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'en': {
+				'my_account': 'My account',
+				'view_my_account': 'View my account',
+				'my_account_description': 'Login into your account to access order tracking information, order history, and more.',
+				'store_account_login_btn': 'HPE Store Login',
+				'store_account_text': 'Don&apos;t have an account?',
+				'store_account_anchor_text': 'Create an account',
+				'ent_account_login_btn': 'Enterprise Account Login',
+				'ent_account_text': '*For HPE Select Store members',
+				'logged_in_description': 'Your <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">account page</a> provides access to order tracking information, order history, and more.',
+				'logout_btn_text': 'Log Out',
+				'sign_in': 'Sign In',
+				'sign_out': 'Sign Out',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'es': {
+				'my_account': 'Mi cuenta',
+				'view_my_account': 'Ver mi cuenta',
+				'my_account_description': 'Inicia sesión en tu cuenta para acceder a la información de seguimiento de pedido, historial de pedidos y más.',
+				'store_account_login_btn': 'Iniciar sesión en la tienda HPE',
+				'store_account_text': '¿No tienes cuenta?',
+				'store_account_anchor_text': 'Crear una cuenta',
+				'ent_account_login_btn': 'Inicio de sesión en cuentas de empresa',
+				'ent_account_text': '*Para miembros de HPE Elite',
+				'logged_in_description': 'Tu <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">página de cuenta</a> proporciona acceso a la información de seguimiento de pedidos, historial de pedidos y más.',
+				'logout_btn_text': 'Cerrar sesión',
+				'sign_in': 'Iniciar sesión',
+				'sign_out': 'Cerrar sesión',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'fr': {
+				'my_account': 'Mon compte',
+				'view_my_account': 'Afficher mon compte',
+				'my_account_description': 'Connectez-vous à votre compte pour accéder au suivi de vos commandes, à l’historique de vos commandes et à bien d’autres informations.',
+				'store_account_login_btn': 'Connexion à la Boutique HPE',
+				'store_account_text': 'Vous n’avez pas de compte ?',
+				'store_account_anchor_text': 'Créer un compte',
+				'ent_account_login_btn': 'Connexion au compte Entreprise',
+				'ent_account_text': '*Pour les membres HPE Elite',
+				'logged_in_description': 'Votre <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">page de compte</a> vous permet d’accéder au suivi de vos commandes, à l’historique de vos commandes et à bien d’autres informations.',
+				'logout_btn_text': 'Déconnexion',
+				'sign_in': 'Se connecter',
+				'sign_out': 'Se déconnecter',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'it': {
+				'my_account': 'Il mio account',
+				'view_my_account': 'Visualizza il mio account',
+				'my_account_description': 'Accedi al tuo account per visualizzare le informazioni di monitoraggio degli ordini, la cronologia degli ordini e molto altro.',
+				'store_account_login_btn': 'Accesso a HPE Store',
+				'store_account_text': 'Non hai ancora un account?',
+				'store_account_anchor_text': 'Crea un account',
+				'ent_account_login_btn': 'Accesso all’account aziendale',
+				'ent_account_text': '*Per i soci di HPE Elite',
+				'logged_in_description': 'Vai <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">alla pagina del tuo account</a> per accedere alle informazioni di monitoraggio degli ordini, alla cronologia degli ordini e molto altro ancora.',
+				'logout_btn_text': 'Disconnetti',
+				'sign_in': 'Accedi',
+				'sign_out': 'Disconnetti',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'ja': {
+				'my_account': 'マイアカウント',
+				'view_my_account': 'マイアカウントを表示',
+				'my_account_description': 'アカウントにログインすると、注文状況や注文履歴などを確認できます。',
+				'store_account_login_btn': 'HPEストアにログイン',
+				'store_account_text': 'アカウントをお持ちではない場合:',
+				'store_account_anchor_text': 'アカウントを作成する',
+				'ent_account_login_btn': 'エンタープライズアカウントにログイン',
+				'ent_account_text': '* HPE Eliteメンバーのみ',
+				'logged_in_description': '<a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">アカウントページ</a>では、注文状況や注文履歴などを確認できます。',
+				'logout_btn_text': 'ログアウト',
+				'sign_in': 'サインイン',
+				'sign_out': 'サインアウト',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'ko': {
+				'my_account': '나의 계정',
+				'view_my_account': '나의 계정 보기',
+				'my_account_description': '계정에 로그인하고 주문 추적 정보, 주문 내역 등을 확인하십시오.',
+				'store_account_login_btn': 'HPE Store 로그인',
+				'store_account_text': '계정이 없으십니까?',
+				'store_account_anchor_text': '계정 생성',
+				'ent_account_login_btn': '엔터프라이즈 계정 로그인',
+				'ent_account_text': '*HPE Elite 회원 대상 ',
+				'logged_in_description': '귀하의 <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">계정 페이지</a>에서 주문 추적 정보, 주문 내역 등을 확인할 수 있습니다.',
+				'logout_btn_text': '로그아웃',
+				'sign_in': '로그인',
+				'sign_out': '로그아웃',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'nl': {
+				'my_account': 'Mijn account',
+				'view_my_account': 'Mijn account bekijken',
+				'my_account_description': 'Meld u aan op uw account om toegang te krijgen tot trackinggegevens van bestellingen, bestelgeschiedenis en meer.',
+				'store_account_login_btn': 'Aanmelden bij HPE Store',
+				'store_account_text': 'Hebt u geen account?',
+				'store_account_anchor_text': 'Maak een account aan',
+				'ent_account_login_btn': 'Aanmelden met zakelijk account',
+				'ent_account_text': '*Voor HPE Elite-leden ',
+				'logged_in_description': 'Uw <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">accountpagina</a> geeft toegang tot trackinggegevens van bestellingen, bestelgeschiedenis en meer.',
+				'logout_btn_text': 'Afmelden',
+				'sign_in': 'Aanmelden',
+				'sign_out': 'Afmelden',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'pl': {
+				'my_account': 'Moje konto',
+				'view_my_account': 'Wyświetl Moje konto',
+				'my_account_description': 'Zaloguj się do swojego konta, aby uzyskać dostęp do informacji dotyczących monitorowania zamówień, historii zamówień i wielu innych.',
+				'store_account_login_btn': 'Logowanie do sklepu HPE',
+				'store_account_text': 'Nie masz konta?',
+				'store_account_anchor_text': 'Utwórz konto',
+				'ent_account_login_btn': 'Logowanie do konta firmowego',
+				'ent_account_text': '*Dla członków HPE Elite',
+				'logged_in_description': 'Twoja <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">strona konta</a> zapewnia dostęp do informacji dotyczących monitorowania zamówień, historii zamówień i wielu innych.',
+				'logout_btn_text': 'Wyloguj',
+				'sign_in': 'Zaloguj się',
+				'sign_out': 'Wyloguj się',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'pt': {
+				'my_account': 'Minha conta',
+				'view_my_account': 'Ver minha conta',
+				'my_account_description': 'Faça login em sua conta para acessar informações de rastreamento de pedidos, histórico de pedidos e muito mais.',
+				'store_account_login_btn': 'Login na loja da HPE',
+				'store_account_text': 'Não tem uma conta?',
+				'store_account_anchor_text': 'Crie uma conta',
+				'ent_account_login_btn': 'Login em conta corporativa',
+				'ent_account_text': '*Para membros HPE Elite',
+				'logged_in_description': 'A <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">página da sua conta</a> fornece acesso a informações de rastreamento de pedidos, histórico de pedidos e muito mais.',
+				'logout_btn_text': 'Sair',
+				'sign_in': 'Login',
+				'sign_out': 'Sair',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'ru': {
+				'my_account': 'Моя учетная запись',
+				'view_my_account': 'Просмотреть мою учетную запись',
+				'my_account_description': 'Войдите в свою учетную запись, чтобы получить доступ к информации об отслеживании заказов, истории заказов и т. д.',
+				'store_account_login_btn': 'Учетная запись в магазине HPE',
+				'store_account_text': 'Нет учетной записи?',
+				'store_account_anchor_text': 'Создать учетную запись',
+				'ent_account_login_btn': 'Вход в корпоративную учетную запись',
+				'ent_account_text': '*Для членов HPE Elite',
+				'logged_in_description': 'На <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">странице учетной записи</a> представлена информация об отслеживании заказов, истории заказов и т. д.',
+				'logout_btn_text': 'Выход',
+				'sign_in': 'Вход',
+				'sign_out': 'Выход',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'sv': {
+				'my_account': 'Mitt konto',
+				'view_my_account': 'Visa mitt konto',
+				'my_account_description': 'Logga in på ditt konto för att komma åt spårningsinformation om din order och orderhistorik med mera.',
+				'store_account_login_btn': 'Logga in på HPE Store',
+				'store_account_text': 'Har du inget konto?',
+				'store_account_anchor_text': 'Skapa ett konto',
+				'ent_account_login_btn': 'Logga in på företagskonto',
+				'ent_account_text': '*För HPE Elite-medlemmar',
+				'logged_in_description': 'Din <a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">kontosida</a> ger tillgång till spårningsinformation om din order, orderhistorik med mera.',
+				'logout_btn_text': 'Logga ut',
+				'sign_in': 'Logga in',
+				'sign_out': 'Logga ut',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'tr': {
+				'my_account': 'Hesabım',
+				'view_my_account': 'Hesabımı göster',
+				'my_account_description': 'Sipariş takip bilgilerine, sipariş geçmişine ve daha fazlasına erişmek için hesabınıza giriş yapın.',
+				'store_account_login_btn': 'HPE Mağazası Girişi',
+				'store_account_text': 'Bir hesabınız yok mu?',
+				'store_account_anchor_text': 'Hesap oluşturun',
+				'ent_account_login_btn': 'Kurumsal Hesap Girişi',
+				'ent_account_text': '*HPE Elite üyeleri için',
+				'logged_in_description': '<a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">Hesap sayfanız,</a> sipariş takip bilgilerine, sipariş geçmişine ve daha fazlasına erişim sağlar.',
+				'logout_btn_text': 'Çıkış yap',
+				'sign_in': 'Oturum Açın',
+				'sign_out': 'Oturumu Kapat',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'zh-cn': {
+				'my_account': '我的帐户',
+				'view_my_account': '查看我的帐户',
+				'my_account_description': '登录您的帐户即可访问订单跟踪信息、订单历史记录等信息。',
+				'store_account_login_btn': 'HPE Store 登录',
+				'store_account_text': '没有帐户？',
+				'store_account_anchor_text': '创建帐户',
+				'ent_account_login_btn': '企业帐户登录',
+				'ent_account_text': '*针对 HPE Elite 会员',
+				'logged_in_description': '您的<a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">帐户页面</a>可供您访问订单跟踪信息、订单历史记录等信息。',
+				'logout_btn_text': '退出',
+				'sign_in': '登录',
+				'sign_out': '注销',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			},
+			'zh-tw': {
+				'my_account': '我的帳戶',
+				'view_my_account': '檢視我的帳戶',
+				'my_account_description': '登入您的帳戶來存取訂單追蹤資訊、訂單記錄及其他資訊。',
+				'store_account_login_btn': 'HPE Store 登入',
+				'store_account_text': '還沒有帳戶嗎？',
+				'store_account_anchor_text': '建立帳戶',
+				'ent_account_login_btn': '企業帳戶登入',
+				'ent_account_text': '*適用於 HPE Elite 會員 ',
+				'logged_in_description': '您的<a href="____STORE_BASE_URL____/___CC___/___LL___/my-account" data-analytics-region-id="gmenu_Account page" data-analytics-link-id="account page">帳戶頁面</a>可供您存取訂單追蹤資訊、訂單記錄及其他資訊。',
+				'logout_btn_text': '登出',
+				'sign_in': '登入',
+				'sign_out': '登出',
+				'order_status_text': 'Enter the order confirmation number below to view your order status.',
+				'order_number': 'Order Number',
+				'track_my_order': 'Track my order',
+				'order_not_found_msg': 'Your order could not be located. Please verify your order number or contact support.'
+			}
+		},
+
+		/* local test json for purchase / quote cart*/
+		'local_test_purchase_quote_json': '{"type":"cartWsDTO","code":"8000000899","entries":[{"basePrice":{},"bundleQuantity":2,"entryNumber":0,"getQuoteIdentifier":true,"product":{"availableForPickup":false,"baseOptions":[],"categories":[{"code":"1008556811","url":"/compute/proliant-tower-servers/proliant-ml10-servers/proliant-ml30-server/c/1008556811"},{"code":"h001011","image":{"url":"/hpeintegrations/v2/medias/5-2-1q-Complex-AssemblyNew.jpg?context=bWFzdGVyfHJvb3R8MTI3NzE4fGltYWdlL2pwZWd8aGU0L2g5My8yODM4NDU4MTc0NjcxOC5qcGd8NGZjYjRjYzE1MWU0OGQwNGZkMDJjOWY4NGI0MDIzYzRiNDhiZDNhZDI3M2U2MmVkMTZlYjdiMTMzZGIzZWIyYQ"},"url":"/use-cases/connected-worker/c/h001011"},{"code":"h001012","image":{"url":"/hpeintegrations/v2/medias/5-2-1f-Condition-based-maintenance.jpg?context=bWFzdGVyfHJvb3R8NjMwNTJ8aW1hZ2UvanBlZ3xoN2QvaGJlLzI4Mzg0NTkwNjU5NjE0LmpwZ3w3MmQ1Zjc1Y2IyNzgzMTIyODAwM2Y1ZTRmNThjY2ZjODNmMjk0ZGE4NDdjOGJkMzJmZThmZDY3ZGFhOWUyN2M0"},"url":"/use-cases/digital-factory%3a-condition-monitoring/c/h001012"},{"code":"h001013","image":{"url":"/hpeintegrations/v2/medias/5-2-1e-Predictive-Maintenance.jpg?context=bWFzdGVyfHJvb3R8ODgwNjF8aW1hZ2UvanBlZ3xoNjIvaDQ1LzI4Mzg0NTkwNzU3OTE4LmpwZ3w1ZDUwNjE0OTY1Zjc4NmMyY2MwMTIwN2EwMWQ5NjU1MzM1MjliOTA1ZDdkNGEzMDZiY2E2NmVhYjFlNGIzNWM4"},"url":"/use-cases/digital-factory%3apredictive-maintenance/c/h001013"},{"code":"h001014","image":{"url":"/hpeintegrations/v2/medias/5-2-1n-Quality-Assurance.jpg?context=bWFzdGVyfHJvb3R8NzUzMzN8aW1hZ2UvanBlZ3xoN2IvaDEzLzI4Mzg0NTkwNzkwNjg2LmpwZ3wxMzZiNzk2ZmE4MTM2NTZiYjE4YjIzYWNiNTAwOWU4ZjAxNGI0ZjhkMTdkMTk0NjkxOWFiMzdmM2IzNTNhZDkz"},"url":"/use-cases/digital-factory%3a-quality-assurance/c/h001014"},{"code":"h001026","url":"/use-cases/industrial-augmented-reality/c/h001026"},{"code":"h001027","url":"/use-cases/industrial-iot/c/h001027"},{"code":"h001033","url":"/use-cases/virtualization/c/h001033"},{"code":"c001010","url":"/compute/proliant-servers/c/c001010"}],"code":"1011028701","description":"Do you know that a reliable enterprise-class server can easily meet your budget?The HPE ProLiant ML30 Gen10 server is a powerful yet affordable tower server designed for small offices, remote and branch offices to run on-premise and Hybrid Cloud solutions, delivering enterprise-class performance, security, reliability, and expandability at a lower cost. Just a small change can give you an extra edge. Hewlett Packard Enterprise builds security right into the server with HPE iLO silicon root of trust, making the HPE ProLiant ML30 Gen10 server one of the world`s most secure industry-standard servers. Redundant power supply option and up to 4 LFF or 8 SFF hot-plug HDDs provide availability and flexibility. The enhanced expansion capability allows you to upgrade with serial attached SCSI (SAS) controllers, networking cards, or graphics cards as your business grows. You will be surprised at how much benefit you can get with HPE ProLiant ML30 Gen10 server.","images":[{"altText":"HPE ProLiant ML30 Gen10 server","format":"zoom","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00010923?$zoom$#.png"},{"altText":"HPE ProLiant ML30 Gen10 server","format":"product","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00010923?$product$#.png"},{"altText":"HPE ProLiant ML30 Gen10 server","format":"thumbnail","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00010923?$thumbnail$#.png"},{"altText":"HPE ProLiant ML30 Gen10 server","format":"cartIcon","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00010923?$carticon$#.png"}],"name":"HPE ProLiant ML30 Gen10 server","purchasable":false,"stock":{"stockLevel":0,"stockLevelStatus":"outOfStock"},"url":"/Compute/ProLiant-Tower-Servers/ProLiant-ML10-Servers/ProLiant-ML30-Server/HPE-ProLiant-ML30-Gen10-server/p/1011028701","variantType":"HPEVariantProduct"},"quantity":2,"totalPrice":{},"updateable":true},{"basePrice":{"currencyIso":"USD","formattedValue":"$2,472.99","priceType":"BUY","value":2472.99},"entryNumber":1,"getQuoteIdentifier":true,"product":{"availableForPickup":false,"baseOptions":[{"selected":{"code":"P35516-B21","priceData":{"currencyIso":"USD","formattedValue":"$1,044.00","priceType":"BUY","value":1044},"stock":{"stockLevel":999,"stockLevelStatus":"inStock"},"url":"/Compute/Rack-Servers/ProLiant-DL100-Servers/ProLiant-DL160-Server/HPE-ProLiant-DL160-Gen10-4210R-1P-16GB-R-S100i-8SFF-500W-PS-Server/p/P35516-B21","variantOptionQualifiers":[]},"variantType":"HPEVariantProduct"}],"baseProduct":"1010192771","categories":[{"code":"3580693","url":"/compute/rack-servers/proliant-dl100-servers/proliant-dl160-server/c/3580693"},{"code":"h001002","image":{"url":"/hpeintegrations/v2/medias/5-2-1e-Business-Intelligence.jpg?context=bWFzdGVyfHJvb3R8NTc0NzR8aW1hZ2UvanBlZ3xoMjcvaDgxLzI5MTE2NTA4NTY5NjMwLmpwZ3w4YjdiY2EyNWI2NTU4YmNhZDYyZDkwNjNjOTM5M2NmMGVhYmEwZmQ5YmFmODQwMDZjNjY4ODFhNGMxOTA3YWNh"},"url":"/use-cases/business-intelligence/c/h001002"},{"code":"h001003","image":{"url":"/hpeintegrations/v2/medias/5-2-1f-Fraud-Detection-Security.jpg?context=bWFzdGVyfHJvb3R8NTgwNDF8aW1hZ2UvanBlZ3xoMGMvaGM4LzI4Mzg0NTIzMTI0NzY2LmpwZ3xjNDYxZWZiZTU0NThlM2UyODk1ZjFlYWUwNDNhODFjNmY3MDgwN2M3MjllZTc2M2E3ZTc3NTFiNGE4MmZhZDQw"},"url":"/use-cases/fraud-detection-and-security/c/h001003"},{"code":"h001011","image":{"url":"/hpeintegrations/v2/medias/5-2-1q-Complex-AssemblyNew.jpg?context=bWFzdGVyfHJvb3R8MTI3NzE4fGltYWdlL2pwZWd8aGU0L2g5My8yODM4NDU4MTc0NjcxOC5qcGd8NGZjYjRjYzE1MWU0OGQwNGZkMDJjOWY4NGI0MDIzYzRiNDhiZDNhZDI3M2U2MmVkMTZlYjdiMTMzZGIzZWIyYQ"},"url":"/use-cases/connected-worker/c/h001011"},{"code":"h001012","image":{"url":"/hpeintegrations/v2/medias/5-2-1f-Condition-based-maintenance.jpg?context=bWFzdGVyfHJvb3R8NjMwNTJ8aW1hZ2UvanBlZ3xoN2QvaGJlLzI4Mzg0NTkwNjU5NjE0LmpwZ3w3MmQ1Zjc1Y2IyNzgzMTIyODAwM2Y1ZTRmNThjY2ZjODNmMjk0ZGE4NDdjOGJkMzJmZThmZDY3ZGFhOWUyN2M0"},"url":"/use-cases/digital-factory%3a-condition-monitoring/c/h001012"},{"code":"h001013","image":{"url":"/hpeintegrations/v2/medias/5-2-1e-Predictive-Maintenance.jpg?context=bWFzdGVyfHJvb3R8ODgwNjF8aW1hZ2UvanBlZ3xoNjIvaDQ1LzI4Mzg0NTkwNzU3OTE4LmpwZ3w1ZDUwNjE0OTY1Zjc4NmMyY2MwMTIwN2EwMWQ5NjU1MzM1MjliOTA1ZDdkNGEzMDZiY2E2NmVhYjFlNGIzNWM4"},"url":"/use-cases/digital-factory%3apredictive-maintenance/c/h001013"},{"code":"h001014","image":{"url":"/hpeintegrations/v2/medias/5-2-1n-Quality-Assurance.jpg?context=bWFzdGVyfHJvb3R8NzUzMzN8aW1hZ2UvanBlZ3xoN2IvaDEzLzI4Mzg0NTkwNzkwNjg2LmpwZ3wxMzZiNzk2ZmE4MTM2NTZiYjE4YjIzYWNiNTAwOWU4ZjAxNGI0ZjhkMTdkMTk0NjkxOWFiMzdmM2IzNTNhZDkz"},"url":"/use-cases/digital-factory%3a-quality-assurance/c/h001014"},{"code":"h001026","url":"/use-cases/industrial-augmented-reality/c/h001026"},{"code":"h001027","url":"/use-cases/industrial-iot/c/h001027"},{"code":"h001033","url":"/use-cases/virtualization/c/h001033"},{"code":"c001002","url":"/compute/smb-offers/c/c001002"},{"code":"c001010","url":"/compute/proliant-servers/c/c001010"}],"code":"P35516-B21","description":"HPE ProLiant DL160 Gen10 rack server with one Intel® Xeon® 4210R processor, 16 GB memory, eight small form factor drive bays and a 500W power supply","images":[{"altText":"HPE ProLiant DL160 Gen10 Server","format":"zoom","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$zoom$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"product","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$product$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"thumbnail","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$thumbnail$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"cartIcon","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$carticon$#.png"}],"name":"HPE ProLiant DL160 Gen10 4210R 1P 16GB-R S100i 8SFF 500W PS Server","purchasable":true,"stock":{"stockLevel":28,"stockLevelStatus":"inStock"},"url":"/Compute/Rack-Servers/ProLiant-DL100-Servers/ProLiant-DL160-Server/HPE-ProLiant-DL160-Gen10-4210R-1P-16GB-R-S100i-8SFF-500W-PS-Server/p/P35516-B21"},"quantity":1,"reseller":"Insight","totalPrice":{"currencyIso":"USD","formattedValue":"$2,472.99","priceType":"BUY","value":2472.99},"updateable":true},{"basePrice":{"currencyIso":"USD","formattedValue":"$2,169.99","priceType":"BUY","value":2169.99},"entryNumber":2,"getQuoteIdentifier":false,"product":{"availableForPickup":false,"baseOptions":[{"selected":{"code":"P35515-B21","priceData":{"currencyIso":"USD","formattedValue":"$1,026.00","priceType":"BUY","value":1026},"stock":{"stockLevel":999,"stockLevelStatus":"inStock"},"url":"/Compute/Rack-Servers/ProLiant-DL100-Servers/ProLiant-DL160-Server/HPE-ProLiant-DL160-Gen10-4210R-1P-16GB-R-S100i-4LFF-500W-PS-Server/p/P35515-B21","variantOptionQualifiers":[]},"variantType":"HPEVariantProduct"}],"baseProduct":"1010192771","categories":[{"code":"3580693","url":"/compute/rack-servers/proliant-dl100-servers/proliant-dl160-server/c/3580693"},{"code":"h001002","image":{"url":"/hpeintegrations/v2/medias/5-2-1e-Business-Intelligence.jpg?context=bWFzdGVyfHJvb3R8NTc0NzR8aW1hZ2UvanBlZ3xoMjcvaDgxLzI5MTE2NTA4NTY5NjMwLmpwZ3w4YjdiY2EyNWI2NTU4YmNhZDYyZDkwNjNjOTM5M2NmMGVhYmEwZmQ5YmFmODQwMDZjNjY4ODFhNGMxOTA3YWNh"},"url":"/use-cases/business-intelligence/c/h001002"},{"code":"h001003","image":{"url":"/hpeintegrations/v2/medias/5-2-1f-Fraud-Detection-Security.jpg?context=bWFzdGVyfHJvb3R8NTgwNDF8aW1hZ2UvanBlZ3xoMGMvaGM4LzI4Mzg0NTIzMTI0NzY2LmpwZ3xjNDYxZWZiZTU0NThlM2UyODk1ZjFlYWUwNDNhODFjNmY3MDgwN2M3MjllZTc2M2E3ZTc3NTFiNGE4MmZhZDQw"},"url":"/use-cases/fraud-detection-and-security/c/h001003"},{"code":"h001011","image":{"url":"/hpeintegrations/v2/medias/5-2-1q-Complex-AssemblyNew.jpg?context=bWFzdGVyfHJvb3R8MTI3NzE4fGltYWdlL2pwZWd8aGU0L2g5My8yODM4NDU4MTc0NjcxOC5qcGd8NGZjYjRjYzE1MWU0OGQwNGZkMDJjOWY4NGI0MDIzYzRiNDhiZDNhZDI3M2U2MmVkMTZlYjdiMTMzZGIzZWIyYQ"},"url":"/use-cases/connected-worker/c/h001011"},{"code":"h001012","image":{"url":"/hpeintegrations/v2/medias/5-2-1f-Condition-based-maintenance.jpg?context=bWFzdGVyfHJvb3R8NjMwNTJ8aW1hZ2UvanBlZ3xoN2QvaGJlLzI4Mzg0NTkwNjU5NjE0LmpwZ3w3MmQ1Zjc1Y2IyNzgzMTIyODAwM2Y1ZTRmNThjY2ZjODNmMjk0ZGE4NDdjOGJkMzJmZThmZDY3ZGFhOWUyN2M0"},"url":"/use-cases/digital-factory%3a-condition-monitoring/c/h001012"},{"code":"h001013","image":{"url":"/hpeintegrations/v2/medias/5-2-1e-Predictive-Maintenance.jpg?context=bWFzdGVyfHJvb3R8ODgwNjF8aW1hZ2UvanBlZ3xoNjIvaDQ1LzI4Mzg0NTkwNzU3OTE4LmpwZ3w1ZDUwNjE0OTY1Zjc4NmMyY2MwMTIwN2EwMWQ5NjU1MzM1MjliOTA1ZDdkNGEzMDZiY2E2NmVhYjFlNGIzNWM4"},"url":"/use-cases/digital-factory%3apredictive-maintenance/c/h001013"},{"code":"h001014","image":{"url":"/hpeintegrations/v2/medias/5-2-1n-Quality-Assurance.jpg?context=bWFzdGVyfHJvb3R8NzUzMzN8aW1hZ2UvanBlZ3xoN2IvaDEzLzI4Mzg0NTkwNzkwNjg2LmpwZ3wxMzZiNzk2ZmE4MTM2NTZiYjE4YjIzYWNiNTAwOWU4ZjAxNGI0ZjhkMTdkMTk0NjkxOWFiMzdmM2IzNTNhZDkz"},"url":"/use-cases/digital-factory%3a-quality-assurance/c/h001014"},{"code":"h001026","url":"/use-cases/industrial-augmented-reality/c/h001026"},{"code":"h001027","url":"/use-cases/industrial-iot/c/h001027"},{"code":"h001033","url":"/use-cases/virtualization/c/h001033"},{"code":"c001002","url":"/compute/smb-offers/c/c001002"},{"code":"c001010","url":"/compute/proliant-servers/c/c001010"}],"code":"P35515-B21","description":"HPE ProLiant DL160 Gen10 rack server with one Intel® Xeon® 4210R processor, 16 GB memory, four large form factor drive bays and a 500W power supply","images":[{"altText":"HPE ProLiant DL160 Gen10 Server","format":"zoom","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$zoom$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"product","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$product$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"thumbnail","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$thumbnail$#.png"},{"altText":"HPE ProLiant DL160 Gen10 Server","format":"cartIcon","imageType":"PRIMARY","url":"/hpeintegrations/v2https://assets.ext.hpe.com/is/image/hpedam/s00001901?$carticon$#.png"}],"name":"HPE ProLiant DL160 Gen10 4210R 1P 16GB-R S100i 4LFF 500W PS Server","purchasable":true,"stock":{"stockLevel":1,"stockLevelStatus":"inStock"},"url":"/Compute/Rack-Servers/ProLiant-DL100-Servers/ProLiant-DL160-Server/HPE-ProLiant-DL160-Gen10-4210R-1P-16GB-R-S100i-4LFF-500W-PS-Server/p/P35515-B21"},"quantity":1,"reseller":"TigerDirect","totalPrice":{"currencyIso":"USD","formattedValue":"$2,169.99","priceType":"BUY","value":2169.99},"updateable":true}],"guid":"d847ad8e-9a30-4b79-8f7f-189b619eb04c","totalItems":3,"totalPrice":{"currencyIso":"USD","formattedValue":"$0.00","value":0},"totalPriceWithTax":{"currencyIso":"USD","formattedValue":"$0.00","value":0}}'
+	};
+
+
+	/*
+	 * HPE Mini Cart object
+	 */
+	window.HPE_MINI_CART = {
+		cfg: null,
+		cc: null,
+		ll: null,
+		cartInitialized: false,
+		cartCssInserted: false,
+		cartHtmlInserted: false,
+		cartLoaded: false,
+		cartHTMLContainter: 'hpe-mini-cart-container',
+		cartIndicatorContainter: 'hpe-mini-cart-indicator',
+		userLoggedInIndicatorContainter: 'hpe-store-signed-in-indicator',
+		cartNumItems: 0,
+		storeBaseUrl: 'https://buy.hpe.com',
+		hfwsStaticPath: './',
+		hfwsImgPath: 'img',
+		staticCartJsonURL: 'json/cart-test.json',
+		userHasCartCookie: 'user-has-cart',
+		userLoggedInCookie: 'hybris-store-logged-in',
+		cartJsonData: null,
+		cartPurchaseItems: [],
+		cartPurchaseNum: 0,
+		cartQuoteItems: [],
+		cartQuoteNum: 0,
+		userHasCart: false,
+		myAccountLoaded: false,
+		myAccountHtmlInserted: false,
+		myAccountHTMLContainter: 'hpe-my-account-container',
+
+
+		/*
+		 * log(logStr) - our own log method; it checks if console exists, to make it safe to execute on older browsers
+		 */
+		log: function(logStr) {
+			if ( (typeof console != 'undefined') && (typeof console.log != 'undefined') ) {
+				console.log(logStr);
+			}
+		},
+
+
+		/*
+		 * isCartEmpty() - returns true if cart is empty
+		 */
+		isCartEmpty: function() {
+			if (this.cartNumItems == 0) {
+				return true;
+			}
+			return false;
+		},
+
+
+		/*
+		 * isUserLoggedIn() - returns true if user is logged in to store
+		 */
+		isUserLoggedIn: function() {
+			if (this.readCookie(this.userLoggedInCookie)!=null) {
+				return true;
+			}
+			if (window.location.href.indexOf("test-logged-in=1") >= 0) {
+				return true;
+			}
+			return false;
+		},
+
+
+		/*
+		 * setCartItemsNumberFromJson(json) - reads Hybris cart JSON passed through param, and sets number of items found in cart
+		 */
+		setCartItemsNumberFromJson: function(json) {
+			this.cartNumItems = this.getCartProductsNumber(json);
+		},
+
+
+		/*
+		 * readCookie(name) - returns cookie value, if cookie is not found, return null
+		 */
+		readCookie: function(name) {
+			var nameEQ = name + '=';
+			var ca = document.cookie.split(';');
+			for(var i=0; i < ca.length; i++) {
+				var c = ca[i];
+				while ( c.charAt(0) == ' ' ) c = c.substring(1, c.length);
+				if ( c.indexOf(nameEQ) == 0 ) return c.substring(nameEQ.length, c.length);
+			}
+			return null;
+		},
+
+
+		/*
+		 * getContainerWidthForFont(container, fontFamily) - calculates the width of provided container with text styled for provided fontFamily.
+		 *    (method used by isFontAvailable())
+		 */
+		getContainerWidthForFont: function (container, fontFamily) {
+			var width;
+			var body = document.body;
+
+			container.style.fontFamily = fontFamily;
+
+			body.appendChild(container);
+			width = container.clientWidth;
+			body.removeChild(container);
+
+			return width;
+		},
+
+
+		/*
+		 * getCartJson() - calls hybris web services to get cart contents asyncronously, executes the callback with parsed JSON as param for completed service request. Executes callback with json set to null on error calling the web service, or, if there is no cart associatd with user (this.userHasCart is false).
+		 */
+		getCartJson: function(callback) {
+			var cart_json_url = "";
+			var json = null;
+
+			/* Check if user has cart - if yes, build the cart_json_url based on config */
+			if (this.userHasCart) {
+				cart_json_url = this.storeBaseUrl + '/' + this.cc + '/' + this.ll + '/mycart';
+			}
+
+			/* add test-cart=1 parameter to force static cart content read from json file */
+			if (window.location.href.indexOf("test-cart=1") >= 0) {
+				cart_json_url = this.staticCartJsonURL;
+				this.log("using debug cart from json file");
+			}
+
+			/* add test-cart-local to force static cart content, read from configuration instead of store cart json */
+			if (window.location.href.indexOf("test-cart-local=1") >= 0) {
+				json = $.parseJSON(this.cfg.local_test_purchase_quote_json);
+				this.log("using debug purchase / quote cart from json embedded to cart configuration");
+				callback(json);
+			}
+			/* do ajax call to fetch cart JSON, if cart_json_url is not empty */
+			else if (cart_json_url != "") {
+
+				var jqxhr = $.ajax({
+						url: cart_json_url,
+						headers: {
+							"Accept": "text/html"
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						async: true,
+						complete : function(jqxhr, statusText) {
+							var retJson = null;
+							var json = null;
+
+							if (statusText == 'success') {
+								json = jqxhr.responseText;
+								if (json == "Cart Not Found") {
+									json = null;
+								}
+								if (json) {
+									retJson = $.parseJSON(json);
+								}
+							}
+
+							callback(retJson);
+						}
+					});
+			}
+			/* There is no real or test cart to call, run callback with json as null */
+			else {
+				callback(null);
+			}
+
+		},
+
+
+		/*
+		 * getCartProductsNumber() - returns the total number of products in the cart JSON (calculated with quantities)
+		 */
+		getCartProductsNumber: function(json) {
+
+			/* Calculate number of products in cart by adding quantities for each product in cart. */
+			var number = 0;
+
+			if (json) {
+				$.each(json.entries, function(i, item) {
+					// If bundleQuantity is defined - use it for current product's quantity calculation (this property is set for Bundle and Config products)
+					if (item.bundleQuantity !== undefined) {
+						number = number + item.bundleQuantity;
+					}
+					else {
+						number = number + item.quantity;
+					}
+				});
+			}
+
+			return number;
+
+		},
+
+
+		/*
+		 * getCartNumberOfItems() - returns the number of items in the cart JSON
+		 */
+		getCartNumberOfItems: function(json) {
+			/* Calculate number of items in cart (not quantities) */
+			var number = 0;
+			if (json) {
+				$.each(json.entries, function(i, item) {
+						number++;
+				});
+			}
+			return number;
+		},
+
+
+		/*
+		 * getProductThumbnail() - returns the thumbnail for product, or null
+		 */
+		getProductThumbnail: function(productItem) {
+			var image=null;
+			if (productItem) {
+				$.each(productItem.product.images, function(i, item) {
+					if (item.format === "thumbnail") {
+						image = item.url;
+						image = image.replace("/hpeintegrations/v2","");
+					}
+				});
+			}
+			return image;
+		},
+
+
+		/*
+		 * formatMoney(n, decimals, decimal_sep, thousands_sep, curr_prefix, curr_postfix) - formats n amount as money, using decimal_sep, thousands_sep, and placing currency before (curr_prefix), or after (curr_postfix) the amount.
+		 */
+		formatMoney: function(n, decimals, decimal_sep, thousands_sep, curr_prefix, curr_postfix) {
+			c = isNaN(decimals) ? 2 : Math.abs(decimals), //if decimal is zero we must take it, it means user does not want to show any decimal
+			d = decimal_sep || '.', //if no decimal separator is passed we use the dot as default decimal separator (we MUST use a decimal separator)
+
+			t = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, //if you don't want to use a thousands separator you can pass empty string as thousands_sep value
+			sign = (n < 0) ? '-' : '',
+
+			//extracting the absolute value of the integer part of the number and converting to string
+			i = parseInt(n = Math.abs(n).toFixed(c)) + '', j = ((j = i.length) > 3) ? j % 3 : 0;
+			return curr_prefix + sign + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '') + curr_postfix;
+		},
+
+
+		/*
+		 * formatPrice(amount) - returns amount formatted as price, with currency added to output
+		 */
+		formatPrice: function(amount) {
+			/* TODO: Below call is hardcoded to format for USD. If we cannot get formatted prices for locale from service - add locale specific config with information how to call formatMoney, and update below code to pass those config params to formatMoney() */
+			return this.formatMoney(amount, 2, '.', ',', '$', '');
+		},
+
+
+		/**
+		 * detectLocale() - initialize cc and ll properties based on attributes passed through DOM
+		 */
+		detectLocale: function() {
+			if (document.getElementById('hpehf-header') != null) {
+				if (typeof($('#hpehf-header').attr('hpehf-cc')) != 'undefined' && typeof($('#hpehf-header').attr('hpehf-ll')) != 'undefined') {
+					this.cc = $('#hpehf-header').attr('hpehf-cc');
+					this.ll = $('#hpehf-header').attr('hpehf-ll');
+				}
+			} else if (document.getElementById('data-page-attributes') != null) {
+				if (typeof($('#data-page-attributes').attr('data-cc')) != 'undefined' && typeof($('#data-page-attributes').attr('data-ll')) != 'undefined') {
+					this.cc = $('#data-page-attributes').attr('data-cc');
+					this.ll = $('#data-page-attributes').attr('data-lang');
+				}
+			}
+			// initalize cc and ll as us/en if detection failed.
+			if (this.cc == null || this.ll == null) {
+				this.cc = 'us';
+				this.ll = 'en';
+			}
+		},
+
+
+		/**
+		 * translateFlyoutHTML(translation, lang, template) - method to loop through all translation keys defined for language and replace them in the template
+		 */
+		translateFlyoutHTML: function(translation, lang, template) {
+			/* Check if provided language is included in the translation table */
+			if (typeof(translation[lang]) === 'undefined') {
+				if (typeof(translation[lang + "-" + this.cc]) === 'undefined') {
+					this.log('No translations available for \'' + lang + '\' language. Showing English text.');
+					lang = 'en';
+				}
+				else {
+					lang = this.ll + "-" + this.cc;
+				}
+			}
+
+			/* go through all translation tables keys defined for language, and replace them in the template */
+			for (var key in translation[lang]) {
+				template = template.replace(new RegExp('____' + key + '____', 'g'), translation[lang][key]);
+			}
+
+			return template;
+		},
+
+
+		/*
+		 * renderCartHTML() - renders and returns cart html localized for this.cc country and this.ll language
+		 */
+		renderCartHTML: function () {
+			var cartMaxItems = this.cfg.cartMaxItems;
+			var tmpHtml = this.cfg.template;
+			var cart_tabs_template = this.cfg.purchase_quote_template;
+			var product_template = this.cfg.product_template;
+			var simple_price_template = this.cfg.simple_price_template;
+			var promo_price_template = this.cfg.promo_price_template;
+			var more_items_template = this.cfg.more_items_template;
+			var no_items_in_tab_template = this.cfg.no_items_in_tab_template;
+			var total_simple_price_template = this.cfg.total_simple_price_template;
+			var total_promo_price_template = this.cfg.total_promo_price_template;
+			var reseller_template = this.cfg.reseller_template;
+			var product_tabs = '';
+			var purchase_list = '';
+			var quote_list = '';
+			var cart_tabs = '';
+			var products = this.getCartNumberOfItems(this.cartJsonData);
+			var self = this;
+			var product_image = '';
+			var product_name = '';
+			var product_quantity = '';
+			var product_price = '';
+			var product_old_price = '';
+			var display_promo = false;
+			var cart_total = '';
+			var cart_old_total = '';
+			var display_promo_total = false;
+			var fullLocale = null;
+			var cc = null;
+			var ll = null;
+			var purchase_num = 0;
+			var quote_num = 0;
+			var cartPurchaseItems = this.cartPurchaseItems;
+			var cartPurchaseNum = this.cartPurchaseNum;
+			var cartQuoteItems = this.cartQuoteItems;
+			var cartQuoteNum = this.cartQuoteNum;
+			var resellerName = "";
+
+			/* render cart elements based on json */
+
+			cart_tabs = cart_tabs_template;
+			product_tabs = this.cfg.product_tabs_template;
+
+			// generate arrays with purchase and quote items from cart JSON
+			$.each(this.cartJsonData.entries, function (i, item) {
+				if (!item.getQuoteIdentifier) {
+					cartPurchaseItems.push(item);
+					if (item.bundleQuantity !== undefined) {
+						cartPurchaseNum += item.bundleQuantity;
+					}
+					else {
+						cartPurchaseNum += item.quantity;
+					}
+				}
+				else {
+					cartQuoteItems.push(item);
+					if (item.bundleQuantity !== undefined) {
+						cartQuoteNum += item.bundleQuantity;
+					}
+					else {
+						cartQuoteNum += item.quantity;
+					}
+				}
+			});
+			this.cartPurchaseNum = cartPurchaseNum
+			this.cartQuoteNum = cartQuoteNum
+
+			// sort items for purchase based on reseller information
+			if (cartPurchaseNum > 0) {
+				cartPurchaseItems.sort(function (a, b) {
+					if (a.reseller && b.reseller) {
+						let x = a.reseller.toLowerCase();
+						let y = b.reseller.toLowerCase();
+						if (x < y) { return -1; }
+						if (x > y) { return 1; }
+					}
+					return 0;
+				});
+			}
+
+			// generate purchase tab content
+			resellerName = "";
+			$.each(cartPurchaseItems, function (i, item) {
+				purchase_num += 1;
+				if (purchase_num <= cartMaxItems) {
+					purchase_list += product_template;
+					product_price = '';
+					product_old_price = '';
+					display_promo = false;
+
+					if (!item.reseller) {
+						purchase_list = purchase_list.replace(new RegExp('###RESELLER_INFO###', 'g'), '');
+					}
+					else if (resellerName != item.reseller) {
+						resellerName = item.reseller;
+						if (resellerName == "HPE" || resellerName == "HPEFS") {
+							reseller_template = reseller_template.replace(new RegExp('fulfilled_by', 'g'), 'sold_by');
+						}
+						purchase_list = purchase_list.replace(new RegExp('###RESELLER_INFO###', 'g'), reseller_template);
+						purchase_list = purchase_list.replace(new RegExp('###RESELLER_NAME###', 'g'), resellerName);
+					}
+					else {
+						purchase_list = purchase_list.replace(new RegExp('###RESELLER_INFO###', 'g'), '');
+					}
+
+					if ( (product_image=self.getProductThumbnail(item)) !== null) {
+						product_image = product_image.replace("$&", "$_####_\&"); // TODO: remove when store fixes it? Workaround for urls with $&
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_IMAGE___', 'g'), product_image);
+					}
+					else {
+						// Showing "missing.jpg" if there is no product image information in JSON.
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_IMAGE___', 'g'), self.hfwsImgPath + '/missing.jpg');
+					}
+					// By default, we assume regular product to take name, quantity, price:
+					product_name = item.product.name;
+					product_quantity = item.quantity;
+					// check for product price
+					product_price = item.totalPrice.formattedValue;
+
+					//check for basePriceWithQuantity
+					if(item.basePriceWithQuantity !== undefined) {
+						product_old_price = item.basePriceWithQuantity.formattedValue;
+						display_promo = true;
+					}
+
+					// name, and price for Bundle product:
+					if (item.bundleName !== undefined) product_name = item.bundleName;
+
+					// price for Bundle product:
+					if (item.bundleTotalPrice !== undefined) product_price = self.formatPrice(item.bundleTotalPrice);
+					// check if product has bundle formatted price, and if yes, use it instead.
+					if (item.bundleTotalPriceFormattedValue !== undefined && item.bundleTotalPriceFormattedValue.formattedValue !== undefined) product_price = item.bundleTotalPriceFormattedValue.formattedValue;
+
+					// check if product has bundleNonDiscountedPriceFormattedValue
+					if(item.bundleNonDiscountedPriceFormattedValue !== undefined) {
+						//product_old_price = product_price;
+						product_old_price = item.bundleNonDiscountedPriceFormattedValue.formattedValue;
+						display_promo = true;
+					}
+
+					// quantity for Bundle and Config product:
+					if (item.bundleQuantity !== undefined) product_quantity = item.bundleQuantity;
+
+					// price for Config product:
+					if (item.configTotalPrice !== undefined) product_price = self.formatPrice(item.configTotalPrice);
+					// check if product has config formatted price, and if yes, use it instead.
+					if (item.configTotalPriceFormattedValue !== undefined && item.configTotalPriceFormattedValue.formattedValue !== undefined) product_price = item.configTotalPriceFormattedValue.formattedValue;
+					// check if product has configNonDiscountedPriceFormattedValue
+					if(item.configNonDiscountedPriceFormattedValue !== undefined) {
+						product_old_price = item.configNonDiscountedPriceFormattedValue.formattedValue;
+						display_promo = true;
+					}
+
+					// update the template according to pricing information
+					if(!display_promo) {
+						purchase_list = purchase_list.replace(new RegExp('###PRODUCT_PRICING###', 'g'), simple_price_template);
+					}
+					else {
+						purchase_list = purchase_list.replace(new RegExp('###PRODUCT_PRICING###', 'g'), promo_price_template);
+					}
+
+					purchase_list = purchase_list.replace(new RegExp('___PRODUCT_TITLE___', 'g'), product_name);
+
+					purchase_list = purchase_list.replace(new RegExp('___PRODUCT_ID___', 'g'), item.product.code);
+					// TODO: disabled generating product urls, because urls from Hybris service produce server error. Remove next line, and enable back commented out code, when hybris is fixed.
+
+					if (product_name.length > self.cfg.productNameMaxChars) {
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_DESCRIPTION_TITLE___', 'g'), product_name);
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_DESCRIPTION___', 'g'), product_name.substring(0, self.cfg.productNameMaxChars) + "...");
+					}
+					else {
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_DESCRIPTION___', 'g'), product_name);
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_DESCRIPTION_TITLE___', 'g'), product_name);
+					}
+
+					purchase_list = purchase_list.replace(new RegExp('___PRODUCT_QTY___', 'g'), product_quantity);
+
+					if (product_price == '' || product_price === undefined) {
+						product_price = self.formatPrice("0");
+					}
+
+					purchase_list = purchase_list.replace(new RegExp('___PRODUCT_PRICE___', 'g'), product_price);
+
+					if(product_old_price != '') {
+						purchase_list = purchase_list.replace(new RegExp('___PRODUCT_OLD_PRICE___', 'g'), product_old_price);
+					}
+				}
+			});
+
+			// generate quote tab content
+			resellerName = "";
+			$.each(cartQuoteItems, function (i, item) {
+				quote_num += 1;
+				if(quote_num <= cartMaxItems) {
+					quote_list += product_template;
+					product_price = '';
+					product_old_price = '';
+					display_promo = false;
+
+					//quote_list = quote_list.replace(new RegExp('###RESELLER_INFO###', 'g'), '');
+					if (!item.reseller) {
+						quote_list = quote_list.replace(new RegExp('###RESELLER_INFO###', 'g'), '');
+					}
+					else if (resellerName != item.reseller) {
+						resellerName = item.reseller;
+						if (resellerName == "HPE" || resellerName == "HPEFS") {
+							reseller_template = reseller_template.replace(new RegExp('fulfilled_by', 'g'), 'sold_by');
+						}
+						quote_list = quote_list.replace(new RegExp('###RESELLER_INFO###', 'g'), reseller_template);
+						quote_list = quote_list.replace(new RegExp('###RESELLER_NAME###', 'g'), resellerName);
+					}
+					else {
+						quote_list = quote_list.replace(new RegExp('###RESELLER_INFO###', 'g'), '');
+					}
+
+					if ( (product_image=self.getProductThumbnail(item)) !== null) {
+						product_image = product_image.replace("$&", "$_####_\&"); // TODO: remove when store fixes it? Workaround for urls with $&
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_IMAGE___', 'g'), product_image);
+					}
+					else {
+						// Showing "missing.jpg" if there is no product image information in JSON.
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_IMAGE___', 'g'), self.hfwsImgPath + '/missing.jpg');
+					}
+					// By default, we assume regular product to take name, quantity, price:
+					product_name = item.product.name;
+					product_quantity = item.quantity;
+					// check for product price
+					product_price = item.totalPrice.formattedValue;
+
+					//check for basePriceWithQuantity
+					if(item.basePriceWithQuantity !== undefined) {
+						product_old_price = item.basePriceWithQuantity.formattedValue;
+						display_promo = true;
+					}
+
+					// name, and price for Bundle product:
+					if (item.bundleName !== undefined) product_name = item.bundleName;
+
+					// price for Bundle product:
+					if (item.bundleTotalPrice !== undefined) product_price = self.formatPrice(item.bundleTotalPrice);
+					// check if product has bundle formatted price, and if yes, use it instead.
+					if (item.bundleTotalPriceFormattedValue !== undefined && item.bundleTotalPriceFormattedValue.formattedValue !== undefined) product_price = item.bundleTotalPriceFormattedValue.formattedValue;
+
+					// check if product has bundleNonDiscountedPriceFormattedValue
+					if(item.bundleNonDiscountedPriceFormattedValue !== undefined) {
+						//product_old_price = product_price;
+						product_old_price = item.bundleNonDiscountedPriceFormattedValue.formattedValue;
+						display_promo = true;
+					}
+
+					// quantity for Bundle and Config product:
+					if (item.bundleQuantity !== undefined) product_quantity = item.bundleQuantity;
+
+					// price for Config product:
+					if (item.configTotalPrice !== undefined) product_price = self.formatPrice(item.configTotalPrice);
+					// check if product has config formatted price, and if yes, use it instead.
+					if (item.configTotalPriceFormattedValue !== undefined && item.configTotalPriceFormattedValue.formattedValue !== undefined) product_price = item.configTotalPriceFormattedValue.formattedValue;
+					// check if product has configNonDiscountedPriceFormattedValue
+					if(item.configNonDiscountedPriceFormattedValue !== undefined) {
+						product_old_price = item.configNonDiscountedPriceFormattedValue.formattedValue;
+						display_promo = true;
+					}
+
+					// update the template according to pricing information
+					if(!display_promo) {
+						quote_list = quote_list.replace(new RegExp('###PRODUCT_PRICING###', 'g'), simple_price_template);
+					}
+					else {
+						quote_list = quote_list.replace(new RegExp('###PRODUCT_PRICING###', 'g'), promo_price_template);
+					}
+
+					quote_list = quote_list.replace(new RegExp('___PRODUCT_TITLE___', 'g'), product_name);
+					quote_list = quote_list.replace(new RegExp('___PRODUCT_ID___', 'g'), item.product.code);
+					// TODO: disabled generating product urls, because urls from Hybris service produce server error. Remove next line, and enable back commented out code, when hybris is fixed.
+
+					if (product_name.length > self.cfg.productNameMaxChars) {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_DESCRIPTION_TITLE___', 'g'), product_name);
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_DESCRIPTION___', 'g'), product_name.substring(0, self.cfg.productNameMaxChars) + "...");
+					}
+					else {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_DESCRIPTION___', 'g'), product_name);
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_DESCRIPTION_TITLE___', 'g'), product_name);
+					}
+
+					quote_list = quote_list.replace(new RegExp('___PRODUCT_QTY___', 'g'), product_quantity);
+
+					if (product_price == '' || product_price === undefined || product_price.indexOf("0.00") > -1 || product_price.indexOf("0,00") > -1) {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_PRICE___', 'g'), "");
+					}
+					else {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_PRICE___', 'g'), product_price);
+					}
+
+					if(product_old_price != '') {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_OLD_PRICE___', 'g'), product_old_price);
+					}
+					else {
+						quote_list = quote_list.replace(new RegExp('___PRODUCT_OLD_PRICE___', 'g'), "");
+					}
+				}
+			});
+
+			if (cartPurchaseNum > 0) { // if we have pyurchase items, add them to purchase tab content
+				product_tabs = product_tabs.replace(new RegExp('###PURCHASE_LIST###', 'g'), purchase_list);
+			}
+			else { // if not present, add no items in purchase tab message
+				product_tabs = product_tabs.replace(new RegExp('###PURCHASE_LIST###', 'g'), no_items_in_tab_template);
+				product_tabs = product_tabs.replace(new RegExp('____no_quote_items_text____', 'g'), '');
+				product_tabs = product_tabs.replace(new RegExp('___cart_more_items_active___', 'g'), "active");
+			}
+
+			if (cartQuoteNum > 0) { // if we have quote items, add them to quote tab content
+				product_tabs = product_tabs.replace(new RegExp('###QUOTE_LIST###', 'g'), quote_list);
+			}
+			else {  //if not present, add no items in quote tab message
+				product_tabs = product_tabs.replace(new RegExp('###QUOTE_LIST###', 'g'), no_items_in_tab_template);
+				product_tabs = product_tabs.replace(new RegExp('____no_purchase_items_text____', 'g'), '');
+				product_tabs = product_tabs.replace(new RegExp('___cart_more_items_active___', 'g'), "active");
+			}
+
+			product_tabs = product_tabs.replace(new RegExp('___PURCHASE_TAB___', 'g'), "cart_tab active");
+			product_tabs = product_tabs.replace(new RegExp('___QUOTE_TAB___', 'g'), "cart_tab");
+
+			// update tabs and tabs content in tmpHTML
+			tmpHtml = tmpHtml.replace(new RegExp('###PURCHASE-QUOTE_TABS###', 'g'), cart_tabs);
+			tmpHtml = tmpHtml.replace(new RegExp('###PRODUCTS_LIST###', 'g'), product_tabs);
+
+			if (cartPurchaseNum > 0) {
+				tmpHtml = tmpHtml.replace(new RegExp('____purchase_disable____', 'g'), '');
+			}
+			else {
+				tmpHtml = tmpHtml.replace(new RegExp('____purchase_disable____', 'g'), 'disable');
+			}
+			if (cartQuoteNum > 0) {
+				tmpHtml = tmpHtml.replace(new RegExp('____quote_disable____', 'g'), '');
+			}
+			else {
+				tmpHtml = tmpHtml.replace(new RegExp('____quote_disable____', 'g'), 'disable');
+			}
+
+			if(purchase_num > cartMaxItems) {
+				tmpHtml = tmpHtml.replace(new RegExp('###MORE_PURCHASE_ITEMS_TEMPLATE###', 'g'), this.cfg.more_items_template);
+				tmpHtml = tmpHtml.replace(new RegExp('____purchase_identifier____', 'g'), 'true');
+				tmpHtml = tmpHtml.replace(new RegExp('____quote_identifier____', 'g'), '');
+				tmpHtml = tmpHtml.replace(new RegExp('___cart_more_items_active___', 'g'), "active");
+				tmpHtml = tmpHtml.replace(new RegExp('___cart_more_items_id___', 'g'), "cart_purchase_more_items");
+				tmpHtml = tmpHtml.replace(new RegExp('___PURCHASE_PRODUCT_NUMBER___', 'g'), purchase_num - cartMaxItems);
+				tmpHtml = tmpHtml.replace(new RegExp('___QUOTE_PRODUCT_NUMBER___', 'g'), "");
+			}
+			else {
+				tmpHtml = tmpHtml.replace(new RegExp('###MORE_PURCHASE_ITEMS_TEMPLATE###', 'g'), "");
+			}
+
+			if(quote_num > cartMaxItems) {
+				tmpHtml = tmpHtml.replace(new RegExp('###MORE_QUOTE_ITEMS_TEMPLATE###', 'g'), this.cfg.more_items_template);
+				tmpHtml = tmpHtml.replace(new RegExp('____purchase_identifier____', 'g'), '');
+				tmpHtml = tmpHtml.replace(new RegExp('____quote_identifier____', 'g'), 'false');
+				tmpHtml = tmpHtml.replace(new RegExp('___cart_more_items_active___', 'g'), "active");
+				tmpHtml = tmpHtml.replace(new RegExp('___cart_more_items_id___', 'g'), "cart_quote_more_items");
+				tmpHtml = tmpHtml.replace(new RegExp('___QUOTE_PRODUCT_NUMBER___', 'g'), quote_num - cartMaxItems);
+				tmpHtml = tmpHtml.replace(new RegExp('___PURCHASE_PRODUCT_NUMBER___', 'g'), "");
+			}
+			else {
+				tmpHtml = tmpHtml.replace(new RegExp('###MORE_QUOTE_ITEMS_TEMPLATE###', 'g'), "");
+			}
+
+			/* update cart total amount */
+			tmpHtml = tmpHtml.replace(new RegExp('___CART_NO_ITEMS___', 'g'), cartPurchaseNum);
+			tmpHtml = tmpHtml.replace(new RegExp('___QUOTE_NO_ITEMS___', 'g'), cartQuoteNum);
+			cart_total = this.formatPrice(this.cartJsonData.totalPriceWithTax.value);
+
+			// check if cart has formatted price with tax for total cart value, and use it instead if available
+			if (this.cartJsonData.totalPriceWithTax.formattedValue !== undefined) {
+				cart_total = this.cartJsonData.totalPriceWithTax.formattedValue;
+			}
+			// check if product has subTotalWIthoutOrderDiscount
+			if(this.cartJsonData.subTotalWIthoutOrderDiscount) {
+				cart_old_total = this.cartJsonData.subTotalWIthoutOrderDiscount.formattedValue;
+				display_promo_total = true;
+			}
+
+			// update template according to total price information
+			if(!display_promo_total) {
+				tmpHtml = tmpHtml.replace(new RegExp('____PRODUCT_TOTAL_PRICING____', 'g'), total_simple_price_template);
+				tmpHtml = tmpHtml.replace(new RegExp('___CART_TOTAL___', 'g'), cart_total);
+			}
+			else {
+				tmpHtml = tmpHtml.replace(new RegExp('____PRODUCT_TOTAL_PRICING____', 'g'), total_promo_price_template);
+				tmpHtml = tmpHtml.replace(new RegExp('___CART_TOTAL___', 'g'), cart_total);
+				tmpHtml = tmpHtml.replace(new RegExp('___CART_OLD_TOTAL___', 'g'), cart_old_total);
+			}
+
+			/* Translate the template */
+			// use English translation for languages that were removed; and, if translation cannot be found in the table - fall back to english as well.
+			if (this.cfg.removedTranslations.indexOf(this.ll) !== -1) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.cart_translation, 'en', tmpHtml);
+			}
+			else if (this.cfg.removedTranslations.indexOf(this.ll + "-" + this.cc) !== -1) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.cart_translation, 'en', tmpHtml);
+			}
+			else if (this.ll in this.cfg.cart_translation) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.cart_translation, this.ll, tmpHtml);
+			}
+			else if (this.ll + "-" + this.cc in this.cfg.cart_translation) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.cart_translation, this.ll + "-" + this.cc, tmpHtml);
+			}
+			else {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.cart_translation, 'en', tmpHtml);
+			}
+
+			// check if we need to translate hpe.com cc/ll to a different cc/ll on Store
+			cc = this.cc;
+			ll = this.ll;
+			fullLocale = this.cc + '/' + this.ll;
+			if (fullLocale in this.cfg.redirectLocales) {
+				[cc, ll] = this.cfg.redirectLocales[fullLocale].target.split('/');
+			}
+
+			/* render the cc and ll codes appearing in resulting html */
+			tmpHtml = tmpHtml.replace(new RegExp('___CC___', 'g'), cc);
+			tmpHtml = tmpHtml.replace(new RegExp('___LL___', 'g'), ll);
+
+			/* update the store base URL */
+			tmpHtml = tmpHtml.replace(new RegExp('____STORE_BASE_URL____', 'g'), this.storeBaseUrl);
+
+			// TODO: remove when store fixes it? Workaround for urls with $&
+			tmpHtml = tmpHtml.replace(new RegExp('_####_', 'g'), '');
+
+			return tmpHtml;
+		},
+
+
+		/*
+		 * renderMyAccountHTML() - renders and returns My Account html localized for this.cc country and this.ll language
+		 */
+		renderMyAccountHTML: function() {
+			var tmpHtml = this.cfg.my_account_flyout_template;
+			var fullLocale = null;
+			var cc = null;
+			var ll = null;
+
+			/* Translate the template */
+			// use English translation for languages that were removed; and, if translation cannot be found in the table - fall back to english as well.
+			if (this.cfg.removedTranslations.indexOf(this.ll) !== -1) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.my_account_flyout_translation, 'en', tmpHtml);
+			}
+			else if (this.cfg.removedTranslations.indexOf(this.ll + "-" + this.cc) !== -1) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.my_account_flyout_translation, 'en', tmpHtml);
+			}
+			else if (this.ll in this.cfg.my_account_flyout_translation) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.my_account_flyout_translation, this.ll, tmpHtml);
+			}
+			else if (this.ll + "-" + this.cc in this.cfg.my_account_flyout_translation) {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.my_account_flyout_translation, this.ll + "-" + this.cc, tmpHtml);
+			}
+			else {
+				tmpHtml = this.translateFlyoutHTML(this.cfg.my_account_flyout_translation, 'en', tmpHtml);
+			}
+
+			// check if we need to translate hpe.com cc/ll to a different cc/ll on Store
+			cc = this.cc;
+			ll = this.ll;
+			fullLocale = this.cc + '/' + this.ll;
+			if (fullLocale in this.cfg.redirectLocales) {
+				[cc, ll] = this.cfg.redirectLocales[fullLocale].target.split('/');
+			}
+
+			/* render the cc and ll codes appearing in resulting html */
+			tmpHtml = tmpHtml.replace(new RegExp('___CC___', 'g'), cc);
+			tmpHtml = tmpHtml.replace(new RegExp('___LL___', 'g'), ll);
+
+			/* update the store base URL */
+			tmpHtml = tmpHtml.replace(new RegExp('____STORE_BASE_URL____', 'g'), this.storeBaseUrl);
+
+			return tmpHtml;
+		},
+
+
+		/*
+		 * insertCSS(style) - inserts style to document's head section
+		 */
+		insertCSS: function(style) {
+			var sheet = document.createElement('style');
+			document.getElementsByTagName('head')[0].appendChild(sheet);
+			try {
+				sheet.innerText = style;
+				sheet.innerHTML = style;
+			}
+			catch(e) {
+				sheet.styleSheet.cssText=style;
+			}
+		},
+
+
+		/*
+		 * replaceCSSForLocale() - run search and replace on css, based on locale
+		 */
+		replaceCSSForLocale: function() {
+			if(this.cfg.replace_css[this.ll]) {
+				this.cfg.css = this.cfg.css.replaceAll(new RegExp(this.cfg.replace_css[this.ll]['search'], 'ig'), this.cfg.replace_css[this.ll]['replace']);
+			}
+			else if(this.cfg.replace_css[this.ll + '-' + this.cc]) {
+				this.cfg.css = this.cfg.css.replaceAll(new RegExp(this.cfg.replace_css[this.ll + '-' + this.cc]['search'], 'ig'), this.cfg.replace_css[this.ll + '-' + this.cc]['replace']);
+			}
+		},
+
+
+		/*
+		 * insertCartCSS() - insert cart css code to the page
+		 */
+		insertCartCSS: function() {
+			if (!this.cartCssInserted) {
+				// replace css based on locale rules
+				this.replaceCSSForLocale();
+
+				// insert cart CSS
+				this.insertCSS(this.cfg.css);
+
+				// if defined, insert overwrite CSS for locale
+				if(this.cfg.overwrite_css[this.ll]) {
+					this.insertCSS(this.cfg.overwrite_css[this.ll]);
+				}
+				else if(this.cfg.overwrite_css[this.ll + '-' + this.cc]) {
+					this.insertCSS(this.cfg.overwrite_css[this.ll] + '-' + this.cc);
+				}
+
+				this.cartCssInserted = true;
+			}
+		},
+
+
+		/*
+		 * insertCartHTML() - insert the cart to the page
+		 */
+		insertCartHTML: function () {
+			var purchaseStoreEnabledLocales = this.cfg.purchaseStoreEnabledLocales;
+
+			if( !this.cartHtmlInserted && (document.getElementById(this.cartHTMLContainter) != null) ) {
+				document.getElementById(this.cartHTMLContainter).innerHTML = this.renderCartHTML();
+				this.cartHtmlInserted = true;
+
+				//check if buttons are disabled and if true, remove button action
+				if (document.getElementById('request_checkout').classList.contains('disable')) {
+					document.getElementById('request_checkout').onclick = function() { return false }
+				}
+				if (document.getElementById('request_quote').classList.contains('disable')) {
+					document.getElementById('request_quote').onclick = function() { return false }
+				}
+
+				// remove purchase tab if not enabled for current locale
+				if (!purchaseStoreEnabledLocales.includes(this.cc + '/' + this.ll)) {
+					document.getElementById('purchase_tab_button').remove();
+					document.getElementById("quote_tab_button").remove();
+					document.getElementById('purchase_tab_text').remove();
+					document.getElementById('purchase_tab').remove();
+					document.getElementById('hpehf-cart-purchase-total').remove();
+					document.getElementById('view-cart_purchase').remove();
+					document.getElementById('request_checkout').remove();
+					document.getElementById('hpehf-cart-tabs').style.minHeight = "auto";
+
+					// show quote tab
+					document.getElementById("quote_tab").classList.add("active");
+					document.getElementById("quote_tab_text").classList.add("active");
+					document.getElementById("hpehf-cart-quote-total").classList.add("active");
+					document.getElementById("view-cart_quote").classList.add("active");
+					document.getElementById("request_quote").classList.add("active");
+				}
+				// add events for cart
+				else {
+					/* set default cart tab */
+					if (this.cartPurchaseNum == 0) {
+						document.getElementById("purchase_tab_button").classList.remove("active");
+						document.getElementById("purchase_tab").classList.remove("active");
+						document.getElementById("purchase_tab_text").classList.remove("active");
+						document.getElementById("hpehf-cart-purchase-total").classList.remove("active");
+						document.getElementById("view-cart_purchase").classList.remove("active");
+						document.getElementById("request_checkout").classList.remove("active");
+						document.getElementById("quote_tab_button").classList.add("active");
+						document.getElementById("quote_tab").classList.add("active");
+						document.getElementById("quote_tab_text").classList.add("active");
+						document.getElementById("hpehf-cart-quote-total").classList.add("active");
+						document.getElementById("view-cart_quote").classList.add("active");
+						document.getElementById("request_quote").classList.add("active");
+					}
+					else {
+						document.getElementById("purchase_tab_button").classList.add("active");
+						document.getElementById("purchase_tab").classList.add("active");
+						document.getElementById("purchase_tab_text").classList.add("active");
+						document.getElementById("hpehf-cart-purchase-total").classList.add("active");
+						document.getElementById("view-cart_purchase").classList.add("active");
+						document.getElementById("request_checkout").classList.add("active");
+						document.getElementById("quote_tab_button").classList.remove("active");
+						document.getElementById("quote_tab").classList.remove("active");
+						document.getElementById("quote_tab_text").classList.remove("active");
+						document.getElementById("hpehf-cart-quote-total").classList.remove("active");
+						document.getElementById("view-cart_quote").classList.remove("active");
+						document.getElementById("request_quote").classList.remove("active");
+					}
+
+					/* add click events for cart tabs */
+					if (document.getElementById("hpehf-cart-tabs") != null) {
+						document.getElementById("purchase_tab_button").onclick = function () {
+							document.getElementById("quote_tab_button").classList.remove("active");
+							document.getElementById("quote_tab").classList.remove("active");
+							document.getElementById("quote_tab_text").classList.remove("active");
+							document.getElementById("hpehf-cart-quote-total").classList.remove("active");
+							document.getElementById("view-cart_quote").classList.remove("active");
+							document.getElementById("request_quote").classList.remove("active");
+							document.getElementById("purchase_tab_button").classList.add("active");
+							document.getElementById("purchase_tab").classList.add("active");
+							document.getElementById("purchase_tab_text").classList.add("active");
+							document.getElementById("hpehf-cart-purchase-total").classList.add("active");
+							document.getElementById("view-cart_purchase").classList.add("active");
+							document.getElementById("request_checkout").classList.add("active");
+						};
+						document.getElementById("quote_tab_button").onclick = function () {
+							document.getElementById("purchase_tab_button").classList.remove("active");
+							document.getElementById("purchase_tab").classList.remove("active");
+							document.getElementById("purchase_tab_text").classList.remove("active");
+							document.getElementById("hpehf-cart-purchase-total").classList.remove("active");
+							document.getElementById("view-cart_purchase").classList.remove("active");
+							document.getElementById("request_checkout").classList.remove("active");
+							document.getElementById("quote_tab_button").classList.add("active");
+							document.getElementById("quote_tab").classList.add("active");
+							document.getElementById("quote_tab_text").classList.add("active");
+							document.getElementById("hpehf-cart-quote-total").classList.add("active");
+							document.getElementById("view-cart_quote").classList.add("active");
+							document.getElementById("request_quote").classList.add("active");
+						};
+					}
+				}
+			}
+		},
+
+
+		/*
+		 * insertMyAccountHTML() - insert My Account flyout to the page
+		 */
+		insertMyAccountHTML: function() {
+			if( !this.myAccountHtmlInserted && (document.getElementById(this.myAccountHTMLContainter) != null) ) {
+				document.getElementById(this.myAccountHTMLContainter).innerHTML = this.renderMyAccountHTML();
+				this.myAccountHtmlInserted = true;
+			}
+		},
+
+
+		/*
+		 * insertCartIndicator() - loads cart indicator to the page. If Cart is not empty, number of items in cart will be shown over the cart icon.
+		 */
+		insertCartIndicator: function () {
+			if ( document.getElementById(this.cartIndicatorContainter) == null ) {
+				this.log('Cannot set Mini Cart Indicator on the page: DIV ' + this.cartIndicatorContainter + 'does not exist.');
+				return false;
+			}
+
+			if (!this.isCartEmpty()) {
+				document.getElementById(this.cartIndicatorContainter).innerHTML = this.cartNumItems;
+			}
+			else {
+				document.getElementById(this.cartIndicatorContainter).innerHTML = '';
+			}
+
+			return true;
+		},
+
+
+		/*
+		 * initStoreMyAccountFlyout() - this method initalizes Store's My Account flyout (if enabled), and in case user is logged in to store, inserts to header icon the login indicator
+		 */
+		initStoreMyAccountFlyout: function () {
+			if ( document.getElementById("hpe-my-account-container") != null ) {
+				this.loadMyAccount();
+			}
+
+			if ( document.getElementById(this.userLoggedInIndicatorContainter) == null ) {
+				this.log('Cannot load User Logged In indicator to the page: DIV ' + this.userLoggedInIndicatorContainter + 'does not exist.');
+				return false;
+			}
+
+			var indicatorContainer = document.getElementById(this.userLoggedInIndicatorContainter);
+			if (this.isUserLoggedIn()) {
+				indicatorContainer.innerHTML = '&middot;';
+			}
+			else {
+				indicatorContainer.innerHTML = '';
+			}
+		},
+
+
+		/*
+		 * insertUserLoggedInIndicator() - checks if user is logged in to store, and inserts to header icon indicator that user is logged in, if necessary
+		 */
+		insertUserLoggedInIndicator: function () {
+			if ( document.getElementById(this.userLoggedInIndicatorContainter) == null ) {
+				this.log('Cannot load User Logged In indicator to the page: DIV ' + this.userLoggedInIndicatorContainter + 'does not exist.');
+				return false;
+			}
+
+			var indicatorContainer = document.getElementById(this.userLoggedInIndicatorContainter);
+			if (this.isUserLoggedIn()) {
+				indicatorContainer.innerHTML = '&middot;';
+			}
+			else {
+				indicatorContainer.innerHTML = '';
+			}
+		},
+
+
+		/*
+		 * loadCart() - loads cart content onto the page
+		 */
+		loadCart: function () {
+			if (!this.cartLoaded) {
+				var self = this;
+
+				if ( document.getElementById(this.cartHTMLContainter) == null ) {
+					this.log('Cannot load Mini Cart to the page: DIV ' + this.cartHTMLContainter + 'does not exist.');
+					return false;
+				}
+
+				this.getCartJson(function (json) {
+						self.cartJsonData = json;
+						if (self.cartJsonData) {
+							self.insertCartCSS();
+							self.insertCartHTML();
+							self.cartLoaded = true;
+							self.log('Mini Cart Loaded.');
+						}
+						else {
+							self.log('Mini Cart error - cannot retrieve cart data.');
+						}
+					});
+			}
+			return true;
+		},
+
+
+		/*
+		 * loadMyAccount() - loads My Account content onto the page
+		 */
+		loadMyAccount: function () {
+			if (!this.myAccountLoaded) {
+				this.insertCartCSS();
+				this.insertMyAccountHTML();
+				this.displayLoggedInSection();
+				/* Initialize events necessary to handle Order Status */
+				var self = this;
+				/* Event to execute order status logic when user clicks "Track My Order" button */
+				$("#hpehf-myaccount-track").click(function() {
+					var ordNumber = $("#hpehf-myaccount-input-on").val();
+					if ( (/^\d+$/.test(ordNumber)) && (ordNumber.length == 10) && ( (/^71/.test(ordNumber)) || (/^00/.test(ordNumber)) ) ) {
+						if (/^71/.test(ordNumber)) {
+							window.location.href = 'https://b2b.hpe.com/login/auth';
+						}
+						if (/^00/.test(ordNumber)) {
+							window.location.href = this.storeBaseUrl + '/' + self.cc + '/' + self.ll + '/login';
+						}
+					}
+					else {
+						$(".hpehf-myaccount-order-status").addClass('hpehf-myaccount-has-error');
+					}
+					return false;
+				});
+
+				/* In case user hits "Enter" key after entering order number, execute "Track My Order" click event to trigger the order status logic. */
+				$("#hpehf-myaccount-input-on").keydown(function(event) {
+					if (event.keyCode === 13) {
+						$("#hpehf-myaccount-track").click();
+						return false;
+					}
+				});
+
+				/* event handler for FOCUS IN */
+				$("#hpehf-myaccount-input-on").on('focusin', function() {
+					/* if error message is displayed, remove the "error" classes */
+					if ($(".hpehf-myaccount-order-status").hasClass('hpehf-myaccount-has-error')) {
+						$(".hpehf-myaccount-order-status").removeClass('hpehf-myaccount-has-error');
+					}
+					/* when the input field is focused, add "focused" classes to change cursor and bottom border color to green */
+					$(".hpehf-myaccount-order-status").addClass('hpehf-myaccount-order-status-focused');
+				});
+
+				/* event handler for FOCUS OUT */
+				$("#hpehf-myaccount-input-on").on('focusout', function() {
+					/* when the input loses focus, remove the "focused" classes and revert to original display */
+					$(".hpehf-myaccount-order-status").removeClass('hpehf-myaccount-order-status-focused');
+				});
+
+				/* event handler for INPUT / when user starts typing */
+				$("#hpehf-myaccount-input-on").on('input', function() {
+					/* if error message is displayed, remove all the "error" classes and change back to focused state */
+					if ($(".hpehf-myaccount-order-status").hasClass('hpehf-myaccount-has-error')) {
+						$(".hpehf-myaccount-order-status").removeClass('hpehf-myaccount-has-error');
+					}
+				});
+
+				this.myAccountLoaded = true;
+			}
+			return true;
+		},
+
+
+		/**
+		 * displayLoggedInSection() - a custom message is being displayed instead of the login buttons section in my account flyout if the user is logged in
+		 */
+		displayLoggedInSection: function() {
+			if (this.isUserLoggedIn()) {
+				var loginSectionContainer = document.getElementById('hpehf-myaccount-logins');
+				var loggedInSectionContainer = document.getElementById('hpehf-myaccount-logged-in');
+
+				if (!loginSectionContainer.classList.contains('hidden')) {
+					loginSectionContainer.classList.add('hidden');
+				}
+				if (loggedInSectionContainer.classList.contains('hidden')) {
+					loggedInSectionContainer.classList.remove('hidden');
+				}
+			}
+		},
+
+
+		/*
+		 * init(config) - initializes HPE_MINI_CART object with the provided configuration object
+		 */
+		init: function (config) {
+			var self = this;
+
+			// check if cart was initalized already - to not initalize it twice.
+			if (this.cartInitialized) {
+				return true;
+			}
+
+			this.log('Mini Cart Init start.');
+			this.cartInitialized = true;
+			this.cfg = config;
+			this.detectLocale();
+
+			// Initialize hfwsStaticPath and storeBaseUrl from Cart container DIV, if available.
+			if ( document.getElementById(this.cartHTMLContainter) != null ) {
+				this.log('Cart HTML container DIV exist - trying to read hfws-static-path and store-base-url attributes');
+
+				var cartContainer = $('#' + this.cartHTMLContainter);
+				if ( typeof(cartContainer.attr('hfws-static-path')) != 'undefined' ) {
+					this.hfwsStaticPath = cartContainer.attr('hfws-static-path');
+				}
+
+				if ( typeof(cartContainer.attr('store-base-url')) != 'undefined' ) {
+					this.storeBaseUrl = cartContainer.attr('store-base-url');
+				}
+
+				// TODO: added workaround to check store-path-prefix until all environments stop using /b2c prefix. In order to not have to change AEM code, if no store-path-prefix defined, then prefix is /b2c. When all store environments migrate to not use /b2c, update code to remove store-path-prefix dependency, and use just store-base-url
+				if ( typeof(cartContainer.attr('store-path-prefix')) != 'undefined' ) {
+					this.storeBaseUrl = this.storeBaseUrl + cartContainer.attr('store-path-prefix');
+				}
+				else {
+					this.storeBaseUrl = this.storeBaseUrl + '';
+				}
+			}
+
+			// Build full urls for hfwsImgPath and staticCartJsonURL
+			this.hfwsImgPath = this.hfwsStaticPath + this.hfwsImgPath;
+			this.staticCartJsonURL = this.hfwsStaticPath + this.staticCartJsonURL;
+
+			// init userHasCart based on cookie information from store
+			if(this.userHasCart = this.readCookie(this.userHasCartCookie)) { // if cookie exists
+				if(this.userHasCart == "true") {
+					this.userHasCart = true;
+				}
+				else {
+					this.userHasCart = false;
+				}
+			}
+			else { // if cookie doesn't exist
+				this.userHasCart = false;
+			}
+
+			// Initialize indicator for number of cart items - works asyncronously, so we need to pass callback function executed when JSON is loaded:
+			this.getCartJson(function (json) {
+					self.setCartItemsNumberFromJson(json);
+					self.insertCartIndicator();
+				});
+
+			//this.insertUserLoggedInIndicator();
+			if ( (typeof window.HPEHF !== 'undefined' ) && HPEHF.hfInitialized ) {
+				this.initStoreMyAccountFlyout();
+			}
+			else {
+				function _minicart_hpehf_ready_event_listener() {
+					document.removeEventListener('HPEHF.READY', _minicart_hpehf_ready_event_listener);
+					self.initStoreMyAccountFlyout();
+				}
+				document.addEventListener('HPEHF.READY', _minicart_hpehf_ready_event_listener);
+			}
+
+			this.log('Mini Cart Initialized.');
+		}
+	}
+
+
+	/* If page is loaded at the time of execution, intialize cart right away. Otherwise, attach event function to load it when document is complete */
+	if (document.readyState == 'interactive' || document.readyState == 'complete') {
+			/* Initialize Cart */
+			window.HPE_MINI_CART.init(window.HPE_MINI_CART_CFG);
+	}
+	else {
+		/* Check if other onreadystatechange events are already defined, and preserve them */
+		var saved_onreadystatechange_function = null;
+		if(typeof document.onreadystatechange == 'function') {
+			saved_onreadystatechange_function = document.onreadystatechange;
+		}
+		else {
+			saved_onreadystatechange_function = function () { ; }
+		}
+		document.onreadystatechange = function() {
+			saved_onreadystatechange_function();
+			if (document.readyState == 'interactive' || document.readyState == 'complete') {
+				/* Initialize Cart */
+				window.HPE_MINI_CART.init(window.HPE_MINI_CART_CFG);
+			}
+		}
+	}
+
+/*********************************************************/
+}
+
+/* for migration from legacy mootools hfws instalations, check if jQuery is included to page, and if not, wait for HFWS to initialize and load jQuery */
+if (typeof window.jQuery !== 'undefined') {
+	_hpe_mini_cart(window.jQuery);
+}
+else {
+	function _hpehf_ready_event_listener() {
+		document.removeEventListener('HPEHF.READY', _hpehf_ready_event_listener);
+		_hpe_mini_cart(window.jQuery);
+	}
+	document.addEventListener('HPEHF.READY', _hpehf_ready_event_listener);
+}

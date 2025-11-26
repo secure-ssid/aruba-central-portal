@@ -1,0 +1,3837 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-logging API generated from aruba-logging.yang",
+    "version": "1.0.0",
+    "title": "logging",
+    "x-tag-group": "System"
+  },
+  "tags": [
+    {
+      "name": "logging"
+    }
+  ],
+  "paths": {
+    "/logging": {
+      "get": {
+        "summary": "Read existing logging profile configurations",
+        "description": "Logging parameters.",
+        "operationId": "readLogging",
+        "x-cliParam": {
+          "commandName": "readLoggingCmd",
+          "summary": "Read operation for logging",
+          "commandUse": "logging",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/logging/"
+        },
+        "tags": [
+          "logging"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaLogging_LoggingSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logging/{name}": {
+      "post": {
+        "summary": "Create a new logging by unique name",
+        "description": "event is related to high level functionality of device.",
+        "operationId": "createLoggingProfileByID",
+        "x-cliParam": {
+          "commandName": "createLoggingProfileCmd",
+          "summary": "Create operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "createLoggingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/logging/profile/%s/"
+        },
+        "tags": [
+          "logging"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Logging profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaLogging_LoggingprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing logging configurations",
+        "description": "event is related to high level functionality of device.",
+        "operationId": "readLoggingProfileByID",
+        "x-cliParam": {
+          "commandName": "readLoggingProfileCmd",
+          "summary": "Read operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "readLoggingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/logging/profile/%s/"
+        },
+        "tags": [
+          "logging"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Logging profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaLogging_LoggingprofileSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing logging configurations",
+        "description": "event is related to high level functionality of device.",
+        "operationId": "updateLoggingProfileByID",
+        "x-cliParam": {
+          "commandName": "updateLoggingProfileCmd",
+          "summary": "Update operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "updateLoggingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/logging/profile/%s/"
+        },
+        "tags": [
+          "logging"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Logging profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaLogging_LoggingprofileSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the logging",
+        "description": "event is related to high level functionality of device.",
+        "operationId": "deleteLoggingProfileByID",
+        "x-cliParam": {
+          "commandName": "deleteLoggingProfileCmd",
+          "summary": "Delete operation for profile",
+          "commandUse": "profile",
+          "parentCommand": "deleteLoggingCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/logging/profile/%s/"
+        },
+        "tags": [
+          "logging"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "Logging profile name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaLogging_LoggingprofileSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaLogging_LoggingprofileSchema"
+            }
+          }
+        },
+        "description": "profilebody object"
+      }
+    },
+    "schemas": {
+      "ArubaLogging_LoggingSchema": {
+        "description": "Logging parameters.",
+        "properties": {
+          "profile": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "event is related to high level functionality of device.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaLogging_Logger"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Logging profile name."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Logging profile description."
+                    },
+                    "system-module": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ALL_PASS",
+                        "VLAN",
+                        "IP",
+                        "IGMP",
+                        "IPX",
+                        "STP",
+                        "SYSTEM",
+                        "CHASSIS",
+                        "CONSOLE",
+                        "PORTS",
+                        "DHCP",
+                        "DOWNLOAD",
+                        "TCP",
+                        "TELNET",
+                        "TIMEP",
+                        "TFTP",
+                        "XMODEM",
+                        "UPDATE",
+                        "MGR",
+                        "BRIDGE",
+                        "SNMP",
+                        "ADDRMGR",
+                        "PAGP",
+                        "FAULT",
+                        "LDBAL",
+                        "GARP",
+                        "GVRP",
+                        "COS",
+                        "LACP",
+                        "DHCPR",
+                        "STACK",
+                        "DMA",
+                        "SNTP",
+                        "IEEE802_1X",
+                        "CDP",
+                        "AUTH",
+                        "TACACS",
+                        "RADIUS",
+                        "SSH",
+                        "NETINET",
+                        "OSPF",
+                        "XRRP",
+                        "SSL",
+                        "IPADDRMGR",
+                        "WEBMACAUTH",
+                        "KMS",
+                        "PIM",
+                        "MACLOCK",
+                        "ACL",
+                        "UDPF",
+                        "INST_MON",
+                        "UDLD",
+                        "HPESP",
+                        "LLDP",
+                        "CONNFILT",
+                        "RATELIM",
+                        "IDM",
+                        "IPLOCK",
+                        "DHCP_SNOOP",
+                        "VRRP",
+                        "USB",
+                        "LICENSING",
+                        "LOOP_PROTECT",
+                        "SFLOW",
+                        "ARP_PROTECT",
+                        "DHCPV6C",
+                        "MTM",
+                        "MLD",
+                        "DCA",
+                        "QINQ",
+                        "AUTORUN",
+                        "FFI",
+                        "WSM",
+                        "DIPLD",
+                        "HPSM",
+                        "SRCIP",
+                        "POLICY",
+                        "OOBM",
+                        "TRMODE",
+                        "OSPF3",
+                        "DHCPV6R",
+                        "BGP",
+                        "UFD",
+                        "FIPS",
+                        "DT",
+                        "DCBX",
+                        "SFTP",
+                        "STACKING",
+                        "RFS",
+                        "TESTMODE",
+                        "CRYPTO",
+                        "SLP",
+                        "RA_GUARD",
+                        "HPECM",
+                        "HPESP_IP",
+                        "MOBILITY",
+                        "SECUREMODE",
+                        "MSATPROXY",
+                        "ESATPROXY",
+                        "HPESP_CM",
+                        "OPENFLOW",
+                        "SMART_LINK",
+                        "INSYSPROG",
+                        "DHCP_SERVER",
+                        "JOB",
+                        "DSNOOPV6",
+                        "DIPLDV6",
+                        "SI_TUNNEL",
+                        "TR_069",
+                        "HTTP",
+                        "VXLAN_TUNNEL",
+                        "BPDU",
+                        "BYOD_REDIRECT",
+                        "DLDP",
+                        "MACSEC",
+                        "ACCT",
+                        "TLS",
+                        "RIPNG",
+                        "ARPT",
+                        "NDSNOOP",
+                        "NTP",
+                        "IPSLA",
+                        "MDNS",
+                        "MVRP",
+                        "RIP",
+                        "LLDPMAD",
+                        "CAPTIVE_PORTAL",
+                        "PROFILE_MANAGER",
+                        "VSF",
+                        "TUNNELED_NODE",
+                        "AMP_SERVER",
+                        "PSDETECT",
+                        "ACTIVATE",
+                        "CENTRAL",
+                        "ZTPIPSEC",
+                        "USERTNODE",
+                        "VLANMAD",
+                        "CFGRESTORE",
+                        "HTTPPROXY",
+                        "DEV_ONBOARD",
+                        "DFP",
+                        "AUTHORDER",
+                        "CADOWNLOAD",
+                        "ESTC",
+                        "BFD"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ALL_PASS": "Event log for system-module all-pass",
+                        "VLAN": "Event log for system-module vlan",
+                        "IP": "Event log for system-module ip",
+                        "IGMP": "Event log for system-module igmp",
+                        "IPX": "Event log for system-module ipx",
+                        "STP": "Event log for system-module stp",
+                        "SYSTEM": "Event log for system-module system",
+                        "CHASSIS": "Event log for system-module chassis",
+                        "CONSOLE": "Event log for system-module console",
+                        "PORTS": "Event log for system-module ports",
+                        "DHCP": "Event log for system-module dhcp",
+                        "DOWNLOAD": "Event log for system-module download",
+                        "TCP": "Event log for system-module tcp",
+                        "TELNET": "Event log for system-module telnet",
+                        "TIMEP": "Event log for system-module timep",
+                        "TFTP": "Event log for system-module tftp",
+                        "XMODEM": "Event log for system-module xmodem",
+                        "UPDATE": "Event log for system-module update",
+                        "MGR": "Event log for system-module mgr",
+                        "BRIDGE": "Event log for system-module bridge",
+                        "SNMP": "Event log for system-module snmp",
+                        "ADDRMGR": "Event log for system-module addrmgr",
+                        "PAGP": "Event log for system-module pagp",
+                        "FAULT": "Event log for system-module fault",
+                        "LDBAL": "Event log for system-module ldbal",
+                        "GARP": "Event log for system-module garp",
+                        "GVRP": "Event log for system-module gvrp",
+                        "COS": "Event log for system-module cos",
+                        "LACP": "Event log for system-module lacp",
+                        "DHCPR": "Event log for system-module dhcpr",
+                        "STACK": "Event log for system-module stack",
+                        "DMA": "Event log for system-module dma",
+                        "SNTP": "Event log for system-module sntp",
+                        "IEEE802_1X": "Event log for system-module 802.1x",
+                        "CDP": "Event log for system-module cdp",
+                        "AUTH": "Event log for system-module auth",
+                        "TACACS": "Event log for system-module tacacs",
+                        "RADIUS": "Event log for system-module radius",
+                        "SSH": "Event log for system-module ssh",
+                        "NETINET": "Event log for system-module netinet",
+                        "OSPF": "Event log for system-module ospf",
+                        "XRRP": "Event log for system-module xrrp",
+                        "SSL": "Event log for system-module ssl",
+                        "IPADDRMGR": "Event log for system-module ipaddrmgr",
+                        "WEBMACAUTH": "Event log for system-module webmacauth",
+                        "KMS": "Event log for system-module kms",
+                        "PIM": "Event log for system-module pim",
+                        "MACLOCK": "Event log for system-module maclock",
+                        "ACL": "Event log for system-module acl",
+                        "UDPF": "Event log for system-module udpf",
+                        "INST_MON": "Event log for system-module inst-mon",
+                        "UDLD": "Event log for system-module udld",
+                        "HPESP": "Event log for system-module hpesp",
+                        "LLDP": "Event log for system-module lldp",
+                        "CONNFILT": "Event log for system-module connfilt",
+                        "RATELIM": "Event log for system-module ratelim",
+                        "IDM": "Event log for system-module idm",
+                        "IPLOCK": "Event log for system-module iplock",
+                        "DHCP_SNOOP": "Event log for system-module dhcp-snoop",
+                        "VRRP": "Event log for system-module vrrp",
+                        "USB": "Event log for system-module usb",
+                        "LICENSING": "Event log for system-module licensing",
+                        "LOOP_PROTECT": "Event log for system-module loop-protect",
+                        "SFLOW": "Event log for system-module sflow",
+                        "ARP_PROTECT": "Event log for system-module arp-protect",
+                        "DHCPV6C": "Event log for system-module dhcpv6c",
+                        "MTM": "Event log for system-module mtm",
+                        "MLD": "Event log for system-module mld",
+                        "DCA": "Event log for system-module DCA",
+                        "QINQ": "Event log for system-module Q-in-Q",
+                        "AUTORUN": "Event log for system-module autorun",
+                        "FFI": "Event log for system-module FFI",
+                        "WSM": "Event log for system-module wsm",
+                        "DIPLD": "Event log for system-module dipld",
+                        "HPSM": "Event log for system-module hpsm",
+                        "SRCIP": "Event log for system-module srcip",
+                        "POLICY": "Event log for system-module policy",
+                        "OOBM": "Event log for system-module oobm",
+                        "TRMODE": "Event log for system-module trmode",
+                        "OSPF3": "Event log for system-module ospf3",
+                        "DHCPV6R": "Event log for system-module dhcpv6r",
+                        "BGP": "Event log for system-module bgp",
+                        "UFD": "Event log for system-module ufd",
+                        "FIPS": "Event log for system-module fips",
+                        "DT": "Event log for system-module dt",
+                        "DCBX": "Event log for system-module dcbx",
+                        "SFTP": "Event log for system-module sftp",
+                        "STACKING": "Event log for system-module stacking",
+                        "RFS": "Event log for system-module rfs",
+                        "TESTMODE": "Event log for system-module testmode",
+                        "CRYPTO": "Event log for system-module crypto",
+                        "SLP": "Event log for system-module slp",
+                        "RA_GUARD": "Event log for system-module ra-guard",
+                        "HPECM": "Event log for system-module hpecm",
+                        "HPESP_IP": "Event log for system-module hpesp-ip",
+                        "MOBILITY": "Event log for system-module mobility",
+                        "SECUREMODE": "Event log for system-module securemode",
+                        "MSATPROXY": "Event log for system-module msatproxy",
+                        "ESATPROXY": "Event log for system-module esatproxy",
+                        "HPESP_CM": "Event log for system-module hpesp-cm",
+                        "OPENFLOW": "Event log for system-module openflow",
+                        "SMART_LINK": "Event log for system-module smart-link",
+                        "INSYSPROG": "Event log for system-module insysprog",
+                        "DHCP_SERVER": "Event log for system-module dhcp-server",
+                        "JOB": "Event log for system-module job",
+                        "DSNOOPV6": "Event log for system-module dsnoopv6",
+                        "DIPLDV6": "Event log for system-module dipldv6",
+                        "SI_TUNNEL": "Event log for system-module si-tunnel",
+                        "TR_069": "Event log for system-module tr-069",
+                        "HTTP": "Event log for system-module http",
+                        "VXLAN_TUNNEL": "Event log for system-module vxlan-tunnel",
+                        "BPDU": "Event log for system-module bpdu",
+                        "BYOD_REDIRECT": "Event log for system-module byod-redirect",
+                        "DLDP": "Event log for system-module dldp",
+                        "MACSEC": "Event log for system-module macsec",
+                        "ACCT": "Event log for system-module acct",
+                        "TLS": "Event log for system-module tls",
+                        "RIPNG": "Event log for system-module ripng",
+                        "ARPT": "Event log for system-module arpt",
+                        "NDSNOOP": "Event log for system-module ndsnoop",
+                        "NTP": "Event log for system-module ntp",
+                        "IPSLA": "Event log for system-module ipsla",
+                        "MDNS": "Event log for system-module mdns",
+                        "MVRP": "Event log for system-module mvrp",
+                        "RIP": "Event log for system-module rip",
+                        "LLDPMAD": "Event log for system-module lldpmad",
+                        "CAPTIVE_PORTAL": "Event log for system-module captive-portal",
+                        "PROFILE_MANAGER": "Event log for system-module profile-manager",
+                        "VSF": "Event log for system-module vsf",
+                        "TUNNELED_NODE": "Event log for system-module tunneled-node",
+                        "AMP_SERVER": "Event log for system-module amp-server",
+                        "PSDETECT": "Event log for system-module psdetect",
+                        "ACTIVATE": "Event log for system-module activate",
+                        "CENTRAL": "Event log for system-module central",
+                        "ZTPIPSEC": "Event log for system-module ztpipsec",
+                        "USERTNODE": "Event log for system-module usertnode",
+                        "VLANMAD": "Event log for system-module vlanmad",
+                        "CFGRESTORE": "Event log for system-module cfgrestore",
+                        "HTTPPROXY": "Event log for system-module httpproxy",
+                        "DEV_ONBOARD": "Event log for system-module dev-onboard",
+                        "DFP": "Event log for system-module dfp",
+                        "AUTHORDER": "Event log for system-module authorder",
+                        "CADOWNLOAD": "Event log for system-module cadownload",
+                        "ESTC": "Event log for system-module estc",
+                        "BFD": "Event log for system-module bfd"
+                      },
+                      "x-typeDescription": "Event log for system-module.",
+                      "description": "Name of the system-module."
+                    },
+                    "priority-description": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "description": "A text string associated with the values of facility, severity, and\nsystem-module."
+                    },
+                    "running-config-change": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Notification about changes in running configuration will\nbe sent to the syslog server(s)."
+                    },
+                    "transmission-interval": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 4294967295,
+                      "description": "Egress rate limit for sending notifications."
+                    },
+                    "origin-id": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "IP_ADDRESS",
+                        "HOSTNAME",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "IP_ADDRESS": "IP address of the outgoing interface as the origin-id.",
+                        "HOSTNAME": "Hostname of the device as the origin-id.",
+                        "NONE": "Disable origin-id in the Syslog message."
+                      },
+                      "x-typeDescription": "Specify the origin information for the syslog message.",
+                      "description": "Origin Id for the syslog message."
+                    },
+                    "command": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "description": "Enable local command logging."
+                    },
+                    "prefix": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 48,
+                      "description": "Add a string to the message content. The string may contain upto 48 US ASCII printable characters except for space."
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaLogging_LoggingSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaLogging_LoggingSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaLogging_LoggingprofileSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaLogging_Logger"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Logging profile name."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Logging profile description."
+              },
+              "system-module": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "ALL_PASS",
+                  "VLAN",
+                  "IP",
+                  "IGMP",
+                  "IPX",
+                  "STP",
+                  "SYSTEM",
+                  "CHASSIS",
+                  "CONSOLE",
+                  "PORTS",
+                  "DHCP",
+                  "DOWNLOAD",
+                  "TCP",
+                  "TELNET",
+                  "TIMEP",
+                  "TFTP",
+                  "XMODEM",
+                  "UPDATE",
+                  "MGR",
+                  "BRIDGE",
+                  "SNMP",
+                  "ADDRMGR",
+                  "PAGP",
+                  "FAULT",
+                  "LDBAL",
+                  "GARP",
+                  "GVRP",
+                  "COS",
+                  "LACP",
+                  "DHCPR",
+                  "STACK",
+                  "DMA",
+                  "SNTP",
+                  "IEEE802_1X",
+                  "CDP",
+                  "AUTH",
+                  "TACACS",
+                  "RADIUS",
+                  "SSH",
+                  "NETINET",
+                  "OSPF",
+                  "XRRP",
+                  "SSL",
+                  "IPADDRMGR",
+                  "WEBMACAUTH",
+                  "KMS",
+                  "PIM",
+                  "MACLOCK",
+                  "ACL",
+                  "UDPF",
+                  "INST_MON",
+                  "UDLD",
+                  "HPESP",
+                  "LLDP",
+                  "CONNFILT",
+                  "RATELIM",
+                  "IDM",
+                  "IPLOCK",
+                  "DHCP_SNOOP",
+                  "VRRP",
+                  "USB",
+                  "LICENSING",
+                  "LOOP_PROTECT",
+                  "SFLOW",
+                  "ARP_PROTECT",
+                  "DHCPV6C",
+                  "MTM",
+                  "MLD",
+                  "DCA",
+                  "QINQ",
+                  "AUTORUN",
+                  "FFI",
+                  "WSM",
+                  "DIPLD",
+                  "HPSM",
+                  "SRCIP",
+                  "POLICY",
+                  "OOBM",
+                  "TRMODE",
+                  "OSPF3",
+                  "DHCPV6R",
+                  "BGP",
+                  "UFD",
+                  "FIPS",
+                  "DT",
+                  "DCBX",
+                  "SFTP",
+                  "STACKING",
+                  "RFS",
+                  "TESTMODE",
+                  "CRYPTO",
+                  "SLP",
+                  "RA_GUARD",
+                  "HPECM",
+                  "HPESP_IP",
+                  "MOBILITY",
+                  "SECUREMODE",
+                  "MSATPROXY",
+                  "ESATPROXY",
+                  "HPESP_CM",
+                  "OPENFLOW",
+                  "SMART_LINK",
+                  "INSYSPROG",
+                  "DHCP_SERVER",
+                  "JOB",
+                  "DSNOOPV6",
+                  "DIPLDV6",
+                  "SI_TUNNEL",
+                  "TR_069",
+                  "HTTP",
+                  "VXLAN_TUNNEL",
+                  "BPDU",
+                  "BYOD_REDIRECT",
+                  "DLDP",
+                  "MACSEC",
+                  "ACCT",
+                  "TLS",
+                  "RIPNG",
+                  "ARPT",
+                  "NDSNOOP",
+                  "NTP",
+                  "IPSLA",
+                  "MDNS",
+                  "MVRP",
+                  "RIP",
+                  "LLDPMAD",
+                  "CAPTIVE_PORTAL",
+                  "PROFILE_MANAGER",
+                  "VSF",
+                  "TUNNELED_NODE",
+                  "AMP_SERVER",
+                  "PSDETECT",
+                  "ACTIVATE",
+                  "CENTRAL",
+                  "ZTPIPSEC",
+                  "USERTNODE",
+                  "VLANMAD",
+                  "CFGRESTORE",
+                  "HTTPPROXY",
+                  "DEV_ONBOARD",
+                  "DFP",
+                  "AUTHORDER",
+                  "CADOWNLOAD",
+                  "ESTC",
+                  "BFD"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ALL_PASS": "Event log for system-module all-pass",
+                  "VLAN": "Event log for system-module vlan",
+                  "IP": "Event log for system-module ip",
+                  "IGMP": "Event log for system-module igmp",
+                  "IPX": "Event log for system-module ipx",
+                  "STP": "Event log for system-module stp",
+                  "SYSTEM": "Event log for system-module system",
+                  "CHASSIS": "Event log for system-module chassis",
+                  "CONSOLE": "Event log for system-module console",
+                  "PORTS": "Event log for system-module ports",
+                  "DHCP": "Event log for system-module dhcp",
+                  "DOWNLOAD": "Event log for system-module download",
+                  "TCP": "Event log for system-module tcp",
+                  "TELNET": "Event log for system-module telnet",
+                  "TIMEP": "Event log for system-module timep",
+                  "TFTP": "Event log for system-module tftp",
+                  "XMODEM": "Event log for system-module xmodem",
+                  "UPDATE": "Event log for system-module update",
+                  "MGR": "Event log for system-module mgr",
+                  "BRIDGE": "Event log for system-module bridge",
+                  "SNMP": "Event log for system-module snmp",
+                  "ADDRMGR": "Event log for system-module addrmgr",
+                  "PAGP": "Event log for system-module pagp",
+                  "FAULT": "Event log for system-module fault",
+                  "LDBAL": "Event log for system-module ldbal",
+                  "GARP": "Event log for system-module garp",
+                  "GVRP": "Event log for system-module gvrp",
+                  "COS": "Event log for system-module cos",
+                  "LACP": "Event log for system-module lacp",
+                  "DHCPR": "Event log for system-module dhcpr",
+                  "STACK": "Event log for system-module stack",
+                  "DMA": "Event log for system-module dma",
+                  "SNTP": "Event log for system-module sntp",
+                  "IEEE802_1X": "Event log for system-module 802.1x",
+                  "CDP": "Event log for system-module cdp",
+                  "AUTH": "Event log for system-module auth",
+                  "TACACS": "Event log for system-module tacacs",
+                  "RADIUS": "Event log for system-module radius",
+                  "SSH": "Event log for system-module ssh",
+                  "NETINET": "Event log for system-module netinet",
+                  "OSPF": "Event log for system-module ospf",
+                  "XRRP": "Event log for system-module xrrp",
+                  "SSL": "Event log for system-module ssl",
+                  "IPADDRMGR": "Event log for system-module ipaddrmgr",
+                  "WEBMACAUTH": "Event log for system-module webmacauth",
+                  "KMS": "Event log for system-module kms",
+                  "PIM": "Event log for system-module pim",
+                  "MACLOCK": "Event log for system-module maclock",
+                  "ACL": "Event log for system-module acl",
+                  "UDPF": "Event log for system-module udpf",
+                  "INST_MON": "Event log for system-module inst-mon",
+                  "UDLD": "Event log for system-module udld",
+                  "HPESP": "Event log for system-module hpesp",
+                  "LLDP": "Event log for system-module lldp",
+                  "CONNFILT": "Event log for system-module connfilt",
+                  "RATELIM": "Event log for system-module ratelim",
+                  "IDM": "Event log for system-module idm",
+                  "IPLOCK": "Event log for system-module iplock",
+                  "DHCP_SNOOP": "Event log for system-module dhcp-snoop",
+                  "VRRP": "Event log for system-module vrrp",
+                  "USB": "Event log for system-module usb",
+                  "LICENSING": "Event log for system-module licensing",
+                  "LOOP_PROTECT": "Event log for system-module loop-protect",
+                  "SFLOW": "Event log for system-module sflow",
+                  "ARP_PROTECT": "Event log for system-module arp-protect",
+                  "DHCPV6C": "Event log for system-module dhcpv6c",
+                  "MTM": "Event log for system-module mtm",
+                  "MLD": "Event log for system-module mld",
+                  "DCA": "Event log for system-module DCA",
+                  "QINQ": "Event log for system-module Q-in-Q",
+                  "AUTORUN": "Event log for system-module autorun",
+                  "FFI": "Event log for system-module FFI",
+                  "WSM": "Event log for system-module wsm",
+                  "DIPLD": "Event log for system-module dipld",
+                  "HPSM": "Event log for system-module hpsm",
+                  "SRCIP": "Event log for system-module srcip",
+                  "POLICY": "Event log for system-module policy",
+                  "OOBM": "Event log for system-module oobm",
+                  "TRMODE": "Event log for system-module trmode",
+                  "OSPF3": "Event log for system-module ospf3",
+                  "DHCPV6R": "Event log for system-module dhcpv6r",
+                  "BGP": "Event log for system-module bgp",
+                  "UFD": "Event log for system-module ufd",
+                  "FIPS": "Event log for system-module fips",
+                  "DT": "Event log for system-module dt",
+                  "DCBX": "Event log for system-module dcbx",
+                  "SFTP": "Event log for system-module sftp",
+                  "STACKING": "Event log for system-module stacking",
+                  "RFS": "Event log for system-module rfs",
+                  "TESTMODE": "Event log for system-module testmode",
+                  "CRYPTO": "Event log for system-module crypto",
+                  "SLP": "Event log for system-module slp",
+                  "RA_GUARD": "Event log for system-module ra-guard",
+                  "HPECM": "Event log for system-module hpecm",
+                  "HPESP_IP": "Event log for system-module hpesp-ip",
+                  "MOBILITY": "Event log for system-module mobility",
+                  "SECUREMODE": "Event log for system-module securemode",
+                  "MSATPROXY": "Event log for system-module msatproxy",
+                  "ESATPROXY": "Event log for system-module esatproxy",
+                  "HPESP_CM": "Event log for system-module hpesp-cm",
+                  "OPENFLOW": "Event log for system-module openflow",
+                  "SMART_LINK": "Event log for system-module smart-link",
+                  "INSYSPROG": "Event log for system-module insysprog",
+                  "DHCP_SERVER": "Event log for system-module dhcp-server",
+                  "JOB": "Event log for system-module job",
+                  "DSNOOPV6": "Event log for system-module dsnoopv6",
+                  "DIPLDV6": "Event log for system-module dipldv6",
+                  "SI_TUNNEL": "Event log for system-module si-tunnel",
+                  "TR_069": "Event log for system-module tr-069",
+                  "HTTP": "Event log for system-module http",
+                  "VXLAN_TUNNEL": "Event log for system-module vxlan-tunnel",
+                  "BPDU": "Event log for system-module bpdu",
+                  "BYOD_REDIRECT": "Event log for system-module byod-redirect",
+                  "DLDP": "Event log for system-module dldp",
+                  "MACSEC": "Event log for system-module macsec",
+                  "ACCT": "Event log for system-module acct",
+                  "TLS": "Event log for system-module tls",
+                  "RIPNG": "Event log for system-module ripng",
+                  "ARPT": "Event log for system-module arpt",
+                  "NDSNOOP": "Event log for system-module ndsnoop",
+                  "NTP": "Event log for system-module ntp",
+                  "IPSLA": "Event log for system-module ipsla",
+                  "MDNS": "Event log for system-module mdns",
+                  "MVRP": "Event log for system-module mvrp",
+                  "RIP": "Event log for system-module rip",
+                  "LLDPMAD": "Event log for system-module lldpmad",
+                  "CAPTIVE_PORTAL": "Event log for system-module captive-portal",
+                  "PROFILE_MANAGER": "Event log for system-module profile-manager",
+                  "VSF": "Event log for system-module vsf",
+                  "TUNNELED_NODE": "Event log for system-module tunneled-node",
+                  "AMP_SERVER": "Event log for system-module amp-server",
+                  "PSDETECT": "Event log for system-module psdetect",
+                  "ACTIVATE": "Event log for system-module activate",
+                  "CENTRAL": "Event log for system-module central",
+                  "ZTPIPSEC": "Event log for system-module ztpipsec",
+                  "USERTNODE": "Event log for system-module usertnode",
+                  "VLANMAD": "Event log for system-module vlanmad",
+                  "CFGRESTORE": "Event log for system-module cfgrestore",
+                  "HTTPPROXY": "Event log for system-module httpproxy",
+                  "DEV_ONBOARD": "Event log for system-module dev-onboard",
+                  "DFP": "Event log for system-module dfp",
+                  "AUTHORDER": "Event log for system-module authorder",
+                  "CADOWNLOAD": "Event log for system-module cadownload",
+                  "ESTC": "Event log for system-module estc",
+                  "BFD": "Event log for system-module bfd"
+                },
+                "x-typeDescription": "Event log for system-module.",
+                "description": "Name of the system-module."
+              },
+              "priority-description": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 255,
+                "description": "A text string associated with the values of facility, severity, and\nsystem-module."
+              },
+              "running-config-change": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Notification about changes in running configuration will\nbe sent to the syslog server(s)."
+              },
+              "transmission-interval": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "description": "Egress rate limit for sending notifications."
+              },
+              "origin-id": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "IP_ADDRESS",
+                  "HOSTNAME",
+                  "NONE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "IP_ADDRESS": "IP address of the outgoing interface as the origin-id.",
+                  "HOSTNAME": "Hostname of the device as the origin-id.",
+                  "NONE": "Disable origin-id in the Syslog message."
+                },
+                "x-typeDescription": "Specify the origin information for the syslog message.",
+                "description": "Origin Id for the syslog message."
+              },
+              "command": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "description": "Enable local command logging."
+              },
+              "prefix": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 48,
+                "description": "Add a string to the message content. The string may contain upto 48 US ASCII printable characters except for space."
+              }
+            }
+          }
+        ]
+      },
+      "ArubaLogging_SyslogGroup": {
+        "description": "syslog parameters",
+        "properties": {
+          "module": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Gateway"
+            ],
+            "description": "List of module type, module and sub-module.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "type-process-subcategory": {
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "key for module. This key is the combination of type, process and subcategory separated by ~\ntype        - Logging type.\nprocess     - Name of the debug process.\nsubcategory - Name of the debug subcategory type."
+                },
+                "severity": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "EMERGENCY",
+                    "ALERT",
+                    "CRITICAL",
+                    "ERROR",
+                    "WARNING",
+                    "NOTICE",
+                    "INFO",
+                    "DEBUG",
+                    "MAJOR"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "EMERGENCY": "System is unusable",
+                    "ALERT": "Immediate action needed.",
+                    "CRITICAL": "Critical Condition",
+                    "ERROR": "Error condition in the system",
+                    "WARNING": "Warning condition",
+                    "NOTICE": "Normal bug significant condition",
+                    "INFO": "Informational Messages",
+                    "DEBUG": "Debug Messages",
+                    "MAJOR": "Major condition"
+                  },
+                  "x-typeDescription": "Logging level upto which, the messages are logged.",
+                  "description": "Minimum severity for logging."
+                },
+                "trace": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "mac-address",
+                      "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IEEE 802 MAC address"
+                    },
+                    {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63
+                    }
+                  ],
+                  "description": "trace value for debugging specific user or AP"
+                },
+                "entities": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "Debug log configuration entities.",
+                  "properties": {
+                    "client": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 65535,
+                      "description": "Client name to filter debug logs"
+                    },
+                    "column": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 65535,
+                      "description": "Column name to filter debug logs"
+                    },
+                    "table": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 65535,
+                      "description": "Table name to filter debug logs"
+                    },
+                    "entities-severity": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "EMERGENCY",
+                        "ALERT",
+                        "CRITICAL",
+                        "ERROR",
+                        "WARNING",
+                        "NOTICE",
+                        "INFO",
+                        "DEBUG",
+                        "MAJOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "EMERGENCY": "System is unusable",
+                        "ALERT": "Immediate action needed.",
+                        "CRITICAL": "Critical Condition",
+                        "ERROR": "Error condition in the system",
+                        "WARNING": "Warning condition",
+                        "NOTICE": "Normal bug significant condition",
+                        "INFO": "Informational Messages",
+                        "DEBUG": "Debug Messages",
+                        "MAJOR": "Major condition"
+                      },
+                      "x-typeDescription": "Logging level upto which, the messages are logged.",
+                      "description": "Minimum log severity to filter debug logs"
+                    },
+                    "vlan-id": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4094,
+                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                      "description": "VLAN entity and its corresponding value of this sub-module."
+                    },
+                    "port": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "x-path": "/ac-if-eth:ethernet-interfaces/ac-if-eth:interface/ac-if-eth:name",
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "name",
+                          "x-patterns": "'((enet|usb)\\d+)|(\\w+(/\\w+)?(/\\d+)?(:\\d)?)'",
+                          "maxLength": 9999
+                        },
+                        {
+                          "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4094,
+                          "x-typeDescription": "Type definition representing a single-tagged VLAN"
+                        }
+                      ],
+                      "description": "Port entity and its corresponding value of this sub-module."
+                    },
+                    "ip": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        }
+                      ],
+                      "description": "IPv4 or IPv6 entity and its corresponding value of this\nsub-module."
+                    },
+                    "mac": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "mac-address",
+                      "x-patterns": "'[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IEEE 802 MAC address",
+                      "description": "MAC entity and its corresponding value of this sub-module."
+                    },
+                    "instance": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 65535,
+                      "description": "Instance entity and its corresponding value of this sub-module."
+                    },
+                    "vrf": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "name-type",
+                      "x-patterns": "'([^\\\\/ ]+)'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                      "description": "VRF entity and its corresponding value of this sub-module."
+                    },
+                    "ubt-zone": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "UBT Zone entity and its corresponding value of this sub-module."
+                    }
+                  }
+                }
+              }
+            },
+            "x-key": [
+              "type",
+              "process",
+              "subcategory"
+            ],
+            "maxItems": 2147483647
+          },
+          "remote-syslog": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch CX"
+            ],
+            "description": "Remote syslog details.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "logging-syslog-enable": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "description": "Enable this for non default vrf"
+                },
+                "host": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv4-address",
+                      "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "ipv6-address",
+                      "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "host-type-address",
+                      "x-patterns": "'[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*'"
+                    },
+                    {
+                      "type": "string",
+                      "format": "pattern",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "x-patternSources": "host-type-address",
+                      "x-patterns": "'((([0-9]{1,3}\\.){3}[0-9]{1,3})|([0-9A-Fa-f:]+))~([^ \\t\\r\\n]+)'"
+                    }
+                  ],
+                  "description": "FQDN or host name or IPv4 address or IPv6 address of the syslog server.\nFor AP devices, support IPv4 address or IPv6 address and up to 3 syslog servers for an AP.\nFor GW devices, host contains IP address and logging type separated by ~.\nlogging type includes: AP_DEBUG, NETWORK, SECURITY, SYSTEM, USER, USER_DEBUG, WIRELESS, case sensitive."
+                },
+                "filter-name": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "maxLength": 9999,
+                  "description": "Name of the filter used to filter syslog messages."
+                },
+                "transport": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "UDP",
+                    "TCP",
+                    "TLS"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "UDP": "User Datagram Protocol.",
+                    "TCP": "Transmission Control Protocol.",
+                    "TLS": "Transport Layer Security."
+                  },
+                  "x-typeDescription": "Transport layer protocol used to forward messages to the server.",
+                  "default": "UDP",
+                  "description": "Transport layer protocol used to forward messages to the server."
+                },
+                "port-number": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0,
+                  "maximum": 65535,
+                  "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                  "description": "Port number of the syslog server."
+                },
+                "severity": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "EMERGENCY",
+                    "ALERT",
+                    "CRITICAL",
+                    "ERROR",
+                    "WARNING",
+                    "NOTICE",
+                    "INFO",
+                    "DEBUG",
+                    "MAJOR"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "EMERGENCY": "System is unusable",
+                    "ALERT": "Immediate action needed.",
+                    "CRITICAL": "Critical Condition",
+                    "ERROR": "Error condition in the system",
+                    "WARNING": "Warning condition",
+                    "NOTICE": "Normal bug significant condition",
+                    "INFO": "Informational Messages",
+                    "DEBUG": "Debug Messages",
+                    "MAJOR": "Major condition"
+                  },
+                  "x-typeDescription": "Logging level upto which, the messages are logged.",
+                  "default": "INFO",
+                  "description": "Syslog message severity. Only messages with severity higher than\nor equal to the specified value will be sent to the remote server."
+                },
+                "vrf": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "name-type",
+                  "x-patterns": "'([^\\\\/ ]+)'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                  "description": "VRF of the remote_host.\nIf not specified, remote-host will be routed through default VRF."
+                },
+                "include-auditable-events": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Specifies whether auditable events (audit and authentication)\nshould be transmitted to the remote syslog server."
+                },
+                "tls-auth-mode": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "CERTIFICATE",
+                    "SUBJECT_NAME"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "CERTIFICATE": "certificate based authentication.",
+                    "SUBJECT_NAME": "certificate and subject name based authentication."
+                  },
+                  "x-typeDescription": "TLS authentication mode used to authenticate the server.",
+                  "default": "CERTIFICATE",
+                  "description": "TLS authentication mode used to authenticate the server"
+                },
+                "disable": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Disable sending syslog messages to the remote syslog server."
+                },
+                "unsecure-tls-renegotiation": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enable TLS session with syslog server which does not support secure\nrenegotiation."
+                },
+                "rate-limit": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "description": "Rate limiting applied to messages sent to the remote syslog server.",
+                  "properties": {
+                    "burst": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 1,
+                      "maximum": 4294967295,
+                      "description": "Maximum number of logs allowed in a given rate limit interval."
+                    },
+                    "interval": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 30,
+                      "maximum": 4294967295,
+                      "default": "30",
+                      "description": "Rate limit interval in seconds."
+                    }
+                  }
+                },
+                "mgmt": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Syslog server for logs reachable through mgmt interface"
+                },
+                "control-description": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "description": "A text string associated with the given IP address."
+                },
+                "host-filter": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "description": "filter associated with the given IP address."
+                },
+                "smm": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "syslog server should receive log messages from a standby management\nmodule."
+                },
+                "format": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "BSD_STANDARD",
+                    "CEF"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "BSD_STANDARD": "BSD standard format (RFC 3164).",
+                    "CEF": "Arcsight CEF format."
+                  },
+                  "x-typeDescription": "Format type.",
+                  "description": "Remote logging Server format"
+                },
+                "source-interface": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "x-path": "/ac-if-vlan:vlan-interfaces/ac-if-vlan:interface/ac-if-vlan:id",
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1,
+                  "maximum": 4094,
+                  "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                  "description": "Source address of outgoing Syslog messages, only support IPv4. Must match an existing VLAN interface ID."
+                },
+                "tls": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "Enable TLS option for rsyslog, only support IPv4"
+                },
+                "type": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "AP_DEBUG",
+                    "NETWORK",
+                    "SECURITY",
+                    "SYSTEM",
+                    "USER",
+                    "USER_DEBUG",
+                    "WIRELESS",
+                    "NONE"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "AP_DEBUG": "AP Debug Logs",
+                    "NETWORK": "Network Logs",
+                    "SECURITY": "Security Logs",
+                    "SYSTEM": "System Logs",
+                    "USER": "User Logs",
+                    "USER_DEBUG": "User debug Logs",
+                    "WIRELESS": "Wireless Logs",
+                    "NONE": "No log type"
+                  },
+                  "x-typeDescription": "Logging message type",
+                  "description": "Logging type for remote syslog."
+                },
+                "local-facility": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "LOCAL0",
+                    "LOCAL1",
+                    "LOCAL2",
+                    "LOCAL3",
+                    "LOCAL4",
+                    "LOCAL5",
+                    "LOCAL6",
+                    "LOCAL7",
+                    "KERN",
+                    "USER",
+                    "MAIL",
+                    "DAEMON",
+                    "AUTH",
+                    "SYSLOG",
+                    "LPR",
+                    "NEWS",
+                    "UUCP",
+                    "SYS9",
+                    "SYS10",
+                    "SYS11",
+                    "SYS12",
+                    "SYS13",
+                    "SYS14",
+                    "CRON"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "LOCAL0": "Facility LOG_LOCAL0",
+                    "LOCAL1": "Facility LOG_LOCAL1",
+                    "LOCAL2": "Facility LOG_LOCAL2",
+                    "LOCAL3": "Facility LOG_LOCAL3",
+                    "LOCAL4": "Facility LOG_LOCAL4",
+                    "LOCAL5": "Facility LOG_LOCAL5",
+                    "LOCAL6": "Facility LOG_LOCAL6",
+                    "LOCAL7": "Facility LOG_LOCAL7",
+                    "KERN": "Facility KERN",
+                    "USER": "Facility USER",
+                    "MAIL": "Facility MAIL",
+                    "DAEMON": "Facility DAEMON",
+                    "AUTH": "Facility AUTH",
+                    "SYSLOG": "Facility SYSLOG",
+                    "LPR": "Facility LPR",
+                    "NEWS": "Facility NEWS",
+                    "UUCP": "Facility UUCP",
+                    "SYS9": "Facility SYS9",
+                    "SYS10": "Facility SYS10",
+                    "SYS11": "Facility SYS11",
+                    "SYS12": "Facility SYS12",
+                    "SYS13": "Facility SYS13",
+                    "SYS14": "Facility SYS14",
+                    "CRON": "Facility CRON"
+                  },
+                  "x-typeDescription": "Facility to use when logging to Remote Syslog Server.",
+                  "default": "LOCAL0",
+                  "description": "Remote logging local Facility"
+                }
+              }
+            },
+            "x-key": [
+              "host"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaLogging_FilterEntry": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Logging filter entry configuration.",
+        "properties": {
+          "entry": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Logging filter entry configuration.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "sequence-number": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX"
+                  ],
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "maximum": 4294967295,
+                  "description": "Filter criteria sequence number. (Default: Increments by 10 from\nthe largest sequence-id currently used in this filter.)"
+                },
+                "match-event-id": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS"
+                    ],
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1,
+                    "maximum": 32767,
+                    "description": "List of event match Ids"
+                  },
+                  "maxItems": 2147483647
+                },
+                "event-id-range": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 5,
+                  "maxLength": 11,
+                  "description": "Event id or range of event ids."
+                },
+                "match-severity": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "description": "Filter by event severity.",
+                  "properties": {
+                    "match-severity-key": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "HIGHER_THAN",
+                        "HIGHER_OR_EQUAL_TO",
+                        "EQUAL_TO",
+                        "LESSER_THAN",
+                        "LESSER_THAN_OR_EQUAL_TO",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "HIGHER_THAN": "Severity type higher than.",
+                        "HIGHER_OR_EQUAL_TO": "Severity type higher than or equal to.",
+                        "EQUAL_TO": "Severity type equal to.",
+                        "LESSER_THAN": "Severity type lesser than.",
+                        "LESSER_THAN_OR_EQUAL_TO": "Severity type lesser than or equal to.",
+                        "NONE": "No log type"
+                      },
+                      "x-typeDescription": "Logging filter match severity type.",
+                      "description": "Type of matching severity for logging filter."
+                    },
+                    "match-severity-value": {
+                      "type": "string",
+                      "enum": [
+                        "EMERGENCY",
+                        "ALERT",
+                        "CRITICAL",
+                        "ERROR",
+                        "WARNING",
+                        "NOTICE",
+                        "INFO",
+                        "DEBUG",
+                        "MAJOR"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "EMERGENCY": "System is unusable",
+                        "ALERT": "Immediate action needed.",
+                        "CRITICAL": "Critical Condition",
+                        "ERROR": "Error condition in the system",
+                        "WARNING": "Warning condition",
+                        "NOTICE": "Normal bug significant condition",
+                        "INFO": "Informational Messages",
+                        "DEBUG": "Debug Messages",
+                        "MAJOR": "Major condition"
+                      },
+                      "x-typeDescription": "Logging level upto which, the messages are logged.",
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "Value for logging filter severity."
+                    }
+                  }
+                },
+                "enable": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "boolean",
+                  "description": "Specifies whether filter feature is enabled."
+                },
+                "match-regex": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS",
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 2,
+                  "maxLength": 256,
+                  "description": "Filter events using regular expression."
+                },
+                "action": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "PERMIT",
+                    "DENY"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "PERMIT": "permit action.",
+                    "DENY": "deny action."
+                  },
+                  "x-typeDescription": "Action applied on the selected events.",
+                  "default": "PERMIT",
+                  "description": "Action applied on the selected events."
+                },
+                "default-action": {
+                  "x-supportedDeviceType": [
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "PERMIT",
+                    "DENY"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "PERMIT": "permit action.",
+                    "DENY": "deny action."
+                  },
+                  "x-typeDescription": "Action applied on the selected events.",
+                  "description": "Action applied on default criteria."
+                }
+              }
+            },
+            "x-key": [
+              "sequenceNumber"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaLogging_LoggingFilter": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "List of logging-filter parameters.",
+        "properties": {
+          "filter": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Filter name.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaLogging_FilterEntry"
+                },
+                {
+                  "properties": {
+                    "lf-name": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "Filter used to filter the message."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Specifies whether looging filter feature is enabled."
+                    },
+                    "per-ip": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "description": "Logging filter per-ip configuration",
+                      "properties": {
+                        "enable": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "description": "Specifies whether filter feature is enabled."
+                        },
+                        "event-list": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "integer",
+                          "format": "int64",
+                          "minimum": 0,
+                          "maximum": 4294967295,
+                          "description": "Action applied on the event list"
+                        },
+                        "system-module": {
+                          "type": "array",
+                          "items": {
+                            "x-supportedDeviceType": [
+                              "Switch PVOS"
+                            ],
+                            "type": "string",
+                            "enum": [
+                              "ALL_PASS",
+                              "VLAN",
+                              "IP",
+                              "IGMP",
+                              "IPX",
+                              "STP",
+                              "SYSTEM",
+                              "CHASSIS",
+                              "CONSOLE",
+                              "PORTS",
+                              "DHCP",
+                              "DOWNLOAD",
+                              "TCP",
+                              "TELNET",
+                              "TIMEP",
+                              "TFTP",
+                              "XMODEM",
+                              "UPDATE",
+                              "MGR",
+                              "BRIDGE",
+                              "SNMP",
+                              "ADDRMGR",
+                              "PAGP",
+                              "FAULT",
+                              "LDBAL",
+                              "GARP",
+                              "GVRP",
+                              "COS",
+                              "LACP",
+                              "DHCPR",
+                              "STACK",
+                              "DMA",
+                              "SNTP",
+                              "IEEE802_1X",
+                              "CDP",
+                              "AUTH",
+                              "TACACS",
+                              "RADIUS",
+                              "SSH",
+                              "NETINET",
+                              "OSPF",
+                              "XRRP",
+                              "SSL",
+                              "IPADDRMGR",
+                              "WEBMACAUTH",
+                              "KMS",
+                              "PIM",
+                              "MACLOCK",
+                              "ACL",
+                              "UDPF",
+                              "INST_MON",
+                              "UDLD",
+                              "HPESP",
+                              "LLDP",
+                              "CONNFILT",
+                              "RATELIM",
+                              "IDM",
+                              "IPLOCK",
+                              "DHCP_SNOOP",
+                              "VRRP",
+                              "USB",
+                              "LICENSING",
+                              "LOOP_PROTECT",
+                              "SFLOW",
+                              "ARP_PROTECT",
+                              "DHCPV6C",
+                              "MTM",
+                              "MLD",
+                              "DCA",
+                              "QINQ",
+                              "AUTORUN",
+                              "FFI",
+                              "WSM",
+                              "DIPLD",
+                              "HPSM",
+                              "SRCIP",
+                              "POLICY",
+                              "OOBM",
+                              "TRMODE",
+                              "OSPF3",
+                              "DHCPV6R",
+                              "BGP",
+                              "UFD",
+                              "FIPS",
+                              "DT",
+                              "DCBX",
+                              "SFTP",
+                              "STACKING",
+                              "RFS",
+                              "TESTMODE",
+                              "CRYPTO",
+                              "SLP",
+                              "RA_GUARD",
+                              "HPECM",
+                              "HPESP_IP",
+                              "MOBILITY",
+                              "SECUREMODE",
+                              "MSATPROXY",
+                              "ESATPROXY",
+                              "HPESP_CM",
+                              "OPENFLOW",
+                              "SMART_LINK",
+                              "INSYSPROG",
+                              "DHCP_SERVER",
+                              "JOB",
+                              "DSNOOPV6",
+                              "DIPLDV6",
+                              "SI_TUNNEL",
+                              "TR_069",
+                              "HTTP",
+                              "VXLAN_TUNNEL",
+                              "BPDU",
+                              "BYOD_REDIRECT",
+                              "DLDP",
+                              "MACSEC",
+                              "ACCT",
+                              "TLS",
+                              "RIPNG",
+                              "ARPT",
+                              "NDSNOOP",
+                              "NTP",
+                              "IPSLA",
+                              "MDNS",
+                              "MVRP",
+                              "RIP",
+                              "LLDPMAD",
+                              "CAPTIVE_PORTAL",
+                              "PROFILE_MANAGER",
+                              "VSF",
+                              "TUNNELED_NODE",
+                              "AMP_SERVER",
+                              "PSDETECT",
+                              "ACTIVATE",
+                              "CENTRAL",
+                              "ZTPIPSEC",
+                              "USERTNODE",
+                              "VLANMAD",
+                              "CFGRESTORE",
+                              "HTTPPROXY",
+                              "DEV_ONBOARD",
+                              "DFP",
+                              "AUTHORDER",
+                              "CADOWNLOAD",
+                              "ESTC",
+                              "BFD"
+                            ],
+                            "format": "enum",
+                            "x-enumDescriptions": {
+                              "ALL_PASS": "Event log for system-module all-pass",
+                              "VLAN": "Event log for system-module vlan",
+                              "IP": "Event log for system-module ip",
+                              "IGMP": "Event log for system-module igmp",
+                              "IPX": "Event log for system-module ipx",
+                              "STP": "Event log for system-module stp",
+                              "SYSTEM": "Event log for system-module system",
+                              "CHASSIS": "Event log for system-module chassis",
+                              "CONSOLE": "Event log for system-module console",
+                              "PORTS": "Event log for system-module ports",
+                              "DHCP": "Event log for system-module dhcp",
+                              "DOWNLOAD": "Event log for system-module download",
+                              "TCP": "Event log for system-module tcp",
+                              "TELNET": "Event log for system-module telnet",
+                              "TIMEP": "Event log for system-module timep",
+                              "TFTP": "Event log for system-module tftp",
+                              "XMODEM": "Event log for system-module xmodem",
+                              "UPDATE": "Event log for system-module update",
+                              "MGR": "Event log for system-module mgr",
+                              "BRIDGE": "Event log for system-module bridge",
+                              "SNMP": "Event log for system-module snmp",
+                              "ADDRMGR": "Event log for system-module addrmgr",
+                              "PAGP": "Event log for system-module pagp",
+                              "FAULT": "Event log for system-module fault",
+                              "LDBAL": "Event log for system-module ldbal",
+                              "GARP": "Event log for system-module garp",
+                              "GVRP": "Event log for system-module gvrp",
+                              "COS": "Event log for system-module cos",
+                              "LACP": "Event log for system-module lacp",
+                              "DHCPR": "Event log for system-module dhcpr",
+                              "STACK": "Event log for system-module stack",
+                              "DMA": "Event log for system-module dma",
+                              "SNTP": "Event log for system-module sntp",
+                              "IEEE802_1X": "Event log for system-module 802.1x",
+                              "CDP": "Event log for system-module cdp",
+                              "AUTH": "Event log for system-module auth",
+                              "TACACS": "Event log for system-module tacacs",
+                              "RADIUS": "Event log for system-module radius",
+                              "SSH": "Event log for system-module ssh",
+                              "NETINET": "Event log for system-module netinet",
+                              "OSPF": "Event log for system-module ospf",
+                              "XRRP": "Event log for system-module xrrp",
+                              "SSL": "Event log for system-module ssl",
+                              "IPADDRMGR": "Event log for system-module ipaddrmgr",
+                              "WEBMACAUTH": "Event log for system-module webmacauth",
+                              "KMS": "Event log for system-module kms",
+                              "PIM": "Event log for system-module pim",
+                              "MACLOCK": "Event log for system-module maclock",
+                              "ACL": "Event log for system-module acl",
+                              "UDPF": "Event log for system-module udpf",
+                              "INST_MON": "Event log for system-module inst-mon",
+                              "UDLD": "Event log for system-module udld",
+                              "HPESP": "Event log for system-module hpesp",
+                              "LLDP": "Event log for system-module lldp",
+                              "CONNFILT": "Event log for system-module connfilt",
+                              "RATELIM": "Event log for system-module ratelim",
+                              "IDM": "Event log for system-module idm",
+                              "IPLOCK": "Event log for system-module iplock",
+                              "DHCP_SNOOP": "Event log for system-module dhcp-snoop",
+                              "VRRP": "Event log for system-module vrrp",
+                              "USB": "Event log for system-module usb",
+                              "LICENSING": "Event log for system-module licensing",
+                              "LOOP_PROTECT": "Event log for system-module loop-protect",
+                              "SFLOW": "Event log for system-module sflow",
+                              "ARP_PROTECT": "Event log for system-module arp-protect",
+                              "DHCPV6C": "Event log for system-module dhcpv6c",
+                              "MTM": "Event log for system-module mtm",
+                              "MLD": "Event log for system-module mld",
+                              "DCA": "Event log for system-module DCA",
+                              "QINQ": "Event log for system-module Q-in-Q",
+                              "AUTORUN": "Event log for system-module autorun",
+                              "FFI": "Event log for system-module FFI",
+                              "WSM": "Event log for system-module wsm",
+                              "DIPLD": "Event log for system-module dipld",
+                              "HPSM": "Event log for system-module hpsm",
+                              "SRCIP": "Event log for system-module srcip",
+                              "POLICY": "Event log for system-module policy",
+                              "OOBM": "Event log for system-module oobm",
+                              "TRMODE": "Event log for system-module trmode",
+                              "OSPF3": "Event log for system-module ospf3",
+                              "DHCPV6R": "Event log for system-module dhcpv6r",
+                              "BGP": "Event log for system-module bgp",
+                              "UFD": "Event log for system-module ufd",
+                              "FIPS": "Event log for system-module fips",
+                              "DT": "Event log for system-module dt",
+                              "DCBX": "Event log for system-module dcbx",
+                              "SFTP": "Event log for system-module sftp",
+                              "STACKING": "Event log for system-module stacking",
+                              "RFS": "Event log for system-module rfs",
+                              "TESTMODE": "Event log for system-module testmode",
+                              "CRYPTO": "Event log for system-module crypto",
+                              "SLP": "Event log for system-module slp",
+                              "RA_GUARD": "Event log for system-module ra-guard",
+                              "HPECM": "Event log for system-module hpecm",
+                              "HPESP_IP": "Event log for system-module hpesp-ip",
+                              "MOBILITY": "Event log for system-module mobility",
+                              "SECUREMODE": "Event log for system-module securemode",
+                              "MSATPROXY": "Event log for system-module msatproxy",
+                              "ESATPROXY": "Event log for system-module esatproxy",
+                              "HPESP_CM": "Event log for system-module hpesp-cm",
+                              "OPENFLOW": "Event log for system-module openflow",
+                              "SMART_LINK": "Event log for system-module smart-link",
+                              "INSYSPROG": "Event log for system-module insysprog",
+                              "DHCP_SERVER": "Event log for system-module dhcp-server",
+                              "JOB": "Event log for system-module job",
+                              "DSNOOPV6": "Event log for system-module dsnoopv6",
+                              "DIPLDV6": "Event log for system-module dipldv6",
+                              "SI_TUNNEL": "Event log for system-module si-tunnel",
+                              "TR_069": "Event log for system-module tr-069",
+                              "HTTP": "Event log for system-module http",
+                              "VXLAN_TUNNEL": "Event log for system-module vxlan-tunnel",
+                              "BPDU": "Event log for system-module bpdu",
+                              "BYOD_REDIRECT": "Event log for system-module byod-redirect",
+                              "DLDP": "Event log for system-module dldp",
+                              "MACSEC": "Event log for system-module macsec",
+                              "ACCT": "Event log for system-module acct",
+                              "TLS": "Event log for system-module tls",
+                              "RIPNG": "Event log for system-module ripng",
+                              "ARPT": "Event log for system-module arpt",
+                              "NDSNOOP": "Event log for system-module ndsnoop",
+                              "NTP": "Event log for system-module ntp",
+                              "IPSLA": "Event log for system-module ipsla",
+                              "MDNS": "Event log for system-module mdns",
+                              "MVRP": "Event log for system-module mvrp",
+                              "RIP": "Event log for system-module rip",
+                              "LLDPMAD": "Event log for system-module lldpmad",
+                              "CAPTIVE_PORTAL": "Event log for system-module captive-portal",
+                              "PROFILE_MANAGER": "Event log for system-module profile-manager",
+                              "VSF": "Event log for system-module vsf",
+                              "TUNNELED_NODE": "Event log for system-module tunneled-node",
+                              "AMP_SERVER": "Event log for system-module amp-server",
+                              "PSDETECT": "Event log for system-module psdetect",
+                              "ACTIVATE": "Event log for system-module activate",
+                              "CENTRAL": "Event log for system-module central",
+                              "ZTPIPSEC": "Event log for system-module ztpipsec",
+                              "USERTNODE": "Event log for system-module usertnode",
+                              "VLANMAD": "Event log for system-module vlanmad",
+                              "CFGRESTORE": "Event log for system-module cfgrestore",
+                              "HTTPPROXY": "Event log for system-module httpproxy",
+                              "DEV_ONBOARD": "Event log for system-module dev-onboard",
+                              "DFP": "Event log for system-module dfp",
+                              "AUTHORDER": "Event log for system-module authorder",
+                              "CADOWNLOAD": "Event log for system-module cadownload",
+                              "ESTC": "Event log for system-module estc",
+                              "BFD": "Event log for system-module bfd"
+                            },
+                            "x-typeDescription": "Event log for system-module.",
+                            "description": "Name of the system-module."
+                          },
+                          "maxItems": 2147483647
+                        },
+                        "severity": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "EMERGENCY",
+                            "ALERT",
+                            "CRITICAL",
+                            "ERROR",
+                            "WARNING",
+                            "NOTICE",
+                            "INFO",
+                            "DEBUG",
+                            "MAJOR"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "EMERGENCY": "System is unusable",
+                            "ALERT": "Immediate action needed.",
+                            "CRITICAL": "Critical Condition",
+                            "ERROR": "Error condition in the system",
+                            "WARNING": "Warning condition",
+                            "NOTICE": "Normal bug significant condition",
+                            "INFO": "Informational Messages",
+                            "DEBUG": "Debug Messages",
+                            "MAJOR": "Major condition"
+                          },
+                          "x-typeDescription": "Logging level upto which, the messages are logged.",
+                          "description": "Syslog message severity. Only messages with severity higher than\nor equal to the specified value will be sent to the remote server."
+                        },
+                        "default-action": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "boolean",
+                          "description": "Action applied on default criteria."
+                        },
+                        "event-action": {
+                          "x-supportedDeviceType": [
+                            "Switch PVOS"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "PERMIT",
+                            "DENY"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "PERMIT": "permit action.",
+                            "DENY": "deny action."
+                          },
+                          "x-typeDescription": "Action applied on the selected events.",
+                          "description": "Action applied on event list."
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "lfName"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaLogging_Logger": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaLogging_SyslogGroup"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaLogging_LoggingFilter"
+          }
+        ],
+        "description": "Generated log messages may be directed to various destinations including\nconsole, files, remote syslog servers to send messages to the log",
+        "properties": {
+          "console": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "console-logging related configuration.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Display the live logs on console."
+              },
+              "log-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "EVENT",
+                  "DEBUG",
+                  "ALL"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "EVENT": "Event logs.",
+                  "DEBUG": "Debug logs.",
+                  "ALL": "All event and debug logs."
+                },
+                "x-typeDescription": "Specifies the type of log notification.",
+                "default": "EVENT",
+                "description": "Type of log notification."
+              },
+              "min-severity": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "EMERGENCY",
+                  "ALERT",
+                  "CRITICAL",
+                  "ERROR",
+                  "WARNING",
+                  "NOTICE",
+                  "INFO",
+                  "DEBUG",
+                  "MAJOR"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "EMERGENCY": "System is unusable",
+                  "ALERT": "Immediate action needed.",
+                  "CRITICAL": "Critical Condition",
+                  "ERROR": "Error condition in the system",
+                  "WARNING": "Warning condition",
+                  "NOTICE": "Normal bug significant condition",
+                  "INFO": "Informational Messages",
+                  "DEBUG": "Debug Messages",
+                  "MAJOR": "Major condition"
+                },
+                "x-typeDescription": "Logging level upto which, the messages are logged.",
+                "default": "INFO",
+                "description": "Specify the log severity."
+              },
+              "filter-regex": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "POSIX regular expression filter associated\nwith console-logging."
+              }
+            }
+          },
+          "local-file": {
+            "description": "Local file",
+            "properties": {
+              "rotation": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "Log rotation configuration.",
+                "properties": {
+                  "maxsize": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 10,
+                    "maximum": 200,
+                    "default": "100",
+                    "description": "Log size (in megabytes), which would trigger rotation."
+                  },
+                  "period": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "MONTHLY",
+                      "WEEKLY",
+                      "DAILY",
+                      "HOURLY"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "MONTHLY": "Log rotation period monthly.",
+                      "WEEKLY": "Log rotation period weekly.",
+                      "DAILY": "Log rotation period daily.",
+                      "HOURLY": "Log rotation period hourly."
+                    },
+                    "x-typeDescription": "Log rotation period.",
+                    "default": "DAILY",
+                    "description": "The user configured period of logrotation."
+                  },
+                  "target": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "default": "local",
+                    "description": "The user configured URI of the remote host.\nIf not specified log files will be rotated\nlocally."
+                  },
+                  "vrf": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "name-type",
+                    "x-patterns": "'([^\\\\/ ]+)'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                    "description": "VRF for logrotate remote host connections.\nIf not set, then the 'default' VRF will be used."
+                  }
+                }
+              }
+            }
+          },
+          "destination": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "SYSLOG",
+              "FILE",
+              "CONSOLE",
+              "BUFFER"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "SYSLOG": "Debug log destination syslog.",
+              "FILE": "Debug log destination file.",
+              "CONSOLE": "Debug log destination console.",
+              "BUFFER": "Debug log destination buffer."
+            },
+            "x-typeDescription": "Debug log destination type.",
+            "description": "Debug log destination."
+          },
+          "severity": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "EMERGENCY",
+              "ALERT",
+              "CRITICAL",
+              "ERROR",
+              "WARNING",
+              "NOTICE",
+              "INFO",
+              "DEBUG",
+              "MAJOR"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "EMERGENCY": "System is unusable",
+              "ALERT": "Immediate action needed.",
+              "CRITICAL": "Critical Condition",
+              "ERROR": "Error condition in the system",
+              "WARNING": "Warning condition",
+              "NOTICE": "Normal bug significant condition",
+              "INFO": "Informational Messages",
+              "DEBUG": "Debug Messages",
+              "MAJOR": "Major condition"
+            },
+            "x-typeDescription": "Logging level upto which, the messages are logged.",
+            "description": "Minimum severity for logging.\nFor AP devices, Range: EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG.\nFor PVOS devices, Range: MAJOR, INFO, WARNING, DEBUG, ERROR."
+          },
+          "facility": {
+            "x-supportedDeviceType": [
+              "Switch PVOS",
+              "Switch CX",
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "LOCAL0",
+              "LOCAL1",
+              "LOCAL2",
+              "LOCAL3",
+              "LOCAL4",
+              "LOCAL5",
+              "LOCAL6",
+              "LOCAL7",
+              "KERN",
+              "USER",
+              "MAIL",
+              "DAEMON",
+              "AUTH",
+              "SYSLOG",
+              "LPR",
+              "NEWS",
+              "UUCP",
+              "SYS9",
+              "SYS10",
+              "SYS11",
+              "SYS12",
+              "SYS13",
+              "SYS14",
+              "CRON"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "LOCAL0": "Facility LOG_LOCAL0",
+              "LOCAL1": "Facility LOG_LOCAL1",
+              "LOCAL2": "Facility LOG_LOCAL2",
+              "LOCAL3": "Facility LOG_LOCAL3",
+              "LOCAL4": "Facility LOG_LOCAL4",
+              "LOCAL5": "Facility LOG_LOCAL5",
+              "LOCAL6": "Facility LOG_LOCAL6",
+              "LOCAL7": "Facility LOG_LOCAL7",
+              "KERN": "Facility KERN",
+              "USER": "Facility USER",
+              "MAIL": "Facility MAIL",
+              "DAEMON": "Facility DAEMON",
+              "AUTH": "Facility AUTH",
+              "SYSLOG": "Facility SYSLOG",
+              "LPR": "Facility LPR",
+              "NEWS": "Facility NEWS",
+              "UUCP": "Facility UUCP",
+              "SYS9": "Facility SYS9",
+              "SYS10": "Facility SYS10",
+              "SYS11": "Facility SYS11",
+              "SYS12": "Facility SYS12",
+              "SYS13": "Facility SYS13",
+              "SYS14": "Facility SYS14",
+              "CRON": "Facility CRON"
+            },
+            "x-typeDescription": "Facility to use when logging to Remote Syslog Server.",
+            "default": "LOCAL7",
+            "description": "Syslog facility to be used for remote syslog messages."
+          },
+          "accounting-format-native": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable sending audit log messages to the syslog server in Linux format.\nIf it is not enabled, then it sends in ArubaOS-CX defined log format."
+          },
+          "event-trap": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "This command enables/disables the notification of the events to be sent as traps."
+          },
+          "notification-threshold": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Threshold percentage relative to the size of the\nlog buffer. Once the utilization has reached this threshold, a\nlog notification will be generated.",
+            "properties": {
+              "event-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_15",
+                  "THRESHOLD_30",
+                  "THRESHOLD_50",
+                  "THRESHOLD_70",
+                  "THRESHOLD_90",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_15": "threshold 15",
+                  "THRESHOLD_30": "threshold 30",
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_70": "threshold 70",
+                  "THRESHOLD_90": "threshold 90",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_90",
+                "description": "Configure the logging threshold for event log buffer."
+              },
+              "auth-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_15",
+                  "THRESHOLD_30",
+                  "THRESHOLD_50",
+                  "THRESHOLD_70",
+                  "THRESHOLD_90",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_15": "threshold 15",
+                  "THRESHOLD_30": "threshold 30",
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_70": "threshold 70",
+                  "THRESHOLD_90": "threshold 90",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_90",
+                "description": "Configure the logging threshold for auth log buffer."
+              },
+              "audit-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_50",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_50",
+                "description": "Configure the logging threshold for audit log buffer."
+              },
+              "security-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_15",
+                  "THRESHOLD_30",
+                  "THRESHOLD_50",
+                  "THRESHOLD_70",
+                  "THRESHOLD_90",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_15": "threshold 15",
+                  "THRESHOLD_30": "threshold 30",
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_70": "threshold 70",
+                  "THRESHOLD_90": "threshold 90",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_90",
+                "description": "Configure the logging threshold for security log buffer."
+              },
+              "commands-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_15",
+                  "THRESHOLD_30",
+                  "THRESHOLD_50",
+                  "THRESHOLD_70",
+                  "THRESHOLD_90",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_15": "threshold 15",
+                  "THRESHOLD_30": "threshold 30",
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_70": "threshold 70",
+                  "THRESHOLD_90": "threshold 90",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_90",
+                "description": "Configure the logging threshold for commands log buffer."
+              },
+              "https-server-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "THRESHOLD_15",
+                  "THRESHOLD_30",
+                  "THRESHOLD_50",
+                  "THRESHOLD_70",
+                  "THRESHOLD_90",
+                  "THRESHOLD_100"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "THRESHOLD_15": "threshold 15",
+                  "THRESHOLD_30": "threshold 30",
+                  "THRESHOLD_50": "threshold 50",
+                  "THRESHOLD_70": "threshold 70",
+                  "THRESHOLD_90": "threshold 90",
+                  "THRESHOLD_100": "threshold 100"
+                },
+                "x-typeDescription": "Log notification threshold.",
+                "default": "THRESHOLD_90",
+                "description": "Configure the logging threshold for http-server log buffer."
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1943 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-net-service API generated from aruba-net-service.yang",
+    "version": "1.0.0",
+    "title": "net-service",
+    "x-tag-group": "Named Object"
+  },
+  "tags": [
+    {
+      "name": "net-services"
+    }
+  ],
+  "paths": {
+    "/net-services": {
+      "get": {
+        "summary": "Read Net Services configuration",
+        "description": "Top level container for Net Services.",
+        "operationId": "readNetServices",
+        "x-cliParam": {
+          "commandName": "readNetServicesCmd",
+          "summary": "Read operation for net-services",
+          "commandUse": "net-services",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/net-services/"
+        },
+        "tags": [
+          "net-services"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaNetService_NetServicesSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/net-services/{name}": {
+      "post": {
+        "summary": "Add Net Service configuration",
+        "description": "List of Net Services.",
+        "operationId": "createNetServicesNetServiceByID",
+        "x-cliParam": {
+          "commandName": "createNetServicesNetServiceCmd",
+          "summary": "Create operation for net-service",
+          "commandUse": "net-service",
+          "parentCommand": "createNetServicesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/net-services/net-service/%s/"
+        },
+        "tags": [
+          "net-services"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Net Service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaNetService_NetServicesnetServiceSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read Net Service configuration",
+        "description": "List of Net Services.",
+        "operationId": "readNetServicesNetServiceByID",
+        "x-cliParam": {
+          "commandName": "readNetServicesNetServiceCmd",
+          "summary": "Read operation for net-service",
+          "commandUse": "net-service",
+          "parentCommand": "readNetServicesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/net-services/net-service/%s/"
+        },
+        "tags": [
+          "net-services"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Net Service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaNetService_NetServicesnetServiceSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing Net Service configuration",
+        "description": "List of Net Services.",
+        "operationId": "updateNetServicesNetServiceByID",
+        "x-cliParam": {
+          "commandName": "updateNetServicesNetServiceCmd",
+          "summary": "Update operation for net-service",
+          "commandUse": "net-service",
+          "parentCommand": "updateNetServicesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/net-services/net-service/%s/"
+        },
+        "tags": [
+          "net-services"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Net Service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaNetService_NetServicesnetServiceSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Net Service configuration",
+        "description": "List of Net Services.",
+        "operationId": "deleteNetServicesNetServiceByID",
+        "x-cliParam": {
+          "commandName": "deleteNetServicesNetServiceCmd",
+          "summary": "Delete operation for net-service",
+          "commandUse": "net-service",
+          "parentCommand": "deleteNetServicesCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/net-services/net-service/%s/"
+        },
+        "tags": [
+          "net-services"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Net Service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaNetService_NetServicesnetServiceSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaNetService_NetServicesnetServiceSchema"
+            }
+          }
+        },
+        "description": "net-servicebody object"
+      }
+    },
+    "schemas": {
+      "ArubaNetService_NetServicesSchema": {
+        "x-supportedDeviceType": [
+          "Access Point",
+          "Gateway",
+          "Switch PVOS",
+          "Switch CX"
+        ],
+        "description": "Top level container for Net Services.",
+        "properties": {
+          "net-service": {
+            "description": "List of Net Services.",
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 63,
+                  "description": "The name of the Net Service."
+                },
+                "description": {
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "Description of the Net Service."
+                },
+                "protocol": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch PVOS",
+                    "Gateway"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "IP_TCP",
+                        "IP_UDP",
+                        "IP_ICMP",
+                        "IPV6_ICMP",
+                        "IP_IGMP",
+                        "IP_PIM",
+                        "IP_RSVP",
+                        "IP_GRE",
+                        "IP_AUTH",
+                        "IP_L2TP",
+                        "IP_IN_IP",
+                        "IP_ESP",
+                        "PROTOCOL_ANY"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "IP_TCP": "Transmission Control Protocol (6)",
+                        "IP_UDP": "User Datagram Protocol (17)",
+                        "IP_ICMP": "Internet Control Message Protocol (1)",
+                        "IPV6_ICMP": "Internet Control Message Protocol (58)",
+                        "IP_IGMP": "Internet Group Membership Protocol (2)",
+                        "IP_PIM": "Protocol Independent Multicast (103)",
+                        "IP_RSVP": "Resource Reservation Protocol (46)",
+                        "IP_GRE": "Generic Routing Encapsulation (47)",
+                        "IP_AUTH": "Authentication header, e.g., for IPSEC (51)",
+                        "IP_L2TP": "Layer Two Tunneling Protocol v.3 (115)",
+                        "IP_IN_IP": "IP-in-IP tunneling (4)",
+                        "IP_ESP": "ESP Protocol",
+                        "PROTOCOL_ANY": "Any Protocol"
+                      },
+                      "x-typeDescription": "IP Protocol types."
+                    }
+                  ],
+                  "description": "The protocol carried in the IP packet, expressed either\nas its IP protocol number, or by a defined identity."
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "x-supportedDeviceType": [
+                      "Switch PVOS",
+                      "Access Point",
+                      "Gateway"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 65535,
+                    "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                    "description": "List of Ports."
+                  },
+                  "maxItems": 2147483647
+                },
+                "port-range": {
+                  "description": "Operator and port values. If operator == COMPARISON_RANGE then minimum and maximum values are valid,\notherwise only the minimum value is valid.",
+                  "properties": {
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "COMPARISON_EQ",
+                        "COMPARISON_NE",
+                        "COMPARISON_LT",
+                        "COMPARISON_GT",
+                        "COMPARISON_RANGE",
+                        "PORT_GROUP"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "COMPARISON_EQ": "Equal operator.",
+                        "COMPARISON_NE": "Not equal operator.",
+                        "COMPARISON_LT": "Less than operator.",
+                        "COMPARISON_GT": "Greater than operator.",
+                        "COMPARISON_RANGE": "Minimum and maximum values of range.",
+                        "PORT_GROUP": "Specifies port group"
+                      },
+                      "x-typeDescription": "Comparison operator types.",
+                      "description": "Comparison operator."
+                    },
+                    "min": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "description": "Port value or lower bound of port range."
+                    },
+                    "max": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "description": "Upper bound of port range."
+                    }
+                  }
+                },
+                "http-proxy": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "HTTP Proxy port."
+                },
+                "https-proxy": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "boolean",
+                  "default": "false",
+                  "description": "HTTPS Proxy port."
+                },
+                "alg-service": {
+                  "x-supportedDeviceType": [
+                    "Gateway"
+                  ],
+                  "type": "string",
+                  "enum": [
+                    "DHCP",
+                    "DNS",
+                    "FACETIME",
+                    "FTP",
+                    "JABBER",
+                    "NOE",
+                    "RTSP",
+                    "SCCP",
+                    "SIP",
+                    "SIPS",
+                    "SVP",
+                    "TFTP",
+                    "VOCERA",
+                    "H323",
+                    "ICMP",
+                    "SUNRPC",
+                    "MSRPC"
+                  ],
+                  "format": "enum",
+                  "x-enumDescriptions": {
+                    "DHCP": "DHCP Service.",
+                    "DNS": "DNS Service.",
+                    "FACETIME": "Facetime Service.",
+                    "FTP": "FTP Service.",
+                    "JABBER": "Jabber Service.",
+                    "NOE": "Alcatel NOE (New Office Environment) Service.",
+                    "RTSP": "RTSP Service.",
+                    "SCCP": "SCCP Service.",
+                    "SIP": "SIP Service.",
+                    "SIPS": "SIPS Service.",
+                    "SVP": "SVP Service.",
+                    "TFTP": "TFTP Service.",
+                    "VOCERA": "VOCERA Service.",
+                    "H323": "H.323 Service.",
+                    "ICMP": "ICMP Service.",
+                    "SUNRPC": "SUNRPC Service.",
+                    "MSRPC": "MSRPC Service."
+                  },
+                  "x-typeDescription": "ALG Net-service types.",
+                  "description": "ALG Service."
+                },
+                "alg-config": {
+                  "x-supportedDeviceType": [
+                    "Access Point",
+                    "Switch PVOS",
+                    "Switch CX"
+                  ],
+                  "description": "Distributed Services Switches (DSS) Application Layer Gateway (ALG) configuration.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ArubaNetService_AlgIcmp"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaNetService_AlgDns"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaNetService_AlgFtp"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaNetService_AlgMsrpc"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArubaNetService_AlgSunrpc"
+                    }
+                  ]
+                }
+              }
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaNetService_NetServicesSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaNetService_NetServicesSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaNetService_NetServicesnetServiceSchema": {
+        "properties": {
+          "name": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "The name of the Net Service."
+          },
+          "description": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Description of the Net Service."
+          },
+          "protocol": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS",
+              "Gateway"
+            ],
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 255
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "IP_TCP",
+                  "IP_UDP",
+                  "IP_ICMP",
+                  "IPV6_ICMP",
+                  "IP_IGMP",
+                  "IP_PIM",
+                  "IP_RSVP",
+                  "IP_GRE",
+                  "IP_AUTH",
+                  "IP_L2TP",
+                  "IP_IN_IP",
+                  "IP_ESP",
+                  "PROTOCOL_ANY"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "IP_TCP": "Transmission Control Protocol (6)",
+                  "IP_UDP": "User Datagram Protocol (17)",
+                  "IP_ICMP": "Internet Control Message Protocol (1)",
+                  "IPV6_ICMP": "Internet Control Message Protocol (58)",
+                  "IP_IGMP": "Internet Group Membership Protocol (2)",
+                  "IP_PIM": "Protocol Independent Multicast (103)",
+                  "IP_RSVP": "Resource Reservation Protocol (46)",
+                  "IP_GRE": "Generic Routing Encapsulation (47)",
+                  "IP_AUTH": "Authentication header, e.g., for IPSEC (51)",
+                  "IP_L2TP": "Layer Two Tunneling Protocol v.3 (115)",
+                  "IP_IN_IP": "IP-in-IP tunneling (4)",
+                  "IP_ESP": "ESP Protocol",
+                  "PROTOCOL_ANY": "Any Protocol"
+                },
+                "x-typeDescription": "IP Protocol types."
+              }
+            ],
+            "description": "The protocol carried in the IP packet, expressed either\nas its IP protocol number, or by a defined identity."
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS",
+                "Access Point",
+                "Gateway"
+              ],
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0,
+              "maximum": 65535,
+              "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+              "description": "List of Ports."
+            },
+            "maxItems": 2147483647
+          },
+          "port-range": {
+            "description": "Operator and port values. If operator == COMPARISON_RANGE then minimum and maximum values are valid,\notherwise only the minimum value is valid.",
+            "properties": {
+              "operator": {
+                "type": "string",
+                "enum": [
+                  "COMPARISON_EQ",
+                  "COMPARISON_NE",
+                  "COMPARISON_LT",
+                  "COMPARISON_GT",
+                  "COMPARISON_RANGE",
+                  "PORT_GROUP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "COMPARISON_EQ": "Equal operator.",
+                  "COMPARISON_NE": "Not equal operator.",
+                  "COMPARISON_LT": "Less than operator.",
+                  "COMPARISON_GT": "Greater than operator.",
+                  "COMPARISON_RANGE": "Minimum and maximum values of range.",
+                  "PORT_GROUP": "Specifies port group"
+                },
+                "x-typeDescription": "Comparison operator types.",
+                "description": "Comparison operator."
+              },
+              "min": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "description": "Port value or lower bound of port range."
+              },
+              "max": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "description": "Upper bound of port range."
+              }
+            }
+          },
+          "http-proxy": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "HTTP Proxy port."
+          },
+          "https-proxy": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "HTTPS Proxy port."
+          },
+          "alg-service": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "enum": [
+              "DHCP",
+              "DNS",
+              "FACETIME",
+              "FTP",
+              "JABBER",
+              "NOE",
+              "RTSP",
+              "SCCP",
+              "SIP",
+              "SIPS",
+              "SVP",
+              "TFTP",
+              "VOCERA",
+              "H323",
+              "ICMP",
+              "SUNRPC",
+              "MSRPC"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "DHCP": "DHCP Service.",
+              "DNS": "DNS Service.",
+              "FACETIME": "Facetime Service.",
+              "FTP": "FTP Service.",
+              "JABBER": "Jabber Service.",
+              "NOE": "Alcatel NOE (New Office Environment) Service.",
+              "RTSP": "RTSP Service.",
+              "SCCP": "SCCP Service.",
+              "SIP": "SIP Service.",
+              "SIPS": "SIPS Service.",
+              "SVP": "SVP Service.",
+              "TFTP": "TFTP Service.",
+              "VOCERA": "VOCERA Service.",
+              "H323": "H.323 Service.",
+              "ICMP": "ICMP Service.",
+              "SUNRPC": "SUNRPC Service.",
+              "MSRPC": "MSRPC Service."
+            },
+            "x-typeDescription": "ALG Net-service types.",
+            "description": "ALG Service."
+          },
+          "alg-config": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Switch PVOS",
+              "Switch CX"
+            ],
+            "description": "Distributed Services Switches (DSS) Application Layer Gateway (ALG) configuration.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaNetService_AlgIcmp"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaNetService_AlgDns"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaNetService_AlgFtp"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaNetService_AlgMsrpc"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaNetService_AlgSunrpc"
+              }
+            ]
+          }
+        }
+      },
+      "ArubaNetService_AlgIcmp": {
+        "properties": {
+          "icmp-alg": {
+            "description": "Internet Control Message Protocol (ICMP) ALG configuration for Distributed Services Switches (DSS).",
+            "properties": {
+              "type": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 255,
+                "x-mandatory": true,
+                "description": "ICMP Type."
+              },
+              "code": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 18,
+                "x-mandatory": true,
+                "description": "ICMP Code is sub-command for a given ICMP Type."
+              }
+            },
+            "required": [
+              "type",
+              "code"
+            ]
+          }
+        }
+      },
+      "ArubaNetService_AlgDns": {
+        "properties": {
+          "dns-alg": {
+            "description": "Domain Name System (DNS) ALG configuration for Distributed Services Switches (DSS).",
+            "properties": {
+              "drop-multi-question-packets": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Drop packet if number of questions is more than one."
+              },
+              "drop-large-domain-name-packets": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Drop packet if label length is 64 bytes or higher."
+              },
+              "drop-long-label-packets": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Drop packet if domain name size is > 255 bytes."
+              },
+              "max-message-length": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 8129,
+                "default": "512",
+                "description": "Maximum message length, default value is 512, maximum specified user value is 8129."
+              }
+            }
+          }
+        }
+      },
+      "ArubaNetService_AlgFtp": {
+        "properties": {
+          "ftp-alg": {
+            "description": "File Transfer Protocol (FTP) ALG configuration for Distributed Services Switches (DSS).",
+            "properties": {
+              "allow-mismatch-ip-address": {
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow Mismatch IP Address in the payload compared to what is present in the IP header."
+              }
+            }
+          }
+        }
+      },
+      "ArubaNetService_AlgSunrpc": {
+        "properties": {
+          "sunrpc-alg": {
+            "description": "SUN Remote Procedure Call (SUNRPC) ALG configuration for Distributed Services Switches (DSS).",
+            "properties": {
+              "timeout": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "default": "60",
+                "description": "timeout (in seconds) for SUNRPC program identifier."
+              },
+              "program-ids": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "maximum": 4294967295,
+                  "description": "RPC Program Identifiers."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaNetService_AlgMsrpc": {
+        "properties": {
+          "msrpc-alg": {
+            "description": "Microsoft Remote Procedure Call (MSRPC) ALG configuration for Distributed Services Switches (DSS).",
+            "properties": {
+              "timeout": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "default": "60",
+                "description": "timeout (in seconds) for MSRPC program identifier."
+              },
+              "program-uuids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "uuid",
+                  "x-patterns": "'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "A Universally Unique IDentifier in the string representation\ndefined in RFC 4122.  The canonical representation uses\nlowercase characters.\n\nThe following is an example of a UUID in string representation:\nf81d4fae-7dec-11d0-a765-00a0c91e6bf6\n",
+                  "description": "MSRPC Program Identifier."
+                },
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

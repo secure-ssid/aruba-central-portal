@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 """
 Create tunnel mode WLAN using working aruba-home config as template
+
+This script creates a test tunnel mode WLAN using a known-working configuration
+as a template. Useful for validating that the WLAN creation API works correctly.
+
+Usage:
+    python scripts/create_tunnel_wlan_from_working.py
 """
 
-import requests
+import traceback
 from rich.console import Console
 from datetime import datetime
+from utils.test_helpers import login_to_dashboard, TEST_WLAN_PASSWORD, DASHBOARD_API, api_request
 
 console = Console()
-
-DASHBOARD_API = "http://localhost:5000/api"
-
-def login():
-    response = requests.post(f"{DASHBOARD_API}/auth/login")
-    if response.status_code == 200:
-        return response.json().get('session_id')
-    return None
 
 def create_tunnel_wlan_like_aruba_home(session_id):
     """Create a tunnel mode WLAN using the working aruba-home config as template"""
@@ -82,7 +81,7 @@ def create_tunnel_wlan_like_aruba_home(session_id):
         "mac-authentication": True,  # Added from working config
         "personal-security": {
             "passphrase-format": "STRING",
-            "wpa-passphrase": "TestPassword123!"
+            "wpa-passphrase": TEST_WLAN_PASSWORD
         },
         "gw-auth-server": "default",  # Added from working config
         "auth-server-group": "sys_central_nac",  # Added from working config
@@ -122,8 +121,8 @@ def create_tunnel_wlan_like_aruba_home(session_id):
         try:
             error = response.json()
             console.print(f"[red]Error:[/red] {error}")
-        except:
-            console.print(f"[red]Error:[/red] {response.text}")
+        except Exception:
+            console.print(f"[red]Error:[/red] {response.text[:200]}")
         return False
 
 def main():
@@ -131,9 +130,9 @@ def main():
 
     # Login
     console.print("[cyan]Authenticating...[/cyan]")
-    session_id = login()
-    if not session_id:
-        console.print("[red]Failed to authenticate[/red]")
+    session_id, error = login_to_dashboard()
+    if error:
+        console.print(f"[red]Authentication failed:[/red] {error}")
         return
     console.print("[green]✓[/green] Authenticated\n")
 
@@ -154,6 +153,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         console.print("\n[yellow]Interrupted[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]Error:[/red] {str(e)}")
-        import traceback
+        console.print(f"\n[red]Unexpected error:[/red] {str(e)}")
         console.print(f"[dim]{traceback.format_exc()}[/dim]")

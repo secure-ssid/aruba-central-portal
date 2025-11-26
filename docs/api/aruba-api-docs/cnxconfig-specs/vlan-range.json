@@ -1,0 +1,1691 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-vlan-range API generated from aruba-vlan-range.yang",
+    "version": "1.0.0",
+    "title": "vlan-range",
+    "x-tag-group": "VLANs & Networks"
+  },
+  "tags": [
+    {
+      "name": "layer2-vlan-range"
+    }
+  ],
+  "paths": {
+    "/layer2-vlan-range": {
+      "post": {
+        "summary": "Add or Update range of VLAN profiles",
+        "description": "Bulk API for creating or updating multiple VLAN profiles in a single request.\nThis provides a convenient way for users to manage VLANs efficiently, allowing batch operations\ninstead of configuring VLANs one at a time.",
+        "operationId": "createLayer2VlanRange",
+        "x-cliParam": {
+          "commandName": "createLayer2VlanRangeCmd",
+          "summary": "Create operation for layer2-vlan-range",
+          "commandUse": "layer2-vlan-range",
+          "parentCommand": "createCmd",
+          "pathToPrint": "/layer2-vlan-range/"
+        },
+        "tags": [
+          "layer2-vlan-range"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaVlanRange_Layer2VlanRangeSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaVlanRange_Layer2VlanRangeSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaVlanRange_Layer2VlanRangeSchema"
+            }
+          }
+        },
+        "description": "layer2-vlan-rangebody object"
+      }
+    },
+    "schemas": {
+      "ArubaVlanRange_Layer2VlanRangeSchema": {
+        "description": "Bulk API for creating or updating multiple VLAN profiles in a single request.\nThis provides a convenient way for users to manage VLANs efficiently, allowing batch operations\ninstead of configuring VLANs one at a time.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaVlanCommon_VlanConfig"
+          }
+        ],
+        "properties": {
+          "vlan-range": {
+            "type": "string",
+            "format": "pattern",
+            "x-patternSources": "vlan-list",
+            "x-patterns": "'((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{0,2})(\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{0,2}))?)(,((409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{0,2})(\\-(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{0,2}))?))*'",
+            "maxLength": 9999,
+            "x-typeDescription": "Comma separated list of VLAN IDs and ranges",
+            "description": "VLAN identifier"
+          },
+          "description-alias": {
+            "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 256,
+            "x-patternSources": "name",
+            "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+            "description": "VLAN description alias."
+          },
+          "voice-enable-alias": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-alias:aliases/ac-alias:alias/ac-alias:name",
+            "type": "string",
+            "format": "pattern",
+            "minLength": 1,
+            "maxLength": 256,
+            "x-patternSources": "name",
+            "x-patterns": "'[a-zA-Z0-9-_ ]+'",
+            "description": "Alias to manage vlan voice enable/disable.\nvoice-enable-alias and voice-enable both cannot be set."
+          }
+        }
+      },
+      "ArubaVlanCommon_AccessListPolicies": {
+        "x-supportedDeviceType": [
+          "Switch CX",
+          "Switch PVOS"
+        ],
+        "description": "Grouping for access-list configurations.",
+        "properties": {
+          "access-list-in": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Access-list Policy for inbound (Ingress) traffic."
+          },
+          "access-list-out": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Access-list Policy for outbound (Egress) traffic."
+          }
+        }
+      },
+      "ArubaVlanCommon_ArpInspectionVlan": {
+        "description": "Dynamic ARP Inspection VLAN prameter grouping",
+        "properties": {
+          "dynamic-arp-inspection": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Configuration of Dynamic ARP Inspection on VLAN.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable status of Dynamic ARP Inspection on the VLAN"
+              }
+            }
+          }
+        }
+      },
+      "ArubaVlanCommon_VlanConfig": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaClientIptracker_VlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaMgmd_IgmpVlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaMgmd_MldVlanConfig"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv4SnoopingVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDhcpSnooping_Dhcpv6SnoopingVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaNdSnooping_NdSnoopingVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaVlanCommon_ArpInspectionVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaDestinationGuard_DestinationGuardVlan"
+          },
+          {
+            "$ref": "#/components/schemas/ArubaVlanCommon_AccessListPolicies"
+          }
+        ],
+        "properties": {
+          "option-82": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "To control DHCPv4 Option 82. This is related to DHCP-Relay module."
+          },
+          "is-l3-vlan": {
+            "type": "boolean",
+            "default": "false",
+            "description": "is this vlan an l3 vlan, used only for GET calls"
+          },
+          "wired-aaa-profile": {
+            "x-supportedDeviceType": [
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Wired authentication AAA profile"
+          },
+          "protocols": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "enum": [
+                "IPX",
+                "IPV4",
+                "IPV6",
+                "ARP",
+                "APPLETALK",
+                "SNA",
+                "NETBEUI"
+              ],
+              "format": "enum",
+              "x-enumDescriptions": {
+                "IPX": "IPX Protocol Group",
+                "IPV4": "IP version 4 Protocol Group",
+                "IPV6": "IP version 6 Protocol Group",
+                "ARP": "Address Resolution Protocol (ARP) Group",
+                "APPLETALK": "Appletalk Protocol Group",
+                "SNA": "System Network Architecture (SNA) Protocol Group",
+                "NETBEUI": "Network Basic Input/Output Stream (BIOS)\nEnhanced User Interface Protocol Group"
+              },
+              "x-typeDescription": "Protocols mapped to a VLAN.",
+              "description": "Assign traffic to different VLANs based on protocol."
+            },
+            "maxItems": 2147483647
+          },
+          "description": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Description of the VLAN profile.;\nLimit on description length for AP,GW:32 and for CX:64 characters."
+          },
+          "voice-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Set VLAN type to voice"
+          },
+          "ttl-threshold": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 255,
+            "default": "255",
+            "description": "Multicast datagram TTL threshold for the\nVLAN."
+          },
+          "enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "Set VLAN Administrative State"
+          },
+          "policy-in": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Policy for inbound (Ingress) traffic."
+          },
+          "policy-out": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Policy for outbound (Egress) traffic."
+          }
+        }
+      },
+      "ArubaMgmd_IgmpStaticGroups": {
+        "description": "IPv4 IGMP Static Group Configurations",
+        "properties": {
+          "static-group": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS",
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "ipv4-address",
+              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+              "maxLength": 9999,
+              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone.",
+              "description": "IGMP static group address"
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaMgmd_MldStaticGroups": {
+        "description": "IPv6 MLD Static Group Configurations",
+        "properties": {
+          "static-group": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch CX"
+              ],
+              "type": "string",
+              "format": "pattern",
+              "x-patternSources": "ipv6-address",
+              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+              "maxLength": 9999,
+              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone.",
+              "description": "MLD static group address"
+            },
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaMgmd_MgmdVlanCommonConfig": {
+        "description": "Grouping for common MGMD Configurations on the VLAN",
+        "properties": {
+          "fastleave-eth-interfaces": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999,
+              "description": "This list is now deprecated. The list of eth-interfaces on which IGMP/MLD fastleave is configured."
+            },
+            "maxItems": 2147483647
+          },
+          "forced-fastleave-eth-interfaces": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999,
+              "description": "This list is now deprecated. The list of eth-interfaces on which IGMP/MLD forced fastleave is configured."
+            },
+            "maxItems": 2147483647
+          },
+          "auto-eth-interfaces": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999,
+              "description": "This list is now deprecated. Configure the eth-interface to monitor traffic on specific ports."
+            },
+            "maxItems": 2147483647
+          },
+          "block-eth-interfaces": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999,
+              "description": "This list is now deprecated. Configure the eth-interface in block mode for IGMP/MLD."
+            },
+            "maxItems": 2147483647
+          },
+          "forward-eth-interfaces": {
+            "type": "array",
+            "items": {
+              "x-supportedDeviceType": [
+                "Switch PVOS"
+              ],
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999,
+              "description": "This list is now deprecated. Configure the eth-interfaces in forward mode for IGMP/MLD."
+            },
+            "maxItems": 2147483647
+          },
+          "querier-enable": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "boolean",
+            "default": "true",
+            "description": "This leaf is now deprecated.Enable IGMP/MLD Querier on this device."
+          },
+          "last-member-query-interval": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 2,
+            "default": "1",
+            "description": "This leaf is now deprecated. The number of seconds between successive group-specific\nquery messages."
+          },
+          "robustness": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 8,
+            "default": "2",
+            "description": "This leaf is now deprecated.Set the number of times to retry a IGMP/MLD query."
+          },
+          "query-max-response-time": {
+            "x-supportedDeviceType": [
+              "Switch PVOS"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 10,
+            "maximum": 128,
+            "default": "10",
+            "description": "This leaf is now deprecated.The number of seconds to wait for a response to an\nIGMP/MLD query."
+          },
+          "policy-in": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "x-path": "/ac-policy:policies/ac-policy:policy/ac-policy:name",
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 144,
+            "description": "Ingress ACL to filter processing of IGMP reports\nand leave messages received"
+          },
+          "preprogram-starg-flow": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable pre-programming of summarized multicast\nflows in the forwarding table on receiving IGMP\njoin"
+          }
+        }
+      },
+      "ArubaMgmd_IgmpVlanConfig": {
+        "description": "Grouping for IGMP Configurations on the VLAN",
+        "properties": {
+          "igmp": {
+            "description": "IGMP Configurations on the VLAN",
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaMgmd_IgmpStaticGroups"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaMgmd_MgmdVlanCommonConfig"
+              }
+            ],
+            "properties": {
+              "snooping": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable IGMP snooping on the VLAN."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "This leaf is now deprecated.Enable IGMP on the VLAN"
+              },
+              "version": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 2,
+                "maximum": 3,
+                "description": "The IGMP protocol version to use."
+              },
+              "strict-version": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Process only the selected IGMP version packets."
+              },
+              "filter-unknown-multicast": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "This leaf is now deprecated.Block Flooding of IPv4 Unknown Multicast Packets"
+              },
+              "query-interval": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 5,
+                "maximum": 300,
+                "default": "125",
+                "description": "This leaf is now deprecated.Sets the interval in seconds between IGMP queries."
+              }
+            }
+          }
+        }
+      },
+      "ArubaMgmd_MldVlanConfig": {
+        "description": "Grouping for MLD Configurations on the VLAN",
+        "properties": {
+          "mld": {
+            "description": "MLD Configuration on VLAN.",
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ArubaMgmd_MldStaticGroups"
+              },
+              {
+                "$ref": "#/components/schemas/ArubaMgmd_MgmdVlanCommonConfig"
+              }
+            ],
+            "properties": {
+              "snooping": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable MLD snooping on the VLAN."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "This leaf is now deprecated.Enable MLD on the VLAN"
+              },
+              "version": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 2,
+                "default": "2",
+                "description": "The MLD protocol version to use."
+              },
+              "strict-version": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Process only the selected MLD version packets."
+              },
+              "query-interval": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 60,
+                "maximum": 31744,
+                "default": "125",
+                "description": "This leaf is now deprecated.Sets the interval in seconds between MLD queries."
+              }
+            }
+          }
+        }
+      },
+      "ArubaClientIptracker_VlanConfig": {
+        "description": "Grouping for VLAN-level configuration parameters of client IP tracker.",
+        "properties": {
+          "client-ip-tracker-enable": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "boolean",
+            "default": "false",
+            "description": "Enable client IP tracking on this VLAN.  This is applicable to AOS-CX Switch."
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv4SnoopingVlan": {
+        "description": "Grouping of VLAN-specific DHCPv4-Snooping parameters",
+        "properties": {
+          "dhcpv4-snooping": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "VLAN-specific DHCPv4-Snooping parameters",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable status of DHCPv4-Snooping on the VLAN"
+              },
+              "ip-binding-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Learn DHCPv4-Snooping IP bindings on the VLAN"
+              }
+            }
+          }
+        }
+      },
+      "ArubaDhcpSnooping_Dhcpv6SnoopingVlan": {
+        "description": "Grouping of VLAN-specific DHCPv6-Snooping parameters",
+        "properties": {
+          "dhcpv6-snooping": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "VLAN-specific DHCPv6-Snooping parameters",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable status of DHCPv6-Snooping on the VLAN"
+              },
+              "allow-bindings-on-trusted-ports": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow learning bindings on trusted ports"
+              },
+              "ip-binding-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "Learn DHCPv6-Snooping IP bindings on the VLAN"
+              },
+              "guard-policy": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "DHCPv6 Guard policy reference"
+              }
+            }
+          }
+        }
+      },
+      "ArubaNdSnooping_NdSnoopingVlan": {
+        "description": "VLAN specific ND-Snooping parameter grouping",
+        "properties": {
+          "nd-snooping": {
+            "x-supportedDeviceType": [
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "description": "Configuration of ND-Snooping on VLAN.",
+            "properties": {
+              "nd-guard": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable ND-Guard on the VLAN"
+              },
+              "ra-guard": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable RA-guard on the VLAN"
+              },
+              "ra-guard-log": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable RA-guard logging"
+              },
+              "ra-drop": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable RA-Drop on the VLAN"
+              },
+              "allow-bindings-on-trusted-ports": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow learning ND-Snoop bindings on trusted ports"
+              },
+              "prefix-list": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX"
+                  ],
+                  "type": "string",
+                  "format": "const",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "description": "Allowed prefix-list for ND-Snooping"
+                },
+                "maxItems": 2147483647
+              },
+              "ra-guard-policy": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "RA-Guard policy reference"
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable/Disable ND-Snooping on the VLAN"
+              },
+              "prefix": {
+                "type": "array",
+                "items": {
+                  "x-supportedDeviceType": [
+                    "Switch CX",
+                    "Switch PVOS"
+                  ],
+                  "type": "string",
+                  "format": "pattern",
+                  "x-patternSources": "ipv6-prefix",
+                  "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9])'",
+                  "maxLength": 9999,
+                  "x-typeDescription": "An IPv6 prefix represented in full, shortened, or mixed\nshortened format followed by a slash and CIDR mask\n(0 <= mask <= 128).",
+                  "description": "IPv6 prefix-list for ND Snooping"
+                },
+                "maxItems": 2147483647
+              }
+            }
+          }
+        }
+      },
+      "ArubaDestinationGuard_DestinationGuardVlan": {
+        "description": "IPv6 destination guard VLAN parameter grouping",
+        "properties": {
+          "destination-guard": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "IPv6 destination guard VLAN prameters.\nEnabling IPv6 Destination Guard on a switch prevents ND Cache depletion\nissues and it helps in minimizing Denial-Of-Service(DoS) attacks. When\nIPv6 destination guard is enabled address resolution is performed only\nfor the destination addresses that are active on the link.",
+            "properties": {
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable IPv6 destination guard on the VLAN"
+              }
+            }
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}

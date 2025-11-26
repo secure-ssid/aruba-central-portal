@@ -1,0 +1,3739 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "aruba-auth-server API generated from aruba-auth-server.yang",
+    "version": "1.0.0",
+    "title": "auth-server",
+    "x-tag-group": "Security"
+  },
+  "tags": [
+    {
+      "name": "auth-servers"
+    }
+  ],
+  "paths": {
+    "/auth-servers": {
+      "get": {
+        "summary": "Read configuration of auth server profile",
+        "description": "Use this API to configure an external RADIUS server for user authentication. You can configure parameters such as server IP, authentication port, accounting port,\nshared key, etc. This feature is applicable for all devices.",
+        "operationId": "readAuthServers",
+        "x-cliParam": {
+          "commandName": "readAuthServersCmd",
+          "summary": "Read operation for auth-servers",
+          "commandUse": "auth-servers",
+          "parentCommand": "readCmd",
+          "pathToPrint": "/auth-servers/"
+        },
+        "tags": [
+          "auth-servers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAuthServer_AuthServersSchemaGET"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth-servers/{name}": {
+      "post": {
+        "summary": "Create a new auth server profile by unique name",
+        "description": "Auth Server profile.",
+        "operationId": "createAuthServersAuthServerByID",
+        "x-cliParam": {
+          "commandName": "createAuthServersAuthServerCmd",
+          "summary": "Create operation for auth-server",
+          "commandUse": "auth-server",
+          "parentCommand": "createAuthServersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-servers/auth-server/%s/"
+        },
+        "tags": [
+          "auth-servers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Auth Server.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/post_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/post_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/post_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAuthServer_AuthServersauthServerSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "get": {
+        "summary": "Read existing auth server profile configuration",
+        "description": "Auth Server profile.",
+        "operationId": "readAuthServersAuthServerByID",
+        "x-cliParam": {
+          "commandName": "readAuthServersAuthServerCmd",
+          "summary": "Read operation for auth-server",
+          "commandUse": "auth-server",
+          "parentCommand": "readAuthServersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-servers/auth-server/%s/"
+        },
+        "tags": [
+          "auth-servers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Auth Server.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/view_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/get_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/get_persona"
+          },
+          {
+            "$ref": "#/components/parameters/effective"
+          },
+          {
+            "$ref": "#/components/parameters/detailed"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArubaAuthServer_AuthServersauthServerSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update existing auth server profile configuration",
+        "description": "Auth Server profile.",
+        "operationId": "updateAuthServersAuthServerByID",
+        "x-cliParam": {
+          "commandName": "updateAuthServersAuthServerCmd",
+          "summary": "Update operation for auth-server",
+          "commandUse": "auth-server",
+          "parentCommand": "updateAuthServersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-servers/auth-server/%s/"
+        },
+        "tags": [
+          "auth-servers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Auth Server.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/patch_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/patch_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/patch_persona"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArubaAuthServer_AuthServersauthServerSchema"
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete the auth server profile",
+        "description": "Auth Server profile.",
+        "operationId": "deleteAuthServersAuthServerByID",
+        "x-cliParam": {
+          "commandName": "deleteAuthServersAuthServerCmd",
+          "summary": "Delete operation for auth-server",
+          "commandUse": "auth-server",
+          "parentCommand": "deleteAuthServersCmd",
+          "paramKeys": [
+            {
+              "key": "name"
+            }
+          ],
+          "totParams": 1,
+          "pathToPrint": "/auth-servers/auth-server/%s/"
+        },
+        "tags": [
+          "auth-servers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "description": "The name of the Auth Server.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "const",
+              "maxLength": 9999
+            }
+          },
+          {
+            "$ref": "#/components/parameters/delete_object_type"
+          },
+          {
+            "$ref": "#/components/parameters/delete_scope_id"
+          },
+          {
+            "$ref": "#/components/parameters/delete_persona"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "408": {
+            "$ref": "#/components/responses/408"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/network-config/v1alpha1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "delete_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To delete local objects. SHARED - To delete shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "delete_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be deleted. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To create local objects. SHARED - To create shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "post_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be created. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_object_type": {
+        "name": "object_type",
+        "description": "LOCAL - To update local objects. SHARED - To update shared objects. Default - Defaults to SHARED if not provided",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_scope_id": {
+        "name": "scope_id",
+        "description": "Scope at which local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "patch_persona": {
+        "name": "persona",
+        "description": "Persona for which the local object needs to be updated. Mandatory if object_type = LOCAL. Should not be provided for object_type = SHARED.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_object_type": {
+        "name": "object_type",
+        "description": "Retrieves LOCAL or SHARED or both(default) configuration objects.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_scope_id": {
+        "name": "scope_id",
+        "description": "Configuration at a given scope. Mandatory for view_type = LOCAL.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "get_persona": {
+        "name": "persona",
+        "description": "Filters configuration specific to given persona type. If not provided and view_type = LOCAL, then defaults to all persona.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "effective": {
+        "name": "effective",
+        "description": "True - Returns effective configuration (i.e hierarchically merged configuration). False - Returns committed configuration at a given scope.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "detailed": {
+        "name": "detailed",
+        "description": "True - Includes annotations in the returned json to indicate the type of object, scope, and persona. False - Returns only config objects without annotations.",
+        "in": "query",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "view_type": {
+        "name": "view_type",
+        "description": "LIBRARY - Returns shared objects in library. For LIBRARY, all other parameters listed below, except 'detailed' , will be ignored. LOCAL - Returns configurations for a scope and one or more persona based on parameters below.",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "Limit for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "description": "Offset for pagination.",
+        "in": "query",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "Request limit per hour."
+        },
+        "description": "Request limit per hour."
+      },
+      "X-RateLimit-Remaining": {
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 9223372036854776000,
+          "description": "The number of requests left for the time window."
+        },
+        "description": "The number of requests left for the time window."
+      },
+      "X-RateLimit-Reset": {
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 20,
+          "description": "The UTC date/time at which the current rate limit window resets."
+        },
+        "description": "The UTC date/time at which the current rate limit window resets."
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful Operation",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Successful200"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error400"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Access",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error401"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error403"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error404"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Not Acceptable",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error406"
+            }
+          }
+        }
+      },
+      "408": {
+        "description": "Request Timeout",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error408"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "Precondition Failed",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error412"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "Rate limit exceeded",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error429"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/X-RateLimit-Limit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/X-RateLimit-Remaining"
+          },
+          "X-RateLimit-Reset": {
+            "$ref": "#/components/headers/X-RateLimit-Reset"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error500"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ArubaAuthServer_AuthServersauthServerSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArubaAuthServer_AuthServersauthServerSchema"
+            }
+          }
+        },
+        "description": "auth-serverbody object"
+      }
+    },
+    "schemas": {
+      "ArubaAuthServer_AuthServersSchema": {
+        "x-supportedDeviceType": [
+          "Gateway"
+        ],
+        "description": "Use this API to configure an external RADIUS server for user authentication. You can configure parameters such as server IP, authentication port, accounting port,\nshared key, etc. This feature is applicable for all devices.",
+        "properties": {
+          "auth-server": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "description": "Auth Server profile.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ArubaAuthServer_CalledStationIdConfig"
+                },
+                {
+                  "properties": {
+                    "name": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "The name of the Auth Server."
+                    },
+                    "description": {
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "User description for Auth Server."
+                    },
+                    "type": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "RADIUS",
+                        "LDAP",
+                        "TACACS",
+                        "WINDOWS",
+                        "RFC3576",
+                        "XMLAPI",
+                        "RADSEC",
+                        "LOCAL"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "RADIUS": "RADIUS Server.",
+                        "LDAP": "LDAP Server.",
+                        "TACACS": "TACACS Server.",
+                        "WINDOWS": "Windows Server.",
+                        "RFC3576": "Dynamic authorization Server.",
+                        "XMLAPI": "XML API Server.",
+                        "RADSEC": "RadSec Server.",
+                        "LOCAL": "Local Internal Server for GW."
+                      },
+                      "x-typeDescription": "Auth server types.",
+                      "description": "Auth Server Type. AP support server types are RADIUS, LDAP, TACACS and XMLAPI.\nCX supports server types RADIUS and TACACS. PVOS supports RADIUS and TACACS.\nType is a mandatory parameter for CX and PVOS and can not be modified.\nGW supports RADIUS, TACACS, WINDOWS and LDAP"
+                    },
+                    "radius-server-mode": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "AUTH_ONLY",
+                        "COA_ONLY",
+                        "AUTH_AND_COA"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "AUTH_ONLY": "RADIUS server is used only for authentication.",
+                        "COA_ONLY": "RADIUS server is used only for Change of Authorization (CoA).",
+                        "AUTH_AND_COA": "RADIUS server is used for both authentication and CoA."
+                      },
+                      "default": "AUTH_ONLY",
+                      "description": "Specifies the mode in which the RADIUS server is used.\n- AUTH_ONLY: Server is used only for authentication.\n- COA_ONLY: Server is used only for Change of Authorization (CoA).\n- AUTH_AND_COA: Server is used for both authentication and CoA."
+                    },
+                    "auth-server-address": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "minLength": 1,
+                          "maxLength": 253,
+                          "x-patternSources": "domain-name",
+                          "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                          "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                        }
+                      ],
+                      "description": "IP address or FQDN of the Auth server. For CX and PVOS, auth-server-address is a mandatory parameter and can not be modified."
+                    },
+                    "xmlapi-server-address": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-prefix",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                        }
+                      ],
+                      "description": "XML SERVER Address."
+                    },
+                    "xmlapi-server-key": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "description": "XML server key."
+                    },
+                    "enable": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable Auth Server."
+                    },
+                    "enable-radsec": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enables RadSec for RADIUS data transport over TCP and TLS\nThis field can be configured only when type is RADIUS.\nFor CX and PVOS, this parameter cannot be modified."
+                    },
+                    "authentication-type": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "PAP",
+                        "MSCHAPv2",
+                        "CHAP"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "PAP": "Use PAP to authenticate user.",
+                        "MSCHAPv2": "Use MSCHAPv2 to authenticate user.",
+                        "CHAP": "Use CHAP (non-standard) to authenticate user."
+                      },
+                      "x-typeDescription": "Auth procotocols to authenticate user.",
+                      "description": "Specifies authentication protocol which is used for communication with Auth servers.\nIf not specified, the global timeout value will be picked. This field can be configured only when type is TACACS OR RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "auth-port": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "description": "Port number for authentication requests.For CX, default auth-port for RADIUS Servers is 1812 and TACACS Servers is 49.\nFor CX and PVOS, this parameter cannot be modified."
+                    },
+                    "acct-port": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "default": "1813",
+                      "description": "Port number for accounting requests.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "tcp-port": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "default": "49",
+                      "description": "Port number used by the server.\nThis field can be configured only when type is TACACS"
+                    },
+                    "max-retransmit-attempts": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 255,
+                      "description": "Maximum number of retries sent to the server by the manager device(AP, GW and SW_CX) before the server is marked as down.\nFor AP, the default value is 3.\nFor CX, range is 0-5. If not specified, the global retry value will be picked."
+                    },
+                    "timeout": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 255,
+                      "description": "Maximum time, in seconds, that the manager device(AP, GW and SW_CX) waits before timing out the request and resending it.\nFor CX, range is 1-60. If not specified, the global timeout value will be picked.\nFor AP, the default value of RADIUS and LDAP is 5, TACACS is 20.\nThis field can be configured only when type is TACACS, LDAP, or RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "source-address": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        }
+                      ],
+                      "description": "Source IP address to use in messages to the Auth server"
+                    },
+                    "source-interface": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 4094,
+                      "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                      "description": "Source VLAN Interface to use in messages to the Auth server\nThis field can be configured only when type is TACACS or RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "nas-ip-address": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-address",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                        },
+                        {
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv6-address",
+                          "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                        }
+                      ],
+                      "description": "The NAS IP address to be sent in RADIUS packets from that server."
+                    },
+                    "nas-identifier": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 253,
+                      "description": "NAS identifier to use in RADIUS packets.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "cppm-user-name": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "description": "User name of the ClearPass server to authenticate.\nFor CX, supported length is 2-64.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "service-type": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "STANDARD",
+                        "FRAMED"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "STANDARD": "Follow RFC, the default Service-Type for 802.1x is framed, for CP is Login, for mac is Call-Back.",
+                        "FRAMED": "Change Service-Type default value to framed for 802.1x, CP and MAC auth."
+                      },
+                      "x-typeDescription": "Change the default value of service type.",
+                      "default": "STANDARD",
+                      "description": "Change Service Type default value to framed.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "use-ip-for-calling-station-id": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Use IP for Calling Station Id.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "use-md5": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Use MD5 hash for cleartext password.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "lower-case-mac-address": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Lower case MAC address.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "mac-address-delimiter": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "NONE",
+                        "COLON",
+                        "DASH",
+                        "OUI_NIC",
+                        "PERCENT",
+                        "COMMA",
+                        "SLASH"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "NONE": "XXXXXXXXXXXX",
+                        "COLON": " XX:XX:XX:XX:XX:XX",
+                        "DASH": "XX-XX-XX-XX-XX-XX",
+                        "OUI_NIC": "XXXXXX-XXXXXX",
+                        "PERCENT": "XX%XX%XX%XX%XX%XX",
+                        "COMMA": "XX,XX,XX,XX,XX,XX",
+                        "SLASH": "XX/XX/XX/XX/XX/XX"
+                      },
+                      "x-typeDescription": "MAC address format.",
+                      "description": "MAC address delimiter.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "vrf": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                      "type": "string",
+                      "format": "pattern",
+                      "x-patternSources": "name-type",
+                      "x-patterns": "'([^\\\\/ ]+)'",
+                      "maxLength": 9999,
+                      "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                      "description": "VRF for the Auth server.\nFor CX, this parameter cannot be modified."
+                    },
+                    "management-interface": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Out of Band management interface for the Auth server."
+                    },
+                    "clearpass": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Host RADIUS server on ClearPass."
+                    },
+                    "dynamic-authorization-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable Dynamic Authorization."
+                    },
+                    "radsec-port": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Switch PVOS",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "default": "2083",
+                      "description": "Designates a RadSec port for RADIUS data transport\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true.\nFor CX and PVOS, this parameter cannot be modified."
+                    },
+                    "radsec-client-cert": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 20,
+                      "description": "RADIUS Security Client Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "radsec-trusted-cacert-name": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 20,
+                      "description": "RADIUS Security Trusted CA Cert Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "radsec-trusted-servercert-name": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 20,
+                      "description": "RADIUS Security Server Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "radsec-est-cert-profile": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-est:est-profiles/ac-est:profile/ac-est:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "RADIUS Security Server Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "admin-dn": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "DN for the admin user who has read or search privileges across all of the entries in the LDAP database (the user does not need\nwrite privileges but should be able to search the database and read attributes of other users in the database).\nThis field can be configured only when type is LDAP."
+                    },
+                    "admin-password": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "maxLength": 9999,
+                      "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                      "description": "Password for the admin user.\nthis field can be configured only when type is LDAP."
+                    },
+                    "base-dn": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "DN name of the node which contains the entire user database to use.\nthis field can be configured only when type is LDAP."
+                    },
+                    "allow-cleartext": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Allow unencrypted communication with LDAP server.\nthis field can be configured only when type is LDAP."
+                    },
+                    "chase-referrals": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "LDAP Chase Referrals.\nthis field can be configured only when type is LDAP."
+                    },
+                    "filter": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Filter that should be applied to search of the user in the LDAP database.\nthis field can be configured only when type is LDAP"
+                    },
+                    "key-attribute": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "The attribute that should be used as a key in search\nfor the LDAP server. This field can be configured only when type is LDAP"
+                    },
+                    "max-connection": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 16,
+                      "default": "4",
+                      "description": "Maximum number of simultaneous non-admin connections to a LDAP server.\nthis field can be configured only when type is LDAP"
+                    },
+                    "session-authorization": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable TACACS+ authorization.\nthis field can be configured only when type is TACACS."
+                    },
+                    "domain": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "description": "Windows domain name.\nthis field can be configured only when type is WINDOWS."
+                    },
+                    "replay-protection": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Replay protection for DAC(Dynamic Authorization Client) requests\nthis field can be configured only when type is RADIUS and radius-server-mode is equal to COA_ONLY or AUTH_AND_COA."
+                    },
+                    "window-duration": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS",
+                        "Gateway"
+                      ],
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "default": "300",
+                      "description": "Time window size in seconds."
+                    },
+                    "window-type": {
+                      "x-supportedDeviceType": [
+                        "Switch PVOS"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "POSITIVE",
+                        "PLUS_OR_MINUS"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "POSITIVE": "Sets the acceptable time-window value as default PLUS",
+                        "PLUS_OR_MINUS": "Sets the acceptable time-window value as PLUS OR MINUS"
+                      },
+                      "x-typeDescription": "Time-window value type for dynamic authorization messages.",
+                      "default": "POSITIVE",
+                      "description": "Acceptable time window type."
+                    },
+                    "event-timestamp-required": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Discard DAC request, if Event-Timestamp is not present\nin DAC(Dynamic Authorization Client) request. This field can be configured only when type is RADIUS with radius-server-mode configured as COA_ONLY or AUTH_AND_COA."
+                    },
+                    "rfc5176-enforcement-mode": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "STRICT",
+                        "LOOSE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "STRICT": "RFC enforcement is strict",
+                        "LOOSE": "RFC enforcement is loose"
+                      },
+                      "x-typeDescription": "RFC 5176 enforcement mode type",
+                      "default": "STRICT",
+                      "description": "Enforcement mode of RFC5176."
+                    },
+                    "default-authenticated-role": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 63,
+                      "description": "Assign default role for users after XML server\n authorization."
+                    },
+                    "preferred-conn-type": {
+                      "x-supportedDeviceType": [
+                        "Gateway"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "CLEAR_TEXT",
+                        "LDAP_S",
+                        "START_TLS"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "CLEAR_TEXT": "set preferred connection type as Clear-Text",
+                        "LDAP_S": "set preferred connection type as LDAP-S",
+                        "START_TLS": "set preferred connection type as START-TLS"
+                      },
+                      "x-typeDescription": "Include VLAN identifier of port in acce7ss-request",
+                      "description": "Preferred Connection Type.\nthis field can be configured only when type is LDAP."
+                    },
+                    "auth-modifier": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-radius-modifiers:radius-modifiers/ac-radius-modifiers:radius-modifier/ac-radius-modifiers:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 80,
+                      "description": "Attributes modifier for authentication-request.\nthis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "acct-modifier": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway"
+                      ],
+                      "x-path": "/ac-radius-modifiers:radius-modifiers/ac-radius-modifiers:radius-modifier/ac-radius-modifiers:name",
+                      "type": "string",
+                      "format": "const",
+                      "minLength": 1,
+                      "maxLength": 80,
+                      "description": "Attributes modifier for accounting-request.\nthis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "deadtime": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 1,
+                      "maximum": 1440,
+                      "default": "5",
+                      "description": "Configures a dead time interval for the authentication server. When two or more authentication servers are configured on the Instant AP and\na server is unavailable, the dead time configuratidetermines the duration for which the authentication server would be available if the server\nis marked as unavailable. the default value is 5min. time range is 1-1440."
+                    },
+                    "auth-throttle": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "boolean",
+                      "default": "true",
+                      "description": "AP measures request-response times for each packet exchange. As the time taken approaches the timeout, AP throttles new transactions."
+                    },
+                    "dynamic-authorization-port": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 0,
+                      "maximum": 65535,
+                      "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                      "description": "Configures the port number for sending AirGroup CoA, instead of the standard CoA port. The default value is 5999."
+                    },
+                    "radsec-keepalive": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "STATUS_SERVER",
+                        "TCP_KEEPALIVE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "STATUS_SERVER": "Status-server messages are used for keeping\nRadSec port-access tunnel active",
+                        "TCP_KEEPALIVE": "TCP keep alive messages are used for keeping\nRadSec port-access tunnel active"
+                      },
+                      "x-typeDescription": "Method to keep RadSec port-access tunnel active",
+                      "default": "TCP_KEEPALIVE",
+                      "description": "If there is no radius activity for more than 15 minutes, with status-server keepalive, CPPM doesn't terminate connection every 15 minutes, with tcp-keepalive , CPPM terminates the RADSEC connection after 15 minutes "
+                    },
+                    "rfc5997": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "AUTH_ONLY",
+                        "ACCT_ONLY",
+                        "NONE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "AUTH_ONLY": "Query Status of Auth RADIUS Servers.",
+                        "ACCT_ONLY": "Query Status of Acct RADIUS Servers.",
+                        "NONE": "Query Status of auth and accounting RADIUS Servers."
+                      },
+                      "x-typeDescription": "Query Status of auth and accounting RADIUS Servers.",
+                      "default": "NONE",
+                      "description": "When enabled, this parameter allows the Instant AP to send a status-server request to determine the actual status of the authentication or accounting server. This proves useful when there is a authentication or request time\nrfc5997\u2014RFC5997 support enabled for both authentication and accounting on the authentication server.\nauth-only\u2014RFC5997 support enabled for authentication only.\nacct-only\u2014RFC5997 support enabled for accounting only\nno rfc5997\u2014Disables RFC5997 support for the authentication server."
+                    },
+                    "msg-auth-required": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch PVOS"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enforcement of RADIUS message authenticator. if AP receives Access-Request/Access-Reject/Access-Challenge/CoA-Request/Disconnect-Request without message-authenticator present, the packet will be discarded.\nFor AP, this configuration is supported from 10.7.1.0.\nthis field can be configured only when type is RADIUS"
+                    },
+                    "tracking-enable": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "boolean",
+                      "default": "false",
+                      "description": "Enable server tracking.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA or TACACS"
+                    },
+                    "tracking-mode": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ANY",
+                        "DEAD_ONLY"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ANY": "Track the server irrespective of its availability.",
+                        "DEAD_ONLY": "Track the server only if it is not reachable."
+                      },
+                      "x-typeDescription": "Tracking mode type of the server",
+                      "description": "Tracking mode of the server. Default value of tracking-mode is any.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+                    },
+                    "tracking-method": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "ACCESS_REQUEST",
+                        "STATUS_SERVER",
+                        "TCP_KEEPALIVE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "ACCESS_REQUEST": "Track the server using access-request messages",
+                        "STATUS_SERVER": "Track the server using status-server messages",
+                        "TCP_KEEPALIVE": "Track the server using TCP keep-alive messages"
+                      },
+                      "x-typeDescription": "Tracking method type of the server",
+                      "description": "Tracking method of the server. Default value for tracking method is access-request.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+                    },
+                    "tls-initial-connection-timeout": {
+                      "x-supportedDeviceType": [
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "type": "integer",
+                      "format": "int32",
+                      "minimum": 5,
+                      "maximum": 300,
+                      "description": "TLS Initial connection timeout (timeout for TLS handshake).\nFor CX, if not specified, the global TLS Initial connection timeout value will be picked.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+                    },
+                    "port-access-keepalive": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "type": "string",
+                      "enum": [
+                        "STATUS_SERVER",
+                        "TCP_KEEPALIVE"
+                      ],
+                      "format": "enum",
+                      "x-enumDescriptions": {
+                        "STATUS_SERVER": "Status-server messages are used for keeping\nRadSec port-access tunnel active",
+                        "TCP_KEEPALIVE": "TCP keep alive messages are used for keeping\nRadSec port-access tunnel active"
+                      },
+                      "x-typeDescription": "Method to keep RadSec port-access tunnel active",
+                      "description": "Method to keep RadSec port-access tunnel active. Default value is status-server.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+                    },
+                    "shared-secret-config": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch CX",
+                        "Switch PVOS"
+                      ],
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaAuthServer_SharedSecretInfo"
+                        }
+                      ],
+                      "description": "This passkey is used as shared-secret for encrypting the communication between Auth server and device."
+                    },
+                    "cppm-password-config": {
+                      "x-supportedDeviceType": [
+                        "Access Point",
+                        "Gateway",
+                        "Switch CX"
+                      ],
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaAuthServer_CppmPasswordInfo"
+                        }
+                      ],
+                      "description": "Auth server Clearpass password configuration used for authentication.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+                    },
+                    "ipsec-ah": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "RADIUS server IPsec authentication parameters.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaAuthServer_IpsecConfig"
+                        }
+                      ]
+                    },
+                    "ipsec-esp": {
+                      "x-supportedDeviceType": [
+                        "Switch CX"
+                      ],
+                      "description": "RADIUS server IPsec encryption parameters.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ArubaAuthServer_IpsecConfig"
+                        }
+                      ],
+                      "properties": {
+                        "encryption-type": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "ENCR_3DES",
+                            "AES",
+                            "DES",
+                            "AES192",
+                            "AES256"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "ENCR_3DES": "3DES encryption method",
+                            "AES": "AES encryption method",
+                            "DES": "DES encryption method",
+                            "AES192": "AES-192 encryption method",
+                            "AES256": "AES-256 encryption method"
+                          },
+                          "x-typeDescription": "IPsec encryption type",
+                          "description": "Specify the algorithm to use for IPsec encryption: aes, des or 3des."
+                        },
+                        "encryption-key-type": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "enum": [
+                            "PLAIN_TEXT",
+                            "CIPHER_TEXT",
+                            "HEX_STRING"
+                          ],
+                          "format": "enum",
+                          "x-enumDescriptions": {
+                            "PLAIN_TEXT": "Configure plaintext type of IPsec key",
+                            "CIPHER_TEXT": "Configure ciphertext type of IPsec key",
+                            "HEX_STRING": "Configure hex-string type of IPsec key"
+                          },
+                          "x-typeDescription": "The key type for the IPsec authentication or the IPsec encryption.",
+                          "default": "PLAIN_TEXT",
+                          "description": "The key type for IPsec encryption."
+                        },
+                        "encryption-key-hexstring": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "The hex-string key for IPsec encryption.\nThis field can be configured only when encryption-key-type is HEX_STRING."
+                        },
+                        "encryption-key-cipher-text": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "The ciphertext key for IPsec encryption.\nThis field can be configured only when encryption-key-type is CIPHER_TEXT."
+                        },
+                        "encryption-key": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "string",
+                          "format": "const",
+                          "maxLength": 9999,
+                          "description": "The plaintext key for IPsec encryption.\nThis field can be configured only when encryption-key-type is PLAIN_TEXT."
+                        },
+                        "null-encryption": {
+                          "x-supportedDeviceType": [
+                            "Switch CX"
+                          ],
+                          "type": "boolean",
+                          "default": "false",
+                          "description": "null type of IPsec encryption."
+                        }
+                      }
+                    },
+                    "drp": {
+                      "x-supportedDeviceType": [
+                        "Access Point"
+                      ],
+                      "description": "Configure dynamic RADIUS proxy.",
+                      "properties": {
+                        "ip": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "string",
+                          "format": "pattern",
+                          "x-patternSources": "ipv4-prefix",
+                          "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                          "maxLength": 9999,
+                          "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                          "description": "IP address to be used as source IP for RADIUS packets and subnet mask of the DRP IP address."
+                        },
+                        "vlan": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1,
+                          "maximum": 4093,
+                          "description": "VLAN in which the RADIUS packets are sent."
+                        },
+                        "gateway": {
+                          "x-supportedDeviceType": [
+                            "Access Point"
+                          ],
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv4-address",
+                              "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                            },
+                            {
+                              "type": "string",
+                              "format": "pattern",
+                              "x-patternSources": "ipv6-address",
+                              "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                              "maxLength": 9999,
+                              "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                            }
+                          ],
+                          "description": "Gateway IP address of the DRP VLAN"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x-key": [
+              "name"
+            ],
+            "maxItems": 2147483647
+          }
+        }
+      },
+      "ArubaAuthServer_AuthServersSchemaGET": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAuthServer_AuthServersSchema"
+          },
+          {
+            "properties": {
+              "metadata": {
+                "description": "Summary metadata",
+                "properties": {
+                  "count_objects_in_module": {
+                    "description": "Object count in module",
+                    "properties": {
+                      "LOCAL": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Local config object."
+                      },
+                      "SHARED": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Shared config object."
+                      },
+                      "ANY": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0,
+                        "maximum": 9223372036854776000,
+                        "default": 0,
+                        "description": "Any of local or shared config object."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAuthServer_AuthServersauthServerSchema": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArubaAuthServer_CalledStationIdConfig"
+          },
+          {
+            "properties": {
+              "name": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "The name of the Auth Server."
+              },
+              "description": {
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "User description for Auth Server."
+              },
+              "type": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "RADIUS",
+                  "LDAP",
+                  "TACACS",
+                  "WINDOWS",
+                  "RFC3576",
+                  "XMLAPI",
+                  "RADSEC",
+                  "LOCAL"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "RADIUS": "RADIUS Server.",
+                  "LDAP": "LDAP Server.",
+                  "TACACS": "TACACS Server.",
+                  "WINDOWS": "Windows Server.",
+                  "RFC3576": "Dynamic authorization Server.",
+                  "XMLAPI": "XML API Server.",
+                  "RADSEC": "RadSec Server.",
+                  "LOCAL": "Local Internal Server for GW."
+                },
+                "x-typeDescription": "Auth server types.",
+                "description": "Auth Server Type. AP support server types are RADIUS, LDAP, TACACS and XMLAPI.\nCX supports server types RADIUS and TACACS. PVOS supports RADIUS and TACACS.\nType is a mandatory parameter for CX and PVOS and can not be modified.\nGW supports RADIUS, TACACS, WINDOWS and LDAP"
+              },
+              "radius-server-mode": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "AUTH_ONLY",
+                  "COA_ONLY",
+                  "AUTH_AND_COA"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "AUTH_ONLY": "RADIUS server is used only for authentication.",
+                  "COA_ONLY": "RADIUS server is used only for Change of Authorization (CoA).",
+                  "AUTH_AND_COA": "RADIUS server is used for both authentication and CoA."
+                },
+                "default": "AUTH_ONLY",
+                "description": "Specifies the mode in which the RADIUS server is used.\n- AUTH_ONLY: Server is used only for authentication.\n- COA_ONLY: Server is used only for Change of Authorization (CoA).\n- AUTH_AND_COA: Server is used for both authentication and CoA."
+              },
+              "auth-server-address": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "x-patternSources": "domain-name",
+                    "x-patterns": "'(((([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.)*([a-zA-Z0-9_]([a-zA-Z0-9\\-_]){0,61})?[a-zA-Z0-9]\\.?)|\\.)'",
+                    "x-typeDescription": "The domain-name type represents a DNS domain name.\nFully quallified left to the models which utilize this type.\n\nInternet domain names are only loosely specified.  Section\n3.5 of RFC 1034 recommends a syntax (modified in Section\n2.1 of RFC 1123).  The pattern above is intended to allow\nfor current practice in domain name use, and some possible\nfuture expansion.  It is designed to hold various types of\ndomain names, including names used for A or AAAA records\n(host names) and other records, such as SRV records.  Note\nthat Internet host names have a stricter syntax (described\nin RFC 952) than the DNS recommendations in RFCs 1034 and\n1123, and that systems that want to store host names in\nschema nodes using the domain-name type are recommended to\nadhere to this stricter standard to ensure interoperability.\n\nThe encoding of DNS names in the DNS protocol is limited\nto 255 characters.  Since the encoding consists of labels\nprefixed by a length bytes and there is a trailing NULL\nbyte, only 253 characters can appear in the textual dotted\nnotation.\n\nDomain-name values use the US-ASCII encoding.  Their canonical\nformat uses lowercase US-ASCII characters.  Internationalized\ndomain names MUST be encoded in punycode as described in RFC\n3492"
+                  }
+                ],
+                "description": "IP address or FQDN of the Auth server. For CX and PVOS, auth-server-address is a mandatory parameter and can not be modified."
+              },
+              "xmlapi-server-address": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-prefix",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32)."
+                  }
+                ],
+                "description": "XML SERVER Address."
+              },
+              "xmlapi-server-key": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "XML server key."
+              },
+              "enable": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable Auth Server."
+              },
+              "enable-radsec": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enables RadSec for RADIUS data transport over TCP and TLS\nThis field can be configured only when type is RADIUS.\nFor CX and PVOS, this parameter cannot be modified."
+              },
+              "authentication-type": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "PAP",
+                  "MSCHAPv2",
+                  "CHAP"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "PAP": "Use PAP to authenticate user.",
+                  "MSCHAPv2": "Use MSCHAPv2 to authenticate user.",
+                  "CHAP": "Use CHAP (non-standard) to authenticate user."
+                },
+                "x-typeDescription": "Auth procotocols to authenticate user.",
+                "description": "Specifies authentication protocol which is used for communication with Auth servers.\nIf not specified, the global timeout value will be picked. This field can be configured only when type is TACACS OR RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "auth-port": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "description": "Port number for authentication requests.For CX, default auth-port for RADIUS Servers is 1812 and TACACS Servers is 49.\nFor CX and PVOS, this parameter cannot be modified."
+              },
+              "acct-port": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "default": "1813",
+                "description": "Port number for accounting requests.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "tcp-port": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "default": "49",
+                "description": "Port number used by the server.\nThis field can be configured only when type is TACACS"
+              },
+              "max-retransmit-attempts": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 255,
+                "description": "Maximum number of retries sent to the server by the manager device(AP, GW and SW_CX) before the server is marked as down.\nFor AP, the default value is 3.\nFor CX, range is 0-5. If not specified, the global retry value will be picked."
+              },
+              "timeout": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 255,
+                "description": "Maximum time, in seconds, that the manager device(AP, GW and SW_CX) waits before timing out the request and resending it.\nFor CX, range is 1-60. If not specified, the global timeout value will be picked.\nFor AP, the default value of RADIUS and LDAP is 5, TACACS is 20.\nThis field can be configured only when type is TACACS, LDAP, or RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "source-address": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  }
+                ],
+                "description": "Source IP address to use in messages to the Auth server"
+              },
+              "source-interface": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 4094,
+                "x-typeDescription": "Type definition representing a single-tagged VLAN",
+                "description": "Source VLAN Interface to use in messages to the Auth server\nThis field can be configured only when type is TACACS or RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "nas-ip-address": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch PVOS"
+                ],
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-address",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                  },
+                  {
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv6-address",
+                    "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                  }
+                ],
+                "description": "The NAS IP address to be sent in RADIUS packets from that server."
+              },
+              "nas-identifier": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 253,
+                "description": "NAS identifier to use in RADIUS packets.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "cppm-user-name": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "User name of the ClearPass server to authenticate.\nFor CX, supported length is 2-64.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "service-type": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "STANDARD",
+                  "FRAMED"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "STANDARD": "Follow RFC, the default Service-Type for 802.1x is framed, for CP is Login, for mac is Call-Back.",
+                  "FRAMED": "Change Service-Type default value to framed for 802.1x, CP and MAC auth."
+                },
+                "x-typeDescription": "Change the default value of service type.",
+                "default": "STANDARD",
+                "description": "Change Service Type default value to framed.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "use-ip-for-calling-station-id": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Use IP for Calling Station Id.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "use-md5": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Use MD5 hash for cleartext password.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "lower-case-mac-address": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Lower case MAC address.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "mac-address-delimiter": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "COLON",
+                  "DASH",
+                  "OUI_NIC",
+                  "PERCENT",
+                  "COMMA",
+                  "SLASH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "XXXXXXXXXXXX",
+                  "COLON": " XX:XX:XX:XX:XX:XX",
+                  "DASH": "XX-XX-XX-XX-XX-XX",
+                  "OUI_NIC": "XXXXXX-XXXXXX",
+                  "PERCENT": "XX%XX%XX%XX%XX%XX",
+                  "COMMA": "XX,XX,XX,XX,XX,XX",
+                  "SLASH": "XX/XX/XX/XX/XX/XX"
+                },
+                "x-typeDescription": "MAC address format.",
+                "description": "MAC address delimiter.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "vrf": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Gateway"
+                ],
+                "x-path": "/ac-vrf:vrfs/ac-vrf:vrf/ac-vrf:name",
+                "type": "string",
+                "format": "pattern",
+                "x-patternSources": "name-type",
+                "x-patterns": "'([^\\\\/ ]+)'",
+                "maxLength": 9999,
+                "x-typeDescription": "Type definition for 'name', should be alphanumeric. Special characters such as '\\', '/' and space are not allowed.",
+                "description": "VRF for the Auth server.\nFor CX, this parameter cannot be modified."
+              },
+              "management-interface": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Out of Band management interface for the Auth server."
+              },
+              "clearpass": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Host RADIUS server on ClearPass."
+              },
+              "dynamic-authorization-enable": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable Dynamic Authorization."
+              },
+              "radsec-port": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Switch PVOS",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "default": "2083",
+                "description": "Designates a RadSec port for RADIUS data transport\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true.\nFor CX and PVOS, this parameter cannot be modified."
+              },
+              "radsec-client-cert": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 20,
+                "description": "RADIUS Security Client Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "radsec-trusted-cacert-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 20,
+                "description": "RADIUS Security Trusted CA Cert Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "radsec-trusted-servercert-name": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-certificate:certificates/ac-certificate:certificate/ac-certificate:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 20,
+                "description": "RADIUS Security Server Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "radsec-est-cert-profile": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-est:est-profiles/ac-est:profile/ac-est:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "RADIUS Security Server Certificate Name.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "admin-dn": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "DN for the admin user who has read or search privileges across all of the entries in the LDAP database (the user does not need\nwrite privileges but should be able to search the database and read attributes of other users in the database).\nThis field can be configured only when type is LDAP."
+              },
+              "admin-password": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "maxLength": 9999,
+                "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+                "description": "Password for the admin user.\nthis field can be configured only when type is LDAP."
+              },
+              "base-dn": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "DN name of the node which contains the entire user database to use.\nthis field can be configured only when type is LDAP."
+              },
+              "allow-cleartext": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Allow unencrypted communication with LDAP server.\nthis field can be configured only when type is LDAP."
+              },
+              "chase-referrals": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "LDAP Chase Referrals.\nthis field can be configured only when type is LDAP."
+              },
+              "filter": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Filter that should be applied to search of the user in the LDAP database.\nthis field can be configured only when type is LDAP"
+              },
+              "key-attribute": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "The attribute that should be used as a key in search\nfor the LDAP server. This field can be configured only when type is LDAP"
+              },
+              "max-connection": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 16,
+                "default": "4",
+                "description": "Maximum number of simultaneous non-admin connections to a LDAP server.\nthis field can be configured only when type is LDAP"
+              },
+              "session-authorization": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable TACACS+ authorization.\nthis field can be configured only when type is TACACS."
+              },
+              "domain": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Windows domain name.\nthis field can be configured only when type is WINDOWS."
+              },
+              "replay-protection": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Replay protection for DAC(Dynamic Authorization Client) requests\nthis field can be configured only when type is RADIUS and radius-server-mode is equal to COA_ONLY or AUTH_AND_COA."
+              },
+              "window-duration": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS",
+                  "Gateway"
+                ],
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0,
+                "maximum": 65535,
+                "default": "300",
+                "description": "Time window size in seconds."
+              },
+              "window-type": {
+                "x-supportedDeviceType": [
+                  "Switch PVOS"
+                ],
+                "type": "string",
+                "enum": [
+                  "POSITIVE",
+                  "PLUS_OR_MINUS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "POSITIVE": "Sets the acceptable time-window value as default PLUS",
+                  "PLUS_OR_MINUS": "Sets the acceptable time-window value as PLUS OR MINUS"
+                },
+                "x-typeDescription": "Time-window value type for dynamic authorization messages.",
+                "default": "POSITIVE",
+                "description": "Acceptable time window type."
+              },
+              "event-timestamp-required": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Discard DAC request, if Event-Timestamp is not present\nin DAC(Dynamic Authorization Client) request. This field can be configured only when type is RADIUS with radius-server-mode configured as COA_ONLY or AUTH_AND_COA."
+              },
+              "rfc5176-enforcement-mode": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "STRICT",
+                  "LOOSE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "STRICT": "RFC enforcement is strict",
+                  "LOOSE": "RFC enforcement is loose"
+                },
+                "x-typeDescription": "RFC 5176 enforcement mode type",
+                "default": "STRICT",
+                "description": "Enforcement mode of RFC5176."
+              },
+              "default-authenticated-role": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "x-path": "/ac-role:roles/ac-role:role/ac-role:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 63,
+                "description": "Assign default role for users after XML server\n authorization."
+              },
+              "preferred-conn-type": {
+                "x-supportedDeviceType": [
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "CLEAR_TEXT",
+                  "LDAP_S",
+                  "START_TLS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "CLEAR_TEXT": "set preferred connection type as Clear-Text",
+                  "LDAP_S": "set preferred connection type as LDAP-S",
+                  "START_TLS": "set preferred connection type as START-TLS"
+                },
+                "x-typeDescription": "Include VLAN identifier of port in acce7ss-request",
+                "description": "Preferred Connection Type.\nthis field can be configured only when type is LDAP."
+              },
+              "auth-modifier": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "x-path": "/ac-radius-modifiers:radius-modifiers/ac-radius-modifiers:radius-modifier/ac-radius-modifiers:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "Attributes modifier for authentication-request.\nthis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "acct-modifier": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "x-path": "/ac-radius-modifiers:radius-modifiers/ac-radius-modifiers:radius-modifier/ac-radius-modifiers:name",
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "Attributes modifier for accounting-request.\nthis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "deadtime": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 1440,
+                "default": "5",
+                "description": "Configures a dead time interval for the authentication server. When two or more authentication servers are configured on the Instant AP and\na server is unavailable, the dead time configuratidetermines the duration for which the authentication server would be available if the server\nis marked as unavailable. the default value is 5min. time range is 1-1440."
+              },
+              "auth-throttle": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "true",
+                "description": "AP measures request-response times for each packet exchange. As the time taken approaches the timeout, AP throttles new transactions."
+              },
+              "dynamic-authorization-port": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 65535,
+                "x-typeDescription": "A 16-bit port number used by a transport protocol such as TCP\nor UDP.",
+                "description": "Configures the port number for sending AirGroup CoA, instead of the standard CoA port. The default value is 5999."
+              },
+              "radsec-keepalive": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "STATUS_SERVER",
+                  "TCP_KEEPALIVE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "STATUS_SERVER": "Status-server messages are used for keeping\nRadSec port-access tunnel active",
+                  "TCP_KEEPALIVE": "TCP keep alive messages are used for keeping\nRadSec port-access tunnel active"
+                },
+                "x-typeDescription": "Method to keep RadSec port-access tunnel active",
+                "default": "TCP_KEEPALIVE",
+                "description": "If there is no radius activity for more than 15 minutes, with status-server keepalive, CPPM doesn't terminate connection every 15 minutes, with tcp-keepalive , CPPM terminates the RADSEC connection after 15 minutes "
+              },
+              "rfc5997": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "enum": [
+                  "AUTH_ONLY",
+                  "ACCT_ONLY",
+                  "NONE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "AUTH_ONLY": "Query Status of Auth RADIUS Servers.",
+                  "ACCT_ONLY": "Query Status of Acct RADIUS Servers.",
+                  "NONE": "Query Status of auth and accounting RADIUS Servers."
+                },
+                "x-typeDescription": "Query Status of auth and accounting RADIUS Servers.",
+                "default": "NONE",
+                "description": "When enabled, this parameter allows the Instant AP to send a status-server request to determine the actual status of the authentication or accounting server. This proves useful when there is a authentication or request time\nrfc5997\u2014RFC5997 support enabled for both authentication and accounting on the authentication server.\nauth-only\u2014RFC5997 support enabled for authentication only.\nacct-only\u2014RFC5997 support enabled for accounting only\nno rfc5997\u2014Disables RFC5997 support for the authentication server."
+              },
+              "msg-auth-required": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch PVOS"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enforcement of RADIUS message authenticator. if AP receives Access-Request/Access-Reject/Access-Challenge/CoA-Request/Disconnect-Request without message-authenticator present, the packet will be discarded.\nFor AP, this configuration is supported from 10.7.1.0.\nthis field can be configured only when type is RADIUS"
+              },
+              "tracking-enable": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Enable server tracking.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA or TACACS"
+              },
+              "tracking-mode": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "ANY",
+                  "DEAD_ONLY"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ANY": "Track the server irrespective of its availability.",
+                  "DEAD_ONLY": "Track the server only if it is not reachable."
+                },
+                "x-typeDescription": "Tracking mode type of the server",
+                "description": "Tracking mode of the server. Default value of tracking-mode is any.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA"
+              },
+              "tracking-method": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "ACCESS_REQUEST",
+                  "STATUS_SERVER",
+                  "TCP_KEEPALIVE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "ACCESS_REQUEST": "Track the server using access-request messages",
+                  "STATUS_SERVER": "Track the server using status-server messages",
+                  "TCP_KEEPALIVE": "Track the server using TCP keep-alive messages"
+                },
+                "x-typeDescription": "Tracking method type of the server",
+                "description": "Tracking method of the server. Default value for tracking method is access-request.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+              },
+              "tls-initial-connection-timeout": {
+                "x-supportedDeviceType": [
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "type": "integer",
+                "format": "int32",
+                "minimum": 5,
+                "maximum": 300,
+                "description": "TLS Initial connection timeout (timeout for TLS handshake).\nFor CX, if not specified, the global TLS Initial connection timeout value will be picked.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+              },
+              "port-access-keepalive": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "type": "string",
+                "enum": [
+                  "STATUS_SERVER",
+                  "TCP_KEEPALIVE"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "STATUS_SERVER": "Status-server messages are used for keeping\nRadSec port-access tunnel active",
+                  "TCP_KEEPALIVE": "TCP keep alive messages are used for keeping\nRadSec port-access tunnel active"
+                },
+                "x-typeDescription": "Method to keep RadSec port-access tunnel active",
+                "description": "Method to keep RadSec port-access tunnel active. Default value is status-server.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA and enable-radsec is set to true."
+              },
+              "shared-secret-config": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch CX",
+                  "Switch PVOS"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaAuthServer_SharedSecretInfo"
+                  }
+                ],
+                "description": "This passkey is used as shared-secret for encrypting the communication between Auth server and device."
+              },
+              "cppm-password-config": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway",
+                  "Switch CX"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaAuthServer_CppmPasswordInfo"
+                  }
+                ],
+                "description": "Auth server Clearpass password configuration used for authentication.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA."
+              },
+              "ipsec-ah": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "RADIUS server IPsec authentication parameters.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaAuthServer_IpsecConfig"
+                  }
+                ]
+              },
+              "ipsec-esp": {
+                "x-supportedDeviceType": [
+                  "Switch CX"
+                ],
+                "description": "RADIUS server IPsec encryption parameters.\nThis field can be configured only when type is RADIUS with radius-server-mode configured as AUTH_ONLY or AUTH_AND_COA.",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ArubaAuthServer_IpsecConfig"
+                  }
+                ],
+                "properties": {
+                  "encryption-type": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "ENCR_3DES",
+                      "AES",
+                      "DES",
+                      "AES192",
+                      "AES256"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "ENCR_3DES": "3DES encryption method",
+                      "AES": "AES encryption method",
+                      "DES": "DES encryption method",
+                      "AES192": "AES-192 encryption method",
+                      "AES256": "AES-256 encryption method"
+                    },
+                    "x-typeDescription": "IPsec encryption type",
+                    "description": "Specify the algorithm to use for IPsec encryption: aes, des or 3des."
+                  },
+                  "encryption-key-type": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "enum": [
+                      "PLAIN_TEXT",
+                      "CIPHER_TEXT",
+                      "HEX_STRING"
+                    ],
+                    "format": "enum",
+                    "x-enumDescriptions": {
+                      "PLAIN_TEXT": "Configure plaintext type of IPsec key",
+                      "CIPHER_TEXT": "Configure ciphertext type of IPsec key",
+                      "HEX_STRING": "Configure hex-string type of IPsec key"
+                    },
+                    "x-typeDescription": "The key type for the IPsec authentication or the IPsec encryption.",
+                    "default": "PLAIN_TEXT",
+                    "description": "The key type for IPsec encryption."
+                  },
+                  "encryption-key-hexstring": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "description": "The hex-string key for IPsec encryption.\nThis field can be configured only when encryption-key-type is HEX_STRING."
+                  },
+                  "encryption-key-cipher-text": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "description": "The ciphertext key for IPsec encryption.\nThis field can be configured only when encryption-key-type is CIPHER_TEXT."
+                  },
+                  "encryption-key": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "string",
+                    "format": "const",
+                    "maxLength": 9999,
+                    "description": "The plaintext key for IPsec encryption.\nThis field can be configured only when encryption-key-type is PLAIN_TEXT."
+                  },
+                  "null-encryption": {
+                    "x-supportedDeviceType": [
+                      "Switch CX"
+                    ],
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "null type of IPsec encryption."
+                  }
+                }
+              },
+              "drp": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "description": "Configure dynamic RADIUS proxy.",
+                "properties": {
+                  "ip": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "string",
+                    "format": "pattern",
+                    "x-patternSources": "ipv4-prefix",
+                    "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}/([0-9]|[12][0-9]|3[0-2])'",
+                    "maxLength": 9999,
+                    "x-typeDescription": "An IPv4 prefix represented in dotted quad notation followed by\na slash and a CIDR mask (0 <= mask <= 32).",
+                    "description": "IP address to be used as source IP for RADIUS packets and subnet mask of the DRP IP address."
+                  },
+                  "vlan": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 1,
+                    "maximum": 4093,
+                    "description": "VLAN in which the RADIUS packets are sent."
+                  },
+                  "gateway": {
+                    "x-supportedDeviceType": [
+                      "Access Point"
+                    ],
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv4-address",
+                        "x-patterns": "'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv4 address in dotted quad notation using the default\nzone."
+                      },
+                      {
+                        "type": "string",
+                        "format": "pattern",
+                        "x-patternSources": "ipv6-address",
+                        "x-patterns": "'(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))'",
+                        "maxLength": 9999,
+                        "x-typeDescription": "An IPv6 address represented as either a full address; shortened\nor mixed-shortened formats, using the default zone."
+                      }
+                    ],
+                    "description": "Gateway IP address of the DRP VLAN"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArubaAuthServer_IpsecConfig": {
+        "description": "RADIUS server IPsec authentication parameters",
+        "properties": {
+          "spi": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "integer",
+            "format": "int64",
+            "minimum": 256,
+            "maximum": 4294967295,
+            "description": "Security Parameters Index for the Security Association"
+          },
+          "authentication-type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "MD5",
+              "SHA1",
+              "SHA224",
+              "SHA256",
+              "SHA384",
+              "SHA512"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "MD5": "MD5 authentication",
+              "SHA1": "SHA1 authentication",
+              "SHA224": "SHA224 authentication",
+              "SHA256": "SHA256 authentication",
+              "SHA384": "SHA384 authentication",
+              "SHA512": "SHA512 authentication"
+            },
+            "x-typeDescription": "IPsec authentication type",
+            "description": "Specify the algorithm to use for IPsec authentication: md5, sha1 or sha256."
+          },
+          "authentication-key-type": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT",
+              "HEX_STRING"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure plaintext type of IPsec key",
+              "CIPHER_TEXT": "Configure ciphertext type of IPsec key",
+              "HEX_STRING": "Configure hex-string type of IPsec key"
+            },
+            "x-typeDescription": "The key type for the IPsec authentication or the IPsec encryption.",
+            "default": "PLAIN_TEXT",
+            "description": "The key type for IPsec authentication."
+          },
+          "authentication-key-hexstring": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "The hex-string key for IPsec authentication.\nThis field can only be set when authentication-key-type is HEX_STRING."
+          },
+          "authentication-key-cipher-text": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "The ciphertext key for IPsec authentication.\nThis field can only be set when authentication-key-type is CIPHER_TEXT."
+          },
+          "authentication-key": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "The plaintext key for IPsec authentication.\nThis field can only be set when authentication-key-type is PLAIN_TEXT."
+          }
+        }
+      },
+      "ArubaAuthServer_CalledStationIdConfig": {
+        "description": "Called Station ID configuration grouping.",
+        "properties": {
+          "called-station-id": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "description": "Configure this parameter to be sent with the RADIUS attribute Called Station ID for authentication and accounting requests. For AP, this API is applicable for\nWLAN profile and AP port profile. For GW, this API is applicable for the authentication server profile. This feature is applicable for AP and GW.",
+            "properties": {
+              "type": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "MAC_ADDRESS",
+                  "VLAN",
+                  "IP_ADDRESS",
+                  "AP_GROUP",
+                  "AP_NAME",
+                  "AP_MAC_ADDRESS"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "MAC_ADDRESS": "MAC Address.",
+                  "VLAN": "VLAN ID.",
+                  "IP_ADDRESS": "IP address.",
+                  "AP_GROUP": "AP Group.",
+                  "AP_NAME": "AP Name.",
+                  "AP_MAC_ADDRESS": "AP MAC address for gateway."
+                },
+                "x-typeDescription": "Called Station ID type.",
+                "description": " Configure the called-station-id types.\nFor AP, The type includes AP group, AP MAC address, AP name, AP IP or user vlan. The default value is AP MAC address."
+              },
+              "mac-address-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "COLON",
+                  "DASH",
+                  "OUI_NIC",
+                  "PERCENT",
+                  "COMMA",
+                  "SLASH"
+                ],
+                "format": "enum",
+                "x-enumDescriptions": {
+                  "NONE": "XXXXXXXXXXXX",
+                  "COLON": " XX:XX:XX:XX:XX:XX",
+                  "DASH": "XX-XX-XX-XX-XX-XX",
+                  "OUI_NIC": "XXXXXX-XXXXXX",
+                  "PERCENT": "XX%XX%XX%XX%XX%XX",
+                  "COMMA": "XX,XX,XX,XX,XX,XX",
+                  "SLASH": "XX/XX/XX/XX/XX/XX"
+                },
+                "x-typeDescription": "MAC address format.",
+                "default": "NONE",
+                "description": "By default, called-station-id is AP MAC Address string and no delimiter, when configure mac-address-delimiter, AP MAC Address will be added delimiter in authentication packet."
+              },
+              "upper-case": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "By default, called-station-id is AP MAC Address string, when enabled upper-case, AP MAC Address will be changed to upper case in authentication packet."
+              },
+              "include-ssid": {
+                "x-supportedDeviceType": [
+                  "Access Point",
+                  "Gateway"
+                ],
+                "type": "boolean",
+                "default": "false",
+                "description": "Include SSID in called-station-id attribute."
+              },
+              "include-ssid-delimiter": {
+                "x-supportedDeviceType": [
+                  "Access Point"
+                ],
+                "type": "string",
+                "format": "const",
+                "minLength": 1,
+                "maxLength": 9999,
+                "description": "The delimiter between mac address and SSID. For example, the delimiter is dash. The called-station-id like aa:bb:cc:dd:ee:ff-wlanssid."
+              }
+            }
+          }
+        }
+      },
+      "ArubaAuthServer_SharedSecretInfo": {
+        "description": "Group for auth-server shared key.",
+        "properties": {
+          "secret-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure plaintext key",
+              "CIPHER_TEXT": "Configure ciphertext key"
+            },
+            "x-typeDescription": "Secret type.",
+            "default": "PLAIN_TEXT",
+            "description": "Specify the secret key type: CIPHER_TEXT or PLAIN_TEXT."
+          },
+          "ciphertext-value": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "The encrypted shared key used between the authentication\nserver and the device. This field can be configured only when secret-type is CIPHER_TEXT."
+          },
+          "plaintext-value": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway",
+              "Switch CX",
+              "Switch PVOS"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "The unencrypted shared key used between the authentication\nserver and the device. This field can be configured only when secret-type is PLAIN_TEXT."
+          }
+        }
+      },
+      "ArubaAuthServer_CppmPasswordInfo": {
+        "description": "Group for CPPM password of the user",
+        "properties": {
+          "password-type": {
+            "x-supportedDeviceType": [
+              "Access Point"
+            ],
+            "type": "string",
+            "enum": [
+              "PLAIN_TEXT",
+              "CIPHER_TEXT"
+            ],
+            "format": "enum",
+            "x-enumDescriptions": {
+              "PLAIN_TEXT": "Configure plaintext key",
+              "CIPHER_TEXT": "Configure ciphertext key"
+            },
+            "x-typeDescription": "Secret type.",
+            "default": "PLAIN_TEXT",
+            "description": "Specify the password type: CIPHER_TEXT or PLAIN_TEXT."
+          },
+          "ciphertext-value": {
+            "x-supportedDeviceType": [
+              "Switch CX"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "description": "Ciphertext password of the ClearPass server to authenticate. This field can be configured only when password-type is CIPHER_TEXT.\nFor CX, supported length is 1-64."
+          },
+          "plaintext-value": {
+            "x-supportedDeviceType": [
+              "Access Point",
+              "Gateway"
+            ],
+            "type": "string",
+            "format": "const",
+            "maxLength": 9999,
+            "x-typeDescription": "A custom derived type for special use cases. This type takes a plaintext password and uses\nVault's 3rd party API to encrypt the password. The intended use case is to encrypt and store\ncustomer credentials which will be used later to login to 3rd party services.",
+            "description": "Plaintext password of the ClearPass server to authenticate. This field can be configured only when password-type is PLAIN_TEXT.\nFor CX, supported length is 1-64."
+          }
+        }
+      },
+      "Successful200": {
+        "type": "object",
+        "description": "Success response returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "200"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Success code.",
+            "example": "SUCC_001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of successful response.\n",
+            "example": "Success."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error400": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "400"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Bad request. Invalid values supplied in request."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error401": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "401"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_R001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Unauthorized. Authentication Failure."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "403"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Forbidden. Capability Rule fail."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "404"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_CN003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not found. Yang / Corresponding Rule is missing."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error406": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "406"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AP003"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Not Acceptable. Invalid data format."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error408": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "408"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_K001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Request Timeout."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error412": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "412"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_LY002"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Precondition Failed."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "429"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_AJ001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Too Many Requests."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      },
+      "Error500": {
+        "type": "object",
+        "description": "Error details returned from the server.\n",
+        "required": [
+          "httpStatusCode",
+          "errorCode",
+          "message",
+          "debugId"
+        ],
+        "properties": {
+          "httpStatusCode": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "maximum": 599,
+            "description": "HTTP response status codes.",
+            "example": "500"
+          },
+          "errorCode": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Error code.",
+            "example": "ERR_C001"
+          },
+          "message": {
+            "type": "string",
+            "format": "const",
+            "maxLength": 512,
+            "description": "Description of error.\n",
+            "example": "Internal server error. Invalid scope."
+          },
+          "debugId": {
+            "type": "string",
+            "format": "const",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Debug ID.",
+            "example": "0d6666a3-23fa-436c-8873-4186fa251ce6"
+          }
+        }
+      }
+    }
+  }
+}
