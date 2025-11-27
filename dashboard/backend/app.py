@@ -716,10 +716,86 @@ def get_access_points(): pass
 @app.route('/api/wlans', methods=['GET'])
 @require_session
 def get_wlans():
-    """Get all WLANs using new v1alpha1 API."""
+    """Get all WLANs with full configuration using network-config API.
+
+    Uses /network-config/v1alpha1/wlan-ssids which returns comprehensive
+    configuration data for all WLANs in a single call, including:
+    - SSID name, description, enabled status
+    - Forward mode (bridge/tunnel), RF band, VLAN settings
+    - Security settings, 802.11k/r/v, captive portal
+    - High-throughput, WMM, and advanced radio settings
+    """
     try:
-        response = aruba_client.get('/network-monitoring/v1alpha1/wlans')
-        return jsonify(response)
+        response = aruba_client.get('/network-config/v1alpha1/wlan-ssids')
+
+        # Transform response to a consistent format for frontend
+        wlans = []
+        wlan_list = response.get('wlan-ssid', [])
+
+        def to_bool(value):
+            """Convert API value to boolean - handles bool, string, or None."""
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.lower() == 'true'
+            return False
+
+        for wlan in wlan_list:
+            # Extract key fields into a flattened structure for easy display
+            essid = wlan.get('essid', {})
+            transformed = {
+                # Basic info
+                'ssid': wlan.get('ssid') or essid.get('name', 'Unknown'),
+                'essidName': essid.get('name', ''),
+                'essidAlias': essid.get('alias', ''),
+                'description': wlan.get('description', ''),
+                'enabled': to_bool(wlan.get('enable', False)),
+
+                # Network settings
+                'forwardMode': wlan.get('forward-mode', 'FORWARD_MODE_BRIDGE'),
+                'rfBand': wlan.get('rf-band', ''),
+                'hideSsid': to_bool(wlan.get('hide-ssid', False)),
+
+                # VLAN settings
+                'vlanSelector': wlan.get('vlan-selector', ''),
+                'vlanName': wlan.get('vlan-name', ''),
+                'vlanIdRange': wlan.get('vlan-id-range', []),
+
+                # Security
+                'opmode': wlan.get('opmode', ''),
+                'macAuthentication': to_bool(wlan.get('mac-authentication', False)),
+                'captivePortalType': wlan.get('captive-portal-type', ''),
+                'captivePortal': wlan.get('captive-portal', ''),
+                'wpa3TransitionMode': to_bool(wlan.get('wpa3-transition-mode-enable', False)),
+                'mfpCapable': to_bool(wlan.get('mfp-capable', False)),
+                'mfpRequired': to_bool(wlan.get('mfp-required', False)),
+
+                # 802.11 standards
+                'dot11k': to_bool(wlan.get('dot11k', False)),
+                'dot11r': to_bool(wlan.get('dot11r', False)),
+                'dot11v': to_bool(wlan.get('dot11v', False)),
+
+                # Client settings
+                'maxClientsThreshold': wlan.get('max-clients-threshold', '64'),
+                'inactivityTimeout': wlan.get('inactivity-timeout', '1000'),
+                'clientIsolation': to_bool(wlan.get('client-isolation', False)),
+                'denyInterUserBridging': to_bool(wlan.get('deny-inter-user-bridging', False)),
+
+                # Advanced
+                'bandwidthLimit': wlan.get('bandwidth-limit', ''),
+                'contentFiltering': to_bool(wlan.get('content-filtering', False)),
+                'enforceDhcp': to_bool(wlan.get('enforce-dhcp', False)),
+
+                # Keep raw config for detailed view/export
+                '_rawConfig': wlan
+            }
+            wlans.append(transformed)
+
+        return jsonify({
+            'wlans': wlans,
+            'count': len(wlans),
+            'metadata': response.get('metadata', {})
+        })
     except Exception as e:
         logger.error(f"Error fetching WLANs: {e}")
         return jsonify({"error": str(e)}), 500
