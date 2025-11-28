@@ -4754,10 +4754,28 @@ def get_devices_with_greenlake():
     Fetches devices from Aruba Central monitoring API and enriches with
     additional fields from GreenLake Device Management API by matching
     on serial number. Includes all device types: APs, switches, gateways, etc.
+
+    Returns:
+        JSON object with:
+        - items: List of device objects with gl_* prefixed GreenLake fields
+        - count: Total number of devices
+        - gl_matched_count: Number of devices with GreenLake data
+        - gl_available: Boolean indicating if GreenLake data was fetched
+        - gl_error: Error message if GreenLake enrichment failed (optional)
+        - warnings: List of warnings about fallback behavior (optional)
+
+    Notes:
+        - Requires active session (X-Session-ID header)
+        - Gracefully handles API failures with fallback endpoints
+        - Each device has gl_matched boolean indicating GreenLake match status
     """
+    from requests.exceptions import HTTPError, ConnectionError, Timeout
+
     try:
+        warnings = []
+
         # Fetch all devices from Aruba Central monitoring API
-        # Use the same endpoint as the "All Devices" report
+        # Primary: network-monitoring/v1alpha1/devices, fallback: monitoring/v1/devices
         devices = []
         try:
             # Try network-monitoring v1alpha1 first (preferred)
@@ -4765,23 +4783,31 @@ def get_devices_with_greenlake():
             devices = devices_response.get('items', devices_response.get('devices', []))
             if devices:
                 logger.info(f"Fetched {len(devices)} devices from network-monitoring/v1alpha1/devices")
-        except Exception as e:
-            logger.warning(f"Failed to fetch devices from network-monitoring API: {e}")
+        except (HTTPError, ConnectionError, Timeout) as e:
+            logger.warning(f"Primary device API failed, attempting fallback: {e}")
+            warnings.append("Primary device API unavailable, using fallback endpoint")
             # Fallback to monitoring/v1 API
             try:
                 devices_response = aruba_client.get('/monitoring/v1/devices')
                 devices = devices_response.get('items', devices_response.get('devices', []))
                 if devices:
                     logger.info(f"Fetched {len(devices)} devices from monitoring/v1/devices (fallback)")
-            except Exception as e2:
-                logger.warning(f"Failed to fetch devices from monitoring/v1 API: {e2}")
+            except (HTTPError, ConnectionError, Timeout) as e2:
+                logger.error(f"Both device APIs failed: primary={e}, fallback={e2}")
+                return jsonify({
+                    "error": "Unable to fetch device inventory from any available API",
+                    "details": str(e2),
+                    "items": [],
+                    "count": 0
+                }), 503
 
         if not devices:
             logger.warning("No devices found from any API endpoint")
             return jsonify({"items": [], "count": 0, "message": "No devices found"})
 
-        # Try to fetch GreenLake devices
+        # Try to fetch GreenLake devices for enrichment
         gl_devices = {}
+        gl_error = None
         try:
             gl_client = _get_greenlake_client()
             if gl_client:
@@ -4793,16 +4819,15 @@ def get_devices_with_greenlake():
                     if serial:
                         gl_devices[serial.upper()] = gl_device
                 logger.info(f"Fetched {len(gl_devices)} GreenLake devices for enrichment")
-        except Exception as e:
+            else:
+                gl_error = "GreenLake client not configured"
+        except (HTTPError, ConnectionError, Timeout) as e:
             logger.warning(f"GreenLake devices not available for enrichment: {e}")
+            gl_error = f"GreenLake API unavailable: {str(e)}"
 
         # Merge device data with GreenLake data
         enriched_devices = []
-        matched_count = 0
-
-        # Debug: Log device serials and GreenLake serials
-        logger.info(f"Central device serials: {[d.get('serial') for d in devices[:3]]}")
-        logger.info(f"GreenLake serials available: {list(gl_devices.keys())[:5]}")
+        gl_matched_count = 0
 
         for device in devices:
             # Try multiple field names for serial number
@@ -4831,7 +4856,7 @@ def get_devices_with_greenlake():
 
             # Enrich with GreenLake data if available
             if serial_upper and serial_upper in gl_devices:
-                matched_count += 1
+                gl_matched_count += 1
                 gl = gl_devices[serial_upper]
                 enriched_device['gl_deviceId'] = gl.get('id') or gl.get('deviceId')
                 enriched_device['gl_partNumber'] = gl.get('partNumber')
@@ -4855,12 +4880,19 @@ def get_devices_with_greenlake():
         # Sort by name
         enriched_devices.sort(key=lambda x: (x.get('name') or '').lower())
 
-        return jsonify({
+        response = {
             "items": enriched_devices,
             "count": len(enriched_devices),
-            "gl_matched_count": sum(1 for d in enriched_devices if d.get('gl_matched')),
+            "gl_matched_count": gl_matched_count,
             "gl_available": len(gl_devices) > 0
-        })
+        }
+        # Include optional fields only when relevant
+        if gl_error:
+            response["gl_error"] = gl_error
+        if warnings:
+            response["warnings"] = warnings
+
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching devices with GreenLake data: {e}")
         return jsonify({"error": str(e)}), 500

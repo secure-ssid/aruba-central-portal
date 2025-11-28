@@ -1,9 +1,19 @@
 /**
  * Reporting Page
- * Export-focused report catalog with field selection dialogs
+ *
+ * Export-focused report catalog with field selection dialogs.
+ * Displays report categories (Network, Wireless, Security, GreenLake, etc.)
+ * as clickable cards. Clicking a card opens a CSV export dialog with
+ * customizable field selection.
+ *
+ * Key components:
+ * - REPORT_CATEGORIES: Static configuration of available reports
+ * - CSVExportDialog: Field selection and CSV generation
+ * - ReportCard: Individual report display with record count
+ * - ReportSection: Category grouping container
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -35,7 +45,6 @@ import {
   Security as SecurityIcon,
   Inventory as InventoryIcon,
   Speed as SpeedIcon,
-  Router as RouterIcon,
   Devices as DevicesIcon,
   Warning as WarningIcon,
   Cloud as CloudIcon,
@@ -62,7 +71,16 @@ import {
 } from '../services/api';
 
 /**
- * Format header name from API key
+ * Format header name from API key for CSV column headers.
+ * Transforms camelCase, snake_case, and dot.notation to Title Case.
+ *
+ * @param {string} key - API field key to format
+ * @returns {string} Formatted header name
+ *
+ * @example
+ *   formatHeader('deviceType') -> 'Device Type'
+ *   formatHeader('client_count') -> 'Client Count'
+ *   formatHeader('gl.subscriptionKey') -> 'Gl > Subscription Key'
  */
 const formatHeader = (key) => {
   return key
@@ -74,7 +92,33 @@ const formatHeader = (key) => {
 };
 
 /**
- * Flatten nested object to dot-notation keys
+ * Escape a CSV value to prevent injection and formatting issues.
+ * Handles commas, quotes, and newlines in values.
+ *
+ * @param {string} value - Value to escape
+ * @returns {string} Escaped value safe for CSV
+ */
+const escapeCSVValue = (value) => {
+  if (value === null || value === undefined) return '';
+  const str = String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+/**
+ * Flatten nested object to dot-notation keys for CSV export.
+ *
+ * Transformation rules:
+ * - null/undefined -> '' (empty string)
+ * - arrays -> semicolon-separated values
+ * - booleans -> 'Yes' or 'No'
+ * - nested objects -> recursively flattened with dot notation
+ *
+ * @param {Object} obj - Object to flatten
+ * @param {string} prefix - Key prefix for nested properties
+ * @returns {Object} Flat object with dot-notation keys
  */
 const flattenObject = (obj, prefix = '') => {
   const result = {};
@@ -116,35 +160,39 @@ const getAvailableFields = (dataArray, priorityKeys = []) => {
 };
 
 /**
- * Export data to CSV
+ * Export data to CSV with proper escaping and cleanup.
+ *
+ * @param {Array} data - Array of objects to export
+ * @param {Array} selectedFields - Field keys to include in export
+ * @param {string} filename - Base filename (date will be appended)
  */
 const exportToCSV = (data, selectedFields, filename) => {
   if (!data || data.length === 0 || !selectedFields || selectedFields.length === 0) return;
+
   const flattenedData = data.map((item) => flattenObject(item));
-  const header = selectedFields.map((key) => formatHeader(key)).join(',');
+
+  // Escape headers to prevent CSV injection
+  const header = selectedFields.map((key) => escapeCSVValue(formatHeader(key))).join(',');
+
   const rows = flattenedData.map((flat) => {
-    return selectedFields
-      .map((key) => {
-        let value = flat[key];
-        if (value === null || value === undefined) value = '';
-        value = String(value);
-        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-          value = `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-      })
-      .join(',');
+    return selectedFields.map((key) => escapeCSVValue(flat[key])).join(',');
   });
+
   const csv = [header, ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
+
+  // Use try/finally to ensure URL is always revoked (prevent memory leak)
   const link = document.createElement('a');
-  link.href = url;
-  link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  try {
+    link.href = url;
+    link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 };
 
 /**
@@ -574,19 +622,34 @@ function ReportingPage() {
   const [reportData, setReportData] = useState({});
   const [loadingReports, setLoadingReports] = useState({});
   const [error, setError] = useState(null);
+  const [glStatus, setGlStatus] = useState({ available: null, error: null });
 
-  // Load record counts on mount
-  useEffect(() => {
-    loadReportCounts();
-  }, []);
+  // Load record counts with error tracking
+  const loadReportCounts = useCallback(async () => {
+    const failedAPIs = [];
 
-  const loadReportCounts = async () => {
     try {
       const [devices, wlans, sites, alerts] = await Promise.all([
-        monitoringAPIv2.getDevicesMonitoring({ limit: 1000 }).catch(() => ({ items: [] })),
-        wlanAPI.getAll().catch(() => ({ wlans: [] })),
-        configAPI.getSites().catch(() => ({ sites: [] })),
-        alertsAPI.getAll(null, 100).catch(() => ({ alerts: [] })),
+        monitoringAPIv2.getDevicesMonitoring({ limit: 1000 }).catch((e) => {
+          failedAPIs.push('Devices');
+          console.error('Devices API failed:', e);
+          return { items: [] };
+        }),
+        wlanAPI.getAll().catch((e) => {
+          failedAPIs.push('WLANs');
+          console.error('WLANs API failed:', e);
+          return { wlans: [] };
+        }),
+        configAPI.getSites().catch((e) => {
+          failedAPIs.push('Sites');
+          console.error('Sites API failed:', e);
+          return { sites: [] };
+        }),
+        alertsAPI.getAll(null, 100).catch((e) => {
+          failedAPIs.push('Alerts');
+          console.error('Alerts API failed:', e);
+          return { alerts: [] };
+        }),
       ]);
 
       const deviceList = devices.items || devices.devices || [];
@@ -601,8 +664,14 @@ function ReportingPage() {
         sites: siteList,
         alerts: alertList,
       }));
+
+      // Show warning if some APIs failed
+      if (failedAPIs.length > 0) {
+        setError(`Some reports unavailable: ${failedAPIs.join(', ')}`);
+      }
     } catch (err) {
       console.error('Failed to load report counts:', err);
+      setError('Failed to load report data. Please try refreshing the page.');
     }
 
     // Load GreenLake counts separately (may fail if not configured)
@@ -616,6 +685,9 @@ function ReportingPage() {
         greenlakeRoleAPI.listAssignments().catch(() => null),
       ]);
 
+      // Check if any GreenLake data was returned
+      const hasGlData = glUsers || glDevices || glTags || glSubs || glWorkspaces || glRoles;
+
       setReportData((prev) => ({
         ...prev,
         gl_users: glUsers?.items || glUsers?.users || [],
@@ -625,10 +697,26 @@ function ReportingPage() {
         gl_workspaces: glWorkspaces?.items || glWorkspaces?.tenants || [],
         gl_roles: glRoles?.items || glRoles?.assignments || [],
       }));
+
+      setGlStatus({
+        available: hasGlData,
+        error: hasGlData ? null : 'GreenLake integration not configured',
+      });
     } catch (err) {
       console.error('GreenLake reports not available:', err);
+      setGlStatus({
+        available: false,
+        error: err.response?.status === 401
+          ? 'GreenLake authentication required'
+          : 'GreenLake integration unavailable',
+      });
     }
-  };
+  }, []);
+
+  // Load record counts on mount
+  useEffect(() => {
+    loadReportCounts();
+  }, [loadReportCounts]);
 
   const loadReportData = async (reportId) => {
     setLoadingReports((prev) => ({ ...prev, [reportId]: true }));
@@ -645,9 +733,13 @@ function ReportingPage() {
         }
         case 'devices_greenlake': {
           const response = await reportingAPI.getDevicesWithGreenLake();
+          if (response.error) {
+            throw new Error(response.error);
+          }
           data = response.items || response.devices || [];
-          if (!data || data.length === 0) {
-            console.warn('devices_greenlake response:', response);
+          // Warn user if GreenLake enrichment failed but devices were returned
+          if (response.gl_error && data.length > 0) {
+            setError(`Note: ${response.gl_error}. Some GreenLake fields may be missing.`);
           }
           break;
         }
@@ -718,7 +810,8 @@ function ReportingPage() {
           break;
         }
         default:
-          data = [];
+          console.error(`Unknown report type: ${reportId}`);
+          throw new Error(`Report type "${reportId}" is not implemented`);
       }
 
       setReportData((prev) => ({ ...prev, [reportId]: data }));
@@ -732,13 +825,24 @@ function ReportingPage() {
     }
   };
 
-  const handleExportClick = async (report) => {
+  const handleExportClick = useCallback(async (report) => {
     setActiveReport(report);
-    if (!reportData[report.id] || reportData[report.id].length === 0) {
-      await loadReportData(report.id);
+    setError(null);
+
+    try {
+      if (!reportData[report.id] || reportData[report.id].length === 0) {
+        const data = await loadReportData(report.id);
+        if (!data || data.length === 0) {
+          setError(`No data available for ${report.title}`);
+          return; // Don't open dialog with no data
+        }
+      }
+      setExportDialogOpen(true);
+    } catch (err) {
+      // Error already set by loadReportData, don't open dialog
+      console.error(`Export click failed for ${report.id}:`, err);
     }
-    setExportDialogOpen(true);
-  };
+  }, [reportData]);
 
   const getRecordCount = (reportId) => {
     const data = reportData[reportId];
@@ -761,6 +865,13 @@ function ReportingPage() {
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
+        </Alert>
+      )}
+
+      {/* GreenLake Status Alert */}
+      {glStatus.available === false && glStatus.error && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {glStatus.error}. GreenLake reports will show 0 records.
         </Alert>
       )}
 

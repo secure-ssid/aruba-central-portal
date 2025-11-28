@@ -1487,6 +1487,18 @@ export const reportingAPI = {
     return response.data;
   },
 
+  /**
+   * Get all devices enriched with GreenLake subscription data.
+   * Matches devices by serial number to include license and subscription info.
+   *
+   * @returns {Promise<Object>} Object with:
+   *   - items: Array of device objects with gl_* prefixed GreenLake fields
+   *   - count: Total number of devices
+   *   - gl_matched_count: Number of devices with GreenLake data
+   *   - gl_available: Boolean indicating if GreenLake data was fetched
+   *   - gl_error: Error message if GreenLake enrichment failed (optional)
+   *   - warnings: Array of warnings about fallback behavior (optional)
+   */
   getDevicesWithGreenLake: async () => {
     const response = await apiClient.get('/reporting/devices-with-greenlake');
     return response.data;
