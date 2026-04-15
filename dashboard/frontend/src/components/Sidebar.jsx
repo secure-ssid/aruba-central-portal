@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
 import {
   Drawer,
   List,
@@ -44,59 +45,55 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import ShieldIcon from '@mui/icons-material/Shield';
-import CloudIcon from '@mui/icons-material/Cloud';
+import HubIcon from '@mui/icons-material/Hub';
+import BuildIcon from '@mui/icons-material/Build';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const DRAWER_WIDTH_OPEN   = 248;
 const DRAWER_WIDTH_CLOSED = 64;
 
-const SIDEBAR_BG    = '#0D1117';
 const ACTIVE_ORANGE = '#FF6600';
 const ACTIVE_LIGHT  = '#FF8C42';
 
 // ─── Nav data ────────────────────────────────────────────────────────────────
 
-const networkItems = [
-  { text: 'Dashboard',   icon: <DashboardIcon />,    path: '/' },
-  { text: 'Devices',     icon: <DevicesIcon />,      path: '/devices' },
-  { text: 'Topology',    icon: <AccountTreeIcon />,  path: '/topology' },
-  { text: 'Clients',     icon: <GroupsIcon />,       path: '/clients' },
-  { text: 'Sites',       icon: <LocationOnIcon />,   path: '/sites' },
-  { text: 'WLANs',       icon: <WifiIcon />,         path: '/wlans' },
-  { text: 'Alerts',      icon: <NotificationsIcon />,path: '/alerts', badge: true },
+const monitoringItems = [
+  { text: 'Dashboard',       icon: <DashboardIcon />,      path: '/' },
+  { text: 'Devices',         icon: <DevicesIcon />,        path: '/devices' },
+  { text: 'Clients',         icon: <GroupsIcon />,         path: '/clients' },
+  { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },
+  { text: 'Gateway WAN',     icon: <HubIcon />,            path: '/gateway-wan' },
+  { text: 'Topology',        icon: <AccountTreeIcon />,    path: '/topology' },
+  { text: 'Alerts',          icon: <NotificationsIcon />,  path: '/alerts', badge: true },
 ];
 
-const configItems = [
-  { text: 'Site Config',           icon: <LocationOnIcon />,   path: '/configuration/scope-management' },
-  { text: 'Wireless',              icon: <WifiIcon />,          path: '/configuration/wireless' },
-  { text: 'Application Experience',icon: <AdminPanelSettingsIcon />, path: '/configuration/application-experience' },
-  { text: 'NAC',                   icon: <SecurityIcon />,      path: '/nac' },
-  { text: 'Extensions',            icon: <TuneIcon />,          path: '/configuration/extensions' },
-  { text: 'High Availability',     icon: <MonitorHeartIcon />,  path: '/configuration/high-availability' },
-  { text: 'Interfaces',            icon: <AccountTreeIcon />,   path: '/configuration/interfaces' },
-  { text: 'VLANs & Networks',      icon: <NetworkCheckIcon />,  path: '/configuration/vlans-networks' },
+const managementItems = [
+  { text: 'WLANs',         icon: <WifiIcon />,           path: '/wlans' },
+  { text: 'Sites',         icon: <LocationOnIcon />,     path: '/sites' },
+  { text: 'Configuration', icon: <TuneIcon />,           path: '/configuration' },
+  { text: 'Firmware',      icon: <SystemUpdateIcon />,   path: '/firmware' },
 ];
 
-const adminItems = [
-  { text: 'Users',         icon: <PeopleIcon />,        path: '/users' },
-  { text: 'Firmware',      icon: <SystemUpdateIcon />,  path: '/firmware' },
-  { text: 'Troubleshoot',  icon: <BugReportIcon />,     path: '/troubleshoot' },
-  { text: 'API Explorer',  icon: <ApiIcon />,           path: '/api-explorer' },
-  { text: 'System Status', icon: <MonitorHeartIcon />,  path: '/status' },
-  { text: 'Settings',      icon: <SettingsIcon />,      path: '/settings' },
+const toolsItems = [
+  { text: 'Troubleshoot',  icon: <BugReportIcon />,      path: '/troubleshoot' },
+  { text: 'AP Toolkit',    icon: <BuildIcon />,          path: '/ap-troubleshoot' },
+  { text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
+  { text: 'Analytics',          icon: <AssessmentIcon />,     path: '/analytics' },
+  { text: 'Reporting',          icon: <DescriptionIcon />,    path: '/reporting' },
+  { text: 'Scheduled Reports',  icon: <ScheduleIcon />,       path: '/scheduled-reports' },
 ];
 
-const analyticsItems = [
-  { text: 'Analytics',    icon: <AssessmentIcon />,    path: '/analytics' },
-  { text: 'Reporting',    icon: <DescriptionIcon />,   path: '/reporting' },
+const systemItems = [
+  { text: 'Status',        icon: <MonitorHeartIcon />,   path: '/status' },
+  { text: 'Settings',      icon: <SettingsIcon />,       path: '/settings' },
 ];
 
 const glItems = [
@@ -111,11 +108,11 @@ const glItems = [
 ];
 
 const navGroups = [
-  { id: 'network',       title: 'Network',         items: networkItems },
-  { id: 'config',        title: 'Configuration',   items: configItems },
-  { id: 'analytics',     title: 'Analytics',       items: analyticsItems },
-  { id: 'admin',         title: 'Administration',  items: adminItems },
-  { id: 'gl',            title: 'GreenLake',       items: glItems },
+  { id: 'monitoring',    title: 'Monitoring',       items: monitoringItems },
+  { id: 'management',    title: 'Management',       items: managementItems },
+  { id: 'tools',         title: 'Tools',            items: toolsItems },
+  { id: 'system',        title: 'System',           items: systemItems },
+  { id: 'gl',            title: 'GreenLake',        items: glItems },
 ];
 
 // ─── Pulsing dot for alert badge ─────────────────────────────────────────────
@@ -278,8 +275,9 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
 
 function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
   const location = useLocation();
+  const theme = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(['network', 'management', 'analytics']);
+  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system']);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
@@ -323,7 +321,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
         '& .MuiDrawer-paper': {
           width: collapsed ? DRAWER_WIDTH_CLOSED : DRAWER_WIDTH_OPEN,
           boxSizing: 'border-box',
-          backgroundColor: SIDEBAR_BG,
+          backgroundColor: theme.palette.background.default,
           borderRight: '1px solid rgba(255,255,255,0.06)',
           backgroundImage: 'none',
           overflowX: 'hidden',
@@ -529,7 +527,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                     </Box>
                   </Box>
                 ) : (
-                  <Box sx={{ height: 12, borderTop: group.id !== 'network' ? '1px solid rgba(255,255,255,0.05)' : 'none', mx: 0.75, mt: group.id !== 'network' ? 1 : 0 }} />
+                  <Box sx={{ height: 12, borderTop: group.id !== 'monitoring' ? '1px solid rgba(255,255,255,0.05)' : 'none', mx: 0.75, mt: group.id !== 'monitoring' ? 1 : 0 }} />
                 )}
 
                 <Collapse in={collapsed || isExpanded} timeout="auto">

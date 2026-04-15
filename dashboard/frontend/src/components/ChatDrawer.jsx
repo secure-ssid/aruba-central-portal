@@ -362,7 +362,13 @@ function ChatDrawer({ pageContext = '' }) {
 
   const isCollapsed  = drawerState === 'collapsed';
   const isFull       = drawerState === 'full';
-  const panelWidth   = isCollapsed ? 0 : (isFull ? PANEL_WIDTH_WIDE : PANEL_WIDTH_OPEN);
+  // Responsive width: full viewport on xs screens, fixed width on sm+
+  const panelWidth   = isCollapsed
+    ? 0
+    : {
+        xs: '100vw',
+        sm: isFull ? PANEL_WIDTH_WIDE : PANEL_WIDTH_OPEN,
+      };
 
   // ── Scroll to bottom on new messages ────────────────────────────────────
 

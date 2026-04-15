@@ -197,18 +197,6 @@ function LoginPage({ onLogin }) {
                   }
                 />
               </ListItem>
-              <ListItem disableGutters sx={{ py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <CheckCircleIcon sx={{ fontSize: 18, color: 'success.main' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography variant="caption" color="text.secondary">
-                      Rate limit: 5000 calls/day, 7 calls/sec
-                    </Typography>
-                  }
-                />
-              </ListItem>
             </List>
           </Box>
 

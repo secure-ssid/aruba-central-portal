@@ -23,8 +23,15 @@ const routeLabels = {
   'firmware': 'Firmware',
   'troubleshoot': 'Troubleshoot',
   'network-monitor': 'Network Monitor',
+  'topology': 'Topology',
+  'status': 'System Status',
+  'reporting': 'Reporting',
+  'scheduled-reports': 'Scheduled Reports',
+  'gateway-wan': 'Gateway WAN',
+  'ap-troubleshoot': 'AP Toolkit',
   'api-explorer': 'API Explorer',
   'settings': 'Settings',
+  'gl': 'GreenLake',
 };
 
 function Breadcrumb() {

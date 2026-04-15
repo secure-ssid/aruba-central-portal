@@ -52,7 +52,6 @@ function SetupWizard({ onComplete }) {
   // Form state
   const [clientId, setClientId] = useState('');
   const [clientSecret, setClientSecret] = useState('');
-  const [customerId, setCustomerId] = useState('');
   const [baseUrl, setBaseUrl] = useState(DEFAULT_API_BASE_URL);
   // Optional: GreenLake RBAC (HPE GreenLake Platform) configuration
   const [enableRbac, setEnableRbac] = useState(false);
@@ -73,8 +72,8 @@ function SetupWizard({ onComplete }) {
   };
 
   const handleSave = async () => {
-    if (!clientId || !clientSecret || !customerId) {
-      setError('All Aruba Central fields are required');
+    if (!clientId || !clientSecret) {
+      setError('Client ID and Client Secret are required');
       return;
     }
 
@@ -85,7 +84,6 @@ function SetupWizard({ onComplete }) {
       const response = await axios.post(`${API_BASE_URL}/setup/configure`, {
         client_id: clientId,
         client_secret: clientSecret,
-        customer_id: customerId,
         base_url: baseUrl,
         // Optional RBAC block is included only when enabled
         rbac: enableRbac
@@ -165,15 +163,6 @@ function SetupWizard({ onComplete }) {
                   secondary="Generated when creating API credentials"
                 />
               </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <CheckCircleIcon color="success" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Customer ID"
-                  secondary="Your workspace/tenant ID"
-                />
-              </ListItem>
             </List>
 
             <Divider sx={{ my: 3 }} />
@@ -194,8 +183,7 @@ function SetupWizard({ onComplete }) {
               3. Click <strong>Create</strong> and select <strong>Service Account</strong>
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              4. Copy the <strong>Client ID</strong>, <strong>Client Secret</strong>, and{' '}
-              <strong>Customer ID</strong>
+              4. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong>
             </Typography>
 
             <Box sx={{ mt: 4, textAlign: 'center' }}>
@@ -290,16 +278,6 @@ function SetupWizard({ onComplete }) {
               }}
             />
 
-            <TextField
-              fullWidth
-              label="Customer ID"
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-              sx={{ mb: 3 }}
-              placeholder="a1b2c3d4e5f6g7h8..."
-              helperText="Your Customer ID / Workspace ID / Tenant ID"
-            />
-
             {enableRbac && (
               <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider', mb: 3 }}>
                 <Typography variant="subtitle1" gutterBottom fontWeight={600}>
@@ -341,7 +319,7 @@ function SetupWizard({ onComplete }) {
               <Button
                 variant="contained"
                 onClick={handleNext}
-                disabled={!clientId || !clientSecret || !customerId}
+                disabled={!clientId || !clientSecret}
               >
                 Next
               </Button>
@@ -382,12 +360,6 @@ function SetupWizard({ onComplete }) {
                   {'•'.repeat(20)}...
                 </Typography>
 
-                <Typography variant="subtitle2" gutterBottom color="text.secondary">
-                  Customer ID:
-                </Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>
-                  {customerId.substring(0, 20)}...
-                </Typography>
               </CardContent>
             </Card>
 

@@ -122,7 +122,6 @@ make type-check  # Type check with mypy
 ### Running Scripts
 ```bash
 ./venv/bin/python scripts/example_script.py
-./venv/bin/python scripts/devices/provision_device.py
 ```
 
 ## CLI Tools

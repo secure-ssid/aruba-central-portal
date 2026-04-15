@@ -64,6 +64,10 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Node
+node_modules/
+package-lock.json
+
 # Dashboard frontend
 dashboard/frontend/node_modules/
 dashboard/frontend/dist/

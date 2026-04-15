@@ -10,30 +10,32 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
-// Pages (eager — core routes)
+// Pages that must be eager (shown before auth layout)
 import SetupWizard from './pages/SetupWizard';
 import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import DevicesPage from './pages/DevicesPage';
-import DeviceDetailPage from './pages/DeviceDetailPage';
-import ClientsPage from './pages/ClientsPage';
-import ConfigurationPage from './pages/ConfigurationPage';
-import APIExplorerPage from './pages/APIExplorerPage';
-import UsersPage from './pages/UsersPage';
-import TroubleshootPage from './pages/TroubleshootPage';
-import NACPage from './pages/NACPage';
-import SettingsPage from './pages/SettingsPage';
-import SitesPage from './pages/SitesPage';
-import WLANsPage from './pages/WLANsPage';
-import AlertsPage from './pages/AlertsPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import FirmwarePage from './pages/FirmwarePage';
-import NetworkMonitorPage from './pages/NetworkMonitorPage';
-import TopologyPage from './pages/TopologyPage';
-import StatusPage from './pages/StatusPage';
 
-// Lazy-loaded pages (GL, configuration wizard, reporting)
+// ErrorBoundary (always needed)
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Lazy-loaded page components
+const DashboardPage      = lazy(() => import('./pages/DashboardPage'));
+const DevicesPage        = lazy(() => import('./pages/DevicesPage'));
+const DeviceDetailPage   = lazy(() => import('./pages/DeviceDetailPage'));
+const ClientsPage        = lazy(() => import('./pages/ClientsPage'));
+const ConfigurationPage  = lazy(() => import('./pages/ConfigurationPage'));
+const APIExplorerPage    = lazy(() => import('./pages/APIExplorerPage'));
+const UsersPage          = lazy(() => import('./pages/UsersPage'));
+const TroubleshootPage   = lazy(() => import('./pages/TroubleshootPage'));
+const NACPage            = lazy(() => import('./pages/NACPage'));
+const SettingsPage       = lazy(() => import('./pages/SettingsPage'));
+const SitesPage          = lazy(() => import('./pages/SitesPage'));
+const WLANsPage          = lazy(() => import('./pages/WLANsPage'));
+const AlertsPage         = lazy(() => import('./pages/AlertsPage'));
+const AnalyticsPage      = lazy(() => import('./pages/AnalyticsPage'));
+const FirmwarePage       = lazy(() => import('./pages/FirmwarePage'));
+const NetworkMonitorPage = lazy(() => import('./pages/NetworkMonitorPage'));
+const TopologyPage       = lazy(() => import('./pages/TopologyPage'));
+const StatusPage         = lazy(() => import('./pages/StatusPage'));
 const GLDevicesPage       = lazy(() => import('./pages/GLDevicesPage'));
 const GLLocationsPage     = lazy(() => import('./pages/GLLocationsPage'));
 const GLTagsPage          = lazy(() => import('./pages/GLTagsPage'));
@@ -43,6 +45,9 @@ const GLUsersPage         = lazy(() => import('./pages/GLUsersPage'));
 const GLRolesPage         = lazy(() => import('./pages/GLRolesPage'));
 const GLPermissionsPage   = lazy(() => import('./pages/GLPermissionsPage'));
 const ReportingPage       = lazy(() => import('./pages/ReportingPage'));
+const GatewayWANPage          = lazy(() => import('./pages/GatewayWANPage'));
+const APTroubleshootPage      = lazy(() => import('./pages/APTroubleshootPage'));
+const ScheduledReportsPage    = lazy(() => import('./pages/ScheduledReportsPage'));
 
 // Configuration sub-pages
 const ConfigurationIndexPage      = lazy(() => import('./pages/configuration/ConfigurationIndexPage'));
@@ -266,6 +271,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
         <NetworkHealthBanner />
         <Box sx={{ p: 3 }}>
           <Breadcrumb />
+          <ErrorBoundary>
           <Suspense fallback={<LazyFallback />}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
@@ -297,6 +303,9 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/topology" element={<TopologyPage />} />
             <Route path="/api-explorer" element={<APIExplorerPage />} />
             <Route path="/reporting" element={<ErrorBoundary><ReportingPage /></ErrorBoundary>} />
+            <Route path="/gateway-wan" element={<ErrorBoundary><GatewayWANPage /></ErrorBoundary>} />
+            <Route path="/ap-troubleshoot" element={<ErrorBoundary><APTroubleshootPage /></ErrorBoundary>} />
+            <Route path="/scheduled-reports" element={<ErrorBoundary><ScheduledReportsPage /></ErrorBoundary>} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/status" element={<StatusPage />} />
             {/* Global Layer (MSP) routes */}
@@ -311,6 +320,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>
+          </ErrorBoundary>
         </Box>
       </Box>
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />

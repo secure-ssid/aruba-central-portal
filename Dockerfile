@@ -68,7 +68,7 @@ RUN find /app -type d -exec chmod 755 {} \; && \
     find /app -type f -exec chmod 644 {} \; && \
     find /app -type f -name "*.sh" -exec chmod 755 {} \; && \
     find /app -type f -name "*.py" -exec chmod 755 {} \; && \
-    mkdir -p /app/data && chmod 777 /app/data
+    mkdir -p /app/data && chmod 700 /app/data
 
 # Expose port
 EXPOSE 1344
