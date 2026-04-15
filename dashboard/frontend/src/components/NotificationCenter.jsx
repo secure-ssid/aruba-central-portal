@@ -3,7 +3,7 @@
  * Displays alerts and notifications with badge counts
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   IconButton,
@@ -23,38 +23,28 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { alertsAPI } from '../services/api';
+import { useAlerts } from '../hooks/useApiQueries';
 
 const NotificationCenter = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchNotifications();
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  // React Query handles polling every 30 s and caching
+  const alertsQuery = useAlerts({ refetchInterval: 30_000 });
+  const allAlerts = alertsQuery.data?.alerts || [];
 
-  const fetchNotifications = async () => {
-    try {
-      const response = await alertsAPI.getAll();
-      const alerts = response.alerts || [];
+  const notifications = useMemo(() =>
+    allAlerts
+      .filter((alert) => !alert.acknowledged)
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 5),
+    [allAlerts]
+  );
 
-      // Get top 5 most recent unacknowledged alerts
-      const recent = alerts
-        .filter((alert) => !alert.acknowledged)
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
-
-      setNotifications(recent);
-      setUnreadCount(alerts.filter((alert) => !alert.acknowledged).length);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  };
+  const unreadCount = useMemo(() =>
+    allAlerts.filter((alert) => !alert.acknowledged).length,
+    [allAlerts]
+  );
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

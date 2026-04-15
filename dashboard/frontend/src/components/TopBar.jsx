@@ -2,7 +2,7 @@
  * Top Navigation Bar Component
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -23,35 +23,23 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { tokenAPI } from '../services/api';
+import { useTokenInfo } from '../hooks/useApiQueries';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationCenter from './NotificationCenter';
 
 function TopBar({ onLogout, onMenuClick, onSearchClick }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [tokenInfo, setTokenInfo] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchTokenInfo();
-    // Refresh token info every 60 seconds
-    const interval = setInterval(fetchTokenInfo, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchTokenInfo = async () => {
-    try {
-      const info = await tokenAPI.getInfo();
-      setTokenInfo(info);
-    } catch (error) {
-      console.error('Failed to fetch token info:', error);
-    }
-  };
+  // React Query handles polling every 60 s and caching
+  const tokenQuery = useTokenInfo({ refetchInterval: 60_000 });
+  const tokenInfo = tokenQuery.data ?? null;
 
   const handleRefreshToken = async () => {
     setRefreshing(true);
     try {
       await tokenAPI.refresh();
-      await fetchTokenInfo();
+      await tokenQuery.refetch();
     } catch (error) {
       console.error('Failed to refresh token:', error);
     } finally {

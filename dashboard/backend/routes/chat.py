@@ -16,7 +16,7 @@ import hashlib
 import collections as _collections
 import httpx
 
-from .helpers import require_session
+from .helpers import require_session, cached_get
 
 chat_bp = Blueprint('chat', __name__)
 logger = logging.getLogger(__name__)
@@ -505,10 +505,10 @@ def _handle_ap_status(text, _session_id):
     try:
         # Try New Central v1 first, fall back to v1alpha1
         try:
-            r = aruba_client.get('/network-monitoring/v1/aps', params={'limit': 500})
+            r = cached_get('/network-monitoring/v1/aps', params={'limit': 500})
             items = r.get('aps', r.get('items', []))
         except Exception:
-            r = aruba_client.get('/network-monitoring/v1alpha1/aps', params={'limit': 500})
+            r = cached_get('/network-monitoring/v1alpha1/aps', params={'limit': 500})
             items = r.get('items', [])
 
         if site_name:
@@ -599,7 +599,7 @@ def _handle_site_health(text, _session_id):
             return "\n".join(lines), sites, 200
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/sites-health')
+        r = cached_get('/network-monitoring/v1/sites-health')
         sites = r.get('items', r.get('sites', []))
 
         if site_name:
@@ -747,7 +747,7 @@ def _handle_switch_port_errors(text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/devices')
+        r = cached_get('/network-monitoring/v1/devices')
         switches = [
             d for d in r.get('items', [])
             if d.get('deviceType', '').upper() == 'SWITCH'
@@ -965,7 +965,7 @@ def _handle_firmware_status(text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/devices')
+        r = cached_get('/network-monitoring/v1/devices')
         items = r.get('items', [])
 
         version_map: dict = {}
@@ -1056,7 +1056,7 @@ def _handle_device_inventory(text, _session_id):
         return "\n".join(lines), cached, 200
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/devices')
+        r = cached_get('/network-monitoring/v1/devices')
         items   = r.get('items', [])
         total   = r.get('count', len(items))
         by_type: dict = {}
@@ -1197,7 +1197,7 @@ def _handle_device_status(text, _session_id):
 
         if not items:
             # fallback to monitoring endpoint
-            r = aruba_client.get('/network-monitoring/v1/devices', params={'limit': 200})
+            r = cached_get('/network-monitoring/v1/devices', params={'limit': 200})
             items = r.get('devices', r.get('items', []))
 
         if want_type:

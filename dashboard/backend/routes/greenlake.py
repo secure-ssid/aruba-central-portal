@@ -17,7 +17,7 @@ from functools import wraps
 
 from flask import Blueprint, request, jsonify
 
-from .helpers import require_session
+from .helpers import require_session, cached_get
 
 greenlake_bp = Blueprint('greenlake', __name__)
 logger = logging.getLogger(__name__)
@@ -996,7 +996,7 @@ def get_top_aps_by_wireless_usage():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = aruba_client.get('/central/v2/sites')
+                sites = cached_get('/central/v2/sites')
                 if isinstance(sites, dict) and sites.get('sites'):
                     site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
             except Exception as _:
@@ -1038,7 +1038,7 @@ def get_top_aps_by_client_count():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = aruba_client.get('/central/v2/sites')
+                sites = cached_get('/central/v2/sites')
                 if isinstance(sites, dict) and sites.get('sites'):
                     site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
             except Exception as _:
@@ -1075,7 +1075,7 @@ def get_network_usage_report():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = aruba_client.get('/central/v2/sites')
+                sites = cached_get('/central/v2/sites')
                 if isinstance(sites, dict) and sites.get('sites'):
                     site_id = sites['sites'][0].get('site_id') or sites['sites'][0].get('id')
             except Exception as _:
@@ -1108,7 +1108,7 @@ def get_device_inventory_report():
     try:
         # Get all devices
         try:
-            devices_response = aruba_client.get('/network-monitoring/v1/devices')
+            devices_response = cached_get('/network-monitoring/v1/devices')
         except Exception:
             try:
                 devices_response = aruba_client.get('/reporting/v1/device-inventory')
@@ -1237,7 +1237,7 @@ def get_devices_with_greenlake():
         devices = []
         try:
             # Try network-monitoring v1alpha1 first (preferred)
-            devices_response = aruba_client.get('/network-monitoring/v1/devices')
+            devices_response = cached_get('/network-monitoring/v1/devices')
             devices = devices_response.get('items', devices_response.get('devices', []))
             if devices:
                 logger.info(f"Fetched {len(devices)} devices from network-monitoring/v1alpha1/devices")
@@ -1385,7 +1385,7 @@ def grafana_kpis():
     def fetch():
         result = {}
         try:
-            r = aruba_client.get('/network-monitoring/v1/devices')
+            r = cached_get('/network-monitoring/v1/devices')
             items = r.get('items', [])
             total = r.get('count', len(items))
             up = sum(1 for d in items if d.get('status', '').upper() in ('UP', 'ONLINE', 'CONNECTED'))
@@ -1400,7 +1400,7 @@ def grafana_kpis():
             logger.warning(f"Grafana KPI devices: {e}")
             result.update(total_devices=0, devices_up=0, devices_down=0, devices_by_type=[], fleet_health_pct=0)
         try:
-            r = aruba_client.get('/network-monitoring/v1/aps')
+            r = cached_get('/network-monitoring/v1/aps')
             items = r.get('items', [])
             total = r.get('count', len(items))
             up = sum(1 for a in items if a.get('status', '').upper() in ('UP', 'ONLINE', 'CONNECTED'))
@@ -1415,7 +1415,7 @@ def grafana_kpis():
             logger.warning(f"Grafana KPI clients: {e}")
             result['total_clients'] = 0
         try:
-            r = aruba_client.get('/network-monitoring/v1/sites-health')
+            r = cached_get('/network-monitoring/v1/sites-health')
             sites = r.get('items', r.get('sites', []))
             result['total_sites'] = r.get('count', len(sites))
             result['healthy_sites'] = sum(
@@ -1439,7 +1439,7 @@ def grafana_devices_by_type():
     aruba_client = _app.aruba_client
 
     def fetch():
-        r = aruba_client.get('/network-monitoring/v1/devices')
+        r = cached_get('/network-monitoring/v1/devices')
         by_type = {}
         for d in r.get('items', []):
             dt = d.get('deviceType', d.get('type', 'Unknown'))

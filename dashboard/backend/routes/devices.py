@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 import logging
 
-from .helpers import require_session, api_proxy
+from .helpers import require_session, api_proxy, cached_get, parallel_get
 
 devices_bp = Blueprint('devices', __name__)
 logger = logging.getLogger(__name__)
@@ -37,145 +37,104 @@ def get_device_details(serial):
     import app as _app
     aruba_client = _app.aruba_client
     try:
-        # Check if aruba_client is initialized
         if not aruba_client:
             logger.error(f"Aruba client not initialized when fetching device {serial}")
             return jsonify({"error": "Server not configured. Please configure credentials first."}), 500
 
-        r = aruba_client.get('/network-monitoring/v1/devices')
-        if 'items' in r:
-            for d in r['items']:
+        # Direct lookup instead of fetching ALL devices and scanning
+        try:
+            device = aruba_client.get(f'/network-monitoring/v1/devices/{serial}')
+        except Exception:
+            # Fallback: search in cached device list if direct endpoint fails
+            r = cached_get('/network-monitoring/v1/devices')
+            device = None
+            for d in r.get('items', []):
                 if d.get('serial') == serial or d.get('serialNumber') == serial:
                     device = d.copy()
-                    device_type = device.get('deviceType', '').upper()
-                    # Also check alternative field names
-                    if not device_type:
-                        device_type = device.get('type', '').upper()
+                    break
+            if not device:
+                return jsonify({"error": f"Device {serial} not found"}), 404
 
-                    logger.info(f"Fetching device details for {serial}, type: {device_type}, all device keys: {list(device.keys())}")
+        if isinstance(device, dict) and 'serial' not in device and 'items' in device:
+            # API returned a list wrapper — unwrap
+            items = device.get('items', [])
+            device = items[0] if items else None
+            if not device:
+                return jsonify({"error": f"Device {serial} not found"}), 404
 
-                    # If it's an AP, try to get current CPU and memory utilization
-                    # Check multiple possible device type values
-                    is_ap = device_type in ['AP', 'IAP', 'ACCESS_POINT', 'ACCESS POINT'] or \
-                            'ap' in device.get('deviceType', '').lower() or \
-                            'ap' in device.get('type', '').lower()
+        device = dict(device)  # ensure mutable copy
+        device_type = device.get('deviceType', '').upper() or device.get('type', '').upper()
+        logger.info(f"Fetching device details for {serial}, type: {device_type}")
 
-                    if is_ap:
-                        logger.info(f"Device {serial} identified as AP, fetching utilization metrics")
+        is_ap = device_type in ['AP', 'IAP', 'ACCESS_POINT', 'ACCESS POINT'] or \
+                'ap' in device.get('deviceType', '').lower() or \
+                'ap' in device.get('type', '').lower()
 
-                        # Helper function to fetch utilization data
-                        def fetch_utilization(endpoint_name, endpoint_path, device_key):
-                            fetched = False
-                            # Try without filter first (API may return default time range)
-                            # Then try with filters if needed
-                            attempts = [
-                                # Try 1: Without filter (get default/available data)
-                                {},
-                                # Try 2: With 1-hour filter
-                                {'filter': f"timestamp gt '{(datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%SZ')}'"},
-                                # Try 3: With 24-hour filter
-                                {'filter': f"timestamp gt '{(datetime.utcnow() - timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ')}'"},
-                            ]
+        if is_ap:
+            logger.info(f"Device {serial} identified as AP, fetching utilization metrics in parallel")
 
-                            for attempt_num, params in enumerate(attempts, 1):
-                                if fetched:
-                                    break
-                                try:
-                                    logger.info(f"Attempt {attempt_num}: Fetching {endpoint_name} for AP {serial} with params: {params}")
-                                    response = aruba_client.get(
-                                        endpoint_path,
-                                        params=params if params else None
-                                    )
+            def _fetch_utilization(endpoint_path):
+                """Try up to 3 filter strategies; return (response, True) on success."""
+                attempts = [
+                    {},
+                    {'filter': f"timestamp gt '{(datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%SZ')}'"},
+                    {'filter': f"timestamp gt '{(datetime.utcnow() - timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ')}'"},
+                ]
+                for params in attempts:
+                    try:
+                        resp = aruba_client.get(endpoint_path, params=params if params else None)
+                        if 'graph' in resp and 'samples' in resp['graph'] and resp['graph']['samples']:
+                            return resp
+                    except Exception:
+                        continue
+                return None
 
-                                    logger.debug(f"{endpoint_name} response for {serial}: {list(response.keys())}")
+            # ── Parallelize the 3 independent metric fetches ──
+            from concurrent.futures import ThreadPoolExecutor
+            metrics = {
+                'cpu': f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends',
+                'mem': f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends',
+                'power': f'/network-monitoring/v1/aps/{serial}/power-consumption-trends',
+            }
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                futures = {key: pool.submit(_fetch_utilization, ep) for key, ep in metrics.items()}
+                results = {key: fut.result() for key, fut in futures.items()}
 
-                                    # Extract latest value
-                                    if 'graph' in response and 'samples' in response['graph']:
-                                        samples = response['graph']['samples']
-                                        logger.info(f"Found {len(samples)} {endpoint_name} samples for {serial}")
-                                        if samples:
-                                            # Get most recent sample
-                                            latest_sample = samples[-1]
-                                            logger.debug(f"Latest {endpoint_name} sample: {latest_sample}")
-                                            if 'data' in latest_sample and len(latest_sample['data']) > 0:
-                                                values = latest_sample['data']
-                                                avg_value = round(sum(values) / len(values), 2)
-                                                # Store both numeric and formatted versions
-                                                # Format based on metric type
-                                                if 'power' in device_key.lower():
-                                                    # Power is in watts, not percentage
-                                                    device[device_key] = f"{avg_value}W"
-                                                    device['power_consumption'] = avg_value
-                                                    device['power_consumption_watts'] = avg_value
-                                                else:
-                                                    # CPU and Memory are percentages
-                                                    device[device_key] = f"{avg_value}%"
-                                                    # Also store in different formats for compatibility
-                                                    if 'cpu' in device_key.lower():
-                                                        device['cpu_utilization'] = avg_value
-                                                        device['cpu_utilization_percent'] = avg_value
-                                                    elif 'mem' in device_key.lower():
-                                                        device['memory_utilization'] = avg_value
-                                                        device['memory_utilization_percent'] = avg_value
-                                                        device['memoryUsage'] = f"{avg_value}%"  # Alternative field name
+            def _extract_latest(response, device_key):
+                if not response:
+                    return
+                samples = response.get('graph', {}).get('samples', [])
+                if not samples:
+                    return
+                latest = samples[-1]
+                if 'data' not in latest or not latest['data']:
+                    return
+                avg_value = round(sum(latest['data']) / len(latest['data']), 2)
+                if 'power' in device_key.lower():
+                    device[device_key] = f"{avg_value}W"
+                    device['power_consumption'] = avg_value
+                    device['power_consumption_watts'] = avg_value
+                else:
+                    device[device_key] = f"{avg_value}%"
+                    if 'cpu' in device_key.lower():
+                        device['cpu_utilization'] = avg_value
+                        device['cpu_utilization_percent'] = avg_value
+                    elif 'mem' in device_key.lower():
+                        device['memory_utilization'] = avg_value
+                        device['memory_utilization_percent'] = avg_value
+                        device['memoryUsage'] = f"{avg_value}%"
 
-                                                unit = "W" if 'power' in device_key.lower() else "%"
-                                                logger.info(f"Successfully set {endpoint_name} for {serial}: {avg_value}{unit}")
-                                                fetched = True
-                                                break
-                                            else:
-                                                logger.warning(f"No data in latest {endpoint_name} sample for {serial}")
-                                        else:
-                                            logger.warning(f"No {endpoint_name} samples found for {serial} in attempt {attempt_num}")
-                                    else:
-                                        logger.warning(f"{endpoint_name} response missing graph/samples for {serial} in attempt {attempt_num}: {list(response.keys())}")
-                                except Exception as err:
-                                    logger.warning(f"Attempt {attempt_num} failed to fetch {endpoint_name} for AP {serial}: {err}")
-                                    if attempt_num == len(attempts):
-                                        logger.warning(f"All attempts failed to fetch {endpoint_name} for AP {serial}", exc_info=True)
+            _extract_latest(results['cpu'], 'cpuUtilization')
+            _extract_latest(results['mem'], 'memUtilization')
+            _extract_latest(results['power'], 'powerConsumption')
+        else:
+            logger.info(f"Device {serial} is not an AP (type: {device_type}), skipping utilization metrics")
 
-                            return fetched
+        # Ensure fields exist for frontend compatibility
+        for field in ('cpuUtilization', 'memUtilization', 'powerConsumption', 'temperature'):
+            device.setdefault(field, None)
 
-                        # Fetch CPU utilization
-                        fetch_utilization(
-                            'CPU utilization',
-                            f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends',
-                            'cpuUtilization'
-                        )
-
-                        # Fetch Memory utilization
-                        fetch_utilization(
-                            'Memory utilization',
-                            f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends',
-                            'memUtilization'
-                        )
-
-                        # Fetch Power consumption
-                        fetch_utilization(
-                            'Power consumption',
-                            f'/network-monitoring/v1/aps/{serial}/power-consumption-trends',
-                            'powerConsumption'
-                        )
-                    else:
-                        logger.info(f"Device {serial} is not an AP (type: {device_type}), skipping utilization metrics")
-
-                    # Log what fields are being returned
-                    logger.info(f"Returning device details for {serial} with keys: {list(device.keys())}")
-                    logger.info(f"CPU: {device.get('cpuUtilization', 'NOT SET')}, Memory: {device.get('memUtilization', 'NOT SET')}, Power: {device.get('powerConsumption', 'NOT SET')}")
-
-                    # Ensure fields exist even if not fetched (for frontend compatibility)
-                    if 'cpuUtilization' not in device:
-                        device['cpuUtilization'] = None
-                    if 'memUtilization' not in device:
-                        device['memUtilization'] = None
-                    if 'powerConsumption' not in device:
-                        device['powerConsumption'] = None
-                    if 'temperature' not in device:
-                        device['temperature'] = None
-
-                    return jsonify(device)
-            return jsonify({"error": f"Device {serial} not found"}), 404
-        return jsonify({"error": "No devices returned"}), 500
+        return jsonify(device)
     except Exception as e:
         logger.error(f"Device {serial}: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500

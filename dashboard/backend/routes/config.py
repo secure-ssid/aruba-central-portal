@@ -28,7 +28,7 @@ import logging
 import requests
 from flask import Blueprint, request, jsonify, make_response
 
-from .helpers import require_session, api_proxy
+from .helpers import require_session, api_proxy, cached_get, parallel_get
 
 config_bp = Blueprint('config', __name__)
 logger = logging.getLogger(__name__)
@@ -841,7 +841,7 @@ def get_sites_health():
         if 'fields' in params:
             try:
                 logger.info(f"Attempting sites-health with fields={params.get('fields')}")
-                response = aruba_client.get(endpoint, params=params)
+                response = cached_get(endpoint, params=params)
                 logger.info(f"Sites health response received: type={type(response)}, is None: {response is None}")
                 if response is None:
                     logger.warning("Aruba Central API returned None/empty response")
@@ -852,11 +852,10 @@ def get_sites_health():
             except Exception as e:
                 error_str = str(e)
                 logger.warning(f"Sites health with fields parameter failed: {error_str}")
-                # If fields parameter causes error, try without it
                 params_without_fields = {k: v for k, v in params.items() if k != 'fields'}
                 logger.info(f"Retrying sites-health without fields parameter")
                 try:
-                    response = aruba_client.get(endpoint, params=params_without_fields)
+                    response = cached_get(endpoint, params=params_without_fields)
                     logger.info(f"Sites health fallback response: type={type(response)}, is None: {response is None}")
                     if response is None:
                         logger.warning("Aruba Central API returned None/empty response (fallback)")
@@ -866,10 +865,9 @@ def get_sites_health():
                     return jsonify(response)
                 except Exception as e2:
                     logger.error(f"Sites health failed even without fields: {e2}")
-                    raise e  # Raise original error
+                    raise e
         else:
-            # No fields parameter, proceed normally
-            response = aruba_client.get(endpoint, params=params)
+            response = cached_get(endpoint, params=params)
             logger.info(f"Sites health response (no fields): type={type(response)}, is None: {response is None}")
             if response is None:
                 logger.warning("Aruba Central API returned None/empty response")
@@ -1148,7 +1146,7 @@ def get_site_hierarchy():
     aruba_client = _app.aruba_client
     try:
         # Get all sites first
-        sites_response = aruba_client.get('/central/v2/sites')
+        sites_response = cached_get('/central/v2/sites')
         sites = sites_response.get('sites', [])
 
         # Build hierarchy structure
@@ -1497,7 +1495,7 @@ def show_version():
             return jsonify({"error": "Device serial required"}), 400
 
         # Get device details which includes version
-        response = aruba_client.get(f'/network-monitoring/v1/devices')
+        response = cached_get('/network-monitoring/v1/devices')
 
         # Filter for the specific device
         if 'items' in response:
@@ -1727,50 +1725,47 @@ def get_services_health():
             'timestamp': time.time()
         }
 
-        # Check device service
-        try:
-            devices = aruba_client.get('/network-monitoring/v1/devices')
-            device_count = devices.get('count', 0)
+        # Fetch all three in parallel (all cached)
+        data = parallel_get([
+            ('/network-monitoring/v1/devices',),
+            ('/network-monitoring/v1/wlans',),
+            ('/central/v2/sites',),
+        ])
+
+        devices = data.get('/network-monitoring/v1/devices')
+        if devices is not None:
             health_status['services'].append({
                 'name': 'Device Management',
                 'status': 'up',
-                'details': f'{device_count} devices monitored'
+                'details': f"{devices.get('count', 0)} devices monitored"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
-                'name': 'Device Management',
-                'status': 'error',
-                'details': str(e)
+                'name': 'Device Management', 'status': 'error', 'details': 'Unavailable'
             })
             health_status['overall_status'] = 'degraded'
 
-        # Check wireless service
-        try:
-            wlans = aruba_client.get('/network-monitoring/v1/wlans')
-            wlan_count = wlans.get('count', 0)
+        wlans = data.get('/network-monitoring/v1/wlans')
+        if wlans is not None:
             health_status['services'].append({
                 'name': 'Wireless Services',
                 'status': 'up',
-                'details': f'{wlan_count} WLANs configured'
+                'details': f"{wlans.get('count', 0)} WLANs configured"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
-                'name': 'Wireless Services',
-                'status': 'error',
-                'details': str(e)
+                'name': 'Wireless Services', 'status': 'error', 'details': 'Unavailable'
             })
             health_status['overall_status'] = 'degraded'
 
-        # Check site service
-        try:
-            sites = aruba_client.get('/central/v2/sites')
-            site_count = sites.get('total', 0)
+        sites = data.get('/central/v2/sites')
+        if sites is not None:
             health_status['services'].append({
                 'name': 'Site Management',
                 'status': 'up',
-                'details': f'{site_count} sites configured'
+                'details': f"{sites.get('total', 0)} sites configured"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
                 'name': 'Site Management',
                 'status': 'error',
@@ -1840,7 +1835,7 @@ def get_service_capacity():
     aruba_client = _app.aruba_client
     try:
         # Get device counts and calculate capacity
-        devices = aruba_client.get('/network-monitoring/v1/devices')
+        devices = cached_get('/network-monitoring/v1/devices')
 
         capacity = {
             'devices': {

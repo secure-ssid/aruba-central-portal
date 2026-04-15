@@ -4,7 +4,7 @@
  * Optimized for faster loading with caching and optimistic UI
  */
 
-import { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, useCallback, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -27,46 +27,9 @@ import PeopleIcon from '@mui/icons-material/People';
 import ApiIcon from '@mui/icons-material/Api';
 import SpeedIcon from '@mui/icons-material/Speed';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { monitoringAPI, deviceAPI, getClients, rateLimitAPI, sitesConfigAPI } from '../services/api';
+import { useNetworkHealth, useDevices, useClients, useRateLimit } from '../hooks/useApiQueries';
 
-// Cache keys
-const CACHE_KEYS = {
-  STATS: 'dashboard_stats',
-  RATE_LIMIT: 'dashboard_rate_limit',
-};
-
-// Cache expiration (5 minutes)
-const CACHE_TTL = 5 * 60 * 1000;
-
-/**
- * Cache utility functions
- */
-const cacheUtils = {
-  get: (key) => {
-    try {
-      const item = localStorage.getItem(key);
-      if (!item) return null;
-      const { data, timestamp } = JSON.parse(item);
-      if (Date.now() - timestamp > CACHE_TTL) {
-        localStorage.removeItem(key);
-        return null;
-      }
-      return data;
-    } catch {
-      return null;
-    }
-  },
-  set: (key, data) => {
-    try {
-      localStorage.setItem(key, JSON.stringify({
-        data,
-        timestamp: Date.now(),
-      }));
-    } catch {
-      // Ignore storage errors
-    }
-  },
-};
+// localStorage cache utils removed — React Query handles caching automatically
 
 /**
  * Memoized StatsCard component to prevent unnecessary re-renders
@@ -138,308 +101,65 @@ const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loa
 
 function DashboardPage() {
   const navigate = useNavigate();
-  
-  // Load cached data immediately for optimistic UI
-  const cachedStats = cacheUtils.get(CACHE_KEYS.STATS);
-  const cachedRateLimit = cacheUtils.get(CACHE_KEYS.RATE_LIMIT);
-  
-  const [loading, setLoading] = useState(!cachedStats);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState('');
-  // Always start with 0, then update when data loads
-  const [stats, setStats] = useState({
-    totalDevices: 0,
-    switches: 0,
-    accessPoints: 0,
-    gateways: 0,
-    clients: 0,
-  });
-  // Cache the last known values to show while loading
-  const [cachedDisplayStats, setCachedDisplayStats] = useState(cachedStats || {
-    totalDevices: 0,
-    switches: 0,
-    accessPoints: 0,
-    gateways: 0,
-    clients: 0,
-  });
-  const [rateLimit, setRateLimit] = useState(cachedRateLimit);
-  const [previousStats, setPreviousStats] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(cachedStats ? new Date() : null);
 
-  // Request timeout helper
-  const withTimeout = useCallback((promise, timeoutMs = 10000) => {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
-      ),
-    ]);
-  }, []);
+  // ── React Query hooks (cache, dedup, and 60 s auto-poll for free) ──
+  const healthQuery = useNetworkHealth({ refetchInterval: 60_000 });
+  const devicesQuery = useDevices({ refetchInterval: 60_000 });
+  const clientsQuery = useClients(undefined, { refetchInterval: 60_000 });
+  const rateLimitQuery = useRateLimit({ refetchInterval: 60_000 });
 
-  // Fetch client count - try monitoring API first, then aggregate from all sites
-  // Only count clients with status "connected"
-  const fetchClientsCount = useCallback(async () => {
-    try {
-      // Try monitoring API first (fastest)
-      const clientsResponse = await withTimeout(getClients(), 5000);
-      
-      if (clientsResponse) {
-        // Check if this is the "monitoring endpoint not available" response
-        if (clientsResponse.count === 0 && (!clientsResponse.items || clientsResponse.items.length === 0) && clientsResponse.message) {
-          // Monitoring endpoint not available, fall through to site aggregation
-          throw new Error('Monitoring clients endpoint not available');
-        }
-        
-        let clientsArray = [];
-        if (Array.isArray(clientsResponse)) {
-          clientsArray = clientsResponse;
-        } else if (clientsResponse.items && Array.isArray(clientsResponse.items)) {
-          clientsArray = clientsResponse.items;
-        } else if (clientsResponse.count !== undefined && clientsResponse.count > 0) {
-          // If we only have count, we can't filter by status, so return 0
-          // (we need the actual items to filter)
-          throw new Error('Need items array to filter by status');
-        } else if (clientsResponse.total !== undefined && clientsResponse.total > 0) {
-          throw new Error('Need items array to filter by status');
-        }
-        
-        // Filter to only connected clients
-        const connectedClients = clientsArray.filter(client => 
-          client.status?.toLowerCase() === 'connected'
-        );
-        
-        if (connectedClients.length > 0 || clientsArray.length === 0) {
-          return connectedClients.length;
-        }
-      }
-      
-      // If we got here, response was empty - try aggregating from sites
-      throw new Error('Monitoring API returned empty result');
-    } catch (err) {
-      // If monitoring API fails, aggregate from all sites
-      console.warn('Monitoring API unavailable, aggregating from sites:', err.message);
-      
-      try {
-        // Get all sites
-        const sitesData = await withTimeout(sitesConfigAPI.getSites({ limit: 100, offset: 0 }), 5000);
-        
-        let sitesList = [];
-        if (Array.isArray(sitesData)) {
-          sitesList = sitesData;
-        } else if (sitesData && typeof sitesData === 'object') {
-          sitesList = sitesData.items || sitesData.data || sitesData.sites || [];
-        }
-        
-        if (sitesList.length === 0) {
-          return 0;
-        }
-        
-        // Get site IDs
-        const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
-        
-        if (siteIds.length === 0) {
-          return 0;
-        }
-        
-        // Fetch clients from all sites in parallel with timeout
-        const clientPromises = siteIds.map(siteId => 
-          withTimeout(getClients(siteId), 3000).catch(() => ({ items: [], count: 0, total: 0 }))
-        );
-        
-        const clientsResults = await Promise.allSettled(clientPromises);
-        
-        // Aggregate total count - only count connected clients
-        let totalCount = 0;
-        clientsResults.forEach((result) => {
-          if (result.status === 'fulfilled') {
-            const clientData = result.value;
-            let itemsArray = [];
-            if (Array.isArray(clientData)) {
-              itemsArray = clientData;
-            } else if (clientData?.items && Array.isArray(clientData.items)) {
-              itemsArray = clientData.items;
-            }
-            
-            // Filter to only connected clients
-            const connectedClients = itemsArray.filter(client => 
-              client.status?.toLowerCase() === 'connected'
-            );
-            totalCount += connectedClients.length;
-          }
-        });
-        
-        return totalCount;
-      } catch (aggregateErr) {
-        console.warn('Failed to aggregate clients from sites:', aggregateErr.message);
-        return 0;
+  const loading = healthQuery.isLoading && devicesQuery.isLoading;
+  const refreshing = healthQuery.isFetching && !healthQuery.isLoading;
+  const error = healthQuery.error?.message || devicesQuery.error?.message || '';
+  const [errorDismissed, setErrorDismissed] = useState(false);
+
+  const rateLimit = rateLimitQuery.data ?? null;
+
+  // Derive stats from query data
+  const stats = useMemo(() => {
+    const h = healthQuery.data || {};
+    const d = devicesQuery.data?.items || [];
+    const totalDevices = h.total_devices || d.length || 0;
+    let switches = h.switches || 0;
+    let accessPoints = h.access_points || 0;
+    let gateways = 0;
+
+    if (switches === 0 && accessPoints === 0 && d.length > 0) {
+      const counts = d.reduce((acc, dev) => {
+        const t = dev.deviceType || 'UNKNOWN';
+        acc[t] = (acc[t] || 0) + 1;
+        return acc;
+      }, {});
+      switches = counts.SWITCH || 0;
+      accessPoints = counts.AP || counts.IAP || counts.ACCESS_POINT || 0;
+      gateways = counts.GATEWAY || 0;
+    }
+
+    // Client count — filter to connected only
+    let clients = 0;
+    const cData = clientsQuery.data;
+    if (cData) {
+      const items = Array.isArray(cData) ? cData : cData.items || [];
+      clients = items.filter(c => c.status?.toLowerCase() === 'connected').length;
+      if (clients === 0 && (cData.count > 0 || cData.total > 0)) {
+        clients = cData.count || cData.total || 0;
       }
     }
-  }, [withTimeout]);
 
-  const fetchRateLimitData = useCallback(async () => {
-    try {
-      const data = await withTimeout(rateLimitAPI.getStatus(), 5000);
-      setRateLimit(data);
-      cacheUtils.set(CACHE_KEYS.RATE_LIMIT, data);
-    } catch (err) {
-      // Don't show error for rate limit - it's non-critical
-      console.warn('Failed to fetch rate limit data:', err.message);
+    return { totalDevices, switches, accessPoints, gateways, clients };
+  }, [healthQuery.data, devicesQuery.data, clientsQuery.data]);
+
+  // Track previous stats for trend arrows
+  const prevStatsRef = useRef(null);
+  const previousStats = prevStatsRef.current;
+  // Update ref after render so trends compare against previous cycle
+  useMemo(() => {
+    if (healthQuery.dataUpdatedAt) {
+      prevStatsRef.current = stats;
     }
-  }, [withTimeout]);
+  }, [healthQuery.dataUpdatedAt]);
 
-  const fetchDashboardData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    
-    try {
-      setError('');
-
-      // Fetch critical data in parallel with timeouts
-      const [healthData, devicesData] = await Promise.allSettled([
-        withTimeout(monitoringAPI.getNetworkHealth(), 8000),
-        withTimeout(deviceAPI.getAll(), 10000),
-      ]);
-
-      const newStats = {
-        totalDevices: 0,
-        switches: 0,
-        accessPoints: 0,
-        gateways: 0,
-        clients: 0,
-      };
-
-      // Process health data (fastest source)
-      if (healthData.status === 'fulfilled') {
-        newStats.totalDevices = healthData.value.total_devices || 0;
-        newStats.switches = healthData.value.switches || 0;
-        newStats.accessPoints = healthData.value.access_points || 0;
-      }
-
-      // Process devices data for detailed breakdown (fallback if health data missing)
-      if (devicesData.status === 'fulfilled') {
-        const devices = devicesData.value.items || [];
-
-        if (newStats.totalDevices === 0) {
-          newStats.totalDevices = devices.length;
-        }
-
-        // Only count if health data didn't provide counts
-        if (newStats.switches === 0 && newStats.accessPoints === 0) {
-          const deviceCounts = devices.reduce((acc, device) => {
-            const type = device.deviceType || 'UNKNOWN';
-            acc[type] = (acc[type] || 0) + 1;
-            return acc;
-          }, {});
-
-          newStats.switches = deviceCounts.SWITCH || 0;
-          newStats.accessPoints = deviceCounts.AP || deviceCounts.IAP || deviceCounts.ACCESS_POINT || 0;
-          newStats.gateways = deviceCounts.GATEWAY || 0;
-        }
-      }
-
-      // Fetch clients count (non-blocking, can fail gracefully)
-      fetchClientsCount().then(count => {
-        setStats(prev => {
-          const updated = { ...prev, clients: count };
-          // Update cached display if value changed
-          setCachedDisplayStats(prevCached => {
-            if (count !== prevCached.clients) {
-              const updatedCached = { ...prevCached, clients: count };
-              cacheUtils.set(CACHE_KEYS.STATS, { ...updated, ...updatedCached });
-              return updatedCached;
-            }
-            return prevCached;
-          });
-          return updated;
-        });
-      }).catch(() => {
-        // Keep previous client count or 0
-      });
-
-      // Calculate trends - use functional update to avoid dependency
-      setStats(prevStats => {
-        setPreviousStats(prevStats);
-        // Update cached display stats if values changed
-        setCachedDisplayStats(prevCached => {
-          const hasChanges = 
-            newStats.totalDevices !== prevCached.totalDevices ||
-            newStats.switches !== prevCached.switches ||
-            newStats.accessPoints !== prevCached.accessPoints ||
-            newStats.gateways !== prevCached.gateways;
-          
-          if (hasChanges) {
-            const updated = {
-              ...prevCached,
-              totalDevices: newStats.totalDevices,
-              switches: newStats.switches,
-              accessPoints: newStats.accessPoints,
-              gateways: newStats.gateways,
-            };
-            const finalStats = { ...updated, clients: prevCached.clients };
-            cacheUtils.set(CACHE_KEYS.STATS, finalStats);
-            return updated;
-          }
-          return prevCached;
-        });
-        // Cache the results (clients will be updated separately)
-        const finalStats = { ...newStats, clients: prevStats?.clients || cachedDisplayStats.clients || 0 };
-        cacheUtils.set(CACHE_KEYS.STATS, finalStats);
-        return newStats;
-      });
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError(err.message || 'Failed to load dashboard data');
-      // On error, try to restore from cache or keep existing stats
-      const cached = cacheUtils.get(CACHE_KEYS.STATS);
-      if (!cached && stats.totalDevices === 0) {
-        // Only reset if we have no data at all
-        setStats({
-          totalDevices: 0,
-          switches: 0,
-          accessPoints: 0,
-          gateways: 0,
-          clients: 0,
-        });
-      }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [withTimeout, fetchClientsCount]);
-
-  // Initial load and refresh interval
-  useEffect(() => {
-    let mounted = true;
-    
-    const loadData = async () => {
-      // If we have cached stats, set them immediately for display
-      if (cachedStats) {
-        setCachedDisplayStats(cachedStats);
-        setStats(cachedStats);
-      }
-      // Then refresh in background
-      await fetchDashboardData(false);
-      if (mounted) await fetchRateLimitData();
-    };
-
-    loadData();
-
-    // Refresh every 60 seconds (only refresh, don't show loading)
-    const interval = setInterval(() => {
-      if (mounted) {
-        fetchDashboardData(true);
-        fetchRateLimitData();
-      }
-    }, 60000);
-    
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, []); // Only run on mount
+  const lastUpdated = healthQuery.dataUpdatedAt ? new Date(healthQuery.dataUpdatedAt) : null;
 
   const getTrend = useCallback((current, previous) => {
     if (!previous || previous === 0) return null;
@@ -493,8 +213,8 @@ function DashboardPage() {
       </Box>
 
       {/* Error Alert */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+      {error && !errorDismissed && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setErrorDismissed(true)}>
           {error}
         </Alert>
       )}
@@ -504,7 +224,7 @@ function DashboardPage() {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Devices"
-            value={stats.totalDevices !== undefined ? stats.totalDevices : cachedDisplayStats.totalDevices}
+            value={stats.totalDevices}
             icon={DevicesIcon}
             color="primary"
             loading={false}
@@ -517,7 +237,7 @@ function DashboardPage() {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Switches"
-            value={stats.switches !== undefined ? stats.switches : cachedDisplayStats.switches}
+            value={stats.switches}
             icon={RouterIcon}
             color="info"
             loading={false}
@@ -530,7 +250,7 @@ function DashboardPage() {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Access Points"
-            value={stats.accessPoints !== undefined ? stats.accessPoints : cachedDisplayStats.accessPoints}
+            value={stats.accessPoints}
             icon={WifiIcon}
             color="primary"
             loading={false}
@@ -543,7 +263,7 @@ function DashboardPage() {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Clients"
-            value={stats.clients !== undefined ? stats.clients : cachedDisplayStats.clients}
+            value={stats.clients}
             icon={PeopleIcon}
             color="success"
             loading={false}
@@ -556,7 +276,7 @@ function DashboardPage() {
       </Grid>
 
       {/* Client Count Note */}
-      {(stats.clients !== undefined ? stats.clients : cachedDisplayStats.clients) === 0 && !loading && (
+      {(stats.clients) === 0 && !loading && (
         <Alert severity="info" sx={{ mb: 3 }}>
           No clients are currently connected. Visit the <strong>Clients</strong> page to view detailed client information by site.
         </Alert>

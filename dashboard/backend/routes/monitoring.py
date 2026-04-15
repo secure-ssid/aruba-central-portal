@@ -11,7 +11,7 @@ from flask import Blueprint, request, jsonify
 import logging
 import time
 import requests
-from .helpers import require_session, api_proxy
+from .helpers import require_session, api_proxy, cached_get, parallel_get
 
 monitoring_bp = Blueprint('monitoring', __name__)
 logger = logging.getLogger(__name__)
@@ -23,35 +23,30 @@ logger = logging.getLogger(__name__)
 @require_session
 def get_network_health():
     """Get network health metrics using v1alpha1 API."""
-    import app as _app
-    aruba_client = _app.aruba_client
     try:
-        # Aggregate data from multiple endpoints
+        # Fetch devices and APs in parallel (both cached 5 min)
+        data = parallel_get([
+            ('/network-monitoring/v1/devices',),
+            ('/network-monitoring/v1/aps',),
+        ])
+
         health_data = {}
 
-        # Get all devices and calculate counts
-        try:
-            devices = aruba_client.get('/network-monitoring/v1/devices')
+        devices = data.get('/network-monitoring/v1/devices')
+        if devices:
             health_data['total_devices'] = devices.get('count', 0)
-
-            # Count switches by filtering deviceType
             if 'items' in devices:
-                switches_count = sum(1 for d in devices['items'] if d.get('deviceType') == 'SWITCH')
-                health_data['switches'] = switches_count
+                health_data['switches'] = sum(
+                    1 for d in devices['items'] if d.get('deviceType') == 'SWITCH'
+                )
             else:
                 health_data['switches'] = 0
-        except Exception as e:
-            logger.warning(f"Error fetching devices for health: {e}")
+        else:
             health_data['total_devices'] = 0
             health_data['switches'] = 0
 
-        # Get APs
-        try:
-            aps = aruba_client.get('/network-monitoring/v1/aps')
-            health_data['access_points'] = aps.get('count', 0)
-        except Exception as e:
-            logger.warning(f"Error fetching APs for health: {e}")
-            health_data['access_points'] = 0
+        aps = data.get('/network-monitoring/v1/aps')
+        health_data['access_points'] = aps.get('count', 0) if aps else 0
 
         return jsonify(health_data)
     except Exception as e:
@@ -137,64 +132,59 @@ def api_explorer():
 @require_session
 def get_services_health():
     """Get overall service health status."""
-    import app as _app
-    aruba_client = _app.aruba_client
     try:
-        # Aggregate health from multiple sources
+        # Fetch all three in parallel (all cached)
+        data = parallel_get([
+            ('/network-monitoring/v1/devices',),
+            ('/network-monitoring/v1/wlans',),
+            ('/central/v2/sites',),
+        ])
+
         health_status = {
             'overall_status': 'healthy',
             'services': [],
             'timestamp': time.time()
         }
 
-        # Check device service
-        try:
-            devices = aruba_client.get('/network-monitoring/v1/devices')
-            device_count = devices.get('count', 0)
+        # Device service
+        devices = data.get('/network-monitoring/v1/devices')
+        if devices is not None:
             health_status['services'].append({
                 'name': 'Device Management',
                 'status': 'up',
-                'details': f'{device_count} devices monitored'
+                'details': f"{devices.get('count', 0)} devices monitored"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
-                'name': 'Device Management',
-                'status': 'error',
-                'details': str(e)
+                'name': 'Device Management', 'status': 'error', 'details': 'Unavailable'
             })
             health_status['overall_status'] = 'degraded'
 
-        # Check wireless service
-        try:
-            wlans = aruba_client.get('/network-monitoring/v1/wlans')
-            wlan_count = wlans.get('count', 0)
+        # Wireless service
+        wlans = data.get('/network-monitoring/v1/wlans')
+        if wlans is not None:
             health_status['services'].append({
                 'name': 'Wireless Services',
                 'status': 'up',
-                'details': f'{wlan_count} WLANs configured'
+                'details': f"{wlans.get('count', 0)} WLANs configured"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
-                'name': 'Wireless Services',
-                'status': 'error',
-                'details': str(e)
+                'name': 'Wireless Services', 'status': 'error', 'details': 'Unavailable'
             })
             health_status['overall_status'] = 'degraded'
 
-        # Check site service
-        try:
-            sites = aruba_client.get('/central/v2/sites')
-            site_count = sites.get('total', 0)
+        # Site service
+        sites = data.get('/central/v2/sites')
+        if sites is not None:
             health_status['services'].append({
                 'name': 'Site Management',
                 'status': 'up',
-                'details': f'{site_count} sites configured'
+                'details': f"{sites.get('total', 0)} sites configured"
             })
-        except Exception as e:
+        else:
             health_status['services'].append({
-                'name': 'Site Management',
-                'status': 'error',
-                'details': str(e)
+                'name': 'Site Management', 'status': 'error', 'details': 'Unavailable'
             })
             health_status['overall_status'] = 'degraded'
 

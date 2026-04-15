@@ -4,9 +4,11 @@ Shared helpers, decorators, and globals for Blueprint routes.
 All route modules import from here instead of app.py to avoid circular imports.
 The globals (aruba_client, etc.) are read from the app module at request time.
 """
+import json
 import time
 import logging
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import wraps
 from flask import request, jsonify, current_app
 
@@ -48,6 +50,71 @@ def require_session(f):
         _app.track_api_call()
         return f(*args, **kwargs)
     return decorated_function
+
+
+# ── Tiered API Response Cache ───────────────────────────────────────────────
+# TTL in seconds per endpoint prefix.  Inventory data changes rarely (5 min),
+# health/monitoring data needs freshness (30 s), everything else passes through.
+CACHE_TIERS = {
+    '/network-monitoring/v1/devices': 300,
+    '/network-monitoring/v1/aps': 300,
+    '/network-monitoring/v1/wlans': 300,
+    '/central/v2/sites': 300,
+    '/network-monitoring/v1/sites-health': 30,
+    '/platform/licensing/v1/subscriptions': 300,
+}
+
+
+def cached_get(endpoint, params=None, ttl=None):
+    """Cached wrapper around aruba_client.get().
+
+    Looks up the existing ``_poll_cache`` in *app.py* before hitting the
+    Aruba Central API.  *ttl* overrides the built-in tier; pass ``0`` to
+    force a fresh fetch.
+    """
+    import app as _app
+
+    cache_key = f"{endpoint}:{json.dumps(params, sort_keys=True) if params else ''}"
+    effective_ttl = ttl if ttl is not None else CACHE_TIERS.get(endpoint, 0)
+
+    if effective_ttl > 0:
+        data, ts = _app._poll_cache_get(cache_key)
+        if data is not None and (time.time() - ts) < effective_ttl:
+            logger.debug(f"Cache HIT for {endpoint} (ttl={effective_ttl}s)")
+            return data
+
+    result = _app.aruba_client.get(endpoint, params=params)
+
+    if effective_ttl > 0:
+        _app._poll_cache_set(cache_key, result)
+    return result
+
+
+def parallel_get(calls):
+    """Fetch multiple endpoints in parallel via ``cached_get``.
+
+    *calls* is a list of tuples:  ``(endpoint,)`` or ``(endpoint, params)``
+    or ``(endpoint, params, ttl)``.
+
+    Returns a dict mapping *endpoint* → response (or ``None`` on error).
+    """
+    results = {}
+    with ThreadPoolExecutor(max_workers=min(len(calls), 5)) as pool:
+        future_map = {}
+        for item in calls:
+            ep = item[0]
+            params = item[1] if len(item) > 1 else None
+            ttl = item[2] if len(item) > 2 else None
+            future_map[pool.submit(cached_get, ep, params, ttl)] = ep
+
+        for future in as_completed(future_map):
+            ep = future_map[future]
+            try:
+                results[ep] = future.result()
+            except Exception as exc:
+                logger.warning(f"parallel_get failed for {ep}: {exc}")
+                results[ep] = None
+    return results
 
 
 def api_proxy(endpoint_builder, method='GET', error_msg="API", fallback_data=None):
