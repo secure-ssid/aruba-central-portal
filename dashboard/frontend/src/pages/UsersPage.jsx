@@ -6,24 +6,15 @@ import {
   Typography,
   Alert,
   Button,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-  Paper,
   TextField,
   InputAdornment,
-  Pagination,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  MenuItem,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
+import UserTable from './users/UserTable';
+import UserEditBar from './users/UserEditBar';
+import RoleManagementBar from './users/RoleManagementBar';
+import { InviteUserDialog, CreateGroupDialog, ManageGroupDialog } from './users/UserDialogs';
 
 function UsersPage() {
   const [loading, setLoading] = useState(false);
@@ -302,249 +293,134 @@ function UsersPage() {
 
       <Card>
         <CardContent>
-          {/* Roles (Groups) Management */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Roles</Typography>
-            <TextField
-              select
-              size="small"
-              label="Add to role"
-              sx={{ minWidth: 260 }}
-              value={roleToAdd}
-              onChange={(e) => setRoleToAdd(e.target.value)}
-              disabled={!selectedUserId}
-            >
-              {groups.map((g) => (
-                <MenuItem key={g.id} value={g.id}>{g.displayName || g.id}</MenuItem>
-              ))}
-            </TextField>
-            <Button variant="outlined" onClick={addRole} disabled={!selectedUserId || !roleToAdd}>Add Role</Button>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {userGroups.map((g) => (
-                <Button key={g.id} size="small" variant="outlined" color="inherit" onClick={() => removeRole(g.id)}>
-                  {g.displayName || g.id} ✕
-                </Button>
-              ))}
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-            <TextField
-              select
-              label="Select User"
-              value={selectedUserId}
-              onChange={(e) => setSelectedUserId(e.target.value)}
-              size="small"
-              sx={{ minWidth: 260 }}
-            >
-              {users.map((u) => (
-                <MenuItem key={u.id} value={u.id}>{u.username}</MenuItem>
-              ))}
-            </TextField>
-            <TextField label="Given Name" size="small" value={updateGiven} onChange={(e)=>setUpdateGiven(e.target.value)} />
-            <TextField label="Family Name" size="small" value={updateFamily} onChange={(e)=>setUpdateFamily(e.target.value)} />
-            <TextField label="Display Name" size="small" value={updateDisplay} onChange={(e)=>setUpdateDisplay(e.target.value)} />
-            <Button variant="outlined" onClick={updateUser} disabled={!selectedUserId}>Update</Button>
-            <Button variant="outlined" color="error" onClick={deleteUser} disabled={!selectedUserId}>Delete</Button>
-          </Box>
-          <TableContainer component={Paper} variant="outlined">
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell onClick={()=>handleSort('username')} sx={{ cursor: 'pointer' }}>
-                    Email {sortBy==='username' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={()=>handleSort('status')} sx={{ cursor: 'pointer' }}>
-                    Status {sortBy==='status' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={()=>handleSort('firstName')} sx={{ cursor: 'pointer' }}>
-                    First Name {sortBy==='firstName' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={()=>handleSort('lastName')} sx={{ cursor: 'pointer' }}>
-                    Last Name {sortBy==='lastName' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={()=>handleSort('lastLogin')} sx={{ cursor: 'pointer' }}>
-                    Last Login {sortBy==='lastLogin' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={()=>handleSort('createdAt')} sx={{ cursor: 'pointer' }}>
-                    Created {sortBy==='createdAt' ? (sortDir==='asc'?'▲':'▼') : ''}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map((u) => (
-                  <TableRow key={u.id}>
-                    <TableCell>{u.userName || u.username}</TableCell>
-                    <TableCell>{u['urn:ietf:params:scim:schemas:extensions:hpe-greenlake:2.0:User']?.status || '-'}</TableCell>
-                    <TableCell>{u.name?.givenName || '-'}</TableCell>
-                    <TableCell>{u.name?.familyName || '-'}</TableCell>
-                    <TableCell>{u.meta?.lastLogin || '-'}</TableCell>
-                    <TableCell>{u.meta?.created || '-'}</TableCell>
-                  </TableRow>
-                ))}
-                {!loading && users.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        No users found.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Pagination
-              count={Math.max(1, Math.ceil(total / limit))}
-              page={page}
-              onChange={(_, p) => setPage(p)}
-              color="primary"
-              size="small"
-            />
-          </Box>
+          <RoleManagementBar
+            groups={groups}
+            userGroups={userGroups}
+            roleToAdd={roleToAdd}
+            onRoleToAddChange={setRoleToAdd}
+            selectedUserId={selectedUserId}
+            onAddRole={addRole}
+            onRemoveRole={removeRole}
+          />
+          <UserEditBar
+            users={users}
+            selectedUserId={selectedUserId}
+            onSelectUser={setSelectedUserId}
+            updateGiven={updateGiven}
+            onUpdateGiven={setUpdateGiven}
+            updateFamily={updateFamily}
+            onUpdateFamily={setUpdateFamily}
+            updateDisplay={updateDisplay}
+            onUpdateDisplay={setUpdateDisplay}
+            onUpdate={updateUser}
+            onDelete={deleteUser}
+          />
+          <UserTable
+            users={users}
+            loading={loading}
+            total={total}
+            page={page}
+            limit={limit}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onSort={handleSort}
+            onPageChange={setPage}
+          />
         </CardContent>
       </Card>
-
-      {/* Create Group Dialog */}
-      <Dialog open={newGroupOpen} onClose={() => setNewGroupOpen(false)}>
-        <DialogTitle>Create Role (Group)</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Group Name"
-            fullWidth
-            variant="standard"
-            value={newGroupName}
-            onChange={(e) => setNewGroupName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setNewGroupOpen(false)}>Cancel</Button>
-          <Button onClick={async () => {
-            try {
-              const payload = {
-                schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-                displayName: newGroupName,
-              };
-              await apiClient.post('/greenlake/scim/groups', payload);
-              setNewGroupOpen(false);
-              setNewGroupName('');
-              const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
-              setGroups(resp.data?.Resources || []);
-            } catch (e) {
-              setError(e.response?.data?.error || 'Failed to create group');
-            }
-          }} disabled={!newGroupName}>Create</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Rename/Delete/Clone Group Dialog */}
-      <Dialog open={renameGroupOpen} onClose={() => setRenameGroupOpen(false)}>
-        <DialogTitle>Manage Role (Group)</DialogTitle>
-        <DialogContent sx={{ display: 'grid', gap: 2, mt: 1 }}>
-          <TextField
-            select
-            label="Select Group"
-            value={selectedGroupId}
-            onChange={(e) => setSelectedGroupId(e.target.value)}
-          >
-            {groups.map((g) => (
-              <MenuItem key={g.id} value={g.id}>{g.displayName || g.id}</MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="New Name"
-            value={renameGroupName}
-            onChange={(e) => setRenameGroupName(e.target.value)}
-          />
-          <Typography variant="caption" color="text.secondary">
-            Use "Clone" to duplicate a role with the same members.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRenameGroupOpen(false)}>Close</Button>
-          <Button color="error" onClick={async () => {
-            if (!selectedGroupId) return;
-            try {
-              await apiClient.delete(`/greenlake/scim/groups/${selectedGroupId}`);
-              setSelectedGroupId('');
-              const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
-              setGroups(resp.data?.Resources || []);
-            } catch (e) {
-              setError(e.response?.data?.error || 'Failed to delete group');
-            }
-          }} disabled={!selectedGroupId}>Delete</Button>
-          <Button onClick={async () => {
-            if (!selectedGroupId || !renameGroupName) return;
-            try {
-              const payload = { schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'], Operations: [{ op: 'replace', path: 'displayName', value: renameGroupName }] };
-              await apiClient.patch(`/greenlake/scim/groups/${selectedGroupId}`, payload);
-              setRenameGroupName('');
-              const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
-              setGroups(resp.data?.Resources || []);
-            } catch (e) {
-              setError(e.response?.data?.error || 'Failed to rename group');
-            }
-          }} disabled={!selectedGroupId || !renameGroupName}>Rename</Button>
-          <Button onClick={async () => {
-            if (!selectedGroupId || !renameGroupName) return;
-            try {
-              // Get source group (for members)
-              const src = await apiClient.get(`/greenlake/scim/groups/${selectedGroupId}`);
-              const members = src.data?.members || [];
-              // Create new group
-              const created = await apiClient.post('/greenlake/scim/groups', {
-                schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
-                displayName: renameGroupName
-              });
-              const newGroupId = created.data?.id;
-              // Copy members
-              if (newGroupId && Array.isArray(members) && members.length) {
-                await apiClient.patch(`/greenlake/scim/groups/${newGroupId}`, {
-                  schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-                  Operations: [{
-                    op: 'add',
-                    path: 'members',
-                    value: members.map(m => ({ value: m.value }))
-                  }]
-                });
-              }
-              setRenameGroupName('');
-              const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
-              setGroups(resp.data?.Resources || []);
-            } catch (e) {
-              setError(e.response?.data?.error || 'Failed to clone group');
-            }
-          }} disabled={!selectedGroupId || !renameGroupName}>Clone</Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Quick actions for Groups */}
       <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
         <Button variant="outlined" onClick={() => setNewGroupOpen(true)}>Create Role</Button>
         <Button variant="outlined" onClick={() => setRenameGroupOpen(true)}>Manage Roles</Button>
       </Box>
-      <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)}>
-        <DialogTitle>Invite User</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            value={inviteEmail}
-            onChange={(e) => setInviteEmail(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setInviteOpen(false)}>Cancel</Button>
-          <Button onClick={inviteUser} disabled={!inviteEmail}>Send Invite</Button>
-        </DialogActions>
-      </Dialog>
+
+      <InviteUserDialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        email={inviteEmail}
+        onEmailChange={setInviteEmail}
+        onInvite={inviteUser}
+      />
+
+      <CreateGroupDialog
+        open={newGroupOpen}
+        onClose={() => setNewGroupOpen(false)}
+        groupName={newGroupName}
+        onGroupNameChange={setNewGroupName}
+        onCreate={async () => {
+          try {
+            await apiClient.post('/greenlake/scim/groups', {
+              schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+              displayName: newGroupName,
+            });
+            setNewGroupOpen(false);
+            setNewGroupName('');
+            const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
+            setGroups(resp.data?.Resources || []);
+          } catch (e) {
+            setError(e.response?.data?.error || 'Failed to create group');
+          }
+        }}
+      />
+
+      <ManageGroupDialog
+        open={renameGroupOpen}
+        onClose={() => setRenameGroupOpen(false)}
+        groups={groups}
+        selectedGroupId={selectedGroupId}
+        onSelectGroup={setSelectedGroupId}
+        renameGroupName={renameGroupName}
+        onRenameGroupNameChange={setRenameGroupName}
+        onDelete={async () => {
+          if (!selectedGroupId) return;
+          try {
+            await apiClient.delete(`/greenlake/scim/groups/${selectedGroupId}`);
+            setSelectedGroupId('');
+            const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
+            setGroups(resp.data?.Resources || []);
+          } catch (e) {
+            setError(e.response?.data?.error || 'Failed to delete group');
+          }
+        }}
+        onRename={async () => {
+          if (!selectedGroupId || !renameGroupName) return;
+          try {
+            await apiClient.patch(`/greenlake/scim/groups/${selectedGroupId}`, {
+              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+              Operations: [{ op: 'replace', path: 'displayName', value: renameGroupName }],
+            });
+            setRenameGroupName('');
+            const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
+            setGroups(resp.data?.Resources || []);
+          } catch (e) {
+            setError(e.response?.data?.error || 'Failed to rename group');
+          }
+        }}
+        onClone={async () => {
+          if (!selectedGroupId || !renameGroupName) return;
+          try {
+            const src = await apiClient.get(`/greenlake/scim/groups/${selectedGroupId}`);
+            const members = src.data?.members || [];
+            const created = await apiClient.post('/greenlake/scim/groups', {
+              schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+              displayName: renameGroupName,
+            });
+            const newGroupId = created.data?.id;
+            if (newGroupId && members.length) {
+              await apiClient.patch(`/greenlake/scim/groups/${newGroupId}`, {
+                schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+                Operations: [{ op: 'add', path: 'members', value: members.map((m) => ({ value: m.value })) }],
+              });
+            }
+            setRenameGroupName('');
+            const resp = await apiClient.get('/greenlake/scim/groups', { params: { count: 200 } });
+            setGroups(resp.data?.Resources || []);
+          } catch (e) {
+            setError(e.response?.data?.error || 'Failed to clone group');
+          }
+        }}
+      />
     </Box>
   );
 }
