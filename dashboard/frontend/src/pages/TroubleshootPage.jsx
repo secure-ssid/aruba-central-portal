@@ -49,9 +49,6 @@ import {
   LocationOn as LocationIcon,
   RestartAlt as RestartIcon,
   Route as RouteIcon,
-  Update as UpdateIcon,
-  HealthAndSafety as HealthAndSafetyIcon,
-  Build as BuildIcon,
 } from '@mui/icons-material';
 import { troubleshootAPI, deviceAPI, showCommandsAPI } from '../services/api';
 import DeviceSelector from '../components/DeviceSelector';

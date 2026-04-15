@@ -27,7 +27,6 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  Settings as SettingsIcon,
   Visibility,
   VisibilityOff,
   SwapHoriz as SwapHorizIcon,

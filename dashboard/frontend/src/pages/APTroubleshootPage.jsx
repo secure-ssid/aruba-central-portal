@@ -44,13 +44,8 @@ import {
   BugReport as BugReportIcon,
   PowerSettingsNew as PowerIcon,
   LocationSearching as LocateIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
   ContentCopy as CopyIcon,
   Route as RouteIcon,
-  Router as RouterIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
   Info as InfoIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';

@@ -38,7 +38,6 @@ import {
 import {
   Wifi as WifiIcon,
   Refresh as RefreshIcon,
-  Security as SecurityIcon,
   SignalWifi4Bar as SignalIcon,
   Add as AddIcon,
   Download as DownloadIcon,

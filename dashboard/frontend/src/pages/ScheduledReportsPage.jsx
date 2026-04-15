@@ -49,8 +49,6 @@ import {
   Assessment as ReportIcon,
   CheckCircle as CheckIcon,
   Error as ErrorIcon,
-  Refresh as RefreshIcon,
-  Edit as EditIcon,
   NetworkCheck as NetworkIcon,
   Wifi as WifiIcon,
   Devices as DevicesIcon,

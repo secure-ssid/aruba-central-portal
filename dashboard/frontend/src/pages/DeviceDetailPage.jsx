@@ -39,7 +39,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import UpdateIcon from '@mui/icons-material/Update';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import CloudSyncIcon from '@mui/icons-material/CloudSync';
-import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeviceImageUpload from './device-detail/DeviceImageUpload';
 import LanIcon from '@mui/icons-material/Lan';
