@@ -74,8 +74,6 @@ import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Breadcrumb from './components/Breadcrumb';
 import GlobalSearch from './components/GlobalSearch';
-// TODO: EventFeedProvider is a stub (provides empty context with no consumers).
-//       Implement real event feed or remove EventFeedProvider.jsx entirely.
 import EventFeedProvider from './components/EventFeedProvider';
 import ChatDrawer from './components/ChatDrawer';
 import NetworkHealthBanner from './components/NetworkHealthBanner';

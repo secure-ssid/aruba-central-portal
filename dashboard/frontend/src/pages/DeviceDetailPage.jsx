@@ -42,11 +42,11 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeviceImageUpload from './device-detail/DeviceImageUpload';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import LanIcon from '@mui/icons-material/Lan';
 import { deviceAPI, monitoringAPIv2 } from '../services/api';
 import apiClient from '../services/api';
 import Tooltip from '@mui/material/Tooltip';
+import { formatUptimeMs } from '../utils/formatUtils';
 
 // Wired Interfaces View Component
 function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
@@ -1716,22 +1716,6 @@ function DeviceDetailPage() {
     return 'default';
   };
 
-  const formatUptime = (uptimeMs) => {
-    if (!uptimeMs) return 'N/A';
-    const seconds = Math.floor(uptimeMs / 1000);
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m`;
-    } else if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  };
-
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return 'N/A';
     const date = new Date(timestamp);
@@ -1907,7 +1891,7 @@ function DeviceDetailPage() {
                             Uptime
                           </Typography>
                           <Typography variant="body1">
-                            {formatUptime(device?.uptimeInMillis)}
+                            {formatUptimeMs(device?.uptimeInMillis)}
                           </Typography>
                         </Grid>
                       </Grid>
