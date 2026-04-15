@@ -4,10 +4,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function GLDevicesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [devices, setDevices] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -23,6 +25,7 @@ function GLDevicesPage() {
   const [selected, setSelected] = useState(new Set());
 
   const fetchDevices = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -55,7 +58,11 @@ function GLDevicesPage() {
       setDevices(items);
       setTotal(resp.data?.total || 0);
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load devices');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load devices');
+      }
     } finally {
       setLoading(false);
     }
@@ -150,8 +157,9 @@ function GLDevicesPage() {
           </FormGroup>
         </Box>
       )}
+      {notConfigured && <GreenLakeNotConfigured />}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Card>
+      {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -206,7 +214,7 @@ function GLDevicesPage() {
             <Pagination count={Math.max(1, Math.ceil(total / limit))} page={page} onChange={(_, p) => setPage(p)} size="small" color="primary" />
           </Box>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Add Device Dialog */}
       <Dialog open={addOpen} onClose={() => setAddOpen(false)}>

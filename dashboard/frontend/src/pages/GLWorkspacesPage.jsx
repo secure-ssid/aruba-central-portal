@@ -37,6 +37,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function WorkspaceStatusChip({ status }) {
   const color =
@@ -50,6 +51,7 @@ function WorkspaceStatusChip({ status }) {
 function GLWorkspacesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [success, setSuccess] = useState('');
   const [workspaces, setWorkspaces] = useState([]);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
@@ -91,6 +93,7 @@ function GLWorkspacesPage() {
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
 
   const fetchWorkspaces = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -105,7 +108,11 @@ function GLWorkspacesPage() {
         console.log('Could not fetch current workspace info');
       }
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load workspaces');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load workspaces');
+      }
     } finally {
       setLoading(false);
     }
@@ -294,7 +301,9 @@ function GLWorkspacesPage() {
         </Stack>
       </Stack>
 
-      {currentWorkspace && (
+      {notConfigured && <GreenLakeNotConfigured />}
+
+      {!notConfigured && currentWorkspace && (
         <Alert severity="info" icon={<BusinessIcon />} sx={{ mb: 2 }}>
           <Typography variant="body2">
             <strong>Current Workspace:</strong> {currentWorkspace.customer_id || 'Unknown'}
@@ -315,7 +324,7 @@ function GLWorkspacesPage() {
         </Alert>
       )}
 
-      <Card>
+      {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -406,7 +415,7 @@ function GLWorkspacesPage() {
             </Table>
           </TableContainer>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Actions Menu */}
       <Menu

@@ -106,11 +106,19 @@ function InterfacesPage() {
   // UI states
   const [visibleColumns, setVisibleColumns] = useState(() => {
     const saved = localStorage.getItem('table:columns:interfaces-device-profiles');
-    return saved ? JSON.parse(saved) : DEVICE_PROFILE_COLUMNS;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : DEVICE_PROFILE_COLUMNS;
+    }
+    return DEVICE_PROFILE_COLUMNS;
   });
   const [sortConfig, setSortConfig] = useState(() => {
     const saved = localStorage.getItem('table:sort:interfaces-device-profiles');
-    return saved ? JSON.parse(saved) : { column: 'name', direction: 'asc' };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed && typeof parsed === 'object' && parsed.column ? parsed : { column: 'name', direction: 'asc' };
+    }
+    return { column: 'name', direction: 'asc' };
   });
   const [columnMenuAnchor, setColumnMenuAnchor] = useState(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -268,12 +276,22 @@ function InterfacesPage() {
     const defaults = getDefaultColumns();
     const storageKey = `table:columns:interfaces-${['device-profiles', 'loopback', 'management', 'mac-lockout', 'macsec'][newValue]}`;
     const saved = localStorage.getItem(storageKey);
-    setVisibleColumns(saved ? JSON.parse(saved) : defaults);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setVisibleColumns(Array.isArray(parsed) ? parsed : defaults);
+    } else {
+      setVisibleColumns(defaults);
+    }
     
     // Update sort config
     const sortKey = `table:sort:interfaces-${['device-profiles', 'loopback', 'management', 'mac-lockout', 'macsec'][newValue]}`;
     const savedSort = localStorage.getItem(sortKey);
-    setSortConfig(savedSort ? JSON.parse(savedSort) : { column: 'name', direction: 'asc' });
+    if (savedSort) {
+      const parsedSort = JSON.parse(savedSort);
+      setSortConfig(parsedSort && typeof parsedSort === 'object' && parsedSort.column ? parsedSort : { column: 'name', direction: 'asc' });
+    } else {
+      setSortConfig({ column: 'name', direction: 'asc' });
+    }
   };
 
   const handleSort = (columnId) => {

@@ -44,6 +44,7 @@ import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from '@mui/icons-material/Info';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 // Permission categories and definitions
 const PERMISSION_CATEGORIES = {
@@ -118,6 +119,7 @@ function PermissionChip({ permission, granted }) {
 function GLPermissionsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [success, setSuccess] = useState('');
   const [permissions, setPermissions] = useState([]);
   const [rolePermissions, setRolePermissions] = useState({});
@@ -129,6 +131,7 @@ function GLPermissionsPage() {
   });
 
   const fetchPermissions = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -143,7 +146,11 @@ function GLPermissionsPage() {
         console.log('Could not fetch role permissions');
       }
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load permissions');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load permissions');
+      }
     } finally {
       setLoading(false);
     }
@@ -212,13 +219,15 @@ function GLPermissionsPage() {
         </Stack>
       </Stack>
 
-      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
+      {notConfigured && <GreenLakeNotConfigured />}
+
+      {!notConfigured && <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
         <Typography variant="body2">
           Permissions are granular access controls that determine what actions users can perform.
           Permissions are grouped into roles for easier management. Platform roles (Admin/Operator/Observer)
           have predefined permission sets, but you can create custom roles with specific permissions.
         </Typography>
-      </Alert>
+      </Alert>}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -233,7 +242,7 @@ function GLPermissionsPage() {
       )}
 
       {/* Permission Categories */}
-      <Stack spacing={2}>
+      {!notConfigured && <Stack spacing={2}>
         {Object.entries(PERMISSION_CATEGORIES).map(([categoryKey, category]) => (
           <Accordion key={categoryKey} defaultExpanded={categoryKey === 'workspace'}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -303,10 +312,10 @@ function GLPermissionsPage() {
             </AccordionDetails>
           </Accordion>
         ))}
-      </Stack>
+      </Stack>}
 
       {/* Permission Summary */}
-      <Card sx={{ mt: 3 }}>
+      {!notConfigured && <Card sx={{ mt: 3 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={700} gutterBottom>
             Permission Summary by Role
@@ -364,7 +373,7 @@ function GLPermissionsPage() {
             </Table>
           </TableContainer>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Create Custom Role Dialog */}
       <Dialog open={createRoleOpen} onClose={() => setCreateRoleOpen(false)} maxWidth="md" fullWidth>

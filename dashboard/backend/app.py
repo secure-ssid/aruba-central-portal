@@ -8,8 +8,13 @@ import sys
 import os
 import json
 import re
+import hmac
+import queue
+import threading
+from collections import deque
 from pathlib import Path
-from flask import Flask, jsonify, request, send_from_directory
+import httpx
+from flask import Flask, jsonify, request, send_from_directory, Response, stream_with_context
 from flask_cors import CORS
 from flask_compress import Compress
 import logging
@@ -103,6 +108,65 @@ token_manager = None
 config = None
 credentials_configured = False
 
+# ── Webhook event store (Agent C) ────────────────────────────────────────────
+_event_store: deque = deque(maxlen=500)
+_event_store_lock = threading.Lock()
+_sse_subscribers: set = set()
+_sse_subscribers_lock = threading.Lock()
+
+# ── Polling response cache (Agent B) ─────────────────────────────────────────
+_poll_cache: dict = {}
+_poll_cache_lock = threading.Lock()
+_POLL_CACHE_TTL = 30
+
+
+def _safe_int(v, default=0):
+    """Coerce v to int safely — handles dicts, None, non-numeric strings."""
+    if isinstance(v, (int, float)):
+        return int(v)
+    if isinstance(v, str):
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            return default
+    return default
+
+
+def _poll_cache_get(key: str):
+    with _poll_cache_lock:
+        entry = _poll_cache.get(key)
+        if entry:
+            return entry["data"], entry["ts"]
+        return None, None
+
+
+def _poll_cache_set(key: str, data):
+    with _poll_cache_lock:
+        _poll_cache[key] = {"data": data, "ts": time.time()}
+
+
+def _fan_out_event(event: dict):
+    with _sse_subscribers_lock:
+        dead = set()
+        for q in _sse_subscribers:
+            try:
+                q.put_nowait(event)
+            except queue.Full:
+                dead.add(q)
+        _sse_subscribers.difference_update(dead)
+
+
+def _auth_retry_loop():
+    """Retry aruba_client initialization every 60 s until it succeeds (Agent B)."""
+    global aruba_client
+    while True:
+        time.sleep(60)
+        if not aruba_client:
+            logger.info("Auth retry: re-attempting Aruba Central init…")
+            initialize_client()
+            if aruba_client:
+                logger.info("Auth retry: client initialized successfully")
+
 
 def initialize_client():
     """Initialize Aruba Central client."""
@@ -150,6 +214,9 @@ def initialize_client():
 
 # Try to initialize on startup
 initialize_client()
+
+# Background auth-retry thread
+threading.Thread(target=_auth_retry_loop, daemon=True, name="auth-retry").start()
 
 
 def track_api_call():
@@ -436,7 +503,7 @@ def get_rate_limit_status():
 
 @app.route('/api/devices', methods=['GET'])
 @require_session
-@api_proxy('/network-monitoring/v1alpha1/devices', error_msg="Devices")
+@api_proxy('/network-monitoring/v1/devices', error_msg="Devices")
 def get_devices(): pass
 
 @app.route('/api/devices/<serial>', methods=['GET'])
@@ -449,7 +516,7 @@ def get_device_details(serial):
             logger.error(f"Aruba client not initialized when fetching device {serial}")
             return jsonify({"error": "Server not configured. Please configure credentials first."}), 500
         
-        r = aruba_client.get('/network-monitoring/v1alpha1/devices')
+        r = aruba_client.get('/network-monitoring/v1/devices')
         if 'items' in r:
             for d in r['items']:
                 if d.get('serial') == serial or d.get('serialNumber') == serial:
@@ -547,21 +614,21 @@ def get_device_details(serial):
                         # Fetch CPU utilization
                         fetch_utilization(
                             'CPU utilization',
-                            f'/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends',
+                            f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends',
                             'cpuUtilization'
                         )
-                        
+
                         # Fetch Memory utilization
                         fetch_utilization(
                             'Memory utilization',
-                            f'/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends',
+                            f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends',
                             'memUtilization'
                         )
-                        
+
                         # Fetch Power consumption
                         fetch_utilization(
                             'Power consumption',
-                            f'/network-monitoring/v1alpha1/aps/{serial}/power-consumption-trends',
+                            f'/network-monitoring/v1/aps/{serial}/power-consumption-trends',
                             'powerConsumption'
                         )
                     else:
@@ -591,22 +658,22 @@ def get_device_details(serial):
 
 @app.route('/api/switches/<serial>/details', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/switch/{serial}', error_msg="Switch details")
+@api_proxy(lambda serial: f'/network-monitoring/v1/switches/{serial}', error_msg="Switch details")
 def get_switch_details(serial): pass
 
 @app.route('/api/switches/<serial>/hardware', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/switch/{serial}/hardware-categories', error_msg="Switch hardware")
+@api_proxy(lambda serial: f'/network-monitoring/v1/switches/{serial}/hardware-categories', error_msg="Switch hardware")
 def get_switch_hardware(serial): pass
 
 @app.route('/api/switches/<serial>/lag', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/switch/{serial}/lag', error_msg="Switch LAG")
+@api_proxy(lambda serial: f'/network-monitoring/v1/switches/{serial}/lag', error_msg="Switch LAG")
 def get_switch_lag(serial): pass
 
 @app.route('/api/switches/<serial>/interfaces', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/switch/{serial}/interfaces', error_msg="Switch interfaces")
+@api_proxy(lambda serial: f'/network-monitoring/v1/switches/{serial}/interfaces', error_msg="Switch interfaces")
 def get_switch_interfaces(serial): pass
 
 @app.route('/api/switches/<serial>/show-command', methods=['POST'])
@@ -662,12 +729,12 @@ def get_switch_show_command_result(serial, task_id):
 
 @app.route('/api/switches/<serial>/vlans', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/switch/{serial}/vlans', error_msg="Switch VLANs")
+@api_proxy(lambda serial: f'/network-monitoring/v1/switches/{serial}/vlans', error_msg="Switch VLANs")
 def get_switch_vlans(serial): pass
 
 @app.route('/api/stacks/<stack_id>/members', methods=['GET'])
 @require_session
-@api_proxy(lambda stack_id: f'/network-monitoring/v1alpha1/stack/{stack_id}/members', error_msg="Stack members")
+@api_proxy(lambda stack_id: f'/network-monitoring/v1/stack/{stack_id}/members', error_msg="Stack members")
 def get_stack_members(stack_id): pass
 
 @app.route('/api/device-parameters', methods=['GET'])
@@ -682,24 +749,22 @@ def get_device_parameters_by_model(platform_model): pass
 
 @app.route('/api/aps/<serial>/details', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/aps/{serial}', error_msg="AP details")
+@api_proxy(lambda serial: f'/network-monitoring/v1/aps/{serial}', error_msg="AP details")
 def get_ap_details(serial): pass
 
 @app.route('/api/aps/<serial>/power-consumption', methods=['GET'])
 @require_session
-@api_proxy(lambda serial: f'/network-monitoring/v1alpha1/aps/{serial}/power-consumption-trends', error_msg="AP power consumption")
+@api_proxy(lambda serial: f'/network-monitoring/v1/aps/{serial}/power-consumption-trends', error_msg="AP power consumption")
 def get_ap_power_consumption(serial): pass
 
 
 @app.route('/api/switches', methods=['GET'])
 @require_session
 def get_switches():
-    """Get all switches."""
+    """Get all switches using the v1 switches endpoint."""
     try:
-        r = aruba_client.get('/network-monitoring/v1alpha1/devices')
-        if 'items' in r:
-            s = [d for d in r['items'] if d.get('deviceType') == 'SWITCH']
-            return jsonify({'count': len(s), 'items': s})
+        params = request.args.to_dict()
+        r = aruba_client.get('/network-monitoring/v1/switches', params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Switches: {e}")
@@ -707,7 +772,7 @@ def get_switches():
 
 @app.route('/api/aps', methods=['GET'])
 @require_session
-@api_proxy('/network-monitoring/v1alpha1/aps', error_msg="APs")
+@api_proxy('/network-monitoring/v1/aps', error_msg="APs")
 def get_access_points(): pass
 
 
@@ -1231,69 +1296,51 @@ def get_captive_portal_profiles():
 @app.route('/api/clients', methods=['GET'])
 @require_session
 def get_clients():
-    """Get connected clients from ALL sites or specific site with pagination handling."""
+    """Get connected clients — tries multiple endpoints in order of reliability."""
     try:
-        # Check if aruba_client is initialized
         if not aruba_client:
-            logger.error("Aruba client not initialized when fetching clients")
-            return jsonify({"error": "Server not configured. Please configure credentials first."}), 500
-        
+            return jsonify({"error": "Server not configured"}), 500
+
         site_id = request.args.get('site_id', request.args.get('site-id'))
+        connection_type = request.args.get('connection_type')
+        ssid = request.args.get('ssid')
+        limit = int(request.args.get('limit', 500))
 
-        # If site_id is provided, fetch clients for that site with pagination
+        # Build params — use v1 API (matches MCP pipeline which is proven to work)
+        params = {'limit': min(limit, 1000)}
         if site_id:
-            all_items = []
-            offset = 0
-            limit = 100  # Use reasonable page size
+            params['site-id'] = site_id
+        if connection_type:
+            params['filter'] = f"clientConnectionType eq '{connection_type}'"
+        if ssid:
+            f = params.get('filter', '')
+            params['filter'] = (f + ' and ' if f else '') + f"wlanName eq '{ssid}'"
 
-            # Fetch all pages
-            while True:
-                params = {
-                    'site-id': site_id,
-                    'limit': limit,
-                    'offset': offset
-                }
-                response = aruba_client.get('/network-monitoring/v1alpha1/clients', params=params)
+        # Try v1 first (what MCP uses and what works)
+        endpoints_to_try = [
+            ('/network-monitoring/v1/clients', lambda r: r.get('clients', r.get('items', []))),
+            ('/monitoring/v2/clients', lambda r: r.get('clients', r.get('items', []))),
+            ('/monitoring/v1/clients', lambda r: r.get('clients', r.get('items', []))),
+        ]
 
-                items = response.get('items', [])
-                all_items.extend(items)
+        all_clients = []
+        for endpoint, extractor in endpoints_to_try:
+            try:
+                response = aruba_client.get(endpoint, params=params)
+                clients = extractor(response)
+                logger.info(f"Clients fetched from {endpoint}: {len(clients)}")
+                all_clients = clients
+                break
+            except Exception as e:
+                logger.warning(f"Clients endpoint {endpoint} failed: {e}")
+                continue
 
-                # Check if there are more items
-                total = response.get('total', len(items))
-                offset += len(items)
-
-                logger.info(f"Fetched {len(items)} clients (offset: {offset-len(items)}, total so far: {len(all_items)})")
-
-                # Break if no more items or we've reached the total
-                if len(items) == 0 or offset >= total:
-                    break
-
-                # Safety limit to prevent infinite loops
-                if len(all_items) >= 10000:
-                    logger.warning("Reached safety limit of 10000 clients")
-                    break
-
-            return jsonify({
-                'count': len(all_items),
-                'items': all_items,
-                'total': len(all_items)
-            })
-
-        # If no site_id, try to get summary from monitoring endpoint
-        # Some Central instances have endpoints that return all clients
-        try:
-            # Try getting client summary/count from monitoring endpoint
-            response = aruba_client.get('/monitoring/v1/clients')
-            return jsonify(response)
-        except Exception as e:
-            logger.warning(f"Monitoring clients endpoint not available: {e}")
-
-            # Return empty result with helpful message
-            return jsonify({
-                'count': 0,
-                'items': [],
-                'message': 'Client data requires site-id parameter. Please check Clients page for site-specific data.'
-            })
+        return jsonify({
+            'count': len(all_clients),
+            'clients': all_clients,
+            'items': all_clients,  # keep both keys for compatibility
+            'total': len(all_clients),
+        })
 
     except Exception as e:
         logger.error(f"Error fetching clients: {e}")
@@ -1310,7 +1357,7 @@ def get_client_trends():
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/clients/trends', params=params)
+        response = aruba_client.get('/network-monitoring/v1/clients-trend', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching client trends: {e}")
@@ -1327,7 +1374,7 @@ def get_top_clients():
         if site_id:
             params['site-id'] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/clients/usage/topn', params=params)
+        response = aruba_client.get('/network-monitoring/v1/clients-topn-usage', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top clients: {e}")
@@ -1347,8 +1394,11 @@ def get_sites_health():
             return jsonify({"error": "Server not configured"}), 500
         
         params = request.args.to_dict()
-        endpoint = '/network-monitoring/v1alpha1/sites-health'
-        
+        # Aruba Central sites-health API enforces limit ≤ 100
+        if 'limit' in params:
+            params['limit'] = min(int(params['limit']), 100)
+        endpoint = '/network-monitoring/v1/sites-health'
+
         # Try with fields parameter if provided
         if 'fields' in params:
             try:
@@ -1410,12 +1460,23 @@ def get_sites_health():
 
 @app.route('/api/sites/device-health', methods=['GET'])
 @require_session
-@api_proxy('/network-monitoring/v1alpha1/sites-device-health', error_msg="Sites device health")
-def get_sites_device_health(): pass
+def get_sites_device_health():
+    """Sites device health — caps limit at 100 (API restriction)."""
+    try:
+        if not aruba_client:
+            return jsonify({"error": "Server not configured"}), 500
+        params = request.args.to_dict()
+        if 'limit' in params:
+            params['limit'] = min(int(params['limit']), 100)
+        response = aruba_client.get('/network-monitoring/v1/sites-device-health', params=params)
+        return jsonify(response or {"items": []})
+    except Exception as e:
+        logger.error(f"Sites device health error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/tenant/device-health', methods=['GET'])
 @require_session
-@api_proxy('/network-monitoring/v1alpha1/tenant-device-health', error_msg="Tenant device health")
+@api_proxy('/network-monitoring/v1/tenant-device-health', error_msg="Tenant device health")
 def get_tenant_device_health(): pass
 
 # ============= Network Config Sites Endpoints =============
@@ -1462,22 +1523,22 @@ def sites_config():
 
 @app.route('/api/sites', methods=['GET'])
 @require_session
-@api_proxy('/central/v2/sites', error_msg="Sites", fallback_data={"sites": [], "count": 0, "total": 0})
+@api_proxy('/network-config/v1/sites', error_msg="Sites", fallback_data={"items": [], "count": 0, "total": 0})
 def get_sites(): pass
 
 @app.route('/api/sites/<site_id>', methods=['GET'])
 @require_session
-@api_proxy(lambda site_id: f'/central/v2/sites/{site_id}', error_msg="Site details", fallback_data={})
+@api_proxy(lambda site_id: f'/network-config/v1/sites/{site_id}', error_msg="Site details", fallback_data={})
 def get_site_details(site_id): pass
 
 @app.route('/api/sites', methods=['POST'])
 @require_session
-@api_proxy('/central/v2/sites', method='POST', error_msg="Create site")
+@api_proxy('/network-config/v1/sites', method='POST', error_msg="Create site")
 def create_site(): pass
 
 @app.route('/api/sites/<site_id>', methods=['DELETE'])
 @require_session
-@api_proxy(lambda site_id: f'/central/v2/sites/{site_id}', method='DELETE', error_msg="Delete site")
+@api_proxy(lambda site_id: f'/network-config/v1/sites/{site_id}', method='DELETE', error_msg="Delete site")
 def delete_site(site_id): pass
 
 @app.route('/api/groups', methods=['GET'])
@@ -1522,7 +1583,7 @@ def get_network_health():
 
         # Get all devices and calculate counts
         try:
-            devices = aruba_client.get('/network-monitoring/v1alpha1/devices')
+            devices = aruba_client.get('/network-monitoring/v1/devices')
             health_data['total_devices'] = devices.get('count', 0)
 
             # Count switches by filtering deviceType
@@ -1538,7 +1599,7 @@ def get_network_health():
 
         # Get APs
         try:
-            aps = aruba_client.get('/network-monitoring/v1alpha1/aps')
+            aps = aruba_client.get('/network-monitoring/v1/aps')
             health_data['access_points'] = aps.get('count', 0)
         except Exception as e:
             logger.warning(f"Error fetching APs for health: {e}")
@@ -1647,7 +1708,7 @@ def get_nac_client_auth():
             }), 400
 
         params = {'site-id': site_id}
-        response = aruba_client.get('/network-monitoring/v1alpha1/clients', params=params)
+        response = aruba_client.get('/network-monitoring/v1/clients', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching NAC client auth: {e}")
@@ -2195,7 +2256,7 @@ def troubleshoot_cx_port_bounce():
                             import urllib.parse
                             encoded_port = urllib.parse.quote(port, safe='')
                             port_status_response = aruba_client.get(
-                                f'/network-monitoring/v1alpha1/switch/{device_serial}/interfaces/{encoded_port}'
+                                f'/network-monitoring/v1/switches/{device_serial}/interfaces/{encoded_port}'
                             )
                             if port_status_response:
                                 port_status = {
@@ -2236,7 +2297,7 @@ def troubleshoot_cx_port_bounce():
                                 import urllib.parse
                                 encoded_port = urllib.parse.quote(port, safe='')
                                 port_status_response = aruba_client.get(
-                                    f'/network-monitoring/v1alpha1/switch/{device_serial}/interfaces/{encoded_port}'
+                                    f'/network-monitoring/v1/switches/{device_serial}/interfaces/{encoded_port}'
                                 )
                                 if port_status_response:
                                     port_status = {
@@ -2267,7 +2328,7 @@ def troubleshoot_cx_port_bounce():
                             import urllib.parse
                             encoded_port = urllib.parse.quote(port, safe='')
                             port_status_response = aruba_client.get(
-                                f'/network-monitoring/v1alpha1/switch/{device_serial}/interfaces/{encoded_port}'
+                                f'/network-monitoring/v1/switches/{device_serial}/interfaces/{encoded_port}'
                             )
                             if port_status_response:
                                 port_status = {
@@ -2875,7 +2936,7 @@ def get_client_session():
         if not mac_address:
             return jsonify({"error": "MAC address required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
+            response = aruba_client.get(f'/network-monitoring/v1/clients/{mac_address}')
             return jsonify(response)
         except Exception:
             return jsonify({"session": None})
@@ -2893,7 +2954,7 @@ def get_ap_diagnostics():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}')
+            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}')
             return jsonify(response)
         except Exception:
             return jsonify({"items": [], "count": 0})
@@ -2911,7 +2972,7 @@ def get_ap_radio_stats():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/radio-stats')
+            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/radio-stats')
             return jsonify(response)
         except Exception:
             return jsonify({"items": [], "count": 0})
@@ -2929,7 +2990,7 @@ def get_ap_interference():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/interference')
+            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/interference')
             return jsonify(response)
         except Exception:
             return jsonify({"items": [], "count": 0})
@@ -2950,7 +3011,7 @@ def troubleshoot_client_connectivity():
             return jsonify({"error": "mac_address is required"}), 400
 
         # Get client details
-        client = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
+        client = aruba_client.get(f'/network-monitoring/v1/clients/{mac_address}')
 
         # Get associated AP if available
         ap_details = None
@@ -2958,7 +3019,7 @@ def troubleshoot_client_connectivity():
             ap_serial = client.get('associatedDevice') or client.get('apSerial')
             if ap_serial:
                 try:
-                    ap_details = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{ap_serial}')
+                    ap_details = aruba_client.get(f'/network-monitoring/v1/aps/{ap_serial}')
                 except Exception as e:
                     logger.warning(f"Could not fetch AP details: {e}")
 
@@ -3008,9 +3069,9 @@ def get_switch_port_status():
 
         try:
             if port:
-                response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces/{port}')
+                response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces/{port}')
             else:
-                response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
+                response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces')
             return jsonify(response)
         except Exception:
             return jsonify({"interfaces": []})
@@ -3034,16 +3095,22 @@ def get_alerts():
         if severity:
             params['severity'] = severity
 
-        # Try the network-monitoring API first
-        try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/alerts', params=params)
-            return jsonify(response)
-        except Exception as network_err:
-            # Fallback: Return empty alerts list if endpoint doesn't exist
-            if "404" in str(network_err) or "Not Found" in str(network_err):
-                logger.warning(f"Alerts endpoint not available: {network_err}")
-                return jsonify({"alerts": [], "count": 0, "total": 0})
-            raise network_err
+        # Try correct alert endpoints (network-notifications namespace, not network-monitoring)
+        last_err = None
+        for ep in ['/network-notifications/v1/alerts', '/network-notifications/v1alpha1/alerts']:
+            try:
+                response = aruba_client.get(ep, params=params)
+                return jsonify(response)
+            except Exception as ep_err:
+                last_err = ep_err
+                if "401" in str(ep_err) or "403" in str(ep_err):
+                    raise ep_err
+                continue
+        if last_err and ("404" in str(last_err) or "Not Found" in str(last_err)):
+            logger.warning(f"Alerts endpoint not available: {last_err}")
+            return jsonify({"alerts": [], "count": 0, "total": 0})
+        if last_err:
+            raise last_err
     except Exception as e:
         logger.error(f"Error fetching alerts: {e}")
         # Return empty data instead of 500 error
@@ -3055,7 +3122,7 @@ def get_alerts():
 def get_alert_details(alert_id):
     """Get alert details by ID."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/alerts/{alert_id}')
+        response = aruba_client.get(f'/network-monitoring/v1/alerts/{alert_id}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching alert {alert_id}: {e}")
@@ -3067,7 +3134,7 @@ def get_alert_details(alert_id):
 def acknowledge_alert(alert_id):
     """Acknowledge an alert."""
     try:
-        response = aruba_client.post(f'/network-monitoring/v1alpha1/alerts/{alert_id}/acknowledge')
+        response = aruba_client.post(f'/network-monitoring/v1/alerts/{alert_id}/acknowledge')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error acknowledging alert {alert_id}: {e}")
@@ -3170,17 +3237,16 @@ def schedule_firmware_upgrade():
 @app.route('/api/analytics/bandwidth', methods=['GET'])
 @require_session
 def get_bandwidth_analytics():
-    """Get bandwidth usage analytics."""
+    """Get bandwidth usage analytics: top APs by total usage (MRT v1 API)."""
     try:
-        timeframe = request.args.get('timeframe', '1d')
-        params = {'timeframe': timeframe}
+        params = request.args.to_dict()
         try:
-            response = aruba_client.get('/monitoring/v1/networks/bandwidth_usage', params=params)
+            response = aruba_client.get('/network-monitoring/v1/top-aps-by-usage', params=params)
             return jsonify(response)
         except Exception as aerr:
             if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
                 logger.warning("Bandwidth analytics not available; returning empty result")
-                return jsonify({"series": [], "count": 0})
+                return jsonify({"items": [], "count": 0})
             raise aerr
     except Exception as e:
         logger.error(f"Error fetching bandwidth analytics: {e}")
@@ -3190,17 +3256,16 @@ def get_bandwidth_analytics():
 @app.route('/api/analytics/client-count', methods=['GET'])
 @require_session
 def get_client_count_analytics():
-    """Get client count trends over time."""
+    """Get client count trends over time (MRT v1 API)."""
     try:
-        timeframe = request.args.get('timeframe', '1d')
-        params = {'timeframe': timeframe}
+        params = request.args.to_dict()
         try:
-            response = aruba_client.get('/monitoring/v1/clients/count', params=params)
+            response = aruba_client.get('/network-monitoring/v1/clients-trend', params=params)
             return jsonify(response)
         except Exception as aerr:
             if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
                 logger.warning("Client-count analytics not available; returning empty result")
-                return jsonify({"series": [], "count": 0})
+                return jsonify({"items": [], "count": 0})
             raise aerr
     except Exception as e:
         logger.error(f"Error fetching client count analytics: {e}")
@@ -3677,7 +3742,7 @@ def show_version():
             return jsonify({"error": "Device serial required"}), 400
 
         # Get device details which includes version
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/devices')
+        response = aruba_client.get(f'/network-monitoring/v1/devices')
 
         # Filter for the specific device
         if 'items' in response:
@@ -3708,7 +3773,7 @@ def show_interfaces():
             return jsonify({"error": "Device serial required"}), 400
 
         try:
-            response = aruba_client.get(f'/network-monitoring/v1alpha1/switch/{serial}/interfaces')
+            response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces')
             # Check if response has interfaces
             if 'interfaces' in response:
                 if not response['interfaces'] or len(response['interfaces']) == 0:
@@ -4565,7 +4630,7 @@ def get_top_aps_by_wireless_usage():
             params['to_timestamp'] = to_timestamp
 
         try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-wireless-usage', params=params)
+            response = aruba_client.get('/network-monitoring/v1/top-aps-by-wireless-usage', params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -4601,7 +4666,7 @@ def get_top_aps_by_client_count():
             params['site-id'] = site_id
 
         try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/top-aps-by-client-count', params=params)
+            response = aruba_client.get('/network-monitoring/v1/top-aps-by-client-count', params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -4636,7 +4701,7 @@ def get_network_usage_report():
             params['site-id'] = site_id
 
         try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/network-usage', params=params)
+            response = aruba_client.get('/network-monitoring/v1/network-usage', params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -4656,7 +4721,7 @@ def get_device_inventory_report():
     try:
         # Get all devices
         try:
-            devices_response = aruba_client.get('/network-monitoring/v1alpha1/devices')
+            devices_response = aruba_client.get('/network-monitoring/v1/devices')
         except Exception:
             try:
                 devices_response = aruba_client.get('/reporting/v1/device-inventory')
@@ -4707,7 +4772,7 @@ def get_wireless_health_report():
             params['site-id'] = site_id
 
         try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/wireless-health', params=params)
+            response = aruba_client.get('/network-monitoring/v1/wireless-health', params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -4733,7 +4798,7 @@ def get_top_ssids_by_usage():
             params['site-id'] = site_id
 
         try:
-            response = aruba_client.get('/network-monitoring/v1alpha1/top-ssids-by-usage', params=params)
+            response = aruba_client.get('/network-monitoring/v1/top-ssids-by-usage', params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -4779,7 +4844,7 @@ def get_devices_with_greenlake():
         devices = []
         try:
             # Try network-monitoring v1alpha1 first (preferred)
-            devices_response = aruba_client.get('/network-monitoring/v1alpha1/devices')
+            devices_response = aruba_client.get('/network-monitoring/v1/devices')
             devices = devices_response.get('items', devices_response.get('devices', []))
             if devices:
                 logger.info(f"Fetched {len(devices)} devices from network-monitoring/v1alpha1/devices")
@@ -4914,7 +4979,7 @@ def get_services_health():
 
         # Check device service
         try:
-            devices = aruba_client.get('/network-monitoring/v1alpha1/devices')
+            devices = aruba_client.get('/network-monitoring/v1/devices')
             device_count = devices.get('count', 0)
             health_status['services'].append({
                 'name': 'Device Management',
@@ -4931,7 +4996,7 @@ def get_services_health():
 
         # Check wireless service
         try:
-            wlans = aruba_client.get('/network-monitoring/v1alpha1/wlans')
+            wlans = aruba_client.get('/network-monitoring/v1/wlans')
             wlan_count = wlans.get('count', 0)
             health_status['services'].append({
                 'name': 'Wireless Services',
@@ -5025,7 +5090,7 @@ def get_service_capacity():
     """Get service capacity and usage metrics."""
     try:
         # Get device counts and calculate capacity
-        devices = aruba_client.get('/network-monitoring/v1alpha1/devices')
+        devices = aruba_client.get('/network-monitoring/v1/devices')
 
         capacity = {
             'devices': {
@@ -5182,7 +5247,7 @@ def get_cluster_info():
 def get_site_health(site_id):
     """Get detailed health metrics for a specific site."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/site-health/{site_id}')
+        response = aruba_client.get(f'/network-monitoring/v1/site-health/{site_id}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching health for site {site_id}: {e}")
@@ -5201,7 +5266,7 @@ def get_top_aps_bandwidth():
         if request.args.get('site_id'):
             params['site_id'] = request.args.get('site_id')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/aps/bandwidth/top', params=params)
+        response = aruba_client.get('/network-monitoring/v1/aps/bandwidth/top', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top APs by bandwidth: {e}")
@@ -5221,7 +5286,7 @@ def get_aps_monitoring():
         if request.args.get('offset'):
             params['offset'] = request.args.get('offset')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/aps', params=params)
+        response = aruba_client.get('/network-monitoring/v1/aps', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching APs monitoring: {e}")
@@ -5233,7 +5298,7 @@ def get_aps_monitoring():
 def get_ap_monitoring_details(serial):
     """Get detailed monitoring information for a specific Access Point."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}')
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching AP monitoring details for {serial}: {e}")
@@ -5245,7 +5310,7 @@ def get_ap_monitoring_details(serial):
 def get_ap_cpu_utilization(serial):
     """Get CPU utilization information for an Access Point.
     
-    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/cpu-utilization-trends
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/cpu-utilization-trends
     Base URL is configured through the setup wizard.
     
     Query Parameters:
@@ -5274,7 +5339,7 @@ def get_ap_cpu_utilization(serial):
             params['duration'] = request.args.get('duration')
 
         # Construct the endpoint path - using serial-number as per API spec
-        endpoint = f'/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends'
+        endpoint = f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends'
         logger.info(f"Fetching AP CPU utilization: {endpoint} for serial: {serial} with params: {params}")
         
         response = aruba_client.get(endpoint, params=params)
@@ -5313,7 +5378,7 @@ def get_ap_cpu_utilization(serial):
         error_response = {
             "error": "Failed to fetch CPU utilization",
             "message": error_str,
-            "endpoint": f'/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends',
+            "endpoint": f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends',
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured"
         }
         
@@ -5336,7 +5401,7 @@ def get_ap_cpu_utilization(serial):
 def get_ap_memory_utilization(serial):
     """Get memory utilization information for an Access Point.
     
-    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/memory-utilization-trends
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/memory-utilization-trends
     Base URL is configured through the setup wizard.
     
     Query Parameters:
@@ -5365,7 +5430,7 @@ def get_ap_memory_utilization(serial):
             params['duration'] = request.args.get('duration')
 
         # Construct the endpoint path - using serial-number as per API spec
-        endpoint = f'/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends'
+        endpoint = f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends'
         logger.info(f"Fetching AP memory utilization: {endpoint} for serial: {serial} with params: {params}")
         
         response = aruba_client.get(endpoint, params=params)
@@ -5404,7 +5469,7 @@ def get_ap_memory_utilization(serial):
         error_response = {
             "error": "Failed to fetch memory utilization",
             "message": error_str,
-            "endpoint": f'/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends',
+            "endpoint": f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends',
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured"
         }
         
@@ -5439,7 +5504,7 @@ def get_ap_temperature(serial):
             params['duration'] = request.args.get('duration')
 
         # Try the inferred endpoint path
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/hardware-temperature-trends', params=params)
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/hardware-temperature-trends', params=params)
         return jsonify(response)
     except Exception as e:
         error_str = str(e)
@@ -5466,7 +5531,7 @@ def get_ap_throughput_trend(serial):
         if request.args.get('duration'):
             params['duration'] = request.args.get('duration')
 
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/throughput', params=params)
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/throughput', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching throughput for AP {serial}: {e}")
@@ -5478,7 +5543,7 @@ def get_ap_throughput_trend(serial):
 def get_ap_radios(serial):
     """Get list of radios for an Access Point."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/radios')
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/radios')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching radios for AP {serial}: {e}")
@@ -5497,7 +5562,7 @@ def get_radio_channel_utilization(serial, radio_id):
             params['duration'] = request.args.get('duration')
 
         response = aruba_client.get(
-            f'/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_id}/channel-utilization',
+            f'/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization',
             params=params
         )
         return jsonify(response)
@@ -5511,7 +5576,7 @@ def get_radio_channel_utilization(serial, radio_id):
 def get_ap_ports(serial):
     """Get list of ports for an Access Point."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/ports')
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/ports')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching ports for AP {serial}: {e}")
@@ -5528,7 +5593,7 @@ def get_wlans_monitoring():
         if request.args.get('site_id'):
             params['site_id'] = request.args.get('site_id')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/wlans', params=params)
+        response = aruba_client.get('/network-monitoring/v1/wlans', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching WLANs monitoring: {e}")
@@ -5547,7 +5612,7 @@ def get_wlan_throughput(wlan_name):
             params['duration'] = request.args.get('duration')
 
         response = aruba_client.get(
-            f'/network-monitoring/v1alpha1/wlans/{wlan_name}/throughput',
+            f'/network-monitoring/v1/wlans/{wlan_name}/throughput',
             params=params
         )
         return jsonify(response)
@@ -5573,7 +5638,7 @@ def get_switches_monitoring():
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/switches', params=params)
+        response = aruba_client.get('/network-monitoring/v1/switches', params=params)
         return jsonify(response)
     except Exception as e:
         # Gracefully handle 400/404 as empty list
@@ -5593,7 +5658,7 @@ def get_switches_monitoring():
 def get_switch_monitoring_details(serial):
     """Get detailed monitoring information for a specific switch."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}')
+        response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching switch monitoring details for {serial}: {e}")
@@ -5605,7 +5670,7 @@ def get_switch_monitoring_details(serial):
 def get_switch_cpu_utilization(serial):
     """Get CPU utilization information for a Switch.
     
-    Endpoint: /network-monitoring/v1alpha1/switch/{serial-number}/cpu-utilization-trends
+    Endpoint: /network-monitoring/v1/switches/{serial-number}/cpu-utilization-trends
     Base URL is configured through the setup wizard.
     
     Query Parameters:
@@ -5634,7 +5699,7 @@ def get_switch_cpu_utilization(serial):
             params['duration'] = request.args.get('duration')
 
         # Construct the endpoint path - using serial-number as per API spec
-        endpoint = f'/network-monitoring/v1alpha1/switch/{serial}/cpu-utilization-trends'
+        endpoint = f'/network-monitoring/v1/switches/{serial}/cpu-utilization-trends'
         logger.info(f"Fetching Switch CPU utilization: {endpoint} for serial: {serial} with params: {params}")
         
         response = aruba_client.get(endpoint, params=params)
@@ -5673,7 +5738,7 @@ def get_switch_cpu_utilization(serial):
         error_response = {
             "error": "Failed to fetch CPU utilization",
             "message": error_str,
-            "endpoint": f'/network-monitoring/v1alpha1/switch/{serial}/cpu-utilization-trends',
+            "endpoint": f'/network-monitoring/v1/switches/{serial}/cpu-utilization-trends',
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured"
         }
         
@@ -5697,7 +5762,7 @@ def get_switch_cpu_utilization(serial):
 def get_switch_memory_utilization(serial):
     """Get memory utilization information for a Switch.
     
-    Endpoint: /network-monitoring/v1alpha1/switch/{serial-number}/memory-utilization-trends
+    Endpoint: /network-monitoring/v1/switches/{serial-number}/memory-utilization-trends
     Base URL is configured through the setup wizard.
     
     Query Parameters:
@@ -5726,7 +5791,7 @@ def get_switch_memory_utilization(serial):
             params['duration'] = request.args.get('duration')
 
         # Construct the endpoint path - using serial-number as per API spec
-        endpoint = f'/network-monitoring/v1alpha1/switch/{serial}/memory-utilization-trends'
+        endpoint = f'/network-monitoring/v1/switches/{serial}/memory-utilization-trends'
         logger.info(f"Fetching Switch memory utilization: {endpoint} for serial: {serial} with params: {params}")
         
         response = aruba_client.get(endpoint, params=params)
@@ -5765,7 +5830,7 @@ def get_switch_memory_utilization(serial):
         error_response = {
             "error": "Failed to fetch memory utilization",
             "message": error_str,
-            "endpoint": f'/network-monitoring/v1alpha1/switch/{serial}/memory-utilization-trends',
+            "endpoint": f'/network-monitoring/v1/switches/{serial}/memory-utilization-trends',
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured"
         }
         
@@ -5789,7 +5854,7 @@ def get_switch_memory_utilization(serial):
 def get_switch_power_consumption(serial):
     """Get power consumption information for a Switch.
     
-    Endpoint: /network-monitoring/v1alpha1/switch/{serial-number}/power-consumption-trends
+    Endpoint: /network-monitoring/v1/switches/{serial-number}/power-consumption-trends
     Base URL is configured through the setup wizard.
     
     Query Parameters:
@@ -5818,7 +5883,7 @@ def get_switch_power_consumption(serial):
             params['duration'] = request.args.get('duration')
 
         # Construct the endpoint path - using serial-number as per API spec
-        endpoint = f'/network-monitoring/v1alpha1/switch/{serial}/power-consumption-trends'
+        endpoint = f'/network-monitoring/v1/switches/{serial}/power-consumption-trends'
         logger.info(f"Fetching Switch power consumption: {endpoint} for serial: {serial} with params: {params}")
         
         response = aruba_client.get(endpoint, params=params)
@@ -5860,7 +5925,7 @@ def get_switch_power_consumption(serial):
         error_response = {
             "error": "Failed to fetch power consumption",
             "message": error_str,
-            "endpoint": f'/network-monitoring/v1alpha1/switch/{serial}/power-consumption-trends',
+            "endpoint": f'/network-monitoring/v1/switches/{serial}/power-consumption-trends',
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured"
         }
         
@@ -5893,7 +5958,7 @@ def get_switch_power_consumption(serial):
 #         if request.args.get('duration'):
 #             params['duration'] = request.args.get('duration')
 #
-#         response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/memory', params=params)
+#         response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/memory', params=params)
 #         return jsonify(response)
 #     except Exception as e:
 #         logger.error(f"Error fetching memory utilization for switch {serial}: {e}")
@@ -5917,7 +5982,7 @@ def get_switch_temperature(serial):
             params['duration'] = request.args.get('duration')
 
         # Try the inferred endpoint path
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/hardware-temperature-trends', params=params)
+        response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/hardware-temperature-trends', params=params)
         return jsonify(response)
     except Exception as e:
         error_str = str(e)
@@ -5937,7 +6002,7 @@ def get_switch_temperature(serial):
 def get_switch_ports_monitoring(serial):
     """Get monitoring data for switch ports."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/ports')
+        response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/ports')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching ports for switch {serial}: {e}")
@@ -5954,7 +6019,7 @@ def get_gateways_monitoring():
         if request.args.get('site_id'):
             params['site_id'] = request.args.get('site_id')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/gateways', params=params)
+        response = aruba_client.get('/network-monitoring/v1/gateways', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching gateways monitoring: {e}")
@@ -5966,7 +6031,7 @@ def get_gateways_monitoring():
 def get_gateway_monitoring_details(serial):
     """Get detailed monitoring information for a specific gateway."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/gateways/{serial}')
+        response = aruba_client.get(f'/network-monitoring/v1/gateways/{serial}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching gateway monitoring details for {serial}: {e}")
@@ -5978,7 +6043,7 @@ def get_gateway_monitoring_details(serial):
 def get_gateway_tunnels(serial):
     """Get tunnel information for a gateway."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/gateways/{serial}/tunnels')
+        response = aruba_client.get(f'/network-monitoring/v1/gateways/{serial}/tunnels')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching tunnels for gateway {serial}: {e}")
@@ -6001,7 +6066,7 @@ def get_gateway_temperature(serial):
             params['duration'] = request.args.get('duration')
 
         # Try the inferred endpoint path
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/gateways/{serial}/hardware-temperature-trends', params=params)
+        response = aruba_client.get(f'/network-monitoring/v1/gateways/{serial}/hardware-temperature-trends', params=params)
         return jsonify(response)
     except Exception as e:
         error_str = str(e)
@@ -6080,7 +6145,7 @@ def get_devices_monitoring():
         if request.args.get('device_type'):
             params['device_type'] = request.args.get('device_type')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/devices', params=params)
+        response = aruba_client.get('/network-monitoring/v1/devices', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching devices monitoring: {e}")
@@ -6093,7 +6158,7 @@ def get_devices_monitoring():
 def get_client_session_details(mac):
     """Get detailed session information for a client."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac}/session')
+        response = aruba_client.get(f'/network-monitoring/v1/clients/{mac}/session')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching session for client {mac}: {e}")
@@ -6112,7 +6177,7 @@ def get_firewall_sessions():
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/firewall/sessions', params=params)
+        response = aruba_client.get('/network-monitoring/v1/firewall/sessions', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching firewall sessions: {e}")
@@ -6133,7 +6198,7 @@ def get_idps_events():
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/idps/events', params=params)
+        response = aruba_client.get('/network-monitoring/v1/idps/events', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching IDPS events: {e}")
@@ -6157,7 +6222,7 @@ def get_applications_monitoring():
         if request.args.get('limit'):
             params['limit'] = request.args.get('limit')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/applications', params=params)
+        response = aruba_client.get('/network-monitoring/v1/applications', params=params)
         return jsonify(response)
     except Exception as e:
         # If upstream provided HTTP details, pass through status and message for easier debugging
@@ -6202,7 +6267,7 @@ def get_top_applications():
 
         # Fallback logic
         try:
-            apps_response = aruba_client.get('/network-monitoring/v1alpha1/applications', params=params)
+            apps_response = aruba_client.get('/network-monitoring/v1/applications', params=params)
         except Exception as apps_err:
             try:
                 from requests.exceptions import HTTPError
@@ -6266,7 +6331,7 @@ def get_swarms():
         if request.args.get('site_id'):
             params['site_id'] = request.args.get('site_id')
 
-        response = aruba_client.get('/network-monitoring/v1alpha1/swarms', params=params)
+        response = aruba_client.get('/network-monitoring/v1/swarms', params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching swarms: {e}")
@@ -6278,7 +6343,7 @@ def get_swarms():
 def get_swarm_details(swarm_id):
     """Get detailed information for a specific swarm."""
     try:
-        response = aruba_client.get(f'/network-monitoring/v1alpha1/swarms/{swarm_id}')
+        response = aruba_client.get(f'/network-monitoring/v1/swarms/{swarm_id}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching swarm details for {swarm_id}: {e}")
@@ -7759,6 +7824,2805 @@ def get_wireless_wlans(serial): pass
 @require_session
 @api_proxy(lambda serial: f'/network-config/v1alpha1/aps/{serial}/system', error_msg="Get wireless system", fallback_data={})
 def get_wireless_system(serial): pass
+
+# ============= Grafana Integration Endpoints =============
+# Polling endpoints use X-Grafana-API-Key header auth (constant-time compare, Agent B).
+# SSE + webhook endpoints provide sub-second event delivery (Agent C).
+
+def require_grafana_key(f):
+    """Validate X-Grafana-API-Key OR valid session (browser dashboard access)."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Allow valid browser sessions (dashboard widgets)
+        session_id = request.headers.get('X-Session-ID')
+        if session_id and session_id in active_sessions:
+            return f(*args, **kwargs)
+        # Allow Grafana Infinity datasource key
+        expected_key = os.environ.get('GRAFANA_API_KEY', '')
+        if expected_key:
+            provided_key = request.headers.get('X-Grafana-API-Key', '')
+            if provided_key and hmac.compare_digest(provided_key, expected_key):
+                return f(*args, **kwargs)
+        return jsonify({"error": "Unauthorized"}), 401
+    return decorated_function
+
+
+def _kpi_with_stale(cache_key: str, fetch_fn):
+    """Fetch fresh data or serve stale cache + stale:true on failure (Agent B)."""
+    if aruba_client:
+        try:
+            data = fetch_fn()
+            _poll_cache_set(cache_key, data)
+            return jsonify(data)
+        except Exception as e:
+            logger.warning(f"Grafana {cache_key}: live fetch failed ({e}), trying stale cache")
+
+    stale_data, stale_ts = _poll_cache_get(cache_key)
+    if stale_data is not None:
+        resp = dict(stale_data) if isinstance(stale_data, dict) else {"data": stale_data}
+        resp['stale'] = True
+        resp['stale_age_s'] = int(time.time() - stale_ts)
+        return jsonify(resp), 200
+
+    return jsonify({"error": "Aruba Central unavailable and no cached data"}), 503
+
+
+@app.route('/api/grafana/health', methods=['GET'])
+@require_grafana_key
+def grafana_health():
+    """Datasource health-check URL — configure in Infinity datasource settings (Agent B)."""
+    if aruba_client:
+        return jsonify({"status": "ok", "aruba_client": True})
+    stale_data, stale_ts = _poll_cache_get('kpis')
+    if stale_data:
+        return jsonify({"status": "degraded", "aruba_client": False,
+                        "stale_cache_age_s": int(time.time() - stale_ts)}), 200
+    return jsonify({"status": "unavailable", "aruba_client": False}), 503
+
+
+@app.route('/api/grafana/kpis', methods=['GET'])
+@require_grafana_key
+def grafana_kpis():
+    """Aggregated KPIs — all key metrics in one call to minimise Aruba API rate usage."""
+    def fetch():
+        result = {}
+        try:
+            r = aruba_client.get('/network-monitoring/v1/devices')
+            items = r.get('items', [])
+            total = r.get('count', len(items))
+            up = sum(1 for d in items if d.get('status', '').upper() in ('UP', 'ONLINE', 'CONNECTED'))
+            by_type = {}
+            for d in items:
+                dt = d.get('deviceType', d.get('type', 'Unknown'))
+                by_type[dt] = by_type.get(dt, 0) + 1
+            result.update(total_devices=total, devices_up=up, devices_down=total - up,
+                          devices_by_type=[{'type': k, 'count': v} for k, v in by_type.items()],
+                          fleet_health_pct=round(up / total * 100, 2) if total else 0)
+        except Exception as e:
+            logger.warning(f"Grafana KPI devices: {e}")
+            result.update(total_devices=0, devices_up=0, devices_down=0, devices_by_type=[], fleet_health_pct=0)
+        try:
+            r = aruba_client.get('/network-monitoring/v1/aps')
+            items = r.get('items', [])
+            total = r.get('count', len(items))
+            up = sum(1 for a in items if a.get('status', '').upper() in ('UP', 'ONLINE', 'CONNECTED'))
+            result.update(total_aps=total, aps_up=up, aps_down=total - up)
+        except Exception as e:
+            logger.warning(f"Grafana KPI APs: {e}")
+            result.update(total_aps=0, aps_up=0, aps_down=0)
+        try:
+            r = aruba_client.get('/network-monitoring/v1/clients')
+            result['total_clients'] = r.get('count', len(r.get('items', [])))
+        except Exception as e:
+            logger.warning(f"Grafana KPI clients: {e}")
+            result['total_clients'] = 0
+        try:
+            r = aruba_client.get('/network-monitoring/v1/sites-health')
+            sites = r.get('items', r.get('sites', []))
+            result['total_sites'] = r.get('count', len(sites))
+            result['healthy_sites'] = sum(
+                1 for s in sites
+                if _safe_int(s.get('health', s.get('healthScore', 0))) >= 80
+            )
+        except Exception as e:
+            logger.warning(f"Grafana KPI sites: {e}")
+            result.update(total_sites=0, healthy_sites=0)
+        result['timestamp'] = time.time()
+        return result
+
+    return _kpi_with_stale('kpis', fetch)
+
+
+@app.route('/api/grafana/devices-by-type', methods=['GET'])
+@require_grafana_key
+def grafana_devices_by_type():
+    """Device counts by type — Grafana bar gauge panel. Stale-cache aware."""
+    def fetch():
+        r = aruba_client.get('/network-monitoring/v1/devices')
+        by_type = {}
+        for d in r.get('items', []):
+            dt = d.get('deviceType', d.get('type', 'Unknown'))
+            by_type[dt] = by_type.get(dt, 0) + 1
+        return [{'type': k, 'count': v} for k, v in sorted(by_type.items())]
+    return _kpi_with_stale('devices-by-type', fetch)
+
+
+@app.route('/api/grafana/sites-health', methods=['GET'])
+@require_grafana_key
+def grafana_sites_health():
+    """Per-site health scores — Grafana table panel. Stale-cache aware."""
+    def fetch():
+        r = aruba_client.get('/network-monitoring/v1/sites-health')
+        sites = r.get('items', r.get('sites', []))
+        return [{'site': s.get('siteName', s.get('name', 'Unknown')),
+                 'health': s.get('health', s.get('healthScore', 0)),
+                 'devices': s.get('deviceCount', s.get('total_device_count', 0)),
+                 'clients': s.get('clientCount', s.get('total_client_count', 0))}
+                for s in sites]
+    return _kpi_with_stale('sites-health', fetch)
+
+
+# ============= Webhook Ingest + SSE Streaming (Agent C) =============
+
+@app.route('/api/webhooks/aruba-central', methods=['POST'])
+def aruba_webhook():
+    """
+    Receives push events from Aruba Central (device/AP up-down, alerts, etc).
+    Validates HMAC-SHA256 signature when ARUBA_WEBHOOK_SECRET is set.
+    Fan-outs to all active SSE subscribers immediately (<1 s delivery).
+    """
+    body = request.get_data()
+    webhook_secret = os.environ.get('ARUBA_WEBHOOK_SECRET', '')
+
+    if webhook_secret:
+        sig_header = request.headers.get('X-Aruba-Signature', '')
+        expected = hmac.new(webhook_secret.encode(), body, hashlib.sha256).hexdigest()
+        if not sig_header or not hmac.compare_digest(sig_header, expected):
+            logger.warning("Webhook: invalid signature rejected")
+            return '', 401
+
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    event = {
+        "id": payload.get("nid") or payload.get("event_id"),
+        "ts": payload.get("ts") or int(time.time() * 1000),
+        "type": payload.get("event_type"),
+        "severity": payload.get("severity", "info"),
+        "device": payload.get("device_id"),
+        "site": payload.get("group_name"),
+        "detail": payload,
+        "_ingested_at": int(time.time() * 1000),
+    }
+
+    with _event_store_lock:
+        _event_store.append(event)
+
+    _fan_out_event(event)
+    logger.info(f"Webhook: ingested type={event['type']} device={event['device']}")
+    return '', 204
+
+
+@app.route('/api/stream/events')
+def stream_events():
+    """
+    SSE endpoint — accepts either:
+      - X-Grafana-API-Key header (for Grafana Infinity datasource)
+      - X-Session-ID header or ?session= query param (for browser EventSource)
+    """
+    # Auth check: allow Grafana key OR valid session
+    grafana_key = os.environ.get('GRAFANA_API_KEY', '')
+    provided_grafana_key = request.headers.get('X-Grafana-API-Key', '')
+    session_id = request.headers.get('X-Session-ID') or request.args.get('session')
+
+    if grafana_key and provided_grafana_key and hmac.compare_digest(provided_grafana_key, grafana_key):
+        pass  # Valid Grafana key
+    elif session_id and session_id in active_sessions:
+        pass  # Valid browser session
+    else:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    with _event_store_lock:
+        snapshot = list(_event_store)[-50:]
+
+    def generate():
+        for past in snapshot:
+            yield f"data: {json.dumps(past)}\n\n"
+
+        q: queue.Queue = queue.Queue(maxsize=200)
+        with _sse_subscribers_lock:
+            _sse_subscribers.add(q)
+        try:
+            while True:
+                try:
+                    event = q.get(timeout=20)
+                    yield f"data: {json.dumps(event)}\n\n"
+                except queue.Empty:
+                    yield ": keepalive\n\n"
+        except GeneratorExit:
+            pass
+        finally:
+            with _sse_subscribers_lock:
+                _sse_subscribers.discard(q)
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',
+            'Connection': 'keep-alive',
+        }
+    )
+
+
+# =============================================================================
+# ============= MSP Chatbot Backend  (v1 — keyword/regex classifier) ==========
+# =============================================================================
+#
+# Architecture summary
+# --------------------
+# POST /api/chat/message   – main handler, stateless per-request (context
+#                            is carried in the request body as `history`).
+# IntentClassifier         – pure-Python keyword/regex classifier, O(1) per
+#                            message, zero external deps, zero extra API calls.
+# Intent handlers          – thin wrappers around existing aruba_client calls.
+#                            Each handler returns a ChatResponse dict that the
+#                            endpoint serialises to JSON.
+#
+# Rate-limit strategy
+# -------------------
+# * Chat answers cache-hit from _poll_cache wherever possible (TTL = 30 s).
+# * Read-only intents (queries) consume at most 1–2 Aruba API calls each.
+# * Destructive intents (bounce / reboot) are rate-limited to 4/min per
+#   session via _chat_action_tracker so a typo-loop cannot drain the quota.
+# * The entire chatbot path honours the existing api_call_tracker so the
+#   rate-limit dashboard stays accurate.
+#
+# Conversation context
+# --------------------
+# Stateless design: the React client echoes `history` (last N turns) back in
+# every request.  No server-side session storage is needed for chat.  The
+# session_id (X-Session-ID) header still controls Aruba auth, unchanged.
+# =============================================================================
+
+import collections as _collections
+
+# ---------------------------------------------------------------------------
+# Chat-specific rate limiter for destructive actions (bounce / reboot / ack)
+# ---------------------------------------------------------------------------
+_chat_action_tracker: dict = {}          # session_id -> deque of timestamps
+_CHAT_ACTION_LIMIT   = 4                 # max destructive actions per window
+_CHAT_ACTION_WINDOW  = 60               # seconds
+
+
+def _chat_action_allowed(session_id: str) -> bool:
+    """Return True if the session is within the destructive-action rate limit."""
+    now = time.time()
+    dq = _chat_action_tracker.setdefault(session_id, _collections.deque())
+    # Evict timestamps outside the rolling window
+    while dq and dq[0] < now - _CHAT_ACTION_WINDOW:
+        dq.popleft()
+    if len(dq) >= _CHAT_ACTION_LIMIT:
+        return False
+    dq.append(now)
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Intent definitions
+# ---------------------------------------------------------------------------
+# Each intent is a dict with:
+#   name        : str  – machine-readable identifier
+#   description : str  – shown in help text
+#   patterns    : list[re.Pattern] – any match triggers this intent
+#   destructive : bool – True means _chat_action_allowed() is checked
+# ---------------------------------------------------------------------------
+
+_INTENTS = []
+
+def _intent(name, description, patterns, destructive=False):
+    _INTENTS.append({
+        "name": name,
+        "description": description,
+        "patterns": [re.compile(p, re.IGNORECASE) for p in patterns],
+        "destructive": destructive,
+    })
+
+# 1. AP Status / down APs
+_intent("ap_status",
+    "Check how many APs are up/down, optionally at a specific site",
+    [
+        r"\bap[s]?\b.*\b(down|up|status|online|offline|health)\b",
+        r"\b(down|up|status|offline|online)\b.*\bap[s]?\b",
+        r"how many ap",
+        r"access point.*\b(down|up|status)\b",
+        r"\b(down|up|status)\b.*access point",
+    ]
+)
+
+# 2. Site health
+_intent("site_health",
+    "Get health score and device counts for one or all sites",
+    [
+        r"\bsite[s]?\b.*\b(health|status|score|down|up|issue)\b",
+        r"\b(health|status|score)\b.*\bsite[s]?\b",
+        r"which site.*problem",
+        r"site.*unhealthy",
+        r"unhealthy site",
+    ]
+)
+
+# 3. Client lookup by SSID
+_intent("clients_by_ssid",
+    "List clients connected to a specific SSID / WLAN",
+    [
+        r"\bclient[s]?\b.*\bssid\b",
+        r"\bssid\b.*\bclient[s]?\b",
+        r"connect.*\bssid\b",
+        r"who.*connect.*wifi",
+        r"client[s]?\s+on\s+\w",
+        r"\bwifi\b.*client",
+        r"client.*wlan",
+        r"wlan.*client",
+    ]
+)
+
+# 4. Client lookup by MAC
+_intent("client_by_mac",
+    "Look up a client by MAC address",
+    [
+        r"\b([0-9a-f]{2}[:\-]){5}[0-9a-f]{2}\b",   # MAC address pattern
+        r"\bmac\b.*\bclient\b",
+        r"\bclient\b.*\bmac\b",
+        r"find client.*mac",
+        r"who is.*[0-9a-f]{2}:[0-9a-f]{2}",
+    ]
+)
+
+# 5. Switch port errors
+_intent("switch_port_errors",
+    "Find switch with highest port error counters",
+    [
+        r"\bswitch\b.*\b(error[s]?|fault|drop[s]?|crc|collision)\b",
+        r"\b(error[s]?|fault|drop[s]?|crc)\b.*\bswitch\b",
+        r"port error",
+        r"most error",
+        r"interface.*error",
+        r"which switch.*error",
+        r"error.*port",
+    ]
+)
+
+# 6. Bounce / reboot AP
+_intent("bounce_ap",
+    "Reboot an AP by serial number",
+    [
+        r"\b(bounce|reboot|restart|reset)\b.*\bap\b",
+        r"\bap\b.*\b(bounce|reboot|restart|reset)\b",
+        r"\b(bounce|reboot|restart)\b.*access.?point",
+        r"access.?point.*reboot",
+    ],
+    destructive=True
+)
+
+# 7. Bounce switch port
+_intent("bounce_port",
+    "Bounce (shut/no-shut) a switch port",
+    [
+        r"\b(bounce|cycle|reset|restart)\b.*port",
+        r"port.*\b(bounce|cycle|reset|restart)\b",
+        r"\bpoe\b.*bounce",
+        r"bounce.*poe",
+        r"shut.*port",
+    ],
+    destructive=True
+)
+
+# 8. Alert summary
+_intent("alert_summary",
+    "Show recent alerts, optionally filtered by severity",
+    [
+        r"\balert[s]?\b",
+        r"\balarm[s]?\b",
+        r"critical.*event",
+        r"recent.*event",
+        r"event.*recent",
+        r"what.*wrong",
+        r"any.*issue[s]?",
+    ]
+)
+
+# 9. Firmware status
+_intent("firmware_status",
+    "Check firmware versions across the fleet",
+    [
+        r"\bfirmware\b",
+        r"\bfirmware.*version\b",
+        r"\bversion\b.*\bfirmware\b",
+        r"\bupgrade[s]?\b.*\bdevice[s]?\b",
+        r"\bdevice[s]?\b.*\bupgrade[s]?\b",
+        r"\boutdated\b",
+        r"\bneed.*updat\b",
+    ]
+)
+
+# 10. WLAN / SSID list
+_intent("wlan_list",
+    "List all configured WLANs / SSIDs",
+    [
+        r"\bwlan[s]?\b",
+        r"\bssid[s]?\b.*list",
+        r"list.*\bssid[s]?\b",
+        r"show.*ssid",
+        r"ssid.*config",
+        r"wireless.*network",
+        r"network.*wireless",
+    ]
+)
+
+# 11. Top clients by bandwidth
+_intent("top_clients",
+    "Show top bandwidth consumers",
+    [
+        r"\btop\b.*\bclient[s]?\b",
+        r"\bclient[s]?\b.*\btop\b",
+        r"bandwidth.*hog",
+        r"most.*bandwidth",
+        r"highest.*usage",
+        r"who.*using.*most",
+        r"top.*user[s]?",
+        r"heaviest.*user[s]?",
+    ]
+)
+
+# 12. Device inventory / count
+_intent("device_inventory",
+    "Count or list devices in the fleet",
+    [
+        r"\bdevice[s]?\b.*(count|total|how many|list|inventory)",
+        r"(count|total|how many|list|inventory).*\bdevice[s]?\b",
+        r"fleet.*size",
+        r"how many.*switch",
+        r"switch.*count",
+        r"inventory",
+    ]
+)
+
+# 13. Acknowledge alert
+_intent("ack_alert",
+    "Acknowledge a specific alert by ID",
+    [
+        r"\back(nowledge)?\b.*\balert\b",
+        r"\balert\b.*\back(nowledge)?\b",
+        r"dismiss.*alert",
+        r"clear.*alert",
+    ],
+    destructive=True
+)
+
+# 14. Help / capabilities
+_intent("help",
+    "Show what the chatbot can do",
+    [
+        r"\bhelp\b",
+        r"what can you do",
+        r"what.*command",
+        r"show.*command",
+        r"list.*command",
+        r"capability|capabilities",
+        r"^\s*\?+\s*$",
+    ]
+)
+
+# 15. Ping / connectivity test
+_intent("ping_test",
+    "Run a ping from a switch to a destination",
+    [
+        r"\bping\b",
+        r"connectivity.*test",
+        r"reach.*\b(\d{1,3}\.){3}\d{1,3}\b",
+        r"can.*reach",
+        r"reachable",
+    ]
+)
+
+# 16. Traceroute
+_intent("traceroute",
+    "Run a traceroute from a CX switch to a destination",
+    [
+        r"\btraceroute\b",
+        r"\btrace\s*route\b",
+        r"\btr\b.*\b(\d{1,3}\.){3}\d{1,3}\b",
+        r"hops? to",
+        r"path to (\d{1,3}\.){3}\d{1,3}",
+    ]
+)
+
+# 17. Device status (online/offline devices across fleet)
+_intent("device_status",
+    "Show online/offline devices across the fleet, optionally filtered by type",
+    [
+        r"\bdevice[s]?\b.*\b(down|offline|up|online|status)\b",
+        r"\b(down|offline|up|online)\b.*\bdevice[s]?\b",
+        r"show.*device[s]?",
+        r"show.*\b(switch|gateway|router)\b",
+        r"list.*device[s]?",
+        r"all.*device[s]?",
+        r"device[s]?\s*$",
+        r"^device[s]?\b",
+        r"what.*device",
+        r"which device.*\b(down|up|offline|online)\b",
+        r"offline device",
+        r"device.*offline",
+    ]
+)
+
+# 18. Find client by MAC or IP
+_intent("find_client",
+    "Find a connected client by MAC address or IP address",
+    [
+        r"find.*client",
+        r"locate.*client",
+        r"where is.*client",
+        r"client.*ip\s+\d{1,3}\.\d{1,3}",
+        r"who.*\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
+        r"ip.*client",
+        r"client.*locate",
+    ]
+)
+
+# 19. Disconnect client
+_intent("disconnect_client",
+    "Force-disconnect a wireless client by MAC address",
+    [
+        r"\bdisconnect\b.*\bclient\b",
+        r"\bclient\b.*\bdisconnect\b",
+        r"\bkick\b.*\bclient\b",
+        r"\bdeauth\b",
+        r"remove.*client.*wifi",
+        r"force.*disconnect",
+    ],
+    destructive=True
+)
+
+# 20. Client count / total clients
+_intent("client_count",
+    "Show total client count and breakdown by type",
+    [
+        r"^clients?\s*$",
+        r"how many client",
+        r"client[s]?\s+count",
+        r"total.*client",
+        r"show.*client[s]?$",
+        r"client.*status",
+    ]
+)
+
+# 21. Site list
+_intent("site_list",
+    "List all sites with device counts",
+    [
+        r"^sites?\s*$",
+        r"show.*sites?",
+        r"list.*sites?",
+        r"all.*sites?",
+        r"how many site",
+        r"sites?.*list",
+    ]
+)
+
+# 22. Top APs by bandwidth usage
+_intent("top_bandwidth",
+    "Show top APs or clients by bandwidth usage",
+    [
+        r"top.*bandwidth",
+        r"bandwidth.*top",
+        r"top.*ap[s]?.*usage",
+        r"top.*app[s]?",
+        r"most.*traffic",
+        r"highest.*traffic",
+        r"busiest.*ap",
+        r"ap.*usage",
+    ]
+)
+
+
+# ---------------------------------------------------------------------------
+# IntentClassifier
+# ---------------------------------------------------------------------------
+
+class IntentClassifier:
+    """
+    Keyword/regex based intent classifier.
+    Returns the first matching intent or None if no intent matches.
+    Order of _INTENTS list is priority order — more specific intents should
+    be listed before catch-all ones.
+    """
+
+    @staticmethod
+    def classify(text: str) -> dict | None:
+        text = text.strip()
+        for intent in _INTENTS:
+            for pattern in intent["patterns"]:
+                if pattern.search(text):
+                    return intent
+        return None
+
+    @staticmethod
+    def extract_site_name(text: str) -> str | None:
+        """
+        Heuristic extraction of a site name from free text.
+        Looks for patterns like 'at Site-A', 'for Site-A', 'in HQ-Denver'.
+        Returns the raw token found, or None.
+        """
+        m = re.search(
+            r'\b(?:at|for|in|on|site)\s+([A-Za-z0-9][A-Za-z0-9_\-\.]{1,40})',
+            text, re.IGNORECASE
+        )
+        return m.group(1) if m else None
+
+    @staticmethod
+    def extract_serial(text: str) -> str | None:
+        """
+        Extract a device serial number.  Aruba serials are typically 9–12
+        uppercase alphanumeric characters.  Also matches lower-case input.
+        """
+        m = re.search(r'\b([A-Za-z0-9]{6,14})\b', text)
+        # Avoid matching common English words as serials
+        STOPWORDS = {'the','and','for','are','that','with','this','have',
+                     'from','they','will','been','were','said','each','which',
+                     'she','there','their','what','about','would','make'}
+        if m and m.group(1).lower() not in STOPWORDS:
+            return m.group(1).upper()
+        return None
+
+    @staticmethod
+    def extract_mac(text: str) -> str | None:
+        m = re.search(r'\b([0-9a-fA-F]{2}[:\-]){5}[0-9a-fA-F]{2}\b', text)
+        return m.group(0).lower().replace('-', ':') if m else None
+
+    @staticmethod
+    def extract_ssid(text: str) -> str | None:
+        """Extract SSID name — looks for quoted strings or 'ssid <name>'."""
+        # Quoted SSID: "CorpWiFi" or 'CorpWiFi'
+        m = re.search(r'[\'"]([^\'\"]{1,64})[\'"]', text)
+        if m:
+            return m.group(1)
+        # Keyword-preceded: 'ssid CorpWiFi' / 'WLAN CorpWiFi'
+        m = re.search(r'\b(?:ssid|wlan)\s+([A-Za-z0-9_\-\.]{1,64})', text, re.IGNORECASE)
+        return m.group(1) if m else None
+
+    @staticmethod
+    def extract_port(text: str) -> str | None:
+        """Extract a CX-style port identifier like 1/1/5 or 1/1/13."""
+        m = re.search(r'\b(\d+/\d+/\d+)\b', text)
+        return m.group(1) if m else None
+
+    @staticmethod
+    def extract_severity(text: str) -> str | None:
+        for sev in ('critical', 'major', 'minor', 'warning', 'info'):
+            if re.search(rf'\b{sev}\b', text, re.IGNORECASE):
+                return sev
+        return None
+
+    @staticmethod
+    def extract_alert_id(text: str) -> str | None:
+        m = re.search(r'\b([A-Za-z0-9\-]{8,})\b', text)
+        return m.group(1) if m else None
+
+
+# ---------------------------------------------------------------------------
+# Chat-specific poll-cache helpers  (reuse the app-level _poll_cache / TTL)
+# ---------------------------------------------------------------------------
+
+def _chat_cache_get(key: str, max_age: int = _POLL_CACHE_TTL):
+    data, ts = _poll_cache_get(key)
+    if data is not None and (time.time() - ts) < max_age:
+        return data
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Individual intent handlers
+# Each returns a tuple: (reply: str, data: dict|list|None, http_status: int)
+# ---------------------------------------------------------------------------
+
+def _handle_help(_text, _session_id):
+    reply = (
+        "Here's what I can do:\n\n"
+        "📊 **Monitoring:** show devices, show APs down, site health, show alerts, device inventory\n"
+        "👥 **Clients:** show clients, find client <ip>, clients on SSID <name>, client count\n"
+        "🔧 **Actions:** ping from switch <serial>, bounce AP <serial>, bounce port <switch> <port>\n"
+        "❓ **Info:** firmware status, WLAN list, top bandwidth, show sites, audit logs\n"
+        "🔍 **Device Detail:** events for device <serial>, VLANs on switch <serial>, radios on AP <serial>\n"
+        "💬 **General:** ask me anything — networking concepts, config tips, troubleshooting advice\n\n"
+        "Tip: be specific — e.g. *'APs down at Site-A'* or *'events for switch CN12345678'*."
+    )
+    return reply, None, 200
+
+
+def _handle_ap_status(text, _session_id):
+    """Count up/down APs, optionally filtered to a site name."""
+    site_name = IntentClassifier.extract_site_name(text)
+
+    # Try cache first (shares key with grafana KPI endpoint)
+    cached = _chat_cache_get('kpis', max_age=30)
+    if cached and not site_name:
+        total = cached.get('total_aps', 0)
+        up    = cached.get('aps_up', 0)
+        down  = cached.get('aps_down', 0)
+        reply = (
+            f"Fleet-wide: **{total}** APs total — "
+            f"**{up}** up, **{down}** down."
+        )
+        return reply, {"total": total, "up": up, "down": down, "source": "cache"}, 200
+
+    want_down = any(w in text.lower() for w in ['down', 'offline', 'fail', 'unreachable'])
+
+    try:
+        # Try New Central v1 first, fall back to v1alpha1
+        try:
+            r = aruba_client.get('/network-monitoring/v1/aps', params={'limit': 500})
+            items = r.get('aps', r.get('items', []))
+        except Exception:
+            r = aruba_client.get('/network-monitoring/v1alpha1/aps', params={'limit': 500})
+            items = r.get('items', [])
+
+        if site_name:
+            items = [
+                a for a in items
+                if site_name.lower() in (a.get('siteName', '') or a.get('site', '')).lower()
+            ]
+
+        total = len(items)
+        up_statuses = {'UP', 'ONLINE', 'CONNECTED'}
+        up   = sum(1 for a in items if str(a.get('status', '')).upper().strip() in up_statuses)
+        down = total - up
+
+        # Build DataTable-ready rows filtered by what the user asked
+        if want_down:
+            display_items = [a for a in items if str(a.get('status', '')).upper().strip() not in up_statuses]
+        else:
+            display_items = items
+
+        table = [
+            {
+                "Name":   a.get('name', a.get('hostname', '?')),
+                "Serial": a.get('serial', a.get('serialNumber', '?')),
+                "Status": a.get('status', '?'),
+                "Site":   a.get('siteName', a.get('site', '?')),
+                "IP":     a.get('ip_address', a.get('ipv4', '?')),
+                "Model":  a.get('model', '?'),
+            }
+            for a in display_items[:25]
+        ]
+
+        site_clause = f" at **{site_name}**" if site_name else ""
+        if want_down:
+            reply = (
+                f"**{down}** AP(s){site_clause} are currently down out of **{total}** total."
+                if down else f"All **{total}** APs{site_clause} are online!"
+            )
+        else:
+            reply = f"APs{site_clause}: **{total}** total, **{up}** up, **{down}** down."
+            if down > 0:
+                down_aps = [a for a in items if str(a.get('status', '')).upper().strip() not in up_statuses]
+                names = ", ".join(
+                    f"{a.get('name', a.get('hostname', '?'))} ({a.get('serial', a.get('serialNumber', '?'))})"
+                    for a in down_aps[:5]
+                )
+                reply += f"\nDown: {names}"
+                if down > 5:
+                    reply += f" … and {down - 5} more."
+
+        # Warm the KPI cache
+        _poll_cache_set('kpis', {
+            **(_poll_cache_get('kpis')[0] or {}),
+            'total_aps': total,
+            'aps_up': up,
+            'aps_down': down,
+        })
+        return reply, table if table else {"total": total, "up": up, "down": down}, 200
+
+    except Exception as e:
+        logger.error(f"Chat ap_status error: {e}")
+        return f"Could not retrieve AP status: {e}", None, 500
+
+
+def _handle_site_health(text, _session_id):
+    """Return per-site health scores."""
+    site_name = IntentClassifier.extract_site_name(text)
+
+    cached = _chat_cache_get('sites-health', max_age=30)
+    if cached and not site_name:
+        sites = cached if isinstance(cached, list) else cached.get('items', [])
+        if sites:
+            worst = sorted(sites, key=lambda s: s.get('health', s.get('healthScore', 100)))[:5]
+            lines = ["**Site health** (worst first):"]
+            for s in worst:
+                score = s.get('health', s.get('healthScore', s.get('score', '?')))
+                name  = s.get('site', s.get('siteName', s.get('name', '?')))
+                lines.append(f"- {name}: {score}")
+            return "\n".join(lines), sites, 200
+
+    try:
+        r = aruba_client.get('/network-monitoring/v1/sites-health')
+        sites = r.get('items', r.get('sites', []))
+
+        if site_name:
+            sites = [
+                s for s in sites
+                if site_name.lower() in (
+                    s.get('siteName', s.get('name', ''))
+                ).lower()
+            ]
+
+        if not sites:
+            clause = f" matching '{site_name}'" if site_name else ""
+            return f"No sites found{clause}.", [], 200
+
+        def _safe_int(v, default=0):
+            try:
+                return int(v) if not isinstance(v, dict) else default
+            except (TypeError, ValueError):
+                return default
+
+        normalized = [
+            {
+                "name":    s.get('siteName', s.get('name', '?')),
+                "health":  _safe_int(s.get('health', s.get('healthScore', s.get('score', 0)))),
+                "devices": _safe_int(s.get('deviceCount', s.get('total_device_count', 0))),
+                "clients": _safe_int(s.get('clientCount', s.get('total_client_count', 0))),
+            }
+            for s in sites
+        ]
+        normalized.sort(key=lambda s: s['health'])
+
+        lines = ["**Site health**:"]
+        for s in normalized[:15]:
+            emoji = "🔴" if s['health'] < 60 else "🟡" if s['health'] < 80 else "🟢"
+            lines.append(
+                f"- {emoji} {s['name']}: score {s['health']}, "
+                f"{s['devices']} devices, {s['clients']} clients"
+            )
+        if len(normalized) > 15:
+            lines.append(f"  … and {len(normalized) - 15} more sites.")
+
+        # Warm the sites-health cache for subsequent requests
+        _poll_cache_set('sites-health', normalized)
+        return "\n".join(lines), normalized, 200
+
+    except Exception as e:
+        logger.error(f"Chat site_health error: {e}")
+        return f"Could not retrieve site health: {e}", None, 500
+
+
+# ---------------------------------------------------------------------------
+# ENHANCED HANDLERS — replacing below through _HANDLERS
+# ---------------------------------------------------------------------------
+
+
+def _handle_clients_by_ssid(text, _session_id):
+    """List clients on a given SSID.  Requires site-id or iterates all sites."""
+    ssid = IntentClassifier.extract_ssid(text)
+    if not ssid:
+        return (
+            "Which SSID would you like to check? "
+            "Try: *'clients on SSID CorpWiFi'*",
+            None, 200
+        )
+
+    try:
+        # Fetch clients without site filter (monitoring v1 endpoint)
+        try:
+            r = aruba_client.get('/monitoring/v1/clients')
+        except Exception:
+            r = aruba_client.get('/network-monitoring/v1/clients')
+
+        all_items = r.get('items', r.get('clients', []))
+        matched = [
+            c for c in all_items
+            if ssid.lower() in (c.get('ssid', c.get('essid', '')) or '').lower()
+        ]
+
+        total = len(matched)
+        sample = [
+            {
+                "mac":      c.get('macaddr', c.get('mac', '?')),
+                "hostname": c.get('name', c.get('hostname', '?')),
+                "ip":       c.get('ip_address', c.get('ipAddress', '?')),
+                "signal":   c.get('signal_db', c.get('rssi', '?')),
+            }
+            for c in matched[:10]
+        ]
+
+        reply = f"**{total}** client(s) connected to SSID **{ssid}**."
+        if sample:
+            rows = "\n".join(
+                f"  - {s['hostname']} ({s['mac']}) IP: {s['ip']}"
+                for s in sample
+            )
+            reply += f"\n{rows}"
+        if total > 10:
+            reply += f"\n  … and {total - 10} more."
+
+        return reply, {"ssid": ssid, "count": total, "sample": sample}, 200
+
+    except Exception as e:
+        logger.error(f"Chat clients_by_ssid error: {e}")
+        return f"Could not retrieve clients for SSID {ssid}: {e}", None, 500
+
+
+def _handle_client_by_mac(text, _session_id):
+    """Look up a single client by MAC address."""
+    mac = IntentClassifier.extract_mac(text)
+    if not mac:
+        return (
+            "Please provide a MAC address, e.g. *'find client aa:bb:cc:dd:ee:ff'*",
+            None, 200
+        )
+
+    try:
+        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}')
+        name = r.get('name', r.get('hostname', mac))
+        ip   = r.get('ip_address', r.get('ipAddress', '?'))
+        ssid = r.get('ssid', r.get('essid', '?'))
+        site = r.get('site', r.get('siteName', '?'))
+        ap   = r.get('associated_device', r.get('apSerial', '?'))
+
+        reply = (
+            f"Client **{name}** ({mac}):\n"
+            f"- IP: {ip}\n"
+            f"- SSID: {ssid}\n"
+            f"- Site: {site}\n"
+            f"- Associated AP: {ap}"
+        )
+        return reply, r, 200
+
+    except Exception as e:
+        err = str(e)
+        if '404' in err or 'Not Found' in err:
+            return f"No active client found with MAC **{mac}**.", None, 200
+        logger.error(f"Chat client_by_mac error: {e}")
+        return f"Error looking up client {mac}: {e}", None, 500
+
+
+def _handle_switch_port_errors(text, _session_id):
+    """Identify switches with elevated port error counters."""
+    try:
+        r = aruba_client.get('/network-monitoring/v1/devices')
+        switches = [
+            d for d in r.get('items', [])
+            if d.get('deviceType', '').upper() == 'SWITCH'
+        ]
+
+        if not switches:
+            return "No switches found in inventory.", [], 200
+
+        # Fetch interface error stats for each switch — limit to first 10 to
+        # avoid burning daily quota; the worst offender usually surfaces fast.
+        results = []
+        for sw in switches[:10]:
+            serial = sw.get('serial', sw.get('serialNumber', ''))
+            name   = sw.get('name', sw.get('hostname', serial))
+            if not serial:
+                continue
+            try:
+                iface_r = aruba_client.get(
+                    f'/network-monitoring/v1/switches/{serial}/interfaces'
+                )
+                ifaces = iface_r.get('items', iface_r if isinstance(iface_r, list) else [])
+                total_errors = sum(
+                    (i.get('inputErrors', 0) or 0) + (i.get('outputErrors', 0) or 0)
+                    for i in ifaces
+                )
+                results.append({
+                    "serial":       serial,
+                    "name":         name,
+                    "site":         sw.get('siteName', sw.get('site', '?')),
+                    "total_errors": total_errors,
+                    "iface_count":  len(ifaces),
+                })
+            except Exception:
+                pass   # skip switches where interface API isn't available
+
+        if not results:
+            return (
+                "Could not retrieve interface stats for any switch. "
+                "Check that the monitoring API is available.",
+                [], 200
+            )
+
+        results.sort(key=lambda x: x['total_errors'], reverse=True)
+        top = results[0]
+
+        lines = [
+            f"**Top switch by port errors**: **{top['name']}** ({top['serial']}) "
+            f"at {top['site']} — **{top['total_errors']}** total interface errors "
+            f"across {top['iface_count']} ports.\n",
+            "**All sampled switches** (up to 10):",
+        ]
+        for r_ in results:
+            lines.append(
+                f"- {r_['name']} ({r_['serial']}): {r_['total_errors']} errors"
+            )
+
+        return "\n".join(lines), results, 200
+
+    except Exception as e:
+        logger.error(f"Chat switch_port_errors error: {e}")
+        return f"Could not retrieve switch error data: {e}", None, 500
+
+
+def _handle_bounce_ap(text, session_id):
+    """Reboot an AP by serial number."""
+    if not _chat_action_allowed(session_id):
+        return (
+            "Slow down — you've reached the limit of "
+            f"{_CHAT_ACTION_LIMIT} destructive actions per minute. "
+            "Please wait before trying again.",
+            None, 429
+        )
+
+    serial = IntentClassifier.extract_serial(text)
+    if not serial:
+        return (
+            "Please specify the AP serial number, "
+            "e.g. *'reboot AP CNXXXXXX'*",
+            None, 200
+        )
+
+    try:
+        # Aruba Central AP reboot endpoint
+        r = aruba_client.post(
+            f'/device-management/v1/device/{serial}/action/reboot',
+            data={}
+        )
+        reply = (
+            f"Reboot command sent to AP **{serial}**. "
+            "The AP will be unreachable for 60-90 seconds while it restarts."
+        )
+        return reply, {"serial": serial, "result": r}, 200
+
+    except Exception as e:
+        err = str(e)
+        # Try alternative endpoint used by some firmware versions
+        try:
+            r2 = aruba_client.post(
+                f'/configuration/v1/devices/{serial}/action/reboot',
+                data={}
+            )
+            reply = (
+                f"Reboot command sent to AP **{serial}** (via alt endpoint)."
+            )
+            return reply, {"serial": serial, "result": r2}, 200
+        except Exception as e2:
+            logger.error(f"Chat bounce_ap error: primary={e} fallback={e2}")
+            return (
+                f"Failed to reboot AP **{serial}**: {err}\n"
+                "Verify the serial number and that you have write permissions.",
+                None, 500
+            )
+
+
+def _handle_bounce_port(text, session_id):
+    """Bounce a switch port (CX portBounce API)."""
+    if not _chat_action_allowed(session_id):
+        return (
+            "Rate limit: too many destructive actions. "
+            f"Maximum {_CHAT_ACTION_LIMIT} per {_CHAT_ACTION_WINDOW}s.",
+            None, 429
+        )
+
+    serial = IntentClassifier.extract_serial(text)
+    port   = IntentClassifier.extract_port(text)
+
+    if not serial:
+        return (
+            "Please specify the switch serial and port, "
+            "e.g. *'bounce port 1/1/5 on switch SWXXXXXX'*",
+            None, 200
+        )
+    if not port:
+        return (
+            f"Which port on switch **{serial}**? "
+            "e.g. *'bounce port 1/1/5 on switch {serial}'*",
+            None, 200
+        )
+
+    try:
+        resp = aruba_client.post(
+            f'/network-troubleshooting/v1alpha1/cx/{serial}/portBounce',
+            data={"ports": [port]}
+        )
+        location = resp.get('location', '')
+        task_match = re.search(r'/async-operations/([a-f0-9\-]+)', location)
+        task_id = task_match.group(1) if task_match else None
+
+        reply = (
+            f"Port bounce initiated on **{serial}** port **{port}**."
+        )
+        if task_id:
+            reply += f" Task ID: `{task_id}`. Port will cycle in ~5 seconds."
+
+        return reply, {"serial": serial, "port": port, "task_id": task_id}, 200
+
+    except Exception as e:
+        logger.error(f"Chat bounce_port error: {e}")
+        return f"Failed to bounce port {port} on {serial}: {e}", None, 500
+
+
+def _handle_alert_summary(text, _session_id):
+    """Return recent alerts, optionally filtered by severity."""
+    severity = IntentClassifier.extract_severity(text)
+    try:
+        params = {'limit': 20}
+        if severity:
+            params['severity'] = severity
+
+        # Try multiple alert endpoints (correct namespace is network-notifications)
+        alerts = []
+        for ep in ['/network-notifications/v1/alerts', '/network-notifications/v1alpha1/alerts', '/network-monitoring/v1/alerts']:
+            try:
+                r = aruba_client.get(ep, params=params)
+                alerts = r.get('alerts', r.get('items', []))
+                if alerts or r.get('count', 0) == 0:
+                    break
+            except Exception:
+                continue
+
+        if not alerts:
+            sev_clause = f" with severity '{severity}'" if severity else ""
+            return f"No alerts found{sev_clause}.", [], 200
+
+        lines = [f"**Recent alerts** ({len(alerts)} shown):"]
+        for a in alerts[:10]:
+            sev   = a.get('severity', '?').upper()
+            desc  = a.get('description', a.get('alert_type', '?'))
+            atime = a.get('created_at', a.get('ts', ''))
+            aid   = a.get('id', a.get('alert_id', ''))
+            lines.append(f"- [{sev}] {desc} (id: {aid})")
+
+        if len(alerts) > 10:
+            lines.append(f"  … and {len(alerts) - 10} more.")
+
+        return "\n".join(lines), alerts, 200
+
+    except Exception as e:
+        logger.error(f"Chat alert_summary error: {e}")
+        return f"Could not retrieve alerts: {e}", None, 500
+
+
+def _handle_firmware_status(text, _session_id):
+    """Summarise firmware versions across the fleet."""
+    try:
+        r = aruba_client.get('/network-monitoring/v1/devices')
+        items = r.get('items', [])
+
+        version_map: dict = {}
+        outdated_examples = []
+        for d in items:
+            fw = d.get('firmwareVersion', d.get('firmware_version', 'unknown'))
+            version_map[fw] = version_map.get(fw, 0) + 1
+
+        lines = [f"**Firmware summary** across {len(items)} devices:"]
+        for fw, count in sorted(version_map.items(), key=lambda x: -x[1]):
+            lines.append(f"- {fw}: {count} device(s)")
+
+        return "\n".join(lines), version_map, 200
+
+    except Exception as e:
+        logger.error(f"Chat firmware_status error: {e}")
+        return f"Could not retrieve firmware data: {e}", None, 500
+
+
+def _handle_wlan_list(text, _session_id):
+    """List configured WLANs."""
+    try:
+        r = aruba_client.get('/network-config/v1alpha1/wlan-ssids')
+        wlans = r.get('wlan-ssid', r.get('items', []))
+
+        if not wlans:
+            return "No WLANs found in the configuration.", [], 200
+
+        lines = [f"**{len(wlans)} WLAN(s)** configured:"]
+        for w in wlans[:20]:
+            ssid    = w.get('ssid', w.get('essid', {}).get('name', '?'))
+            enabled = w.get('enable', True)
+            band    = w.get('rf-band', '?')
+            status_str = "enabled" if enabled else "disabled"
+            lines.append(f"- **{ssid}** ({band}, {status_str})")
+        if len(wlans) > 20:
+            lines.append(f"  … and {len(wlans) - 20} more.")
+
+        return "\n".join(lines), wlans[:20], 200
+
+    except Exception as e:
+        logger.error(f"Chat wlan_list error: {e}")
+        return f"Could not retrieve WLAN list: {e}", None, 500
+
+
+def _handle_top_clients(text, _session_id):
+    """Show top N bandwidth-consuming clients."""
+    try:
+        r = aruba_client.get('/network-monitoring/v1/clients/usage/topn')
+        clients = r.get('items', r.get('clients', []))
+
+        if not clients:
+            return "No client usage data available.", [], 200
+
+        lines = [f"**Top {min(len(clients), 10)} clients by bandwidth**:"]
+        for c in clients[:10]:
+            name   = c.get('name', c.get('hostname', c.get('macaddr', '?')))
+            usage  = c.get('usage', c.get('total_bytes', 0))
+            ssid   = c.get('ssid', '?')
+            usage_mb = round(usage / 1_000_000, 2) if isinstance(usage, (int, float)) else usage
+            lines.append(f"- **{name}** on {ssid}: {usage_mb} MB")
+
+        return "\n".join(lines), clients[:10], 200
+
+    except Exception as e:
+        logger.error(f"Chat top_clients error: {e}")
+        return f"Could not retrieve top client data: {e}", None, 500
+
+
+def _handle_device_inventory(text, _session_id):
+    """Device inventory summary."""
+    cached = _chat_cache_get('kpis', max_age=60)
+    if cached:
+        total   = cached.get('total_devices', 0)
+        by_type = {d['type']: d['count'] for d in cached.get('devices_by_type', [])}
+        lines   = [f"**Fleet inventory**: **{total}** total devices"]
+        for dt, cnt in sorted(by_type.items()):
+            lines.append(f"- {dt}: {cnt}")
+        return "\n".join(lines), cached, 200
+
+    try:
+        r = aruba_client.get('/network-monitoring/v1/devices')
+        items   = r.get('items', [])
+        total   = r.get('count', len(items))
+        by_type: dict = {}
+        for d in items:
+            dt = d.get('deviceType', d.get('type', 'Unknown'))
+            by_type[dt] = by_type.get(dt, 0) + 1
+
+        lines = [f"**Fleet inventory**: **{total}** total devices"]
+        for dt, cnt in sorted(by_type.items()):
+            lines.append(f"- {dt}: {cnt}")
+
+        return "\n".join(lines), {"total": total, "by_type": by_type}, 200
+
+    except Exception as e:
+        logger.error(f"Chat device_inventory error: {e}")
+        return f"Could not retrieve device inventory: {e}", None, 500
+
+
+def _handle_ack_alert(text, session_id):
+    """Acknowledge an alert by ID."""
+    if not _chat_action_allowed(session_id):
+        return (
+            f"Rate limit: max {_CHAT_ACTION_LIMIT} actions per minute.",
+            None, 429
+        )
+
+    alert_id = IntentClassifier.extract_alert_id(text)
+    if not alert_id:
+        return (
+            "Please provide the alert ID, "
+            "e.g. *'acknowledge alert 12345abc'*",
+            None, 200
+        )
+
+    try:
+        aruba_client.post(
+            f'/network-monitoring/v1/alerts/{alert_id}/acknowledge'
+        )
+        return (
+            f"Alert **{alert_id}** acknowledged.",
+            {"alert_id": alert_id, "acknowledged": True}, 200
+        )
+    except Exception as e:
+        logger.error(f"Chat ack_alert error: {e}")
+        return f"Could not acknowledge alert {alert_id}: {e}", None, 500
+
+
+def _handle_ping_test(text, _session_id):
+    """Run a ping test from a switch to a destination."""
+    serial = IntentClassifier.extract_serial(text)
+    # Extract IP / hostname (simple heuristic)
+    dest_m = re.search(
+        r'\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b',
+        text, re.IGNORECASE
+    )
+    dest = dest_m.group(1) if dest_m else None
+
+    if not serial:
+        return (
+            "Specify the switch serial and destination, "
+            "e.g. *'ping 8.8.8.8 from switch SWXXXXXX'*",
+            None, 200
+        )
+    if not dest:
+        return (
+            f"What IP/hostname should I ping from switch **{serial}**?",
+            None, 200
+        )
+
+    try:
+        resp = aruba_client.post(
+            f'/network-troubleshooting/v1alpha1/cx/{serial}/ping',
+            data={"destination": dest}
+        )
+        location = resp.get('location', '')
+        task_match = re.search(r'/async-operations/([a-f0-9\-]+)', location)
+        if not task_match:
+            return (
+                f"Ping initiated to **{dest}** from **{serial}** but could not "
+                "track the task ID. Check the troubleshooting panel for results.",
+                resp, 200
+            )
+
+        task_id = task_match.group(1)
+        # Poll up to 15 seconds inline (chat users expect a quick answer)
+        for _ in range(15):
+            time.sleep(1)
+            poll = aruba_client.get(
+                f'/network-troubleshooting/v1alpha1/cx/{serial}/ping/async-operations/{task_id}'
+            )
+            status = poll.get('status', '')
+            if status == 'COMPLETED':
+                output = poll.get('output', '')
+                return (
+                    f"Ping from **{serial}** to **{dest}** completed:\n```\n{output}\n```",
+                    poll, 200
+                )
+            elif status == 'FAILED':
+                return (
+                    f"Ping from **{serial}** to **{dest}** failed: "
+                    f"{poll.get('failReason', 'unknown reason')}",
+                    poll, 200
+                )
+
+        return (
+            f"Ping from **{serial}** to **{dest}** still in progress "
+            f"(task `{task_id}`). Check the troubleshooting panel.",
+            {"task_id": task_id}, 200
+        )
+
+    except Exception as e:
+        logger.error(f"Chat ping_test error: {e}")
+        return f"Could not run ping: {e}", None, 500
+
+
+def _handle_device_status(text, _session_id):
+    """Show all online/offline devices, optionally filtered by type or status."""
+    want_down = any(w in text.lower() for w in ['down','offline','fail','unreachable'])
+    want_type = None
+    for t in ['switch','gateway','ap','access point']:
+        if t in text.lower():
+            want_type = t
+            break
+
+    try:
+        # Use device-inventory — most complete list
+        r = aruba_client.get('/network-monitoring/v1alpha1/device-inventory', params={'limit': 200})
+        items = r.get('devices', r.get('items', []))
+
+        if not items:
+            # fallback to monitoring endpoint
+            r = aruba_client.get('/network-monitoring/v1/devices', params={'limit': 200})
+            items = r.get('devices', r.get('items', []))
+
+        if want_type:
+            items = [d for d in items if want_type.replace(' ','').lower() in
+                     (d.get('deviceType', d.get('device_type', ''))).lower()]
+        if want_down:
+            items = [d for d in items if str(d.get('status','')).upper() not in {'UP','ONLINE','CONNECTED'}]
+
+        total = len(items)
+        table = [{
+            'Name':    d.get('deviceName', d.get('name', '?')),
+            'Type':    d.get('deviceType', d.get('device_type', '?')),
+            'Status':  d.get('status', '?'),
+            'IP':      d.get('ipv4', d.get('ip_address', '?')),
+            'Serial':  d.get('serialNumber', d.get('serial', '?')),
+            'Site':    d.get('siteName', d.get('site', '?')),
+        } for d in items[:25]]
+
+        filter_desc = []
+        if want_type: filter_desc.append(want_type)
+        if want_down: filter_desc.append('offline')
+        desc = ' '.join(filter_desc) or 'all'
+        reply = f"**{total}** {desc} device(s) found." if total else f"No {desc} devices found — everything looks good!"
+        return reply, table if table else None, 200
+    except Exception as e:
+        logger.error(f"Chat device_status error: {e}")
+        return f"Could not retrieve device status: {e}", None, 500
+
+
+def _handle_find_client(text, _session_id):
+    """Find a client by IP or MAC address."""
+    mac = IntentClassifier.extract_mac(text)
+    # Try to extract IP
+    ip_m = re.search(r'\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b', text)
+    ip = ip_m.group(1) if ip_m else None
+
+    if not mac and not ip:
+        return ("Please provide a MAC or IP address, e.g. *'find client 192.168.1.50'*", None, 200)
+
+    try:
+        r = aruba_client.get('/network-monitoring/v1/clients', params={'limit': 500})
+        clients = r.get('clients', r.get('items', []))
+        found = []
+        for c in clients:
+            c_mac = (c.get('macaddr', c.get('mac', '')) or '').lower().replace('-', ':')
+            c_ip  = c.get('ip_address', c.get('ipv4', '')) or ''
+            if (mac and mac in c_mac) or (ip and ip == c_ip):
+                found.append(c)
+
+        if not found:
+            query = mac or ip
+            return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
+
+        c = found[0]
+        details = {
+            'MAC':      c.get('macaddr', c.get('mac', '?')),
+            'Hostname': c.get('name', c.get('hostname', '?')),
+            'IP':       c.get('ip_address', c.get('ipv4', '?')),
+            'Status':   c.get('status', '?'),
+            'Type':     c.get('clientConnectionType', c.get('type', '?')),
+            'SSID':     c.get('ssid', c.get('wlanName', '?')),
+            'AP':       c.get('associated_device', c.get('ap_serial', '?')),
+        }
+        reply = f"Client found: **{details['Hostname']}** ({details['MAC']}) — {details['Status']}"
+        return reply, [details], 200
+    except Exception as e:
+        logger.error(f"Chat find_client error: {e}")
+        return f"Could not search for client: {e}", None, 500
+
+
+def _handle_disconnect_client(text, session_id):
+    """Force-disconnect a client by MAC address."""
+    if not _chat_action_allowed(session_id):
+        return (f"Rate limit: max {_CHAT_ACTION_LIMIT} actions per minute.", None, 429)
+
+    mac = IntentClassifier.extract_mac(text)
+    if not mac:
+        return ("Please provide the client MAC address, e.g. *'disconnect client aa:bb:cc:dd:ee:ff'*", None, 200)
+
+    try:
+        # Aruba Central disconnect client endpoint
+        aruba_client.post(f'/network-monitoring/v1/clients/{mac}/disconnect')
+        return (f"Disconnect request sent for client **{mac}**.", {"mac": mac, "action": "disconnect"}, 200)
+    except Exception as e:
+        logger.error(f"Chat disconnect_client error: {e}")
+        return f"Could not disconnect client {mac}: {e}", None, 500
+
+
+def _handle_traceroute(text, _session_id):
+    """Run traceroute from a switch."""
+    serial = IntentClassifier.extract_serial(text)
+    dest_m = re.search(r'\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b', text, re.IGNORECASE)
+    dest = dest_m.group(1) if dest_m else None
+
+    if not serial:
+        return ("Specify the switch serial, e.g. *'traceroute to 8.8.8.8 from switch SWXXXXXX'*", None, 200)
+    if not dest:
+        return (f"What destination should I trace from switch **{serial}**?", None, 200)
+
+    try:
+        resp = aruba_client._request('POST',
+            f'/network-troubleshooting/v1alpha1/cx/{serial}/traceroute',
+            json={"destination": dest})
+        if resp.status_code == 202:
+            data = resp.json()
+            task_id = (data.get('location', '') or '').split('/')[-1]
+            return (
+                f"Traceroute from **{serial}** to **{dest}** started (task `{task_id}`). "
+                "Check the Troubleshoot page for results.",
+                {"serial": serial, "dest": dest, "task_id": task_id}, 200
+            )
+        return (f"Traceroute request returned HTTP {resp.status_code}.", None, 200)
+    except Exception as e:
+        logger.error(f"Chat traceroute error: {e}")
+        return f"Could not run traceroute: {e}", None, 500
+
+
+def _handle_client_count(_text, _session_id):
+    """Show total client count and breakdown by type."""
+    try:
+        r = aruba_client.get('/network-monitoring/v1/clients', params={'limit': 500})
+        clients = r.get('clients', r.get('items', []))
+
+        total = len(clients)
+        if not clients:
+            return "No clients currently connected.", {"total": 0}, 200
+
+        # Count by connection type (wireless/wired)
+        by_type: dict = {}
+        by_status: dict = {}
+        for c in clients:
+            ctype = c.get('clientConnectionType', c.get('network_type', c.get('type', 'Unknown')))
+            cstatus = c.get('status', 'Unknown')
+            by_type[ctype] = by_type.get(ctype, 0) + 1
+            by_status[cstatus] = by_status.get(cstatus, 0) + 1
+
+        lines = [f"**{total}** client(s) currently connected:\n"]
+        lines.append("**By type:**")
+        for t, cnt in sorted(by_type.items(), key=lambda x: -x[1]):
+            lines.append(f"- {t}: {cnt}")
+        lines.append("\n**By status:**")
+        for s, cnt in sorted(by_status.items(), key=lambda x: -x[1]):
+            lines.append(f"- {s}: {cnt}")
+
+        table = [{"Type": t, "Count": cnt} for t, cnt in sorted(by_type.items(), key=lambda x: -x[1])]
+        return "\n".join(lines), table, 200
+
+    except Exception as e:
+        logger.error(f"Chat client_count error: {e}")
+        return f"Could not retrieve client count: {e}", None, 500
+
+
+def _handle_site_list(_text, _session_id):
+    """List all sites with device counts."""
+    try:
+        r = aruba_client.get('/network-config/v1/sites')
+        sites = r.get('sites', r.get('items', []))
+
+        if not sites:
+            return "No sites found.", [], 200
+
+        total = len(sites)
+        table = [
+            {
+                "Name":    s.get('site_name', s.get('name', '?')),
+                "Devices": s.get('associated_device_count', s.get('deviceCount', 0)),
+                "ID":      s.get('site_id', s.get('id', '?')),
+            }
+            for s in sites[:30]
+        ]
+        table.sort(key=lambda x: x['Name'])
+
+        lines = [f"**{total} site(s)** in your network:"]
+        for row in table:
+            lines.append(f"- {row['Name']} ({row['Devices']} device(s))")
+        if total > 30:
+            lines.append(f"  … and {total - 30} more.")
+
+        return "\n".join(lines), table, 200
+
+    except Exception as e:
+        logger.error(f"Chat site_list error: {e}")
+        return f"Could not retrieve site list: {e}", None, 500
+
+
+def _handle_top_bandwidth(_text, _session_id):
+    """Show top APs by bandwidth usage."""
+    try:
+        r = aruba_client.get('/network-monitoring/v1/top-aps-by-usage', params={'limit': 5})
+        aps = r.get('items', r.get('aps', r.get('data', [])))
+
+        if not aps:
+            # Fallback: try top clients by usage
+            r2 = aruba_client.get('/network-monitoring/v1/clients/usage/topn', params={'limit': 5})
+            clients = r2.get('items', r2.get('clients', []))
+            if clients:
+                table = [
+                    {
+                        "Client":  c.get('name', c.get('hostname', c.get('macaddr', '?'))),
+                        "SSID":    c.get('ssid', '?'),
+                        "Usage MB": round(c.get('usage', c.get('total_bytes', 0)) / 1_000_000, 2),
+                    }
+                    for c in clients[:5]
+                ]
+                lines = ["**Top 5 clients by bandwidth:**"]
+                for row in table:
+                    lines.append(f"- {row['Client']} on {row['SSID']}: {row['Usage MB']} MB")
+                return "\n".join(lines), table, 200
+            return "No bandwidth usage data available.", [], 200
+
+        table = [
+            {
+                "AP":      a.get('name', a.get('hostname', '?')),
+                "Site":    a.get('siteName', a.get('site', '?')),
+                "Tx MB":   round(a.get('tx_bytes', a.get('txBytes', 0)) / 1_000_000, 2),
+                "Rx MB":   round(a.get('rx_bytes', a.get('rxBytes', 0)) / 1_000_000, 2),
+            }
+            for a in aps[:5]
+        ]
+        lines = ["**Top 5 APs by bandwidth usage:**"]
+        for row in table:
+            lines.append(f"- {row['AP']} ({row['Site']}): Tx {row['Tx MB']} MB / Rx {row['Rx MB']} MB")
+
+        return "\n".join(lines), table, 200
+
+    except Exception as e:
+        logger.error(f"Chat top_bandwidth error: {e}")
+        return f"Could not retrieve bandwidth data: {e}", None, 500
+
+
+def _handle_device_events(text, _session_id):
+    """Show recent events for a specific device (by serial number)."""
+    serial = IntentClassifier.extract_serial(text) if hasattr(IntentClassifier, 'extract_serial') else None
+    # Fall back to regex extraction
+    if not serial:
+        m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+        serial = m.group(1) if m else None
+    if not serial:
+        return "Please provide a device serial number. Example: *'events for device ABC123456'*", None, 200
+    try:
+        data = aruba_client.get(
+            f"/network-monitoring/v1/events",
+            params={"serial": serial, "limit": 20},
+        )
+        events = data.get("events", data.get("items", []))
+        if not events:
+            return f"No events found for device **{serial}**.", [], 200
+        table = [
+            {
+                "Time":       e.get("createdAt", e.get("timestamp", ""))[:19].replace("T", " "),
+                "Type":       e.get("eventType", e.get("type", "")),
+                "Severity":   e.get("severity", ""),
+                "Description":e.get("description", e.get("details", ""))[:80],
+            }
+            for e in events[:15]
+        ]
+        return f"**Last {len(table)} events for {serial}:**", table, 200
+    except Exception as e:
+        logger.error(f"Chat device_events error: {e}")
+        return f"Could not retrieve events for {serial}: {e}", None, 500
+
+
+def _handle_switch_vlans(text, _session_id):
+    """Show VLANs configured on a switch."""
+    serial = None
+    m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+    serial = m.group(1) if m else None
+    if not serial:
+        return "Please provide a switch serial number. Example: *'VLANs on switch ABC123'*", None, 200
+    try:
+        data = aruba_client.get(
+            f"/network-monitoring/v1/cx_switches/{serial}/vlan",
+        )
+        vlans = data.get("vlans", data.get("items", [data] if data and "vlanId" in data else []))
+        if not vlans:
+            return f"No VLAN data found for **{serial}**.", [], 200
+        table = [
+            {
+                "VLAN ID":   v.get("vlanId", v.get("id", "")),
+                "Name":      v.get("name", ""),
+                "Status":    v.get("status", ""),
+                "Ports":     v.get("portCount", ""),
+            }
+            for v in vlans[:30]
+        ]
+        return f"**VLANs on {serial}:**", table, 200
+    except Exception as e:
+        logger.error(f"Chat switch_vlans error: {e}")
+        return f"Could not retrieve VLANs for {serial}: {e}", None, 500
+
+
+def _handle_ap_radios(text, _session_id):
+    """Show radio info for an AP."""
+    serial = None
+    m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+    serial = m.group(1) if m else None
+    if not serial:
+        return "Please provide an AP serial number. Example: *'radios on AP ABC123'*", None, 200
+    try:
+        data = aruba_client.get(
+            f"/network-monitoring/v1/aps/{serial}/rf",
+        )
+        radios = data.get("radios", data.get("items", []))
+        if not radios:
+            return f"No radio data found for AP **{serial}**.", [], 200
+        table = [
+            {
+                "Radio":       r.get("radioNumber", r.get("index", "")),
+                "Band":        r.get("radioType", r.get("band", "")),
+                "Channel":     r.get("channel", ""),
+                "TX Power":    f"{r.get('txPower', '')} dBm" if r.get("txPower") else "",
+                "Clients":     r.get("clientCount", ""),
+                "Utilization": f"{r.get('utilization', '')}%" if r.get("utilization") is not None else "",
+            }
+            for r in radios
+        ]
+        return f"**Radios on AP {serial}:**", table, 200
+    except Exception as e:
+        logger.error(f"Chat ap_radios error: {e}")
+        return f"Could not retrieve radio info for {serial}: {e}", None, 500
+
+
+def _handle_audit_logs(_text, _session_id):
+    """Show recent audit log entries (configuration changes)."""
+    try:
+        data = aruba_client.get(
+            "/platform/auditlogs/v1/logs",
+            params={"limit": 20},
+        )
+        logs = data.get("audit_logs", data.get("items", data.get("logs", [])))
+        if not logs:
+            return "No recent audit log entries found.", [], 200
+        table = [
+            {
+                "Time":      l.get("ts", l.get("timestamp", ""))[:19].replace("T", " "),
+                "User":      l.get("user_str", l.get("username", "")),
+                "Action":    l.get("description", l.get("action", ""))[:60],
+                "Target":    l.get("target", l.get("device", "")),
+                "Result":    l.get("result", ""),
+            }
+            for l in logs[:15]
+        ]
+        return f"**Last {len(table)} audit log entries:**", table, 200
+    except Exception as e:
+        logger.error(f"Chat audit_logs error: {e}")
+        return f"Could not retrieve audit logs: {e}", None, 500
+
+
+def _handle_unknown(text, _session_id):
+    # Try to give a smart suggestion based on words in the message
+    hints = []
+    msg_lower = text.lower()
+    if any(w in msg_lower for w in ['device','router','switch','ap','gateway']): hints.append("*'show devices down'* or *'device inventory'*")
+    if any(w in msg_lower for w in ['client','user','connected','phone']): hints.append("*'show clients on SSID CorpWiFi'* or *'find client 192.168.1.5'*")
+    if any(w in msg_lower for w in ['alert','alarm','problem','issue']): hints.append("*'show alerts'* or *'show critical alerts'*")
+    if any(w in msg_lower for w in ['site','location','office']): hints.append("*'site health'*")
+    if not hints:
+        hints = ["*'how many APs are down'*", "*'show devices down'*", "*'device inventory'*"]
+
+    return (
+        "I didn't quite catch that. Try:\n" + "\n".join(f"- {h}" for h in hints) +
+        "\n\nType **help** to see everything I can do.",
+        None, 200
+    )
+
+
+# ---------------------------------------------------------------------------
+# Ollama LLM Agent — natural language understanding
+# ---------------------------------------------------------------------------
+
+_OLLAMA_URL   = os.environ.get('OLLAMA_URL',   'http://ollama:11434')
+_OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.1:8b')
+
+_OLLAMA_SYSTEM_PROMPT = """\
+You are a network assistant. Output ONLY valid JSON — no other text, no markdown.
+
+ALWAYS choose ONE of these two formats:
+  {"action":"respond","message":"your text answer here"}
+  {"action":"tool","tool":"TOOLNAME","params":{}}
+
+RULE: When in doubt, ALWAYS use "respond". Never guess a tool.
+
+Use "tool" ONLY when the user is clearly asking for live network data matching one of:
+
+  ap_status       — "how many APs are down" / "AP status" / "show APs"
+  alert_summary   — "show alerts" / "any critical alerts" / "open alerts"
+  site_health     — "site health" / "which sites are degraded"
+  site_list       — "list sites" / "what sites" / "show all sites"
+  client_count    — "how many clients" / "client count" / "connected users"
+  find_client     — "find client 192.168.1.1" / "where is MAC aa:bb:cc"  → params: {"query":"VALUE"}
+  clients_by_ssid — "clients on CorpWiFi" / "who is on SSID X"  → params: {"ssid":"NAME"}
+  firmware_status — "firmware" / "outdated firmware" / "software versions"
+  device_status   — "show devices down" / "switches offline"  → params: {"type":"ap"/"switch"/"gateway"/null}
+  device_inventory — "inventory" / "all devices" / "device list"
+  wlan_list       — "list WLANs" / "show SSIDs" / "wireless networks"
+  top_bandwidth   — "top bandwidth" / "most bandwidth" / "heavy users"
+  top_clients     — "top clients" / "most active clients"
+  switch_port_errors — "port errors" / "interface errors" / "switch errors"
+  device_events   — "events for device SERIAL" / "what happened on switch X"  → params: {"serial":"SERIAL"}
+  switch_vlans    — "VLANs on switch SERIAL" / "what VLANs"  → params: {"serial":"SERIAL"}
+  ap_radios       — "radios on AP SERIAL" / "AP radio info"  → params: {"serial":"SERIAL"}
+  audit_logs      — "audit log" / "recent changes" / "who changed what"
+  ping_test       — "ping IP from SERIAL"  → params: {"serial":"SERIAL","target":"IP"}
+  traceroute      — "traceroute to IP from SERIAL"  → params: {"serial":"SERIAL","target":"IP"}
+  bounce_ap       — "reboot AP SERIAL" / "restart AP"  → params: {"serial":"SERIAL"}
+  help            — "help" / "what can you do"
+
+EXAMPLES:
+User: "hello"                           → {"action":"respond","message":"Hello! I can show you AP status, alerts, client info, and more. Type 'help' for a full list."}
+User: "what is OSPF"                    → {"action":"respond","message":"OSPF (Open Shortest Path First) is a link-state routing protocol..."}
+User: "show me APs that are down"       → {"action":"tool","tool":"ap_status","params":{"status":"down"}}
+User: "how many clients are connected"  → {"action":"tool","tool":"client_count","params":{}}
+User: "show alerts"                     → {"action":"tool","tool":"alert_summary","params":{}}
+User: "find client 10.0.0.5"           → {"action":"tool","tool":"find_client","params":{"query":"10.0.0.5"}}
+User: "what is BGP"                     → {"action":"respond","message":"BGP (Border Gateway Protocol) is the routing protocol of the internet..."}
+User: "thanks"                          → {"action":"respond","message":"You're welcome! Let me know if you need anything else."}
+"""
+
+class OllamaAgent:
+    """LLM-powered intent classifier using local Ollama."""
+
+    @staticmethod
+    def is_available() -> bool:
+        try:
+            r = httpx.get(f"{_OLLAMA_URL}/api/tags", timeout=2.0)
+            return r.status_code == 200
+        except Exception:
+            return False
+
+    @staticmethod
+    def classify(text: str, history: list = None) -> dict | None:
+        """
+        Use Ollama to classify intent and extract params.
+        Returns {"name": tool_name, "params": {...}, "via": "ollama"}
+        or {"name": "__llm_response__", "message": "...", "via": "ollama"}
+        or None on failure (fallback to regex).
+        """
+        messages = [{"role": "system", "content": _OLLAMA_SYSTEM_PROMPT}]
+
+        # Last 6 turns of history for context
+        for h in (history or [])[-6:]:
+            role = h.get("role", "user")
+            content = h.get("content", "")
+            if isinstance(content, str) and content.strip():
+                messages.append({"role": role, "content": content})
+
+        messages.append({"role": "user", "content": text})
+
+        try:
+            resp = httpx.post(
+                f"{_OLLAMA_URL}/api/chat",
+                json={
+                    "model":   _OLLAMA_MODEL,
+                    "messages": messages,
+                    "stream":  False,
+                    "format":  "json",
+                    "options": {"temperature": 0.05, "num_predict": 256},
+                },
+                timeout=60.0,
+            )
+            resp.raise_for_status()
+            content = resp.json()["message"]["content"]
+            parsed  = json.loads(content)
+
+            action = parsed.get("action")
+            if action == "tool":
+                tool   = parsed.get("tool", "")
+                params = parsed.get("params") or {}
+                if tool in _HANDLERS_KEYS:
+                    return {"name": tool, "params": params, "via": "ollama"}
+                # Ollama hallucinated a tool name — ask it to answer directly instead
+                logger.warning(f"Ollama picked unknown tool '{tool}' — retrying as respond")
+                retry_msgs = [
+                    {"role": "system", "content": 'Output ONLY: {"action":"respond","message":"YOUR_ANSWER"}'},
+                    {"role": "user",   "content": text},
+                ]
+                retry_resp = httpx.post(
+                    f"{_OLLAMA_URL}/api/chat",
+                    json={
+                        "model":   _OLLAMA_MODEL,
+                        "messages": retry_msgs,
+                        "stream":  False,
+                        "format":  "json",
+                        "options": {"temperature": 0.1, "num_predict": 256},
+                    },
+                    timeout=60.0,
+                )
+                retry_resp.raise_for_status()
+                retry_parsed = json.loads(retry_resp.json()["message"]["content"])
+                msg = retry_parsed.get("message", "").strip()
+                if msg:
+                    return {"name": "__llm_response__", "message": msg, "via": "ollama"}
+                return None
+
+            if action == "respond":
+                msg = parsed.get("message", "").strip()
+                if msg:
+                    return {"name": "__llm_response__", "message": msg, "via": "ollama"}
+
+            return None
+
+        except httpx.TimeoutException:
+            logger.warning("Ollama timeout — falling back to regex classifier")
+            return None
+        except Exception as e:
+            logger.warning(f"Ollama classify error: {e}")
+            return None
+
+
+# ---------------------------------------------------------------------------
+# Intent → handler dispatch table
+# ---------------------------------------------------------------------------
+_HANDLERS = {
+    "help":               _handle_help,
+    "ap_status":          _handle_ap_status,
+    "site_health":        _handle_site_health,
+    "clients_by_ssid":    _handle_clients_by_ssid,
+    "client_by_mac":      _handle_client_by_mac,
+    "switch_port_errors": _handle_switch_port_errors,
+    "bounce_ap":          _handle_bounce_ap,
+    "bounce_port":        _handle_bounce_port,
+    "alert_summary":      _handle_alert_summary,
+    "firmware_status":    _handle_firmware_status,
+    "wlan_list":          _handle_wlan_list,
+    "top_clients":        _handle_top_clients,
+    "device_inventory":   _handle_device_inventory,
+    "ack_alert":          _handle_ack_alert,
+    "ping_test":          _handle_ping_test,
+    "device_status":      _handle_device_status,
+    "find_client":        _handle_find_client,
+    "disconnect_client":  _handle_disconnect_client,
+    "traceroute":         _handle_traceroute,
+    "client_count":       _handle_client_count,
+    "site_list":          _handle_site_list,
+    "top_bandwidth":      _handle_top_bandwidth,
+    # MCP-sourced tools
+    "device_events":      _handle_device_events,
+    "switch_vlans":       _handle_switch_vlans,
+    "ap_radios":          _handle_ap_radios,
+    "audit_logs":         _handle_audit_logs,
+}
+
+# Used by OllamaAgent to validate tool names (defined after _HANDLERS)
+_HANDLERS_KEYS = set(_HANDLERS.keys())
+
+
+# ---------------------------------------------------------------------------
+# POST /api/chat/message
+# ---------------------------------------------------------------------------
+#
+# Request JSON schema
+# -------------------
+# {
+#   "message":  "How many APs are down at Site-A?",   // required
+#   "history":  [                                       // optional, last N turns
+#     {"role": "user",      "content": "..."},
+#     {"role": "assistant", "content": "..."}
+#   ],
+#   "context":  {                                       // optional client hints
+#     "current_site": "Site-A",
+#     "current_page": "aps"
+#   }
+# }
+#
+# Response JSON schema
+# --------------------
+# {
+#   "reply":   "APs at Site-A: 12 total, 11 up, 1 down.",
+#   "intent":  "ap_status",
+#   "data":    { ... },           // structured data (null if not applicable)
+#   "history": [ ... ],           // echoed history + this turn appended
+#   "ts":      1712345678.123,
+#   "rate_limit": {
+#     "daily_calls_remaining": 4820,
+#     "actions_this_minute":   0
+#   }
+# }
+#
+# Error responses use standard HTTP status codes.  The `reply` field always
+# contains a human-readable explanation suitable for rendering in chat UI.
+# ---------------------------------------------------------------------------
+
+@app.route('/api/chat/llm-status', methods=['GET'])
+def chat_llm_status():
+    """Return Ollama availability and loaded model info."""
+    try:
+        r = httpx.get(f"{_OLLAMA_URL}/api/tags", timeout=3.0)
+        if r.status_code == 200:
+            tags = r.json()
+            models = [m['name'] for m in tags.get('models', [])]
+            model_ready = any(_OLLAMA_MODEL.split(':')[0] in m for m in models)
+            return jsonify({
+                "available": True,
+                "model": _OLLAMA_MODEL,
+                "model_ready": model_ready,
+                "models": models,
+                "url": _OLLAMA_URL,
+            })
+    except Exception as e:
+        pass
+    return jsonify({
+        "available": False,
+        "model": _OLLAMA_MODEL,
+        "model_ready": False,
+        "error": "Ollama not reachable",
+    })
+
+
+@app.route('/api/chat/intents', methods=['GET'])
+@require_session
+def chat_intents():
+    """Return the list of supported chat intents for UI hint rendering."""
+    return jsonify({
+        "intents": [
+            {
+                "name":        i["name"],
+                "description": i["description"],
+                "destructive": i["destructive"],
+            }
+            for i in _INTENTS
+        ],
+        "count": len(_INTENTS),
+    })
+
+
+@app.route('/api/chat/message', methods=['POST'])
+@require_session
+def chat_message():
+    """
+    MSP chatbot message handler.
+
+    Classifies the user's natural-language message into one of the known
+    intents and dispatches to the appropriate handler.  Stateless: conversation
+    history is carried in the request body and echoed back with this turn
+    appended so the React client can maintain context without server storage.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        message  = (body.get('message') or '').strip()
+        history  = body.get('history', [])
+        ctx      = body.get('context', {})
+
+        if not message:
+            return jsonify({
+                "error": "message field is required and must not be empty"
+            }), 400
+
+        # Sanity bounds — prevent abuse of history length
+        if len(history) > 40:
+            history = history[-40:]
+        if len(message) > 2000:
+            return jsonify({
+                "error": "message too long (max 2000 characters)"
+            }), 400
+
+        # Guard: require aruba_client (same pattern as other endpoints)
+        if not aruba_client:
+            return jsonify({
+                "reply":  "The portal is not connected to Aruba Central. "
+                          "Please configure credentials and try again.",
+                "intent": None,
+                "data":   None,
+                "history": history,
+                "ts":     time.time(),
+            }), 503
+
+        session_id = request.headers.get('X-Session-ID', 'unknown')
+
+        # ── Intent classification ────────────────────────────────────────────
+        # 1. Try fast regex classifier first
+        intent   = IntentClassifier.classify(message)
+        via      = "regex"
+
+        # 2. If no regex match, try Ollama (if available)
+        if intent is None:
+            ollama_result = OllamaAgent.classify(message, history)
+            if ollama_result:
+                intent = ollama_result
+                via    = "ollama"
+
+        # 3. Handle direct LLM responses (Ollama said "respond" not "tool")
+        if intent and intent.get('name') == '__llm_response__':
+            logger.info(
+                f"Chat: session={session_id[:8]}... intent=llm_response via=ollama "
+                f"msg={message[:80]!r}"
+            )
+            new_history = list(history) + [
+                {"role": "user",      "content": message},
+                {"role": "assistant", "content": intent['message']},
+            ]
+            return jsonify({
+                "reply":   intent['message'],
+                "intent":  "llm_response",
+                "via":     "ollama",
+                "model":   _OLLAMA_MODEL,
+                "data":    None,
+                "history": new_history,
+                "ts":      time.time(),
+            })
+
+        logger.info(
+            f"Chat: session={session_id[:8]}... "
+            f"intent={intent['name'] if intent else 'unknown'} "
+            f"via={via} msg={message[:80]!r}"
+        )
+
+        # Dispatch
+        if intent:
+            handler = _HANDLERS.get(intent['name'], _handle_unknown)
+        else:
+            handler = _handle_unknown
+
+        try:
+            reply, data, status = handler(message, session_id)
+        except Exception as handler_err:
+            logger.error(
+                f"Chat handler {intent['name'] if intent else '?'} "
+                f"raised: {handler_err}", exc_info=True
+            )
+            reply  = (
+                "An internal error occurred while processing your request. "
+                "Please try again or contact your administrator."
+            )
+            data   = None
+            status = 500
+
+        # Build updated history (stateless — client owns the store)
+        new_history = list(history) + [
+            {"role": "user",      "content": message},
+            {"role": "assistant", "content": reply},
+        ]
+
+        # Rate-limit telemetry
+        actions_this_min = len(
+            _chat_action_tracker.get(session_id, _collections.deque())
+        )
+        daily_remaining = max(
+            0,
+            5000 - api_call_tracker.get('daily_calls', 0)
+        )
+
+        response_body = {
+            "reply":   reply,
+            "intent":  intent['name'] if intent else None,
+            "via":     via,
+            "model":   _OLLAMA_MODEL if via == "ollama" else "regex",
+            "data":    data,
+            "history": new_history,
+            "ts":      time.time(),
+            "rate_limit": {
+                "daily_calls_remaining":  daily_remaining,
+                "actions_this_minute":    actions_this_min,
+                "action_limit_per_minute": _CHAT_ACTION_LIMIT,
+            },
+        }
+
+        return jsonify(response_body), status
+
+    except Exception as e:
+        logger.error(f"Chat endpoint fatal error: {e}", exc_info=True)
+        return jsonify({
+            "error": "Internal server error",
+            "reply": "Something went wrong. Please try again.",
+        }), 500
+
+
+# ============= New v1 API Endpoints =============
+
+@app.route('/api/clients/health', methods=['GET'])
+@require_session
+def get_client_health_summary():
+    """Aggregate client health: counts by status, type, and signal quality."""
+    try:
+        params = request.args.to_dict()
+        params.setdefault('limit', '500')
+        response = aruba_client.get('/network-monitoring/v1/clients', params=params)
+        items = response.get('items', [])
+
+        # Aggregate by status
+        by_status = {}
+        by_type = {}
+        by_signal = {'excellent': 0, 'good': 0, 'fair': 0, 'poor': 0, 'unknown': 0}
+
+        for client in items:
+            status = client.get('status', 'UNKNOWN')
+            by_status[status] = by_status.get(status, 0) + 1
+
+            ctype = client.get('clientConnectionType', client.get('connectionType', 'UNKNOWN'))
+            by_type[ctype] = by_type.get(ctype, 0) + 1
+
+            snr = client.get('snr', client.get('signalStrength', None))
+            if snr is None:
+                by_signal['unknown'] += 1
+            elif snr >= 40:
+                by_signal['excellent'] += 1
+            elif snr >= 25:
+                by_signal['good'] += 1
+            elif snr >= 15:
+                by_signal['fair'] += 1
+            else:
+                by_signal['poor'] += 1
+
+        return jsonify({
+            'total': response.get('total', len(items)),
+            'count': len(items),
+            'by_status': by_status,
+            'by_connection_type': by_type,
+            'by_signal_quality': by_signal,
+            'items': items
+        })
+    except Exception as e:
+        logger.error(f"Error fetching client health: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/devices/<serial>/ports', methods=['GET'])
+@require_session
+def get_switch_ports(serial):
+    """Get port/interface status for a switch using v1 switches interfaces endpoint."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching ports for {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/devices/<serial>/radio', methods=['GET'])
+@require_session
+def get_ap_radio(serial):
+    """Get AP radio details using v1 aps radios endpoint."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/radios', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching radio details for {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/devices/<serial>/health', methods=['GET'])
+@require_session
+def get_device_health(serial):
+    """Get device health metrics from v1 devices endpoint."""
+    try:
+        response = aruba_client.get(f'/network-monitoring/v1/devices/{serial}')
+        # Also try to pull cpu/memory trend data
+        health = {
+            'device': response,
+            'serial': serial,
+        }
+        # For APs, enrich with cpu and memory trends
+        device_type = response.get('deviceType', '')
+        if device_type == 'ACCESS_POINT':
+            try:
+                cpu = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/cpu-utilization-trends')
+                health['cpuTrends'] = cpu
+            except Exception:
+                pass
+            try:
+                mem = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/memory-utilization-trends')
+                health['memoryTrends'] = mem
+            except Exception:
+                pass
+        return jsonify(health)
+    except Exception as e:
+        logger.error(f"Error fetching device health for {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/analytics/top-apps', methods=['GET'])
+@require_session
+def get_top_apps():
+    """Get top applications by bandwidth usage in a site."""
+    try:
+        params = request.args.to_dict()
+        # Requires site-id, start-at, end-at query params per MRT API spec
+        response = aruba_client.get('/network-monitoring/v1/applications', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching top apps: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/analytics/top-aps-wireless', methods=['GET'])
+@require_session
+def get_top_aps_wireless():
+    """Get top APs by wireless (Wi-Fi) bandwidth usage."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-monitoring/v1/top-aps-by-wireless-usage', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching top APs by wireless usage: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/analytics/clients-trend', methods=['GET'])
+@require_session
+def get_clients_trend():
+    """Get client count trend over time."""
+    try:
+        params = request.args.to_dict()
+        response = aruba_client.get('/network-monitoring/v1/clients-trend', params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching clients trend: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ============= New Endpoints from MRT Postman Collection =============
+
+# --- Radios ---
+
+@app.route('/api/radios', methods=['GET'])
+@require_session
+def get_radios():
+    """Get all wireless radios across all APs.
+
+    Endpoint: /network-monitoring/v1/radios
+    Supports query params: site-id, limit, offset, filter
+    """
+    try:
+        params = request.args.to_dict()
+        # Normalize site_id -> site-id
+        if 'site_id' in params and 'site-id' not in params:
+            params['site-id'] = params.pop('site_id')
+        r = aruba_client.get('/network-monitoring/v1/radios', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching radios: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/radios', methods=['GET'])
+@require_session
+def get_ap_radios_v2(serial):
+    """Get radios for a specific AP.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/radios', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching radios for AP {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/radios/<int:radio_number>/throughput', methods=['GET'])
+@require_session
+def get_ap_radio_throughput(serial, radio_number):
+    """Get throughput trends for a specific AP radio.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/throughput-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/aps/{serial}/radios/{radio_number}/throughput-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching radio throughput for AP {serial} radio {radio_number}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/radios/<int:radio_number>/channel-utilization', methods=['GET'])
+@require_session
+def get_ap_radio_channel_utilization(serial, radio_number):
+    """Get channel utilization trends for a specific AP radio.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/channel-utilization-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/aps/{serial}/radios/{radio_number}/channel-utilization-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching channel utilization for AP {serial} radio {radio_number}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/radios/<int:radio_number>/channel-quality', methods=['GET'])
+@require_session
+def get_ap_radio_channel_quality(serial, radio_number):
+    """Get channel quality trends for a specific AP radio.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/channel-quality-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/aps/{serial}/radios/{radio_number}/channel-quality-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching channel quality for AP {serial} radio {radio_number}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/radios/<int:radio_number>/noise-floor', methods=['GET'])
+@require_session
+def get_ap_radio_noise_floor(serial, radio_number):
+    """Get noise floor trends for a specific AP radio.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/noise-floor-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/aps/{serial}/radios/{radio_number}/noise-floor-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching noise floor for AP {serial} radio {radio_number}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/aps/<serial>/throughput', methods=['GET'])
+@require_session
+def get_ap_throughput_trends(serial):
+    """Get wireless throughput trends for an AP.
+
+    Endpoint: /network-monitoring/v1/aps/{serial-number}/throughput-trends?interface-type=WIRELESS
+    """
+    try:
+        params = request.args.to_dict()
+        if 'interface-type' not in params:
+            params['interface-type'] = 'WIRELESS'
+        r = aruba_client.get(
+            f'/network-monitoring/v1/aps/{serial}/throughput-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching throughput trends for AP {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- BSSIDs ---
+
+@app.route('/api/bssids', methods=['GET'])
+@require_session
+def get_bssids():
+    """Get all BSSIDs (Basic Service Set Identifiers) across all APs.
+
+    Endpoint: /network-monitoring/v1/bssids
+    Supports query params: site-id, wlan-name, limit, offset, filter
+    """
+    try:
+        params = request.args.to_dict()
+        if 'site_id' in params and 'site-id' not in params:
+            params['site-id'] = params.pop('site_id')
+        r = aruba_client.get('/network-monitoring/v1/bssids', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching BSSIDs: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- Client Endpoints ---
+
+@app.route('/api/clients/<mac>', methods=['GET'])
+@require_session
+def get_client_by_mac(mac):
+    """Get detailed information for a specific client by MAC address.
+
+    Endpoint: /network-monitoring/v1/clients/{mac-address}
+    """
+    try:
+        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}')
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching client {mac}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/clients/<mac>/mobility-trail', methods=['GET'])
+@require_session
+def get_client_mobility_trail(mac):
+    """Get mobility trail (roaming history) for a client.
+
+    Endpoint: /network-monitoring/v1/clients/{mac-address}/mobility-trail
+    Shows AP-to-AP roaming history for a wireless client.
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}/mobility-trail', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching mobility trail for client {mac}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- Sites/Tenant Client Health ---
+
+@app.route('/api/sites/client-health', methods=['GET'])
+@require_session
+def get_sites_client_health():
+    """Get client health metrics aggregated per site.
+
+    Endpoint: /network-monitoring/v1/sites-client-health
+    """
+    try:
+        params = request.args.to_dict()
+        if 'site_id' in params and 'site-id' not in params:
+            params['site-id'] = params.pop('site_id')
+        r = aruba_client.get('/network-monitoring/v1/sites-client-health', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching sites client health: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/tenant/client-health', methods=['GET'])
+@require_session
+def get_tenant_client_health():
+    """Get client health metrics aggregated at the tenant level.
+
+    Endpoint: /network-monitoring/v1/tenant-client-health
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get('/network-monitoring/v1/tenant-client-health', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching tenant client health: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- Device Inventory ---
+
+@app.route('/api/device-inventory', methods=['GET'])
+@require_session
+def get_device_inventory():
+    """Get device inventory with detailed hardware and subscription info.
+
+    Tries v1 first, then v1alpha1. Supports query params: limit, offset, filter.
+    Endpoint: /network-monitoring/v1/device-inventory
+    """
+    try:
+        params = request.args.to_dict()
+        try:
+            r = aruba_client.get('/network-monitoring/v1/device-inventory', params=params)
+        except Exception as e1:
+            if '404' in str(e1) or 'Not Found' in str(e1):
+                r = aruba_client.get('/network-monitoring/v1alpha1/device-inventory', params=params)
+            else:
+                raise
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching device inventory: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- Firmware Details ---
+
+@app.route('/api/firmware/details', methods=['GET'])
+@require_session
+def get_firmware_details():
+    """Get firmware details for devices including current and recommended versions.
+
+    Tries v1 then v1alpha1. Supports query params: device_type, limit, offset.
+    Endpoint: /network-services/v1/firmware-details
+    """
+    try:
+        params = request.args.to_dict()
+        try:
+            r = aruba_client.get('/network-services/v1/firmware-details', params=params)
+        except Exception as e1:
+            if '404' in str(e1) or 'Not Found' in str(e1):
+                r = aruba_client.get('/network-services/v1alpha1/firmware-details', params=params)
+            else:
+                raise
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching firmware details: {e}")
+        return jsonify({"items": [], "count": 0, "error": str(e)})
+
+
+@app.route('/api/firmware/compliance-policy', methods=['GET'])
+@require_session
+def get_firmware_compliance_policy():
+    """Get firmware compliance policy settings.
+
+    Endpoint: /network-config/v1alpha1/firmware-compliance
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get('/network-config/v1alpha1/firmware-compliance', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching firmware compliance policy: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- Gateway Extended Monitoring ---
+
+@app.route('/api/monitoring/gateways/<serial>/uplinks', methods=['GET'])
+@require_session
+def get_gateway_uplinks(serial):
+    """Get WAN uplinks for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(f'/network-monitoring/v1/gateways/{serial}/uplinks', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching uplinks for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/uplinks/<link_tag>/throughput', methods=['GET'])
+@require_session
+def get_gateway_uplink_throughput(serial, link_tag):
+    """Get throughput trends for a specific gateway uplink.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks/{link-tag}/throughput-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/uplinks/{link_tag}/throughput-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching uplink throughput for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/uplinks/<link_tag>/wan-availability', methods=['GET'])
+@require_session
+def get_gateway_uplink_wan_availability(serial, link_tag):
+    """Get WAN availability trends for a specific gateway uplink.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks/{link-tag}/wan-availability-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/uplinks/{link_tag}/wan-availability-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching WAN availability for gateway {serial} uplink {link_tag}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/wan-availability', methods=['GET'])
+@require_session
+def get_gateway_wan_availability(serial):
+    """Get WAN availability trends for a gateway (all uplinks aggregated).
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/wan-availability-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/wan-availability-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching WAN availability trends for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/wan-tunnels-health', methods=['GET'])
+@require_session
+def get_gateway_wan_tunnels_health(serial):
+    """Get WAN tunnel health summary for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/wan-tunnels-health-summary
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/wan-tunnels-health-summary',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching WAN tunnels health for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/lan-tunnels-health', methods=['GET'])
+@require_session
+def get_gateway_lan_tunnels_health(serial):
+    """Get LAN tunnel health summary for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/lan-tunnels-health-summary
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/lan-tunnels-health-summary',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching LAN tunnels health for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/cpu', methods=['GET'])
+@require_session
+def get_gateway_cpu_utilization(serial):
+    """Get CPU utilization trends for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/cpu-utilization-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/cpu-utilization-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching CPU utilization for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/ports', methods=['GET'])
+@require_session
+def get_gateway_ports(serial):
+    """Get port information for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(f'/network-monitoring/v1/gateways/{serial}/ports', params=params)
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching ports for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/ports/<port_number>', methods=['GET'])
+@require_session
+def get_gateway_port_details(serial, port_number):
+    """Get details for a specific gateway port.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports/{port-number}
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/ports/{port_number}',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching port {port_number} for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/ports/<port_number>/throughput', methods=['GET'])
+@require_session
+def get_gateway_port_throughput(serial, port_number):
+    """Get throughput trends for a specific gateway port.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports/{port-number}/throughput-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/ports/{port_number}/throughput-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching port throughput for gateway {serial} port {port_number}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/monitoring/gateways/<serial>/tunnel/<tunnel_name>/throughput', methods=['GET'])
+@require_session
+def get_gateway_tunnel_throughput(serial, tunnel_name):
+    """Get throughput trends for a specific gateway tunnel.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/tunnels/{tunnel-name}/throughput-trends
+    """
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f'/network-monitoring/v1/gateways/{serial}/tunnels/{tunnel_name}/throughput-trends',
+            params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching tunnel throughput for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 # ============= Main =============
 

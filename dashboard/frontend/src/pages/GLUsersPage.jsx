@@ -32,6 +32,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShieldIcon from '@mui/icons-material/Shield';
 import InfoIcon from '@mui/icons-material/Info';
 import { greenlakeUserAPI } from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function StatusChip({ status }) {
   const color =
@@ -52,6 +53,7 @@ export default function GLUsersPage() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
 
   const filter = useMemo(() => {
     if (!search.trim()) return null;
@@ -63,6 +65,7 @@ export default function GLUsersPage() {
   const offset = (page - 1) * pageSize;
 
   const load = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -75,7 +78,11 @@ export default function GLUsersPage() {
       setUsers(data.items || []);
       setCount(data.count || 0);
     } catch (e) {
-      setError(e?.response?.data?.error || 'Failed to load users');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e?.response?.data?.error || 'Failed to load users');
+      }
     } finally {
       setLoading(false);
     }
@@ -145,7 +152,9 @@ export default function GLUsersPage() {
         </Stack>
       </Stack>
 
-      <Card sx={{ mb: 2 }}>
+      {notConfigured && <GreenLakeNotConfigured />}
+
+      {!notConfigured && <Card sx={{ mb: 2 }}>
         <CardContent>
           <Stack direction="row" spacing={2} alignItems="center">
             <SearchIcon />
@@ -162,15 +171,15 @@ export default function GLUsersPage() {
             />
           </Stack>
         </CardContent>
-      </Card>
+      </Card>}
 
-      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 2 }}>
+      {!notConfigured && <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 2 }}>
         <Typography variant="body2">
           <strong>Two-Tier Role System:</strong> Users need both Platform roles (managed here)
           and Service roles (Aruba Central) for full access. Visit{' '}
           <strong>/gl/roles</strong> to manage platform role assignments.
         </Typography>
-      </Alert>
+      </Alert>}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -178,7 +187,7 @@ export default function GLUsersPage() {
         </Alert>
       )}
 
-      <TableContainer component={Paper}>
+      {!notConfigured && <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -244,9 +253,9 @@ export default function GLUsersPage() {
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer>}
 
-      <Stack direction="row" justifyContent="flex-end" mt={2}>
+      {!notConfigured && <Stack direction="row" justifyContent="flex-end" mt={2}>
         <Pagination
           count={totalPages}
           page={page}
@@ -254,7 +263,7 @@ export default function GLUsersPage() {
           color="primary"
           size="small"
         />
-      </Stack>
+      </Stack>}
 
       <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)}>
         <DialogTitle>Invite User</DialogTitle>
