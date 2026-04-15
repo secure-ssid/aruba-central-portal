@@ -1255,14 +1255,15 @@ def _handle_find_client(text, _session_id):
             return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
 
         c = found[0]
+        logger.debug(f"find_client raw fields: {list(c.keys())}")
         details = {
-            'MAC':      c.get('macaddr', c.get('mac', '?')),
-            'Hostname': c.get('name', c.get('hostname', '?')),
-            'IP':       c.get('ip_address', c.get('ipv4', '?')),
-            'Status':   c.get('status', '?'),
-            'Type':     c.get('clientConnectionType', c.get('type', '?')),
-            'SSID':     c.get('ssid', c.get('wlanName', '?')),
-            'AP':       c.get('associated_device', c.get('ap_serial', '?')),
+            'MAC':      c.get('macaddr') or c.get('mac') or c.get('macAddress') or '?',
+            'Hostname': c.get('name') or c.get('hostname') or c.get('client_name') or '?',
+            'IP':       c.get('ip_address') or c.get('ipv4') or c.get('ip') or '?',
+            'Status':   c.get('status') or c.get('connection_status') or '?',
+            'Type':     c.get('clientConnectionType') or c.get('client_type') or c.get('type') or '?',
+            'SSID':     c.get('ssid') or c.get('wlanName') or c.get('network') or '?',
+            'AP':       c.get('associated_device') or c.get('ap_serial') or c.get('associated_device_name') or '?',
         }
         reply = f"Client found: **{details['Hostname']}** ({details['MAC']}) — {details['Status']}"
         return reply, [details], 200
@@ -1598,8 +1599,8 @@ def _handle_unknown(text, _session_id):
 # Ollama LLM Agent — natural language understanding
 # ---------------------------------------------------------------------------
 
-_OLLAMA_URL   = os.environ.get('OLLAMA_URL',   'http://ollama:11434')
-_OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.1:8b')
+_OLLAMA_URL   = os.environ.get('OLLAMA_URL',   'http://localhost:11434')
+_OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'qwen3.5:cloud')
 
 _OLLAMA_SYSTEM_PROMPT = """\
 You are a network assistant. Output ONLY valid JSON — no other text, no markdown.
@@ -1684,12 +1685,17 @@ class OllamaAgent:
                     "messages": messages,
                     "stream":  False,
                     "format":  "json",
-                    "options": {"temperature": 0.05, "num_predict": 256},
+                    "think":   False,
+                    "options": {"temperature": 0.05, "num_predict": 512},
                 },
                 timeout=60.0,
             )
             resp.raise_for_status()
             content = resp.json()["message"]["content"]
+            # Strip any accidental thinking/preamble before the JSON object
+            json_start = content.find("{")
+            if json_start > 0:
+                content = content[json_start:]
             parsed  = json.loads(content)
 
             action = parsed.get("action")
@@ -1711,12 +1717,17 @@ class OllamaAgent:
                         "messages": retry_msgs,
                         "stream":  False,
                         "format":  "json",
-                        "options": {"temperature": 0.1, "num_predict": 256},
+                        "think":   False,
+                        "options": {"temperature": 0.1, "num_predict": 512},
                     },
                     timeout=60.0,
                 )
                 retry_resp.raise_for_status()
-                retry_parsed = json.loads(retry_resp.json()["message"]["content"])
+                retry_content = retry_resp.json()["message"]["content"]
+                json_start = retry_content.find("{")
+                if json_start > 0:
+                    retry_content = retry_content[json_start:]
+                retry_parsed = json.loads(retry_content)
                 msg = retry_parsed.get("message", "").strip()
                 if msg:
                     return {"name": "__llm_response__", "message": msg, "via": "ollama"}
@@ -2016,8 +2027,16 @@ def chat_message():
         else:
             handler = _handle_unknown
 
+        # For find_client, inject Ollama-extracted query param into the message
+        # so the handler can extract an IP/MAC it wouldn't find in bare text.
+        dispatch_text = message
+        if intent and intent.get('name') == 'find_client':
+            query = (intent.get('params') or {}).get('query', '')
+            if query and query not in message:
+                dispatch_text = f"{message} {query}"
+
         try:
-            reply, data, status = handler(message, session_id)
+            reply, data, status = handler(dispatch_text, session_id)
         except Exception as handler_err:
             logger.error(
                 f"Chat handler {intent['name'] if intent else '?'} "
