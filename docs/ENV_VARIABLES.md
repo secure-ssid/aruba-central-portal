@@ -31,6 +31,25 @@ These variables are optional but may be useful in certain configurations:
 | `ARUBA_PASSWORD` | Password for password grant OAuth2 flow | Not set | `SecurePassword123!` |
 | `LOG_LEVEL` | Logging verbosity level | `INFO` | `DEBUG` |
 | `FLASK_ENV` | Flask environment mode | `production` | `production` |
+| `GL_RBAC_CLIENT_ID` | HPE GreenLake RBAC OAuth2 Client ID — required for /gl/* pages | Not set | `abc123...` |
+| `GL_RBAC_CLIENT_SECRET` | HPE GreenLake RBAC OAuth2 Client Secret | Not set | `xyz789...` |
+| `GRAFANA_API_KEY` | API key for Grafana → backend KPI requests | Not set | `glsa_...` |
+| `OLLAMA_HOST` | Ollama API base URL for the AI chat assistant | `http://localhost:11434` | `http://ollama:11434` |
+| `OLLAMA_MODEL` | Ollama model to use for chat | `llama3.2:3b` | `llama3.2:3b` |
+
+### GreenLake Integration
+
+The `/gl/*` pages (Devices, Users, Locations, Tags, Subscriptions, Roles, Workspaces, Permissions) require HPE GreenLake RBAC credentials. Without these, the pages show a warning banner instead of erroring out.
+
+To obtain GreenLake RBAC credentials:
+1. Log in to [HPE GreenLake](https://client.greenlake.hpe.com)
+2. Navigate to **Manage** → **API clients**
+3. Create a new client with `Workspace Owner` or `Administrator` role
+4. Copy the Client ID and Client Secret
+
+### Grafana Integration
+
+The `/api/grafana/kpis` endpoint accepts either a browser session cookie OR an `X-Grafana-API-Key` header. Set `GRAFANA_API_KEY` if you want Grafana dashboards to pull live KPIs from the backend.
 
 ## How to Get Aruba Central Credentials
 
