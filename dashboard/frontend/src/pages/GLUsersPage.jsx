@@ -23,7 +23,6 @@ import {
   Pagination,
   Chip,
   Alert,
-  Divider,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';

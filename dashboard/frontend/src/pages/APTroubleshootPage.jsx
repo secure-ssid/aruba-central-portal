@@ -15,7 +15,6 @@ import {
   Autocomplete,
   CircularProgress,
   Divider,
-  Collapse,
   Alert,
   Dialog,
   DialogTitle,

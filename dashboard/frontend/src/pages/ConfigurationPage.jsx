@@ -27,7 +27,6 @@ import {
   Button,
   TextField,
   Paper,
-  LinearProgress,
   IconButton,
   Tooltip,
   Accordion,

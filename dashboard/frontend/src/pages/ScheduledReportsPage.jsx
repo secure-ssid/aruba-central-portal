@@ -36,11 +36,9 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
-  Divider,
   Stack,
   Switch,
   FormControlLabel,
-  LinearProgress,
 } from '@mui/material';
 import {
   Add as AddIcon,
