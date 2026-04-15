@@ -1,4 +1,10 @@
 -r requirements.txt
+
+# Dashboard backend (needed for blueprint tests)
+flask>=3.0.0
+flask-cors>=4.0.0
+flask-compress>=1.14
+
 # Testing
 pytest>=7.4.0
 pytest-cov>=4.1.0

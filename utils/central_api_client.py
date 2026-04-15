@@ -4,10 +4,11 @@ Used for the Central API that uses direct bearer tokens with automatic refresh.
 Includes retry logic for rate limiting (429 errors).
 """
 
-import requests
 import logging
 import time
-from typing import Dict, Any, Optional
+from typing import Any
+
+import requests
 
 from .token_manager import TokenManager
 
@@ -20,8 +21,8 @@ class CentralAPIClient:
     def __init__(
         self,
         base_url: str,
-        access_token: Optional[str] = None,
-        token_manager: Optional[TokenManager] = None,
+        access_token: str | None = None,
+        token_manager: TokenManager | None = None,
     ):
         """Initialize the Central API client.
 
@@ -48,9 +49,7 @@ class CentralAPIClient:
 
     def _update_token(self, access_token: str) -> None:
         """Update the authorization header with a new token."""
-        self.session.headers.update({
-            "Authorization": f"Bearer {access_token}"
-        })
+        self.session.headers.update({"Authorization": f"Bearer {access_token}"})
 
     def _ensure_valid_token(self) -> None:
         """Ensure we have a valid token, refreshing if necessary."""
@@ -59,11 +58,7 @@ class CentralAPIClient:
             self._update_token(access_token)
 
     def _request_with_retry(
-        self,
-        method: str,
-        url: str,
-        max_retries: int = 3,
-        **kwargs
+        self, method: str, url: str, max_retries: int = 3, **kwargs
     ) -> requests.Response:
         """Make an HTTP request with automatic retry on rate limiting.
 
@@ -99,7 +94,7 @@ class CentralAPIClient:
 
         return response  # Return last response if all retries exhausted
 
-    def get(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Make a GET request to the API with automatic retry on rate limiting.
 
         Args:
@@ -128,7 +123,7 @@ class CentralAPIClient:
         response.raise_for_status()
 
         # Handle empty responses
-        if not response.text or response.text.strip() == '':
+        if not response.text or response.text.strip() == "":
             logger.warning(f"Empty response body from {url}")
             return {}
 
@@ -138,7 +133,9 @@ class CentralAPIClient:
                 logger.warning(f"response.json() returned None for {url}")
                 logger.warning(f"Response text was: {response.text[:200]}")
                 return {}
-            logger.debug(f"Parsed JSON data type: {type(json_data)}, keys: {list(json_data.keys()) if isinstance(json_data, dict) else 'not a dict'}")
+            logger.debug(
+                f"Parsed JSON data type: {type(json_data)}, keys: {list(json_data.keys()) if isinstance(json_data, dict) else 'not a dict'}"
+            )
             return json_data
         except ValueError as e:
             logger.error(f"Failed to parse JSON response from {url}: {e}")
@@ -148,9 +145,9 @@ class CentralAPIClient:
     def post(
         self,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Make a POST request to the API with automatic retry on rate limiting.
 
         Args:
@@ -175,9 +172,9 @@ class CentralAPIClient:
     def put(
         self,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Make a PUT request to the API with automatic retry on rate limiting.
 
         Args:
@@ -202,9 +199,9 @@ class CentralAPIClient:
     def patch(
         self,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Make a PATCH request to the API with automatic retry on rate limiting.
 
         Args:
@@ -229,8 +226,8 @@ class CentralAPIClient:
     def delete(
         self,
         endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Make a DELETE request to the API with automatic retry on rate limiting.
 
         Args:

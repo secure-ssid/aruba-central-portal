@@ -574,23 +574,37 @@ Frontend displays user-friendly alert
 ```
 ┌────────────────────────────────────┐
 │       Token Cache (Backend)        │
-│  • 2-hour cache                    │
+│  • 2-hour cache with 5-min buffer  │
 │  • Reduces auth API calls          │
 │  • File-based persistence          │
 └────────────────────────────────────┘
 
 ┌────────────────────────────────────┐
+│    API Response Cache (Backend)    │
+│  routes/helpers.py — cached_get()  │
+│  • Inventory (devices/sites/wlans) │
+│    → 5 min TTL                     │
+│  • Health/monitoring data          │
+│    → 30 s TTL                      │
+│  • Thread-safe (_poll_cache_lock)  │
+│  • parallel_get() for concurrent   │
+│    API calls via ThreadPoolExecutor│
+└────────────────────────────────────┘
+
+┌────────────────────────────────────┐
 │      Session Cache (Backend)       │
-│  • In-memory (development)         │
-│  • Redis (production)              │
+│  • In-memory + disk persistence    │
 │  • 1-hour timeout                  │
 └────────────────────────────────────┘
 
 ┌────────────────────────────────────┐
-│    Component State (Frontend)      │
-│  • React useState                  │
-│  • Local to each component         │
-│  • Re-fetched on mount             │
+│   React Query Cache (Frontend)     │
+│  hooks/useApiQueries.js            │
+│  • 30 s staleTime (default)        │
+│  • 5 min gcTime                    │
+│  • Auto request deduplication      │
+│  • refetchInterval for polling     │
+│  • Shared across all pages         │
 └────────────────────────────────────┘
 ```
 

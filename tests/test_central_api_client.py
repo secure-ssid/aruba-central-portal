@@ -1,19 +1,20 @@
 """Tests for CentralAPIClient."""
 
+import time
+from unittest.mock import MagicMock, call, patch
+
 import pytest
 import responses
-import time
-from unittest.mock import MagicMock, patch, call
 from requests.exceptions import HTTPError
 
-from utils.central_api_client import CentralAPIClient
 from tests.conftest import (
-    TEST_BASE_URL,
-    TEST_ACCESS_TOKEN,
     SAMPLE_DEVICES,
     SAMPLE_WLANS,
+    TEST_ACCESS_TOKEN,
+    TEST_BASE_URL,
     add_api_endpoint,
 )
+from utils.central_api_client import CentralAPIClient
 
 
 class TestCentralAPIClientInit:
@@ -21,10 +22,7 @@ class TestCentralAPIClientInit:
 
     def test_init_with_token_manager(self, mock_token_manager):
         """Test initialization with a token manager."""
-        client = CentralAPIClient(
-            base_url=TEST_BASE_URL,
-            token_manager=mock_token_manager
-        )
+        client = CentralAPIClient(base_url=TEST_BASE_URL, token_manager=mock_token_manager)
 
         assert client.base_url == TEST_BASE_URL
         assert client.token_manager == mock_token_manager
@@ -32,10 +30,7 @@ class TestCentralAPIClientInit:
 
     def test_init_with_static_token(self):
         """Test initialization with a static access token."""
-        client = CentralAPIClient(
-            base_url=TEST_BASE_URL,
-            access_token=TEST_ACCESS_TOKEN
-        )
+        client = CentralAPIClient(base_url=TEST_BASE_URL, access_token=TEST_ACCESS_TOKEN)
 
         assert client.base_url == TEST_BASE_URL
         assert client.token_manager is None
@@ -43,15 +38,14 @@ class TestCentralAPIClientInit:
 
     def test_init_without_token_raises_error(self):
         """Test that initialization without any token raises ValueError."""
-        with pytest.raises(ValueError, match="Either access_token or token_manager must be provided"):
+        with pytest.raises(
+            ValueError, match="Either access_token or token_manager must be provided"
+        ):
             CentralAPIClient(base_url=TEST_BASE_URL)
 
     def test_base_url_trailing_slash_stripped(self, mock_token_manager):
         """Test that trailing slash is stripped from base URL."""
-        client = CentralAPIClient(
-            base_url=f"{TEST_BASE_URL}/",
-            token_manager=mock_token_manager
-        )
+        client = CentralAPIClient(base_url=f"{TEST_BASE_URL}/", token_manager=mock_token_manager)
 
         assert client.base_url == TEST_BASE_URL
 
@@ -62,12 +56,7 @@ class TestCentralAPIClientGet:
     @responses.activate
     def test_get_success(self, api_client, mock_devices_response):
         """Test successful GET request."""
-        add_api_endpoint(
-            responses,
-            "GET",
-            "/monitoring/v1/devices",
-            mock_devices_response
-        )
+        add_api_endpoint(responses, "GET", "/monitoring/v1/devices", mock_devices_response)
 
         result = api_client.get("/monitoring/v1/devices")
 
@@ -77,17 +66,9 @@ class TestCentralAPIClientGet:
     @responses.activate
     def test_get_with_params(self, api_client, mock_devices_response):
         """Test GET request with query parameters."""
-        add_api_endpoint(
-            responses,
-            "GET",
-            "/monitoring/v1/devices",
-            mock_devices_response
-        )
+        add_api_endpoint(responses, "GET", "/monitoring/v1/devices", mock_devices_response)
 
-        result = api_client.get(
-            "/monitoring/v1/devices",
-            params={"limit": 10, "offset": 0}
-        )
+        result = api_client.get("/monitoring/v1/devices", params={"limit": 10, "offset": 0})
 
         assert result == mock_devices_response
         assert "limit=10" in responses.calls[0].request.url
@@ -95,12 +76,7 @@ class TestCentralAPIClientGet:
     @responses.activate
     def test_get_empty_response(self, api_client):
         """Test GET request that returns empty body."""
-        responses.add(
-            responses.GET,
-            f"{TEST_BASE_URL}/api/empty",
-            body="",
-            status=200
-        )
+        responses.add(responses.GET, f"{TEST_BASE_URL}/api/empty", body="", status=200)
 
         result = api_client.get("/api/empty")
 
@@ -110,10 +86,7 @@ class TestCentralAPIClientGet:
     def test_get_404_raises_error(self, api_client):
         """Test that 404 raises HTTPError."""
         responses.add(
-            responses.GET,
-            f"{TEST_BASE_URL}/api/notfound",
-            json={"error": "Not found"},
-            status=404
+            responses.GET, f"{TEST_BASE_URL}/api/notfound", json={"error": "Not found"}, status=404
         )
 
         with pytest.raises(HTTPError):
@@ -127,17 +100,9 @@ class TestCentralAPIClientPost:
     def test_post_success(self, api_client):
         """Test successful POST request."""
         response_data = {"status": "created", "id": "12345"}
-        add_api_endpoint(
-            responses,
-            "POST",
-            "/api/resource",
-            response_data
-        )
+        add_api_endpoint(responses, "POST", "/api/resource", response_data)
 
-        result = api_client.post(
-            "/api/resource",
-            data={"name": "test"}
-        )
+        result = api_client.post("/api/resource", data={"name": "test"})
 
         assert result == response_data
         assert len(responses.calls) == 1
@@ -146,18 +111,9 @@ class TestCentralAPIClientPost:
     def test_post_with_params(self, api_client):
         """Test POST request with query parameters."""
         response_data = {"status": "created"}
-        add_api_endpoint(
-            responses,
-            "POST",
-            "/api/resource",
-            response_data
-        )
+        add_api_endpoint(responses, "POST", "/api/resource", response_data)
 
-        result = api_client.post(
-            "/api/resource",
-            data={"name": "test"},
-            params={"object_type": "SHARED"}
-        )
+        api_client.post("/api/resource", data={"name": "test"}, params={"object_type": "SHARED"})
 
         assert "object_type=SHARED" in responses.calls[0].request.url
 
@@ -169,12 +125,7 @@ class TestCentralAPIClientDelete:
     def test_delete_success(self, api_client):
         """Test successful DELETE request."""
         response_data = {"status": "deleted"}
-        add_api_endpoint(
-            responses,
-            "DELETE",
-            "/api/resource/123",
-            response_data
-        )
+        add_api_endpoint(responses, "DELETE", "/api/resource/123", response_data)
 
         result = api_client.delete("/api/resource/123")
 
@@ -192,13 +143,10 @@ class TestCentralAPIClientRateLimiting:
             responses.GET,
             f"{TEST_BASE_URL}/api/endpoint",
             json={"error": "rate limited"},
-            status=429
+            status=429,
         )
         responses.add(
-            responses.GET,
-            f"{TEST_BASE_URL}/api/endpoint",
-            json=mock_devices_response,
-            status=200
+            responses.GET, f"{TEST_BASE_URL}/api/endpoint", json=mock_devices_response, status=200
         )
 
         # Patch time.sleep to avoid actual delays in tests
@@ -217,12 +165,11 @@ class TestCentralAPIClientRateLimiting:
                 responses.GET,
                 f"{TEST_BASE_URL}/api/endpoint",
                 json={"error": "rate limited"},
-                status=429
+                status=429,
             )
 
-        with patch("time.sleep"):
-            with pytest.raises(HTTPError):
-                api_client.get("/api/endpoint")
+        with patch("time.sleep"), pytest.raises(HTTPError):
+            api_client.get("/api/endpoint")
 
         # 1 initial + 3 retries = 4 calls
         assert len(responses.calls) == 4
@@ -236,7 +183,7 @@ class TestCentralAPIClientRateLimiting:
                 responses.GET,
                 f"{TEST_BASE_URL}/api/endpoint",
                 json={"error": "rate limited"},
-                status=429
+                status=429,
             )
 
         with patch("time.sleep") as mock_sleep:
@@ -261,17 +208,9 @@ class TestCentralAPIClientTokenRefresh:
         mock_manager = MagicMock()
         mock_manager.get_access_token.return_value = TEST_ACCESS_TOKEN
 
-        client = CentralAPIClient(
-            base_url=TEST_BASE_URL,
-            token_manager=mock_manager
-        )
+        client = CentralAPIClient(base_url=TEST_BASE_URL, token_manager=mock_manager)
 
-        add_api_endpoint(
-            responses,
-            "GET",
-            "/api/endpoint",
-            mock_devices_response
-        )
+        add_api_endpoint(responses, "GET", "/api/endpoint", mock_devices_response)
 
         client.get("/api/endpoint")
 
@@ -286,17 +225,9 @@ class TestCentralAPIClientHTTPMethods:
     def test_put_method(self, api_client):
         """Test PUT request."""
         response_data = {"status": "updated"}
-        add_api_endpoint(
-            responses,
-            "PUT",
-            "/api/resource/123",
-            response_data
-        )
+        add_api_endpoint(responses, "PUT", "/api/resource/123", response_data)
 
-        result = api_client.put(
-            "/api/resource/123",
-            data={"name": "updated"}
-        )
+        result = api_client.put("/api/resource/123", data={"name": "updated"})
 
         assert result == response_data
 
@@ -304,16 +235,8 @@ class TestCentralAPIClientHTTPMethods:
     def test_patch_method(self, api_client):
         """Test PATCH request."""
         response_data = {"status": "patched"}
-        add_api_endpoint(
-            responses,
-            "PATCH",
-            "/api/resource/123",
-            response_data
-        )
+        add_api_endpoint(responses, "PATCH", "/api/resource/123", response_data)
 
-        result = api_client.patch(
-            "/api/resource/123",
-            data={"name": "patched"}
-        )
+        result = api_client.patch("/api/resource/123", data={"name": "patched"})
 
         assert result == response_data

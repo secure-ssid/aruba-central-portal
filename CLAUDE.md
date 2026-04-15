@@ -11,7 +11,9 @@ Python automation framework for Aruba Central API. Provides reusable utilities a
 - **`utils/config.py`** — loads `config.yaml` + env var overrides
 - **`scripts/`** — organized by domain: `discovery/`, `network/wlan/`, `users/`, `tenants/`, `monitoring/`, `wlan-testing/`, `archive/`
 - **`dashboard/backend/routes/`** — Flask blueprints: `auth`, `devices`, `monitoring`, `config`, `troubleshoot`, `greenlake`, `chat`
+- **`dashboard/backend/routes/helpers.py`** — `cached_get()` (tiered TTL), `parallel_get()` (ThreadPoolExecutor) for API response caching
 - **`dashboard/backend/app.py`** — Flask entry point, registers blueprints via `register_all_blueprints(app)`
+- **`dashboard/frontend/src/hooks/useApiQueries.js`** — React Query hooks for devices, sites, health, alerts, etc.
 - **`docs/`** — local API docs (search here before web); see `.claude/rules/docs-search.md`
 
 ## Dev Commands
@@ -62,7 +64,7 @@ cp .env.example .env   # Then add credentials
 ## Testing
 
 ```bash
-make test                                      # Run all 45+ tests
+make test                                      # Run all 100 tests
 ./venv/bin/python -m pytest tests/ -x -q       # Quick smoke test
 ```
 

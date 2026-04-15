@@ -1,10 +1,11 @@
 """Tests for configuration management."""
 
 import os
-import pytest
-import yaml
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
+import yaml
 
 from utils.config import load_config
 

@@ -1,10 +1,11 @@
 """Tests for Flask blueprint registration and route coverage."""
 
 import json
-import pytest
-from unittest.mock import MagicMock, patch
-from pathlib import Path
 import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "dashboard" / "backend"))
 
@@ -13,12 +14,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "dashboard" / "backend"))
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture(scope="module")
 def flask_app():
     """Create the Flask app with blueprints registered for testing."""
-    with patch("utils.config.load_config") as mock_cfg, \
-         patch("utils.token_manager.TokenManager") as mock_tm_cls, \
-         patch("utils.central_api_client.CentralAPIClient") as mock_client_cls:
+    with (
+        patch("utils.config.load_config") as mock_cfg,
+        patch("utils.token_manager.TokenManager") as mock_tm_cls,
+        patch("utils.central_api_client.CentralAPIClient") as mock_client_cls,
+    ):
 
         mock_cfg.return_value = {
             "aruba_central": {
@@ -37,6 +41,7 @@ def flask_app():
         mock_client_cls.return_value = mock_client
 
         import app as flask_app_module
+
         flask_app_module.app.config["TESTING"] = True
         flask_app_module.app.config["SECRET_KEY"] = "test-secret-key"
         yield flask_app_module.app
@@ -53,8 +58,10 @@ def client(flask_app):
 def authed_client(flask_app):
     """Flask test client with an active session registered in active_sessions."""
     import app as m
+
     session_id = "test-session-id-12345"
     import time
+
     m.active_sessions[session_id] = {
         "authenticated": True,
         "access_token": "test-token",
@@ -72,19 +79,21 @@ def authed_client(flask_app):
 # Blueprint Registration
 # =============================================================================
 
+
 class TestBlueprintRegistration:
     """Verify all blueprints are registered and routing correctly."""
 
     def test_blueprints_registered_flag(self, flask_app):
         import app as m
+
         assert m._blueprints_registered is True
 
     def test_all_blueprints_present(self, flask_app):
         blueprint_names = set(flask_app.blueprints.keys())
         expected = {"auth", "devices", "monitoring", "config", "troubleshoot", "greenlake", "chat"}
-        assert expected.issubset(blueprint_names), (
-            f"Missing blueprints: {expected - blueprint_names}"
-        )
+        assert expected.issubset(
+            blueprint_names
+        ), f"Missing blueprints: {expected - blueprint_names}"
 
     def test_auth_routes_registered(self, flask_app):
         rules = {r.rule for r in flask_app.url_map.iter_rules()}
@@ -147,6 +156,7 @@ class TestBlueprintRegistration:
 # Auth Blueprint
 # =============================================================================
 
+
 class TestAuthBlueprint:
     """Test auth blueprint endpoints."""
 
@@ -162,6 +172,7 @@ class TestAuthBlueprint:
 
     def test_auth_status_authenticated(self, authed_client, flask_app):
         import app as m
+
         mock_tm = MagicMock()
         mock_tm.get_token_info.return_value = {"expires_in": 3600}
         m.token_manager = mock_tm
@@ -172,9 +183,7 @@ class TestAuthBlueprint:
 
     def test_login_endpoint_exists(self, client):
         """Login endpoint is reachable (response varies based on server config)."""
-        resp = client.post("/api/auth/login",
-                           data=json.dumps({}),
-                           content_type="application/json")
+        resp = client.post("/api/auth/login", data=json.dumps({}), content_type="application/json")
         assert resp.status_code != 404
 
     def test_logout_with_session(self, authed_client):
@@ -198,6 +207,7 @@ class TestAuthBlueprint:
 # Devices Blueprint
 # =============================================================================
 
+
 class TestDevicesBlueprint:
     """Test devices blueprint endpoints."""
 
@@ -215,6 +225,7 @@ class TestDevicesBlueprint:
 
     def test_devices_with_auth_calls_api(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"devices": [], "total": 0}
         resp = authed_client.get("/api/devices")
@@ -222,6 +233,7 @@ class TestDevicesBlueprint:
 
     def test_switches_with_auth_calls_api(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"switches": [], "total": 0}
         resp = authed_client.get("/api/switches")
@@ -229,6 +241,7 @@ class TestDevicesBlueprint:
 
     def test_aps_with_auth_calls_api(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"aps": [], "total": 0}
         resp = authed_client.get("/api/aps")
@@ -238,6 +251,7 @@ class TestDevicesBlueprint:
 # =============================================================================
 # Monitoring Blueprint
 # =============================================================================
+
 
 class TestMonitoringBlueprint:
     """Test monitoring blueprint endpoints."""
@@ -252,6 +266,7 @@ class TestMonitoringBlueprint:
 
     def test_monitoring_aps_with_auth(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"aps": [], "total": 0}
         resp = authed_client.get("/api/monitoring/aps")
@@ -259,6 +274,7 @@ class TestMonitoringBlueprint:
 
     def test_monitoring_switches_with_auth(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"switches": [], "total": 0}
         resp = authed_client.get("/api/monitoring/switches")
@@ -266,6 +282,7 @@ class TestMonitoringBlueprint:
 
     def test_monitoring_gateways_with_auth(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"gateways": [], "total": 0}
         resp = authed_client.get("/api/monitoring/gateways")
@@ -275,6 +292,7 @@ class TestMonitoringBlueprint:
 # =============================================================================
 # Config Blueprint
 # =============================================================================
+
 
 class TestConfigBlueprint:
     """Test config blueprint endpoints."""
@@ -289,6 +307,7 @@ class TestConfigBlueprint:
 
     def test_groups_with_auth(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"data": [], "total": 0}
         resp = authed_client.get("/api/groups")
@@ -296,6 +315,7 @@ class TestConfigBlueprint:
 
     def test_sites_with_auth(self, authed_client, flask_app):
         import app as m
+
         m.aruba_client = MagicMock()
         m.aruba_client.get.return_value = {"items": [], "total": 0}
         resp = authed_client.get("/api/sites")
@@ -310,19 +330,24 @@ class TestConfigBlueprint:
 # Troubleshoot Blueprint
 # =============================================================================
 
+
 class TestTroubleshootBlueprint:
     """Test troubleshoot blueprint endpoints."""
 
     def test_ping_requires_auth(self, client):
-        resp = client.post("/api/troubleshoot/ping",
-                           data=json.dumps({"host": "8.8.8.8"}),
-                           content_type="application/json")
+        resp = client.post(
+            "/api/troubleshoot/ping",
+            data=json.dumps({"host": "8.8.8.8"}),
+            content_type="application/json",
+        )
         assert resp.status_code in (401, 403)
 
     def test_traceroute_requires_auth(self, client):
-        resp = client.post("/api/troubleshoot/traceroute",
-                           data=json.dumps({"host": "8.8.8.8"}),
-                           content_type="application/json")
+        resp = client.post(
+            "/api/troubleshoot/traceroute",
+            data=json.dumps({"host": "8.8.8.8"}),
+            content_type="application/json",
+        )
         assert resp.status_code in (401, 403)
 
     def test_firmware_requires_auth(self, client):
@@ -333,6 +358,7 @@ class TestTroubleshootBlueprint:
 # =============================================================================
 # GreenLake Blueprint
 # =============================================================================
+
 
 class TestGreenlakeBlueprint:
     """Test greenlake blueprint endpoints."""
@@ -365,13 +391,16 @@ class TestGreenlakeBlueprint:
 # Chat Blueprint
 # =============================================================================
 
+
 class TestChatBlueprint:
     """Test chat blueprint endpoints."""
 
     def test_chat_message_requires_auth(self, client):
-        resp = client.post("/api/chat/message",
-                           data=json.dumps({"message": "hello"}),
-                           content_type="application/json")
+        resp = client.post(
+            "/api/chat/message",
+            data=json.dumps({"message": "hello"}),
+            content_type="application/json",
+        )
         assert resp.status_code in (401, 403)
 
     def test_chat_intents_requires_auth(self, client):
@@ -385,9 +414,9 @@ class TestChatBlueprint:
 
     def test_webhook_endpoint_exists(self, client):
         """Webhook endpoint exists (may return 400/405 without proper payload)."""
-        resp = client.post("/api/webhooks/aruba-central",
-                           data=json.dumps({}),
-                           content_type="application/json")
+        resp = client.post(
+            "/api/webhooks/aruba-central", data=json.dumps({}), content_type="application/json"
+        )
         assert resp.status_code != 404
 
 
@@ -395,14 +424,12 @@ class TestChatBlueprint:
 # Route Count Sanity Check
 # =============================================================================
 
+
 class TestRouteCoverage:
     """Verify expected minimum number of routes per blueprint."""
 
     def _count_blueprint_routes(self, flask_app, prefix):
-        return sum(
-            1 for r in flask_app.url_map.iter_rules()
-            if r.endpoint.startswith(f"{prefix}.")
-        )
+        return sum(1 for r in flask_app.url_map.iter_rules() if r.endpoint.startswith(f"{prefix}."))
 
     def test_auth_has_minimum_routes(self, flask_app):
         assert self._count_blueprint_routes(flask_app, "auth") >= 7

@@ -7,24 +7,25 @@ loading for dashboard API testing scripts.
 """
 
 import os
+from typing import Any
+
 import requests
-from typing import Optional, Dict, Any, Tuple, List
 from rich.console import Console
 
 console = Console()
 
 # Load from environment with fallback
-DASHBOARD_API = os.environ.get('DASHBOARD_API_URL', 'http://localhost:5000/api')
-TEST_WLAN_PASSWORD = os.environ.get('TEST_WLAN_PASSWORD', 'TestPassword123!')
+DASHBOARD_API = os.environ.get("DASHBOARD_API_URL", "http://localhost:5000/api")
+TEST_WLAN_PASSWORD = os.environ.get("TEST_WLAN_PASSWORD", "TestPassword123!")
 
 
 def api_request(
     method: str,
     url: str,
-    headers: Optional[Dict[str, str]] = None,
-    json_data: Optional[Dict[str, Any]] = None,
-    timeout: int = 30
-) -> Tuple[Optional[Dict], Optional[str]]:
+    headers: dict[str, str] | None = None,
+    json_data: dict[str, Any] | None = None,
+    timeout: int = 30,
+) -> tuple[dict | None, str | None]:
     """Make HTTP request with proper error handling
 
     Args:
@@ -41,11 +42,7 @@ def api_request(
     """
     try:
         response = requests.request(
-            method=method,
-            url=url,
-            headers=headers,
-            json=json_data,
-            timeout=timeout
+            method=method, url=url, headers=headers, json=json_data, timeout=timeout
         )
 
         # Handle successful responses
@@ -75,7 +72,7 @@ def api_request(
             # Conflict - often means resource already exists or is in use
             try:
                 error_data = response.json()
-                msg = error_data.get('message', error_data.get('error', 'Conflict'))
+                msg = error_data.get("message", error_data.get("error", "Conflict"))
                 return None, f"Conflict: {msg}"
             except requests.exceptions.JSONDecodeError:
                 return None, "Conflict - resource may be in use"
@@ -84,7 +81,7 @@ def api_request(
             # Server error
             try:
                 error_data = response.json()
-                msg = error_data.get('message', error_data.get('error', str(error_data)))
+                msg = error_data.get("message", error_data.get("error", str(error_data)))
                 return None, f"Server error (HTTP {response.status_code}): {msg}"
             except requests.exceptions.JSONDecodeError:
                 return None, f"Server error (HTTP {response.status_code}): {response.text[:200]}"
@@ -93,7 +90,7 @@ def api_request(
             # Other client errors (400, etc.)
             try:
                 error_data = response.json()
-                msg = error_data.get('message', error_data.get('error', str(error_data)))
+                msg = error_data.get("message", error_data.get("error", str(error_data)))
                 return None, f"Request failed (HTTP {response.status_code}): {msg}"
             except requests.exceptions.JSONDecodeError:
                 return None, f"Request failed (HTTP {response.status_code}): {response.text[:200]}"
@@ -112,7 +109,7 @@ def api_request(
         return None, f"Unexpected error: {type(e).__name__}: {str(e)}"
 
 
-def login_to_dashboard() -> Tuple[Optional[str], Optional[str]]:
+def login_to_dashboard() -> tuple[str | None, str | None]:
     """Login to dashboard and get session ID
 
     Returns:
@@ -120,7 +117,7 @@ def login_to_dashboard() -> Tuple[Optional[str], Optional[str]]:
         - (session_id, None) on success
         - (None, error_message) on failure
     """
-    data, error = api_request('POST', f"{DASHBOARD_API}/auth/login", timeout=10)
+    data, error = api_request("POST", f"{DASHBOARD_API}/auth/login", timeout=10)
 
     if error:
         return None, f"Login failed: {error}"
@@ -128,14 +125,14 @@ def login_to_dashboard() -> Tuple[Optional[str], Optional[str]]:
     if not data:
         return None, "Login succeeded but received empty response"
 
-    session_id = data.get('session_id')
+    session_id = data.get("session_id")
     if not session_id:
         return None, "Login succeeded but no session_id in response"
 
     return session_id, None
 
 
-def get_devices(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
+def get_devices(session_id: str) -> tuple[list[dict] | None, str | None]:
     """Get all devices from dashboard
 
     Args:
@@ -146,8 +143,8 @@ def get_devices(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
         - (devices, None) on success
         - (None, error_message) on failure
     """
-    headers = {'X-Session-ID': session_id}
-    data, error = api_request('GET', f"{DASHBOARD_API}/devices", headers=headers)
+    headers = {"X-Session-ID": session_id}
+    data, error = api_request("GET", f"{DASHBOARD_API}/devices", headers=headers)
 
     if error:
         return None, error
@@ -155,7 +152,7 @@ def get_devices(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
     if not isinstance(data, dict):
         return None, f"Unexpected response format: expected dict, got {type(data).__name__}"
 
-    devices = data.get('items', data.get('devices', []))
+    devices = data.get("items", data.get("devices", []))
 
     if not isinstance(devices, list):
         return None, f"Unexpected devices format: expected list, got {type(devices).__name__}"
@@ -163,7 +160,7 @@ def get_devices(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
     return devices, None
 
 
-def get_gateways(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
+def get_gateways(session_id: str) -> tuple[list[dict] | None, str | None]:
     """Get all gateways from dashboard
 
     Args:
@@ -179,11 +176,11 @@ def get_gateways(session_id: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
     if error:
         return None, error
 
-    gateways = [d for d in devices if d.get('deviceType') == 'GATEWAY']
+    gateways = [d for d in devices if d.get("deviceType") == "GATEWAY"]
     return gateways, None
 
 
-def get_first_gateway(session_id: str) -> Tuple[Optional[Dict], Optional[str]]:
+def get_first_gateway(session_id: str) -> tuple[dict | None, str | None]:
     """Get first available gateway from dashboard
 
     Args:
@@ -206,10 +203,8 @@ def get_first_gateway(session_id: str) -> Tuple[Optional[Dict], Optional[str]]:
 
 
 def validate_response_structure(
-    data: Any,
-    expected_type: type,
-    required_keys: Optional[List[str]] = None
-) -> Optional[str]:
+    data: Any, expected_type: type, required_keys: list[str] | None = None
+) -> str | None:
     """Validate response data structure
 
     Args:
@@ -221,7 +216,9 @@ def validate_response_structure(
         None if valid, error message string if invalid
     """
     if not isinstance(data, expected_type):
-        return f"Invalid response type: expected {expected_type.__name__}, got {type(data).__name__}"
+        return (
+            f"Invalid response type: expected {expected_type.__name__}, got {type(data).__name__}"
+        )
 
     if required_keys and isinstance(data, dict):
         missing = [key for key in required_keys if key not in data]

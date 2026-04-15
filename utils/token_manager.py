@@ -3,14 +3,15 @@ Token Manager for HPE Aruba Central API
 Handles automatic token refresh using client credentials
 """
 
-import requests
-import logging
-import time
 import json
-from pathlib import Path
-from typing import Optional, Dict, Any
-from datetime import datetime
+import logging
 import os
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +48,8 @@ class TokenManager:
                 self.cache_file = Path(cache_file)
         else:
             self.cache_file = Path(cache_file)
-        self.access_token: Optional[str] = None
-        self.token_expires_at: Optional[float] = None
+        self.access_token: str | None = None
+        self.token_expires_at: float | None = None
 
         # Try to load cached token
         self._load_cached_token()
@@ -60,7 +61,7 @@ class TokenManager:
             return
 
         try:
-            with open(self.cache_file, "r") as f:
+            with open(self.cache_file) as f:
                 cache_data = json.load(f)
 
             self.access_token = cache_data.get("access_token")
@@ -154,7 +155,7 @@ class TokenManager:
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to refresh token: {e}")
-            raise Exception(f"Token refresh failed: {e}")
+            raise Exception(f"Token refresh failed: {e}") from e
 
     def is_token_valid(self) -> bool:
         """Check if current token is valid.
@@ -168,7 +169,7 @@ class TokenManager:
         # Check with 5 minute buffer
         return time.time() < (self.token_expires_at - 300)
 
-    def get_token_info(self) -> Dict[str, Any]:
+    def get_token_info(self) -> dict[str, Any]:
         """Get information about the current token.
 
         Returns:
@@ -194,7 +195,5 @@ class TokenManager:
             "is_valid": self.is_token_valid(),
             "expires_at": expires_at_str,
             "expires_in_seconds": int(time_until_expiry) if time_until_expiry else 0,
-            "expires_in_minutes": (
-                int(time_until_expiry / 60) if time_until_expiry else 0
-            ),
+            "expires_in_minutes": (int(time_until_expiry / 60) if time_until_expiry else 0),
         }

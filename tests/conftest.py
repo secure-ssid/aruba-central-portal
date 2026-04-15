@@ -2,15 +2,17 @@
 
 import json
 import os
-import pytest
-import responses
-import tempfile
-from pathlib import Path
-from typing import Dict, Any
-from unittest.mock import MagicMock, patch
 
 # Add project root to path
 import sys
+import tempfile
+from pathlib import Path
+from typing import Any
+from unittest.mock import MagicMock, patch
+
+import pytest
+import responses
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
@@ -31,20 +33,10 @@ TEST_ACCESS_TOKEN = "test-access-token-12345"
 
 SAMPLE_DEVICES = {
     "devices": [
-        {
-            "serial": "CN12345678",
-            "name": "AP-Office-1",
-            "device_type": "AP",
-            "status": "Up"
-        },
-        {
-            "serial": "CN87654321",
-            "name": "GW-Main",
-            "device_type": "GATEWAY",
-            "status": "Up"
-        }
+        {"serial": "CN12345678", "name": "AP-Office-1", "device_type": "AP", "status": "Up"},
+        {"serial": "CN87654321", "name": "GW-Main", "device_type": "GATEWAY", "status": "Up"},
     ],
-    "total": 2
+    "total": 2,
 }
 
 SAMPLE_WLANS = {
@@ -54,56 +46,43 @@ SAMPLE_WLANS = {
             "opmode": "WPA2_PERSONAL",
             "forward-mode": "FORWARD_MODE_BRIDGE",
             "enable": True,
-            "default-role": "authenticated"
+            "default-role": "authenticated",
         },
         {
             "ssid": "Guest-WiFi",
             "opmode": "OPEN",
             "forward-mode": "FORWARD_MODE_BRIDGE",
             "enable": True,
-            "default-role": "guest"
-        }
+            "default-role": "guest",
+        },
     ]
 }
 
 SAMPLE_SITES = {
     "items": [
-        {
-            "site_name": "HomeLab",
-            "scope-id": "54819475093",
-            "site_type": "branch"
-        },
-        {
-            "site_name": "Office",
-            "scope-id": "12345678901",
-            "site_type": "campus"
-        }
+        {"site_name": "HomeLab", "scope-id": "54819475093", "site_type": "branch"},
+        {"site_name": "Office", "scope-id": "12345678901", "site_type": "campus"},
     ]
 }
 
 SAMPLE_ROLES = {
     "data": [
-        {
-            "name": "authenticated",
-            "vlan-parameters": {"access-vlan": 10}
-        },
-        {
-            "name": "guest",
-            "vlan-parameters": {"access-vlan": 20}
-        }
+        {"name": "authenticated", "vlan-parameters": {"access-vlan": 10}},
+        {"name": "guest", "vlan-parameters": {"access-vlan": 20}},
     ]
 }
 
 SAMPLE_TOKEN_RESPONSE = {
     "access_token": TEST_ACCESS_TOKEN,
     "token_type": "Bearer",
-    "expires_in": 7200
+    "expires_in": 7200,
 }
 
 
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def mock_token_response():
@@ -142,7 +121,7 @@ def temp_token_cache(tmp_path):
     cache_data = {
         "access_token": TEST_ACCESS_TOKEN,
         "expires_at": time.time() + 7200,  # 2 hours from now
-        "cached_at": time.time()
+        "cached_at": time.time(),
     }
 
     with open(cache_file, "w") as f:
@@ -164,7 +143,7 @@ def expired_token_cache(tmp_path):
     cache_data = {
         "access_token": "expired-token",
         "expires_at": time.time() - 3600,  # Expired 1 hour ago
-        "cached_at": time.time() - 7200
+        "cached_at": time.time() - 7200,
     }
 
     with open(cache_file, "w") as f:
@@ -181,7 +160,7 @@ def mock_config():
             "base_url": TEST_BASE_URL,
             "client_id": TEST_CLIENT_ID,
             "client_secret": TEST_CLIENT_SECRET,
-            "customer_id": "test-customer-id"
+            "customer_id": "test-customer-id",
         }
     }
 
@@ -200,10 +179,7 @@ def api_client(mock_token_manager):
     """Create a CentralAPIClient with mocked token manager."""
     from utils.central_api_client import CentralAPIClient
 
-    return CentralAPIClient(
-        base_url=TEST_BASE_URL,
-        token_manager=mock_token_manager
-    )
+    return CentralAPIClient(base_url=TEST_BASE_URL, token_manager=mock_token_manager)
 
 
 @pytest.fixture
@@ -214,9 +190,7 @@ def token_manager(tmp_path):
     cache_file = tmp_path / ".token_cache_test.json"
 
     return TokenManager(
-        client_id=TEST_CLIENT_ID,
-        client_secret=TEST_CLIENT_SECRET,
-        cache_file=str(cache_file)
+        client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
     )
 
 
@@ -250,6 +224,7 @@ def mock_env_vars(monkeypatch):
 # Helper Functions for Tests
 # =============================================================================
 
+
 def add_token_endpoint(rsps, token_data=None, status=200):
     """Add a mock token endpoint to responses.
 
@@ -259,10 +234,7 @@ def add_token_endpoint(rsps, token_data=None, status=200):
         status: HTTP status code
     """
     rsps.add(
-        responses.POST,
-        TEST_TOKEN_URL,
-        json=token_data or SAMPLE_TOKEN_RESPONSE,
-        status=status
+        responses.POST, TEST_TOKEN_URL, json=token_data or SAMPLE_TOKEN_RESPONSE, status=status
     )
 
 
@@ -281,12 +253,9 @@ def add_api_endpoint(rsps, method, endpoint, response_data, status=200):
         "POST": responses.POST,
         "PUT": responses.PUT,
         "PATCH": responses.PATCH,
-        "DELETE": responses.DELETE
+        "DELETE": responses.DELETE,
     }
 
     rsps.add(
-        method_map[method.upper()],
-        f"{TEST_BASE_URL}{endpoint}",
-        json=response_data,
-        status=status
+        method_map[method.upper()], f"{TEST_BASE_URL}{endpoint}", json=response_data, status=status
     )

@@ -497,5 +497,5 @@ For issues related to:
 
 ---
 
-**Version**: 2.0.0
-**Last Updated**: November 2025
+**Version**: 2.1.0
+**Last Updated**: April 2026

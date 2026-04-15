@@ -2,20 +2,21 @@
 
 import json
 import time
-import pytest
-import responses
 from pathlib import Path
 from unittest.mock import patch
 
-from utils.token_manager import TokenManager
+import pytest
+import responses
+
 from tests.conftest import (
-    TEST_TOKEN_URL,
+    SAMPLE_TOKEN_RESPONSE,
+    TEST_ACCESS_TOKEN,
     TEST_CLIENT_ID,
     TEST_CLIENT_SECRET,
-    TEST_ACCESS_TOKEN,
-    SAMPLE_TOKEN_RESPONSE,
+    TEST_TOKEN_URL,
     add_token_endpoint,
 )
+from utils.token_manager import TokenManager
 
 
 class TestTokenManagerInit:
@@ -26,9 +27,7 @@ class TestTokenManagerInit:
         cache_file = tmp_path / ".token_cache.json"
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         assert manager.client_id == TEST_CLIENT_ID
@@ -40,7 +39,7 @@ class TestTokenManagerInit:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(temp_token_cache)
+            cache_file=str(temp_token_cache),
         )
 
         assert manager.access_token == TEST_ACCESS_TOKEN
@@ -51,7 +50,7 @@ class TestTokenManagerInit:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(expired_token_cache)
+            cache_file=str(expired_token_cache),
         )
 
         assert manager.access_token is None
@@ -62,9 +61,7 @@ class TestTokenManagerInit:
         cache_file = tmp_path / "nonexistent.json"
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         assert manager.access_token is None
@@ -80,9 +77,7 @@ class TestTokenManagerGetToken:
         add_token_endpoint(responses)
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         token = manager.get_access_token()
@@ -96,7 +91,7 @@ class TestTokenManagerGetToken:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(temp_token_cache)
+            cache_file=str(temp_token_cache),
         )
 
         token = manager.get_access_token()
@@ -111,18 +106,14 @@ class TestTokenManagerGetToken:
         responses.add(
             responses.POST,
             TEST_TOKEN_URL,
-            json={
-                "access_token": new_token,
-                "token_type": "Bearer",
-                "expires_in": 7200
-            },
-            status=200
+            json={"access_token": new_token, "token_type": "Bearer", "expires_in": 7200},
+            status=200,
         )
 
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(temp_token_cache)
+            cache_file=str(temp_token_cache),
         )
 
         token = manager.get_access_token(force_refresh=True)
@@ -139,7 +130,7 @@ class TestTokenManagerGetToken:
         cache_data = {
             "access_token": "expiring-soon-token",
             "expires_at": time.time() + 240,  # 4 minutes
-            "cached_at": time.time()
+            "cached_at": time.time(),
         }
         with open(cache_file, "w") as f:
             json.dump(cache_data, f)
@@ -147,9 +138,7 @@ class TestTokenManagerGetToken:
         add_token_endpoint(responses)
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         token = manager.get_access_token()
@@ -169,9 +158,7 @@ class TestTokenManagerCaching:
         add_token_endpoint(responses)
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         manager.get_access_token()
@@ -197,7 +184,7 @@ class TestTokenManagerCaching:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=".token_cache.json"
+            cache_file=".token_cache.json",
         )
 
         manager.get_access_token()
@@ -215,7 +202,7 @@ class TestTokenManagerIsValid:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(temp_token_cache)
+            cache_file=str(temp_token_cache),
         )
 
         assert manager.is_token_valid() is True
@@ -225,7 +212,7 @@ class TestTokenManagerIsValid:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(expired_token_cache)
+            cache_file=str(expired_token_cache),
         )
 
         assert manager.is_token_valid() is False
@@ -235,9 +222,7 @@ class TestTokenManagerIsValid:
         cache_file = tmp_path / "nonexistent.json"
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         assert manager.is_token_valid() is False
@@ -251,7 +236,7 @@ class TestTokenManagerGetInfo:
         manager = TokenManager(
             client_id=TEST_CLIENT_ID,
             client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(temp_token_cache)
+            cache_file=str(temp_token_cache),
         )
 
         info = manager.get_token_info()
@@ -267,9 +252,7 @@ class TestTokenManagerGetInfo:
         cache_file = tmp_path / "nonexistent.json"
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         info = manager.get_token_info()
@@ -286,17 +269,10 @@ class TestTokenManagerRefreshErrors:
         """Test that refresh failure raises exception."""
         cache_file = tmp_path / ".token_cache.json"
 
-        responses.add(
-            responses.POST,
-            TEST_TOKEN_URL,
-            json={"error": "invalid_client"},
-            status=401
-        )
+        responses.add(responses.POST, TEST_TOKEN_URL, json={"error": "invalid_client"}, status=401)
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
         with pytest.raises(Exception, match="Token refresh failed"):
@@ -307,17 +283,11 @@ class TestTokenManagerRefreshErrors:
         """Test handling of token refresh timeout."""
         cache_file = tmp_path / ".token_cache.json"
 
-        responses.add(
-            responses.POST,
-            TEST_TOKEN_URL,
-            body=Exception("Connection timeout")
-        )
+        responses.add(responses.POST, TEST_TOKEN_URL, body=Exception("Connection timeout"))
 
         manager = TokenManager(
-            client_id=TEST_CLIENT_ID,
-            client_secret=TEST_CLIENT_SECRET,
-            cache_file=str(cache_file)
+            client_id=TEST_CLIENT_ID, client_secret=TEST_CLIENT_SECRET, cache_file=str(cache_file)
         )
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Connection timeout|Token refresh failed"):
             manager.get_access_token()
