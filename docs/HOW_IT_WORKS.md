@@ -1064,7 +1064,7 @@ Frontend (localStorage)
 
 ## Additional Resources
 
-- [Architecture Documentation](../dashboard/ARCHITECTURE.md)
+- [Architecture Documentation](dashboard/ARCHITECTURE.md)
 - [Configuration Guide](CONFIGURATION.md)
 - [Setup Wizard Guide](SETUP_WIZARD_GUIDE.md)
 - [API Documentation](../dashboard/README.md)

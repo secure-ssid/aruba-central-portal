@@ -396,7 +396,7 @@ docker compose down -v
 ## Next Steps
 
 - ✅ Application is running at http://localhost:1344
-- 📖 Read the [Configuration Guide](dashboard/CONFIGURATION_GUIDE.md)
+- 📖 Read the [Configuration Guide](docs/dashboard/CONFIGURATION_GUIDE.md)
 - 🔧 Explore the [API Explorer](http://localhost:1344/api-explorer)
 - 📊 View the [Dashboard](http://localhost:1344/dashboard)
 

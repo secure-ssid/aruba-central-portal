@@ -154,8 +154,8 @@ docker-compose build --no-cache --pull
 docker-compose logs -f aruba-central-portal
 
 # Check debug info
-./debug-setup.sh
+./scripts/ops/debug-setup.sh
 
 # Validate deployment
-./deploy-check.sh
+./scripts/ops/deploy-check.sh
 ```
