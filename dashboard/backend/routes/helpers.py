@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 def _get_globals():
-    """Fetch live globals from the app module at request time."""
+    """Fetch live globals from the app module at request time.
+
+    TODO(refactor): Migrate to Flask application context (current_app.extensions) to
+    eliminate the runtime `import app` coupling. Each rename in app.py silently breaks
+    all blueprints that call this function.
+    """
     import app as _app
 
     return {

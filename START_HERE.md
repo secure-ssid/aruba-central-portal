@@ -102,7 +102,8 @@ Use the Setup Wizard at http://localhost:1344 to enter these credentials.
 |----------|-------------|
 | [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) | Docker production setup |
 | [DOCKER_DESKTOP_INSTALL.md](DOCKER_DESKTOP_INSTALL.md) | Docker Desktop (Windows/Mac) |
-| [DEV_SETUP.md](DEV_SETUP.md) | Development environment |
+| [docs/SETUP.md](docs/SETUP.md) | Dev and Docker setup (consolidated) |
+| [docs/DEV_SETUP.md](docs/DEV_SETUP.md) | Windows/PowerShell development setup |
 
 ### Configuration
 | Document | Purpose |
@@ -113,7 +114,7 @@ Use the Setup Wizard at http://localhost:1344 to enter these credentials.
 ### Features & Reference
 | Document | Content |
 |----------|---------|
-| [dashboard/FEATURES.md](dashboard/FEATURES.md) | Dashboard features |
+| [docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md) | Dashboard features |
 | [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | System architecture |
 
 ### Maintenance
@@ -213,7 +214,8 @@ aruba-central-portal/
 │   ├── users/             # User management
 │   ├── monitoring/        # Health checks
 │   ├── tenants/           # MSP operations
-│   └── testing/           # Integration tests
+│   ├── testing/           # Integration tests
+│   └── ops/               # Deployment and operational scripts
 ├── utils/                 # Shared utilities
 ├── tests/                 # Unit tests
 └── docs/                  # Documentation
@@ -227,7 +229,7 @@ After successful installation:
 
 1. **Access dashboard** at http://your-ip:1344
 2. **Complete Setup Wizard** - Enter your Aruba Central API credentials
-3. **Explore features** - see [dashboard/FEATURES.md](dashboard/FEATURES.md)
+3. **Explore features** - see [docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md)
 
 ---
 
@@ -236,7 +238,7 @@ After successful installation:
 **Documentation:**
 1. Check this file (START_HERE.md)
 2. See relevant guide from [Documentation Overview](#documentation-overview)
-3. Run `./debug-setup.sh` for diagnostics
+3. Run `./scripts/ops/debug-setup.sh` for diagnostics
 
 **Support:**
 - GitHub Issues: Report bugs or request features
@@ -248,7 +250,7 @@ After successful installation:
 - **[README.md](README.md)** - Technical documentation
 - **[Docker Setup](DOCKER_DEPLOYMENT.md)** - Container deployment
 - **[Configuration](docs/CONFIGURATION.md)** - Advanced config
-- **[Features](dashboard/FEATURES.md)** - What it can do
+- **[Features](docs/dashboard/FEATURES.md)** - What it can do
 
 ---
 

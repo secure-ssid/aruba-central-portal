@@ -36,6 +36,7 @@ pip install -r requirements.txt
 **Installation Guides:**
 - **[START_HERE.md](START_HERE.md)** - General setup guide
 - **[DOCKER_DESKTOP_INSTALL.md](DOCKER_DESKTOP_INSTALL.md)** - Docker Desktop setup
+- **[docs/SETUP.md](docs/SETUP.md)** - Dev and Docker detailed setup
 
 ---
 
@@ -45,11 +46,11 @@ pip install -r requirements.txt
 |----------|-------------|----------|
 | **[START_HERE.md](START_HERE.md)** | Complete getting started guide | Everyone |
 | **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** | Production Docker guide | DevOps |
-| **[QUICK_START_DEV.md](QUICK_START_DEV.md)** | Development environment | Developers |
+| **[docs/SETUP.md](docs/SETUP.md)** | Dev and Docker setup (consolidated) | Developers |
 | **[UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)** | Update guide | Operations |
 | **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** | Configuration reference | Advanced users |
 | **[docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)** | System architecture | Developers |
-| **[dashboard/FEATURES.md](dashboard/FEATURES.md)** | Feature list | Everyone |
+| **[docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md)** | Feature list | Everyone |
 | **[CLAUDE.md](CLAUDE.md)** | Development guidelines | Developers |
 
 ---
@@ -91,7 +92,8 @@ aruba-central-portal/
 │   ├── users/             # User management
 │   ├── monitoring/        # Health checks
 │   ├── tenants/           # MSP operations
-│   └── testing/           # Integration tests
+│   ├── testing/           # Integration tests
+│   └── ops/               # Deployment and operational scripts
 ├── utils/                 # Shared utilities
 ├── tests/                 # Unit tests
 └── docs/                  # Documentation
@@ -144,7 +146,7 @@ This is normal if credentials aren't configured. Use the Setup Wizard at `http:/
 
 ### More Help
 
-- Run: `./debug-setup.sh`
+- Run: `./scripts/ops/debug-setup.sh`
 - See: [UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)
 - Check: [GitHub Issues](https://github.com/secure-ssid/aruba-central-portal/issues)
 
@@ -191,8 +193,9 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 
 - **[START_HERE.md](START_HERE.md)** - Getting started guide
 - **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** - Docker setup
+- **[docs/SETUP.md](docs/SETUP.md)** - Dev and Docker setup (consolidated)
 - **[UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)** - How to update
-- **[dashboard/FEATURES.md](dashboard/FEATURES.md)** - Feature overview
+- **[docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md)** - Feature overview
 - **[CLAUDE.md](CLAUDE.md)** - Development guidelines
 
 ---
