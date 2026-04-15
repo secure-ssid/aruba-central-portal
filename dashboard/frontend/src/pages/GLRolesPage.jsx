@@ -37,6 +37,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import ShieldIcon from '@mui/icons-material/Shield';
 import { greenlakeRoleAPI } from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 const PLATFORM_ROLES = [
   {
@@ -108,12 +109,14 @@ export default function GLRolesPage() {
   const [loading, setLoading] = useState(false);
   const [roleAssignments, setRoleAssignments] = useState([]);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
   const [users, setUsers] = useState([]);
 
   const load = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -121,8 +124,11 @@ export default function GLRolesPage() {
       const data = await greenlakeRoleAPI.listAssignments();
       setRoleAssignments(data.assignments || []);
     } catch (e) {
-      setError(e?.response?.data?.error || 'Failed to load role assignments');
-      // Graceful fallback for demo
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e?.response?.data?.error || 'Failed to load role assignments');
+      }
       setRoleAssignments([]);
     } finally {
       setLoading(false);
@@ -215,7 +221,9 @@ export default function GLRolesPage() {
         </Stack>
       </Stack>
 
-      <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
+      {notConfigured && <GreenLakeNotConfigured />}
+
+      {!notConfigured && <Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
         <Typography variant="body2" fontWeight={600} gutterBottom>
           Two-Tier Role System
         </Typography>
@@ -228,7 +236,7 @@ export default function GLRolesPage() {
           </Typography>{' '}
           for details.
         </Typography>
-      </Alert>
+      </Alert>}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -236,7 +244,7 @@ export default function GLRolesPage() {
         </Alert>
       )}
 
-      <Stack spacing={3}>
+      {!notConfigured && <Stack spacing={3}>
         {PLATFORM_ROLES.map(role => {
           const assignments = assignmentsByRole.find(r => r.id === role.id)?.assignments || [];
           return (
@@ -301,9 +309,9 @@ export default function GLRolesPage() {
             </Card>
           );
         })}
-      </Stack>
+      </Stack>}
 
-      <Card sx={{ mt: 3 }}>
+      {!notConfigured && <Card sx={{ mt: 3 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={700} gutterBottom>
             Role Comparison
@@ -349,7 +357,7 @@ export default function GLRolesPage() {
             </Table>
           </TableContainer>
         </CardContent>
-      </Card>
+      </Card>}
 
       <Dialog open={assignOpen} onClose={() => setAssignOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Assign Platform Role</DialogTitle>

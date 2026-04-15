@@ -29,6 +29,7 @@ import {
   Router as RouterIcon,
   DeviceHub as VLanIcon,
   Wifi as WirelessIcon,
+  Cloud as CloudIcon,
 } from '@mui/icons-material';
 
 const configurationCategories = [
@@ -135,6 +136,14 @@ const configurationCategories = [
     icon: <WirelessIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/wireless',
     color: '#FF6600',
+  },
+  {
+    id: 'greenlake',
+    title: 'GreenLake Platform',
+    description: 'Manage GreenLake users, devices, roles, subscriptions, workspaces, and locations',
+    icon: <CloudIcon sx={{ fontSize: 48 }} />,
+    path: '/gl/devices',
+    color: '#0096D6',
   },
 ];
 

@@ -10,10 +10,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function GLTagsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [success, setSuccess] = useState('');
   const [tags, setTags] = useState([]);
   const [sortBy, setSortBy] = useState('key');
@@ -34,6 +36,7 @@ function GLTagsPage() {
   });
 
   const fetchTags = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -81,7 +84,11 @@ function GLTagsPage() {
       });
       setTags(items);
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load tags');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load tags');
+      }
     } finally {
       setLoading(false);
     }
@@ -216,7 +223,9 @@ function GLTagsPage() {
         </Stack>
       </Stack>
 
-      <Card sx={{ mb: 2 }}>
+      {notConfigured && <GreenLakeNotConfigured />}
+
+      {!notConfigured && <Card sx={{ mb: 2 }}>
         <CardContent>
           <TextField
             size="small"
@@ -228,7 +237,7 @@ function GLTagsPage() {
             InputProps={{ startAdornment: <InputAdornment position="start">🔎</InputAdornment> }}
           />
         </CardContent>
-      </Card>
+      </Card>}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -242,7 +251,7 @@ function GLTagsPage() {
         </Alert>
       )}
 
-      <Card>
+      {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -314,7 +323,7 @@ function GLTagsPage() {
             </Table>
           </TableContainer>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Create Tag Dialog */}
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>

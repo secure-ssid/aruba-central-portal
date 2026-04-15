@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination, Button, TextField, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function GLSubscriptionsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [subs, setSubs] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -18,6 +20,7 @@ function GLSubscriptionsPage() {
   const [form, setForm] = useState({ id: '', type: '', status: '', startDate: '', endDate: '' });
 
   const fetchSubs = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -36,7 +39,11 @@ function GLSubscriptionsPage() {
       setSubs(items);
       setTotal(resp.data?.total || 0);
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load subscriptions');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load subscriptions');
+      }
     } finally {
       setLoading(false);
     }
@@ -88,8 +95,9 @@ function GLSubscriptionsPage() {
           <Button onClick={()=>setEditOpen(true)} variant="outlined">Edit</Button>
         </Box>
       </Box>
+      {notConfigured && <GreenLakeNotConfigured />}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Card>
+      {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -119,7 +127,7 @@ function GLSubscriptionsPage() {
             <Pagination count={Math.max(1, Math.ceil(total / limit))} page={page} onChange={(_, p) => setPage(p)} size="small" color="primary" />
           </Box>
         </CardContent>
-      </Card>
+      </Card>}
       {/* Add Dialog */}
       <Dialog open={addOpen} onClose={()=>setAddOpen(false)}>
         <DialogTitle>Add Subscription</DialogTitle>

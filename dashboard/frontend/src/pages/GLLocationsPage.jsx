@@ -4,10 +4,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import apiClient from '../services/api';
+import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
 function GLLocationsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notConfigured, setNotConfigured] = useState(false);
   const [locations, setLocations] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -23,6 +25,7 @@ function GLLocationsPage() {
   const [selected, setSelected] = useState(new Set());
 
   const fetchLocations = async () => {
+    if (notConfigured) return;
     setLoading(true);
     setError('');
     try {
@@ -54,7 +57,11 @@ function GLLocationsPage() {
       setLocations(items);
       setTotal(resp.data?.total || 0);
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to load locations');
+      if (isGLNotConfiguredError(e)) {
+        setNotConfigured(true);
+      } else {
+        setError(e.response?.data?.error || 'Failed to load locations');
+      }
     } finally {
       setLoading(false);
     }
@@ -149,8 +156,9 @@ function GLLocationsPage() {
           </FormGroup>
         </Box>
       )}
+      {notConfigured && <GreenLakeNotConfigured />}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Card>
+      {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -194,7 +202,7 @@ function GLLocationsPage() {
             <Pagination count={Math.max(1, Math.ceil(total / limit))} page={page} onChange={(_, p) => setPage(p)} size="small" color="primary" />
           </Box>
         </CardContent>
-      </Card>
+      </Card>}
       {/* Add Dialog */}
       <Dialog open={addOpen} onClose={()=>setAddOpen(false)}>
         <DialogTitle>Add Location</DialogTitle>
