@@ -15,19 +15,13 @@ import {
   Alert,
   Chip,
   CircularProgress,
-  LinearProgress,
-  Tooltip,
-  Link,
   Skeleton,
 } from '@mui/material';
 import DevicesIcon from '@mui/icons-material/Devices';
 import RouterIcon from '@mui/icons-material/Router';
 import WifiIcon from '@mui/icons-material/Wifi';
 import PeopleIcon from '@mui/icons-material/People';
-import ApiIcon from '@mui/icons-material/Api';
-import SpeedIcon from '@mui/icons-material/Speed';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { useNetworkHealth, useDevices, useClients, useRateLimit } from '../hooks/useApiQueries';
+import { useNetworkHealth, useDevices, useClients } from '../hooks/useApiQueries';
 
 // localStorage cache utils removed — React Query handles caching automatically
 
@@ -106,14 +100,11 @@ function DashboardPage() {
   const healthQuery = useNetworkHealth({ refetchInterval: 60_000 });
   const devicesQuery = useDevices({ refetchInterval: 60_000 });
   const clientsQuery = useClients(undefined, { refetchInterval: 60_000 });
-  const rateLimitQuery = useRateLimit({ refetchInterval: 60_000 });
 
   const loading = healthQuery.isLoading && devicesQuery.isLoading;
   const refreshing = healthQuery.isFetching && !healthQuery.isLoading;
   const error = healthQuery.error?.message || devicesQuery.error?.message || '';
   const [errorDismissed, setErrorDismissed] = useState(false);
-
-  const rateLimit = rateLimitQuery.data ?? null;
 
   // Derive stats from query data
   const stats = useMemo(() => {
@@ -311,150 +302,36 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* API Usage and System Status */}
-      <Grid container spacing={3}>
-        {/* API Rate Limit Widget */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ApiIcon />
-                  <Typography variant="h6">
-                    API Usage
-                  </Typography>
-                </Box>
-                <Tooltip title="Based on Aruba Central default limits: 5000 calls/day, 7 calls/second">
-                  <InfoOutlinedIcon fontSize="small" color="action" />
-                </Tooltip>
-              </Box>
-
-              {rateLimit ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {/* Daily Calls */}
-                  <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Daily API Calls
-                      </Typography>
-                      <Typography variant="body2" fontWeight={600}>
-                        {rateLimit.daily_calls} / {rateLimit.daily_limit}
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(rateLimit.daily_percentage, 100)}
-                      color={rateLimit.daily_percentage > 80 ? 'error' : rateLimit.daily_percentage > 60 ? 'warning' : 'success'}
-                      sx={{ height: 8, borderRadius: 4 }}
-                    />
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                      {rateLimit.calls_remaining} calls remaining • Resets in {rateLimit.reset_in_hours}h {rateLimit.reset_in_minutes}m
-                    </Typography>
-                  </Box>
-
-                  {/* Current Rate */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <SpeedIcon fontSize="small" color="action" />
-                      <Typography variant="body2" color="text.secondary">
-                        Current Rate
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={`${rateLimit.current_rate_per_second}/${rateLimit.per_second_limit} calls/sec`}
-                      size="small"
-                      color={rateLimit.current_rate_per_second >= rateLimit.per_second_limit ? 'error' : 'default'}
-                    />
-                  </Box>
-
-                  {/* Documentation Link */}
-                  <Link
-                    href="https://developer.arubanetworks.com/aruba-central/docs/api-getting-started#rate-limiting"
-                    target="_blank"
-                    rel="noopener"
-                    variant="caption"
-                    sx={{ display: 'block', textAlign: 'center' }}
-                  >
-                    View Rate Limiting Documentation
-                  </Link>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                  <CircularProgress size={24} />
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* System Status */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                System Status
+      {/* System Status */}
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            System Status
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                API Connection
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    API Connection
-                  </Typography>
-                  <Chip label="Connected" size="small" color="success" />
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Last Updated
-                  </Typography>
-                  <Typography variant="body2">
-                    {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Auto-refresh
-                  </Typography>
-                  <Chip label="60s" size="small" variant="outlined" />
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Base URL
-                  </Typography>
-                  <Tooltip title="Click Settings to verify your regional cluster">
-                    <Chip label="Configured" size="small" variant="outlined" />
-                  </Tooltip>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Quick Actions
+              <Chip label="Connected" size="small" color="success" />
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Last Updated
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Navigate to different sections to manage your network:
-                </Typography>
-                <Typography variant="body2">
-                  • View and manage all network devices
-                </Typography>
-                <Typography variant="body2">
-                  • Configure network settings and templates
-                </Typography>
-                <Typography variant="body2">
-                  • Manage user access and permissions
-                </Typography>
-                <Typography variant="body2">
-                  • Explore API endpoints directly
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+              <Typography variant="body2">
+                {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Auto-refresh
+              </Typography>
+              <Chip label="60s" size="small" variant="outlined" />
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
