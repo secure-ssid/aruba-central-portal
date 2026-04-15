@@ -18,15 +18,15 @@ import httpx
 
 from .helpers import require_session, cached_get
 
-chat_bp = Blueprint('chat', __name__)
+chat_bp = Blueprint("chat", __name__)
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Chat-specific rate limiter for destructive actions (bounce / reboot / ack)
 # ---------------------------------------------------------------------------
-_chat_action_tracker: dict = {}          # session_id -> deque of timestamps
-_CHAT_ACTION_LIMIT   = 4                 # max destructive actions per window
-_CHAT_ACTION_WINDOW  = 60               # seconds
+_chat_action_tracker: dict = {}  # session_id -> deque of timestamps
+_CHAT_ACTION_LIMIT = 4  # max destructive actions per window
+_CHAT_ACTION_WINDOW = 60  # seconds
 
 
 def _chat_action_allowed(session_id: str) -> bool:
@@ -54,16 +54,21 @@ def _chat_action_allowed(session_id: str) -> bool:
 
 _INTENTS = []
 
+
 def _intent(name, description, patterns, destructive=False):
-    _INTENTS.append({
-        "name": name,
-        "description": description,
-        "patterns": [re.compile(p, re.IGNORECASE) for p in patterns],
-        "destructive": destructive,
-    })
+    _INTENTS.append(
+        {
+            "name": name,
+            "description": description,
+            "patterns": [re.compile(p, re.IGNORECASE) for p in patterns],
+            "destructive": destructive,
+        }
+    )
+
 
 # 1. AP Status / down APs
-_intent("ap_status",
+_intent(
+    "ap_status",
     "Check how many APs are up/down, optionally at a specific site",
     [
         r"\bap[s]?\b.*\b(down|up|status|online|offline|health)\b",
@@ -71,11 +76,12 @@ _intent("ap_status",
         r"how many ap",
         r"access point.*\b(down|up|status)\b",
         r"\b(down|up|status)\b.*access point",
-    ]
+    ],
 )
 
 # 2. Site health
-_intent("site_health",
+_intent(
+    "site_health",
     "Get health score and device counts for one or all sites",
     [
         r"\bsite[s]?\b.*\b(health|status|score|down|up|issue)\b",
@@ -83,11 +89,12 @@ _intent("site_health",
         r"which site.*problem",
         r"site.*unhealthy",
         r"unhealthy site",
-    ]
+    ],
 )
 
 # 3. Client lookup by SSID
-_intent("clients_by_ssid",
+_intent(
+    "clients_by_ssid",
     "List clients connected to a specific SSID / WLAN",
     [
         r"\bclient[s]?\b.*\bssid\b",
@@ -98,23 +105,25 @@ _intent("clients_by_ssid",
         r"\bwifi\b.*client",
         r"client.*wlan",
         r"wlan.*client",
-    ]
+    ],
 )
 
 # 4. Client lookup by MAC
-_intent("client_by_mac",
+_intent(
+    "client_by_mac",
     "Look up a client by MAC address",
     [
-        r"\b([0-9a-f]{2}[:\-]){5}[0-9a-f]{2}\b",   # MAC address pattern
+        r"\b([0-9a-f]{2}[:\-]){5}[0-9a-f]{2}\b",  # MAC address pattern
         r"\bmac\b.*\bclient\b",
         r"\bclient\b.*\bmac\b",
         r"find client.*mac",
         r"who is.*[0-9a-f]{2}:[0-9a-f]{2}",
-    ]
+    ],
 )
 
 # 5. Switch port errors
-_intent("switch_port_errors",
+_intent(
+    "switch_port_errors",
     "Find switch with highest port error counters",
     [
         r"\bswitch\b.*\b(error[s]?|fault|drop[s]?|crc|collision)\b",
@@ -124,11 +133,12 @@ _intent("switch_port_errors",
         r"interface.*error",
         r"which switch.*error",
         r"error.*port",
-    ]
+    ],
 )
 
 # 6. Bounce / reboot AP
-_intent("bounce_ap",
+_intent(
+    "bounce_ap",
     "Reboot an AP by serial number",
     [
         r"\b(bounce|reboot|restart|reset)\b.*\bap\b",
@@ -136,11 +146,12 @@ _intent("bounce_ap",
         r"\b(bounce|reboot|restart)\b.*access.?point",
         r"access.?point.*reboot",
     ],
-    destructive=True
+    destructive=True,
 )
 
 # 7. Bounce switch port
-_intent("bounce_port",
+_intent(
+    "bounce_port",
     "Bounce (shut/no-shut) a switch port",
     [
         r"\b(bounce|cycle|reset|restart)\b.*port",
@@ -149,11 +160,12 @@ _intent("bounce_port",
         r"bounce.*poe",
         r"shut.*port",
     ],
-    destructive=True
+    destructive=True,
 )
 
 # 8. Alert summary
-_intent("alert_summary",
+_intent(
+    "alert_summary",
     "Show recent alerts, optionally filtered by severity",
     [
         r"\balert[s]?\b",
@@ -163,11 +175,12 @@ _intent("alert_summary",
         r"event.*recent",
         r"what.*wrong",
         r"any.*issue[s]?",
-    ]
+    ],
 )
 
 # 9. Firmware status
-_intent("firmware_status",
+_intent(
+    "firmware_status",
     "Check firmware versions across the fleet",
     [
         r"\bfirmware\b",
@@ -177,11 +190,12 @@ _intent("firmware_status",
         r"\bdevice[s]?\b.*\bupgrade[s]?\b",
         r"\boutdated\b",
         r"\bneed.*updat\b",
-    ]
+    ],
 )
 
 # 10. WLAN / SSID list
-_intent("wlan_list",
+_intent(
+    "wlan_list",
     "List all configured WLANs / SSIDs",
     [
         r"\bwlan[s]?\b",
@@ -191,11 +205,12 @@ _intent("wlan_list",
         r"ssid.*config",
         r"wireless.*network",
         r"network.*wireless",
-    ]
+    ],
 )
 
 # 11. Top clients by bandwidth
-_intent("top_clients",
+_intent(
+    "top_clients",
     "Show top bandwidth consumers",
     [
         r"\btop\b.*\bclient[s]?\b",
@@ -206,11 +221,12 @@ _intent("top_clients",
         r"who.*using.*most",
         r"top.*user[s]?",
         r"heaviest.*user[s]?",
-    ]
+    ],
 )
 
 # 12. Device inventory / count
-_intent("device_inventory",
+_intent(
+    "device_inventory",
     "Count or list devices in the fleet",
     [
         r"\bdevice[s]?\b.*(count|total|how many|list|inventory)",
@@ -219,11 +235,12 @@ _intent("device_inventory",
         r"how many.*switch",
         r"switch.*count",
         r"inventory",
-    ]
+    ],
 )
 
 # 13. Acknowledge alert
-_intent("ack_alert",
+_intent(
+    "ack_alert",
     "Acknowledge a specific alert by ID",
     [
         r"\back(nowledge)?\b.*\balert\b",
@@ -231,11 +248,12 @@ _intent("ack_alert",
         r"dismiss.*alert",
         r"clear.*alert",
     ],
-    destructive=True
+    destructive=True,
 )
 
 # 14. Help / capabilities
-_intent("help",
+_intent(
+    "help",
     "Show what the chatbot can do",
     [
         r"\bhelp\b",
@@ -245,11 +263,12 @@ _intent("help",
         r"list.*command",
         r"capability|capabilities",
         r"^\s*\?+\s*$",
-    ]
+    ],
 )
 
 # 15. Ping / connectivity test
-_intent("ping_test",
+_intent(
+    "ping_test",
     "Run a ping from a switch to a destination",
     [
         r"\bping\b",
@@ -257,11 +276,12 @@ _intent("ping_test",
         r"reach.*\b(\d{1,3}\.){3}\d{1,3}\b",
         r"can.*reach",
         r"reachable",
-    ]
+    ],
 )
 
 # 16. Traceroute
-_intent("traceroute",
+_intent(
+    "traceroute",
     "Run a traceroute from a CX switch to a destination",
     [
         r"\btraceroute\b",
@@ -269,11 +289,12 @@ _intent("traceroute",
         r"\btr\b.*\b(\d{1,3}\.){3}\d{1,3}\b",
         r"hops? to",
         r"path to (\d{1,3}\.){3}\d{1,3}",
-    ]
+    ],
 )
 
 # 17. Device status (online/offline devices across fleet)
-_intent("device_status",
+_intent(
+    "device_status",
     "Show online/offline devices across the fleet, optionally filtered by type",
     [
         r"\bdevice[s]?\b.*\b(down|offline|up|online|status)\b",
@@ -288,11 +309,12 @@ _intent("device_status",
         r"which device.*\b(down|up|offline|online)\b",
         r"offline device",
         r"device.*offline",
-    ]
+    ],
 )
 
 # 18. Find client by MAC or IP
-_intent("find_client",
+_intent(
+    "find_client",
     "Find a connected client by MAC address or IP address",
     [
         r"find.*client",
@@ -302,11 +324,12 @@ _intent("find_client",
         r"who.*\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
         r"ip.*client",
         r"client.*locate",
-    ]
+    ],
 )
 
 # 19. Disconnect client
-_intent("disconnect_client",
+_intent(
+    "disconnect_client",
     "Force-disconnect a wireless client by MAC address",
     [
         r"\bdisconnect\b.*\bclient\b",
@@ -316,11 +339,12 @@ _intent("disconnect_client",
         r"remove.*client.*wifi",
         r"force.*disconnect",
     ],
-    destructive=True
+    destructive=True,
 )
 
 # 20. Client count / total clients
-_intent("client_count",
+_intent(
+    "client_count",
     "Show total client count and breakdown by type",
     [
         r"^clients?\s*$",
@@ -329,11 +353,12 @@ _intent("client_count",
         r"total.*client",
         r"show.*client[s]?$",
         r"client.*status",
-    ]
+    ],
 )
 
 # 21. Site list
-_intent("site_list",
+_intent(
+    "site_list",
     "List all sites with device counts",
     [
         r"^sites?\s*$",
@@ -342,11 +367,12 @@ _intent("site_list",
         r"all.*sites?",
         r"how many site",
         r"sites?.*list",
-    ]
+    ],
 )
 
 # 22. Top APs by bandwidth usage
-_intent("top_bandwidth",
+_intent(
+    "top_bandwidth",
     "Show top APs or clients by bandwidth usage",
     [
         r"top.*bandwidth",
@@ -357,13 +383,14 @@ _intent("top_bandwidth",
         r"highest.*traffic",
         r"busiest.*ap",
         r"ap.*usage",
-    ]
+    ],
 )
 
 
 # ---------------------------------------------------------------------------
 # IntentClassifier
 # ---------------------------------------------------------------------------
+
 
 class IntentClassifier:
     """
@@ -390,8 +417,7 @@ class IntentClassifier:
         Returns the raw token found, or None.
         """
         m = re.search(
-            r'\b(?:at|for|in|on|site)\s+([A-Za-z0-9][A-Za-z0-9_\-\.]{1,40})',
-            text, re.IGNORECASE
+            r"\b(?:at|for|in|on|site)\s+([A-Za-z0-9][A-Za-z0-9_\-\.]{1,40})", text, re.IGNORECASE
         )
         return m.group(1) if m else None
 
@@ -401,19 +427,41 @@ class IntentClassifier:
         Extract a device serial number.  Aruba serials are typically 9–12
         uppercase alphanumeric characters.  Also matches lower-case input.
         """
-        m = re.search(r'\b([A-Za-z0-9]{6,14})\b', text)
+        m = re.search(r"\b([A-Za-z0-9]{6,14})\b", text)
         # Avoid matching common English words as serials
-        STOPWORDS = {'the','and','for','are','that','with','this','have',
-                     'from','they','will','been','were','said','each','which',
-                     'she','there','their','what','about','would','make'}
+        STOPWORDS = {
+            "the",
+            "and",
+            "for",
+            "are",
+            "that",
+            "with",
+            "this",
+            "have",
+            "from",
+            "they",
+            "will",
+            "been",
+            "were",
+            "said",
+            "each",
+            "which",
+            "she",
+            "there",
+            "their",
+            "what",
+            "about",
+            "would",
+            "make",
+        }
         if m and m.group(1).lower() not in STOPWORDS:
             return m.group(1).upper()
         return None
 
     @staticmethod
     def extract_mac(text: str) -> str | None:
-        m = re.search(r'\b([0-9a-fA-F]{2}[:\-]){5}[0-9a-fA-F]{2}\b', text)
-        return m.group(0).lower().replace('-', ':') if m else None
+        m = re.search(r"\b([0-9a-fA-F]{2}[:\-]){5}[0-9a-fA-F]{2}\b", text)
+        return m.group(0).lower().replace("-", ":") if m else None
 
     @staticmethod
     def extract_ssid(text: str) -> str | None:
@@ -423,25 +471,25 @@ class IntentClassifier:
         if m:
             return m.group(1)
         # Keyword-preceded: 'ssid CorpWiFi' / 'WLAN CorpWiFi'
-        m = re.search(r'\b(?:ssid|wlan)\s+([A-Za-z0-9_\-\.]{1,64})', text, re.IGNORECASE)
+        m = re.search(r"\b(?:ssid|wlan)\s+([A-Za-z0-9_\-\.]{1,64})", text, re.IGNORECASE)
         return m.group(1) if m else None
 
     @staticmethod
     def extract_port(text: str) -> str | None:
         """Extract a CX-style port identifier like 1/1/5 or 1/1/13."""
-        m = re.search(r'\b(\d+/\d+/\d+)\b', text)
+        m = re.search(r"\b(\d+/\d+/\d+)\b", text)
         return m.group(1) if m else None
 
     @staticmethod
     def extract_severity(text: str) -> str | None:
-        for sev in ('critical', 'major', 'minor', 'warning', 'info'):
-            if re.search(rf'\b{sev}\b', text, re.IGNORECASE):
+        for sev in ("critical", "major", "minor", "warning", "info"):
+            if re.search(rf"\b{sev}\b", text, re.IGNORECASE):
                 return sev
         return None
 
     @staticmethod
     def extract_alert_id(text: str) -> str | None:
-        m = re.search(r'\b([A-Za-z0-9\-]{8,})\b', text)
+        m = re.search(r"\b([A-Za-z0-9\-]{8,})\b", text)
         return m.group(1) if m else None
 
 
@@ -456,6 +504,7 @@ _POLL_CACHE_TTL = 30  # mirrors app.py constant
 
 def _chat_cache_get(key: str, max_age: int = _POLL_CACHE_TTL):
     import app as _app
+
     data, ts = _app._poll_cache_get(key)
     if data is not None and (time.time() - ts) < max_age:
         return data
@@ -466,6 +515,7 @@ def _chat_cache_get(key: str, max_age: int = _POLL_CACHE_TTL):
 # Individual intent handlers
 # Each returns a tuple: (reply: str, data: dict|list|None, http_status: int)
 # ---------------------------------------------------------------------------
+
 
 def _handle_help(_text, _session_id):
     reply = (
@@ -484,58 +534,59 @@ def _handle_help(_text, _session_id):
 def _handle_ap_status(text, _session_id):
     """Count up/down APs, optionally filtered to a site name."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     site_name = IntentClassifier.extract_site_name(text)
 
     # Try cache first (shares key with grafana KPI endpoint)
-    cached = _chat_cache_get('kpis', max_age=30)
+    cached = _chat_cache_get("kpis", max_age=30)
     if cached and not site_name:
-        total = cached.get('total_aps', 0)
-        up    = cached.get('aps_up', 0)
-        down  = cached.get('aps_down', 0)
-        reply = (
-            f"Fleet-wide: **{total}** APs total — "
-            f"**{up}** up, **{down}** down."
-        )
+        total = cached.get("total_aps", 0)
+        up = cached.get("aps_up", 0)
+        down = cached.get("aps_down", 0)
+        reply = f"Fleet-wide: **{total}** APs total — " f"**{up}** up, **{down}** down."
         return reply, {"total": total, "up": up, "down": down, "source": "cache"}, 200
 
-    want_down = any(w in text.lower() for w in ['down', 'offline', 'fail', 'unreachable'])
+    want_down = any(w in text.lower() for w in ["down", "offline", "fail", "unreachable"])
 
     try:
         # Try New Central v1 first, fall back to v1alpha1
         try:
-            r = cached_get('/network-monitoring/v1/aps', params={'limit': 500})
-            items = r.get('aps', r.get('items', []))
+            r = cached_get("/network-monitoring/v1/aps", params={"limit": 500})
+            items = r.get("aps", r.get("items", []))
         except Exception:
-            r = cached_get('/network-monitoring/v1alpha1/aps', params={'limit': 500})
-            items = r.get('items', [])
+            r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 500})
+            items = r.get("items", [])
 
         if site_name:
             items = [
-                a for a in items
-                if site_name.lower() in (a.get('siteName', '') or a.get('site', '')).lower()
+                a
+                for a in items
+                if site_name.lower() in (a.get("siteName", "") or a.get("site", "")).lower()
             ]
 
         total = len(items)
-        up_statuses = {'UP', 'ONLINE', 'CONNECTED'}
-        up   = sum(1 for a in items if str(a.get('status', '')).upper().strip() in up_statuses)
+        up_statuses = {"UP", "ONLINE", "CONNECTED"}
+        up = sum(1 for a in items if str(a.get("status", "")).upper().strip() in up_statuses)
         down = total - up
 
         # Build DataTable-ready rows filtered by what the user asked
         if want_down:
-            display_items = [a for a in items if str(a.get('status', '')).upper().strip() not in up_statuses]
+            display_items = [
+                a for a in items if str(a.get("status", "")).upper().strip() not in up_statuses
+            ]
         else:
             display_items = items
 
         table = [
             {
-                "Name":   a.get('name', a.get('hostname', '?')),
-                "Serial": a.get('serial', a.get('serialNumber', '?')),
-                "Status": a.get('status', '?'),
-                "Site":   a.get('siteName', a.get('site', '?')),
-                "IP":     a.get('ip_address', a.get('ipv4', '?')),
-                "Model":  a.get('model', '?'),
+                "Name": a.get("name", a.get("hostname", "?")),
+                "Serial": a.get("serial", a.get("serialNumber", "?")),
+                "Status": a.get("status", "?"),
+                "Site": a.get("siteName", a.get("site", "?")),
+                "IP": a.get("ip_address", a.get("ipv4", "?")),
+                "Model": a.get("model", "?"),
             }
             for a in display_items[:25]
         ]
@@ -544,12 +595,15 @@ def _handle_ap_status(text, _session_id):
         if want_down:
             reply = (
                 f"**{down}** AP(s){site_clause} are currently down out of **{total}** total."
-                if down else f"All **{total}** APs{site_clause} are online!"
+                if down
+                else f"All **{total}** APs{site_clause} are online!"
             )
         else:
             reply = f"APs{site_clause}: **{total}** total, **{up}** up, **{down}** down."
             if down > 0:
-                down_aps = [a for a in items if str(a.get('status', '')).upper().strip() not in up_statuses]
+                down_aps = [
+                    a for a in items if str(a.get("status", "")).upper().strip() not in up_statuses
+                ]
                 names = ", ".join(
                     f"{a.get('name', a.get('hostname', '?'))} ({a.get('serial', a.get('serialNumber', '?'))})"
                     for a in down_aps[:5]
@@ -560,12 +614,16 @@ def _handle_ap_status(text, _session_id):
 
         # Warm the KPI cache
         import app as _app
-        _app._poll_cache_set('kpis', {
-            **(_app._poll_cache_get('kpis')[0] or {}),
-            'total_aps': total,
-            'aps_up': up,
-            'aps_down': down,
-        })
+
+        _app._poll_cache_set(
+            "kpis",
+            {
+                **(_app._poll_cache_get("kpis")[0] or {}),
+                "total_aps": total,
+                "aps_up": up,
+                "aps_down": down,
+            },
+        )
         return reply, table if table else {"total": total, "up": up, "down": down}, 200
 
     except Exception as e:
@@ -576,6 +634,7 @@ def _handle_ap_status(text, _session_id):
 def _handle_site_health(text, _session_id):
     """Return per-site health scores."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     def _safe_int(v, default=0):
@@ -586,28 +645,27 @@ def _handle_site_health(text, _session_id):
 
     site_name = IntentClassifier.extract_site_name(text)
 
-    cached = _chat_cache_get('sites-health', max_age=30)
+    cached = _chat_cache_get("sites-health", max_age=30)
     if cached and not site_name:
-        sites = cached if isinstance(cached, list) else cached.get('items', [])
+        sites = cached if isinstance(cached, list) else cached.get("items", [])
         if sites:
-            worst = sorted(sites, key=lambda s: s.get('health', s.get('healthScore', 100)))[:5]
+            worst = sorted(sites, key=lambda s: s.get("health", s.get("healthScore", 100)))[:5]
             lines = ["**Site health** (worst first):"]
             for s in worst:
-                score = s.get('health', s.get('healthScore', s.get('score', '?')))
-                name  = s.get('site', s.get('siteName', s.get('name', '?')))
+                score = s.get("health", s.get("healthScore", s.get("score", "?")))
+                name = s.get("site", s.get("siteName", s.get("name", "?")))
                 lines.append(f"- {name}: {score}")
             return "\n".join(lines), sites, 200
 
     try:
-        r = cached_get('/network-monitoring/v1/sites-health')
-        sites = r.get('items', r.get('sites', []))
+        r = cached_get("/network-monitoring/v1/sites-health")
+        sites = r.get("items", r.get("sites", []))
 
         if site_name:
             sites = [
-                s for s in sites
-                if site_name.lower() in (
-                    s.get('siteName', s.get('name', ''))
-                ).lower()
+                s
+                for s in sites
+                if site_name.lower() in (s.get("siteName", s.get("name", ""))).lower()
             ]
 
         if not sites:
@@ -616,18 +674,18 @@ def _handle_site_health(text, _session_id):
 
         normalized = [
             {
-                "name":    s.get('siteName', s.get('name', '?')),
-                "health":  _safe_int(s.get('health', s.get('healthScore', s.get('score', 0)))),
-                "devices": _safe_int(s.get('deviceCount', s.get('total_device_count', 0))),
-                "clients": _safe_int(s.get('clientCount', s.get('total_client_count', 0))),
+                "name": s.get("siteName", s.get("name", "?")),
+                "health": _safe_int(s.get("health", s.get("healthScore", s.get("score", 0)))),
+                "devices": _safe_int(s.get("deviceCount", s.get("total_device_count", 0))),
+                "clients": _safe_int(s.get("clientCount", s.get("total_client_count", 0))),
             }
             for s in sites
         ]
-        normalized.sort(key=lambda s: s['health'])
+        normalized.sort(key=lambda s: s["health"])
 
         lines = ["**Site health**:"]
         for s in normalized[:15]:
-            emoji = "🔴" if s['health'] < 60 else "🟡" if s['health'] < 80 else "🟢"
+            emoji = "🔴" if s["health"] < 60 else "🟡" if s["health"] < 80 else "🟢"
             lines.append(
                 f"- {emoji} {s['name']}: score {s['health']}, "
                 f"{s['devices']} devices, {s['clients']} clients"
@@ -637,7 +695,8 @@ def _handle_site_health(text, _session_id):
 
         # Warm the sites-health cache for subsequent requests
         import app as _app
-        _app._poll_cache_set('sites-health', normalized)
+
+        _app._poll_cache_set("sites-health", normalized)
         return "\n".join(lines), normalized, 200
 
     except Exception as e:
@@ -653,46 +712,45 @@ def _handle_site_health(text, _session_id):
 def _handle_clients_by_ssid(text, _session_id):
     """List clients on a given SSID.  Requires site-id or iterates all sites."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     ssid = IntentClassifier.extract_ssid(text)
     if not ssid:
         return (
-            "Which SSID would you like to check? "
-            "Try: *'clients on SSID CorpWiFi'*",
-            None, 200
+            "Which SSID would you like to check? " "Try: *'clients on SSID CorpWiFi'*",
+            None,
+            200,
         )
 
     try:
         # Fetch clients without site filter (monitoring v1 endpoint)
         try:
-            r = aruba_client.get('/monitoring/v1/clients')
+            r = aruba_client.get("/monitoring/v1/clients")
         except Exception:
-            r = aruba_client.get('/network-monitoring/v1/clients')
+            r = aruba_client.get("/network-monitoring/v1/clients")
 
-        all_items = r.get('items', r.get('clients', []))
+        all_items = r.get("items", r.get("clients", []))
         matched = [
-            c for c in all_items
-            if ssid.lower() in (c.get('ssid', c.get('essid', '')) or '').lower()
+            c
+            for c in all_items
+            if ssid.lower() in (c.get("ssid", c.get("essid", "")) or "").lower()
         ]
 
         total = len(matched)
         sample = [
             {
-                "mac":      c.get('macaddr', c.get('mac', '?')),
-                "hostname": c.get('name', c.get('hostname', '?')),
-                "ip":       c.get('ip_address', c.get('ipAddress', '?')),
-                "signal":   c.get('signal_db', c.get('rssi', '?')),
+                "mac": c.get("macaddr", c.get("mac", "?")),
+                "hostname": c.get("name", c.get("hostname", "?")),
+                "ip": c.get("ip_address", c.get("ipAddress", "?")),
+                "signal": c.get("signal_db", c.get("rssi", "?")),
             }
             for c in matched[:10]
         ]
 
         reply = f"**{total}** client(s) connected to SSID **{ssid}**."
         if sample:
-            rows = "\n".join(
-                f"  - {s['hostname']} ({s['mac']}) IP: {s['ip']}"
-                for s in sample
-            )
+            rows = "\n".join(f"  - {s['hostname']} ({s['mac']}) IP: {s['ip']}" for s in sample)
             reply += f"\n{rows}"
         if total > 10:
             reply += f"\n  … and {total - 10} more."
@@ -707,22 +765,20 @@ def _handle_clients_by_ssid(text, _session_id):
 def _handle_client_by_mac(text, _session_id):
     """Look up a single client by MAC address."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     mac = IntentClassifier.extract_mac(text)
     if not mac:
-        return (
-            "Please provide a MAC address, e.g. *'find client aa:bb:cc:dd:ee:ff'*",
-            None, 200
-        )
+        return ("Please provide a MAC address, e.g. *'find client aa:bb:cc:dd:ee:ff'*", None, 200)
 
     try:
-        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}')
-        name = r.get('name', r.get('hostname', mac))
-        ip   = r.get('ip_address', r.get('ipAddress', '?'))
-        ssid = r.get('ssid', r.get('essid', '?'))
-        site = r.get('site', r.get('siteName', '?'))
-        ap   = r.get('associated_device', r.get('apSerial', '?'))
+        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}")
+        name = r.get("name", r.get("hostname", mac))
+        ip = r.get("ip_address", r.get("ipAddress", "?"))
+        ssid = r.get("ssid", r.get("essid", "?"))
+        site = r.get("site", r.get("siteName", "?"))
+        ap = r.get("associated_device", r.get("apSerial", "?"))
 
         reply = (
             f"Client **{name}** ({mac}):\n"
@@ -735,7 +791,7 @@ def _handle_client_by_mac(text, _session_id):
 
     except Exception as e:
         err = str(e)
-        if '404' in err or 'Not Found' in err:
+        if "404" in err or "Not Found" in err:
             return f"No active client found with MAC **{mac}**.", None, 200
         logger.error(f"Chat client_by_mac error: {e}")
         return f"Error looking up client {mac}: {e}", None, 500
@@ -744,14 +800,12 @@ def _handle_client_by_mac(text, _session_id):
 def _handle_switch_port_errors(text, _session_id):
     """Identify switches with elevated port error counters."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = cached_get('/network-monitoring/v1/devices')
-        switches = [
-            d for d in r.get('items', [])
-            if d.get('deviceType', '').upper() == 'SWITCH'
-        ]
+        r = cached_get("/network-monitoring/v1/devices")
+        switches = [d for d in r.get("items", []) if d.get("deviceType", "").upper() == "SWITCH"]
 
         if not switches:
             return "No switches found in inventory.", [], 200
@@ -760,37 +814,37 @@ def _handle_switch_port_errors(text, _session_id):
         # avoid burning daily quota; the worst offender usually surfaces fast.
         results = []
         for sw in switches[:10]:
-            serial = sw.get('serial', sw.get('serialNumber', ''))
-            name   = sw.get('name', sw.get('hostname', serial))
+            serial = sw.get("serial", sw.get("serialNumber", ""))
+            name = sw.get("name", sw.get("hostname", serial))
             if not serial:
                 continue
             try:
-                iface_r = aruba_client.get(
-                    f'/network-monitoring/v1/switches/{serial}/interfaces'
-                )
-                ifaces = iface_r.get('items', iface_r if isinstance(iface_r, list) else [])
+                iface_r = aruba_client.get(f"/network-monitoring/v1/switches/{serial}/interfaces")
+                ifaces = iface_r.get("items", iface_r if isinstance(iface_r, list) else [])
                 total_errors = sum(
-                    (i.get('inputErrors', 0) or 0) + (i.get('outputErrors', 0) or 0)
-                    for i in ifaces
+                    (i.get("inputErrors", 0) or 0) + (i.get("outputErrors", 0) or 0) for i in ifaces
                 )
-                results.append({
-                    "serial":       serial,
-                    "name":         name,
-                    "site":         sw.get('siteName', sw.get('site', '?')),
-                    "total_errors": total_errors,
-                    "iface_count":  len(ifaces),
-                })
+                results.append(
+                    {
+                        "serial": serial,
+                        "name": name,
+                        "site": sw.get("siteName", sw.get("site", "?")),
+                        "total_errors": total_errors,
+                        "iface_count": len(ifaces),
+                    }
+                )
             except Exception:
-                pass   # skip switches where interface API isn't available
+                pass  # skip switches where interface API isn't available
 
         if not results:
             return (
                 "Could not retrieve interface stats for any switch. "
                 "Check that the monitoring API is available.",
-                [], 200
+                [],
+                200,
             )
 
-        results.sort(key=lambda x: x['total_errors'], reverse=True)
+        results.sort(key=lambda x: x["total_errors"], reverse=True)
         top = results[0]
 
         lines = [
@@ -800,9 +854,7 @@ def _handle_switch_port_errors(text, _session_id):
             "**All sampled switches** (up to 10):",
         ]
         for r_ in results:
-            lines.append(
-                f"- {r_['name']} ({r_['serial']}): {r_['total_errors']} errors"
-            )
+            lines.append(f"- {r_['name']} ({r_['serial']}): {r_['total_errors']} errors")
 
         return "\n".join(lines), results, 200
 
@@ -814,6 +866,7 @@ def _handle_switch_port_errors(text, _session_id):
 def _handle_bounce_ap(text, session_id):
     """Reboot an AP by serial number."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     if not _chat_action_allowed(session_id):
@@ -821,23 +874,17 @@ def _handle_bounce_ap(text, session_id):
             "Slow down — you've reached the limit of "
             f"{_CHAT_ACTION_LIMIT} destructive actions per minute. "
             "Please wait before trying again.",
-            None, 429
+            None,
+            429,
         )
 
     serial = IntentClassifier.extract_serial(text)
     if not serial:
-        return (
-            "Please specify the AP serial number, "
-            "e.g. *'reboot AP CNXXXXXX'*",
-            None, 200
-        )
+        return ("Please specify the AP serial number, " "e.g. *'reboot AP CNXXXXXX'*", None, 200)
 
     try:
         # Aruba Central AP reboot endpoint
-        r = aruba_client.post(
-            f'/device-management/v1/device/{serial}/action/reboot',
-            data={}
-        )
+        r = aruba_client.post(f"/device-management/v1/device/{serial}/action/reboot", data={})
         reply = (
             f"Reboot command sent to AP **{serial}**. "
             "The AP will be unreachable for 60-90 seconds while it restarts."
@@ -848,63 +895,59 @@ def _handle_bounce_ap(text, session_id):
         err = str(e)
         # Try alternative endpoint used by some firmware versions
         try:
-            r2 = aruba_client.post(
-                f'/configuration/v1/devices/{serial}/action/reboot',
-                data={}
-            )
-            reply = (
-                f"Reboot command sent to AP **{serial}** (via alt endpoint)."
-            )
+            r2 = aruba_client.post(f"/configuration/v1/devices/{serial}/action/reboot", data={})
+            reply = f"Reboot command sent to AP **{serial}** (via alt endpoint)."
             return reply, {"serial": serial, "result": r2}, 200
         except Exception as e2:
             logger.error(f"Chat bounce_ap error: primary={e} fallback={e2}")
             return (
                 f"Failed to reboot AP **{serial}**: {err}\n"
                 "Verify the serial number and that you have write permissions.",
-                None, 500
+                None,
+                500,
             )
 
 
 def _handle_bounce_port(text, session_id):
     """Bounce a switch port (CX portBounce API)."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     if not _chat_action_allowed(session_id):
         return (
             "Rate limit: too many destructive actions. "
             f"Maximum {_CHAT_ACTION_LIMIT} per {_CHAT_ACTION_WINDOW}s.",
-            None, 429
+            None,
+            429,
         )
 
     serial = IntentClassifier.extract_serial(text)
-    port   = IntentClassifier.extract_port(text)
+    port = IntentClassifier.extract_port(text)
 
     if not serial:
         return (
             "Please specify the switch serial and port, "
             "e.g. *'bounce port 1/1/5 on switch SWXXXXXX'*",
-            None, 200
+            None,
+            200,
         )
     if not port:
         return (
-            f"Which port on switch **{serial}**? "
-            "e.g. *'bounce port 1/1/5 on switch {serial}'*",
-            None, 200
+            f"Which port on switch **{serial}**? " "e.g. *'bounce port 1/1/5 on switch {serial}'*",
+            None,
+            200,
         )
 
     try:
         resp = aruba_client.post(
-            f'/network-troubleshooting/v1alpha1/cx/{serial}/portBounce',
-            data={"ports": [port]}
+            f"/network-troubleshooting/v1alpha1/cx/{serial}/portBounce", data={"ports": [port]}
         )
-        location = resp.get('location', '')
-        task_match = re.search(r'/async-operations/([a-f0-9\-]+)', location)
+        location = resp.get("location", "")
+        task_match = re.search(r"/async-operations/([a-f0-9\-]+)", location)
         task_id = task_match.group(1) if task_match else None
 
-        reply = (
-            f"Port bounce initiated on **{serial}** port **{port}**."
-        )
+        reply = f"Port bounce initiated on **{serial}** port **{port}**."
         if task_id:
             reply += f" Task ID: `{task_id}`. Port will cycle in ~5 seconds."
 
@@ -918,21 +961,26 @@ def _handle_bounce_port(text, session_id):
 def _handle_alert_summary(text, _session_id):
     """Return recent alerts, optionally filtered by severity."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     severity = IntentClassifier.extract_severity(text)
     try:
-        params = {'limit': 20}
+        params = {"limit": 20}
         if severity:
-            params['severity'] = severity
+            params["severity"] = severity
 
         # Try multiple alert endpoints (correct namespace is network-notifications)
         alerts = []
-        for ep in ['/network-notifications/v1/alerts', '/network-notifications/v1alpha1/alerts', '/network-monitoring/v1/alerts']:
+        for ep in [
+            "/network-notifications/v1/alerts",
+            "/network-notifications/v1alpha1/alerts",
+            "/network-monitoring/v1/alerts",
+        ]:
             try:
                 r = aruba_client.get(ep, params=params)
-                alerts = r.get('alerts', r.get('items', []))
-                if alerts or r.get('count', 0) == 0:
+                alerts = r.get("alerts", r.get("items", []))
+                if alerts or r.get("count", 0) == 0:
                     break
             except Exception:
                 continue
@@ -943,10 +991,10 @@ def _handle_alert_summary(text, _session_id):
 
         lines = [f"**Recent alerts** ({len(alerts)} shown):"]
         for a in alerts[:10]:
-            sev   = a.get('severity', '?').upper()
-            desc  = a.get('description', a.get('alert_type', '?'))
-            atime = a.get('created_at', a.get('ts', ''))
-            aid   = a.get('id', a.get('alert_id', ''))
+            sev = a.get("severity", "?").upper()
+            desc = a.get("description", a.get("alert_type", "?"))
+            atime = a.get("created_at", a.get("ts", ""))
+            aid = a.get("id", a.get("alert_id", ""))
             lines.append(f"- [{sev}] {desc} (id: {aid})")
 
         if len(alerts) > 10:
@@ -962,16 +1010,17 @@ def _handle_alert_summary(text, _session_id):
 def _handle_firmware_status(text, _session_id):
     """Summarise firmware versions across the fleet."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = cached_get('/network-monitoring/v1/devices')
-        items = r.get('items', [])
+        r = cached_get("/network-monitoring/v1/devices")
+        items = r.get("items", [])
 
         version_map: dict = {}
         outdated_examples = []
         for d in items:
-            fw = d.get('firmwareVersion', d.get('firmware_version', 'unknown'))
+            fw = d.get("firmwareVersion", d.get("firmware_version", "unknown"))
             version_map[fw] = version_map.get(fw, 0) + 1
 
         lines = [f"**Firmware summary** across {len(items)} devices:"]
@@ -988,20 +1037,21 @@ def _handle_firmware_status(text, _session_id):
 def _handle_wlan_list(text, _session_id):
     """List configured WLANs."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-config/v1alpha1/wlan-ssids')
-        wlans = r.get('wlan-ssid', r.get('items', []))
+        r = aruba_client.get("/network-config/v1alpha1/wlan-ssids")
+        wlans = r.get("wlan-ssid", r.get("items", []))
 
         if not wlans:
             return "No WLANs found in the configuration.", [], 200
 
         lines = [f"**{len(wlans)} WLAN(s)** configured:"]
         for w in wlans[:20]:
-            ssid    = w.get('ssid', w.get('essid', {}).get('name', '?'))
-            enabled = w.get('enable', True)
-            band    = w.get('rf-band', '?')
+            ssid = w.get("ssid", w.get("essid", {}).get("name", "?"))
+            enabled = w.get("enable", True)
+            band = w.get("rf-band", "?")
             status_str = "enabled" if enabled else "disabled"
             lines.append(f"- **{ssid}** ({band}, {status_str})")
         if len(wlans) > 20:
@@ -1017,20 +1067,21 @@ def _handle_wlan_list(text, _session_id):
 def _handle_top_clients(text, _session_id):
     """Show top N bandwidth-consuming clients."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/clients/usage/topn')
-        clients = r.get('items', r.get('clients', []))
+        r = aruba_client.get("/network-monitoring/v1/clients/usage/topn")
+        clients = r.get("items", r.get("clients", []))
 
         if not clients:
             return "No client usage data available.", [], 200
 
         lines = [f"**Top {min(len(clients), 10)} clients by bandwidth**:"]
         for c in clients[:10]:
-            name   = c.get('name', c.get('hostname', c.get('macaddr', '?')))
-            usage  = c.get('usage', c.get('total_bytes', 0))
-            ssid   = c.get('ssid', '?')
+            name = c.get("name", c.get("hostname", c.get("macaddr", "?")))
+            usage = c.get("usage", c.get("total_bytes", 0))
+            ssid = c.get("ssid", "?")
             usage_mb = round(usage / 1_000_000, 2) if isinstance(usage, (int, float)) else usage
             lines.append(f"- **{name}** on {ssid}: {usage_mb} MB")
 
@@ -1044,24 +1095,25 @@ def _handle_top_clients(text, _session_id):
 def _handle_device_inventory(text, _session_id):
     """Device inventory summary."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
-    cached = _chat_cache_get('kpis', max_age=60)
+    cached = _chat_cache_get("kpis", max_age=60)
     if cached:
-        total   = cached.get('total_devices', 0)
-        by_type = {d['type']: d['count'] for d in cached.get('devices_by_type', [])}
-        lines   = [f"**Fleet inventory**: **{total}** total devices"]
+        total = cached.get("total_devices", 0)
+        by_type = {d["type"]: d["count"] for d in cached.get("devices_by_type", [])}
+        lines = [f"**Fleet inventory**: **{total}** total devices"]
         for dt, cnt in sorted(by_type.items()):
             lines.append(f"- {dt}: {cnt}")
         return "\n".join(lines), cached, 200
 
     try:
-        r = cached_get('/network-monitoring/v1/devices')
-        items   = r.get('items', [])
-        total   = r.get('count', len(items))
+        r = cached_get("/network-monitoring/v1/devices")
+        items = r.get("items", [])
+        total = r.get("count", len(items))
         by_type: dict = {}
         for d in items:
-            dt = d.get('deviceType', d.get('type', 'Unknown'))
+            dt = d.get("deviceType", d.get("type", "Unknown"))
             by_type[dt] = by_type.get(dt, 0) + 1
 
         lines = [f"**Fleet inventory**: **{total}** total devices"]
@@ -1078,29 +1130,22 @@ def _handle_device_inventory(text, _session_id):
 def _handle_ack_alert(text, session_id):
     """Acknowledge an alert by ID."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     if not _chat_action_allowed(session_id):
-        return (
-            f"Rate limit: max {_CHAT_ACTION_LIMIT} actions per minute.",
-            None, 429
-        )
+        return (f"Rate limit: max {_CHAT_ACTION_LIMIT} actions per minute.", None, 429)
 
     alert_id = IntentClassifier.extract_alert_id(text)
     if not alert_id:
-        return (
-            "Please provide the alert ID, "
-            "e.g. *'acknowledge alert 12345abc'*",
-            None, 200
-        )
+        return ("Please provide the alert ID, " "e.g. *'acknowledge alert 12345abc'*", None, 200)
 
     try:
-        aruba_client.post(
-            f'/network-monitoring/v1/alerts/{alert_id}/acknowledge'
-        )
+        aruba_client.post(f"/network-monitoring/v1/alerts/{alert_id}/acknowledge")
         return (
             f"Alert **{alert_id}** acknowledged.",
-            {"alert_id": alert_id, "acknowledged": True}, 200
+            {"alert_id": alert_id, "acknowledged": True},
+            200,
         )
     except Exception as e:
         logger.error(f"Chat ack_alert error: {e}")
@@ -1110,13 +1155,13 @@ def _handle_ack_alert(text, session_id):
 def _handle_ping_test(text, _session_id):
     """Run a ping test from a switch to a destination."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     serial = IntentClassifier.extract_serial(text)
     # Extract IP / hostname (simple heuristic)
     dest_m = re.search(
-        r'\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b',
-        text, re.IGNORECASE
+        r"\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b", text, re.IGNORECASE
     )
     dest = dest_m.group(1) if dest_m else None
 
@@ -1124,26 +1169,24 @@ def _handle_ping_test(text, _session_id):
         return (
             "Specify the switch serial and destination, "
             "e.g. *'ping 8.8.8.8 from switch SWXXXXXX'*",
-            None, 200
+            None,
+            200,
         )
     if not dest:
-        return (
-            f"What IP/hostname should I ping from switch **{serial}**?",
-            None, 200
-        )
+        return (f"What IP/hostname should I ping from switch **{serial}**?", None, 200)
 
     try:
         resp = aruba_client.post(
-            f'/network-troubleshooting/v1alpha1/cx/{serial}/ping',
-            data={"destination": dest}
+            f"/network-troubleshooting/v1alpha1/cx/{serial}/ping", data={"destination": dest}
         )
-        location = resp.get('location', '')
-        task_match = re.search(r'/async-operations/([a-f0-9\-]+)', location)
+        location = resp.get("location", "")
+        task_match = re.search(r"/async-operations/([a-f0-9\-]+)", location)
         if not task_match:
             return (
                 f"Ping initiated to **{dest}** from **{serial}** but could not "
                 "track the task ID. Check the troubleshooting panel for results.",
-                resp, 200
+                resp,
+                200,
             )
 
         task_id = task_match.group(1)
@@ -1151,26 +1194,29 @@ def _handle_ping_test(text, _session_id):
         for _ in range(15):
             time.sleep(1)
             poll = aruba_client.get(
-                f'/network-troubleshooting/v1alpha1/cx/{serial}/ping/async-operations/{task_id}'
+                f"/network-troubleshooting/v1alpha1/cx/{serial}/ping/async-operations/{task_id}"
             )
-            status = poll.get('status', '')
-            if status == 'COMPLETED':
-                output = poll.get('output', '')
+            status = poll.get("status", "")
+            if status == "COMPLETED":
+                output = poll.get("output", "")
                 return (
                     f"Ping from **{serial}** to **{dest}** completed:\n```\n{output}\n```",
-                    poll, 200
+                    poll,
+                    200,
                 )
-            elif status == 'FAILED':
+            elif status == "FAILED":
                 return (
                     f"Ping from **{serial}** to **{dest}** failed: "
                     f"{poll.get('failReason', 'unknown reason')}",
-                    poll, 200
+                    poll,
+                    200,
                 )
 
         return (
             f"Ping from **{serial}** to **{dest}** still in progress "
             f"(task `{task_id}`). Check the troubleshooting panel.",
-            {"task_id": task_id}, 200
+            {"task_id": task_id},
+            200,
         )
 
     except Exception as e:
@@ -1181,46 +1227,64 @@ def _handle_ping_test(text, _session_id):
 def _handle_device_status(text, _session_id):
     """Show all online/offline devices, optionally filtered by type or status."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
-    want_down = any(w in text.lower() for w in ['down','offline','fail','unreachable'])
+    want_down = any(w in text.lower() for w in ["down", "offline", "fail", "unreachable"])
     want_type = None
-    for t in ['switch','gateway','ap','access point']:
+    for t in ["switch", "gateway", "ap", "access point"]:
         if t in text.lower():
             want_type = t
             break
 
     try:
         # Use device-inventory — most complete list
-        r = aruba_client.get('/network-monitoring/v1alpha1/device-inventory', params={'limit': 200})
-        items = r.get('devices', r.get('items', []))
+        r = aruba_client.get("/network-monitoring/v1alpha1/device-inventory", params={"limit": 200})
+        items = r.get("devices", r.get("items", []))
 
         if not items:
             # fallback to monitoring endpoint
-            r = cached_get('/network-monitoring/v1/devices', params={'limit': 200})
-            items = r.get('devices', r.get('items', []))
+            r = cached_get("/network-monitoring/v1/devices", params={"limit": 200})
+            items = r.get("devices", r.get("items", []))
 
         if want_type:
-            items = [d for d in items if want_type.replace(' ','').lower() in
-                     (d.get('deviceType', d.get('device_type', ''))).lower()]
+            items = [
+                d
+                for d in items
+                if want_type.replace(" ", "").lower()
+                in (d.get("deviceType", d.get("device_type", ""))).lower()
+            ]
         if want_down:
-            items = [d for d in items if str(d.get('status','')).upper() not in {'UP','ONLINE','CONNECTED'}]
+            items = [
+                d
+                for d in items
+                if str(d.get("status", "")).upper() not in {"UP", "ONLINE", "CONNECTED"}
+            ]
 
         total = len(items)
-        table = [{
-            'Name':    d.get('deviceName', d.get('name', '?')),
-            'Type':    d.get('deviceType', d.get('device_type', '?')),
-            'Status':  d.get('status', '?'),
-            'IP':      d.get('ipv4', d.get('ip_address', '?')),
-            'Serial':  d.get('serialNumber', d.get('serial', '?')),
-            'Site':    d.get('siteName', d.get('site', '?')),
-        } for d in items[:25]]
+        table = [
+            {
+                "Name": d.get("deviceName", d.get("name", "?")),
+                "Type": d.get("deviceType", d.get("device_type", "?")),
+                "Status": d.get("status", "?"),
+                "IP": d.get("ipv4", d.get("ip_address", "?")),
+                "Serial": d.get("serialNumber", d.get("serial", "?")),
+                "Site": d.get("siteName", d.get("site", "?")),
+            }
+            for d in items[:25]
+        ]
 
         filter_desc = []
-        if want_type: filter_desc.append(want_type)
-        if want_down: filter_desc.append('offline')
-        desc = ' '.join(filter_desc) or 'all'
-        reply = f"**{total}** {desc} device(s) found." if total else f"No {desc} devices found — everything looks good!"
+        if want_type:
+            filter_desc.append(want_type)
+        if want_down:
+            filter_desc.append("offline")
+        desc = " ".join(filter_desc) or "all"
+        reply = (
+            f"**{total}** {desc} device(s) found."
+            if total
+            else f"No {desc} devices found — everything looks good!"
+        )
         return reply, table if table else None, 200
     except Exception as e:
         logger.error(f"Chat device_status error: {e}")
@@ -1230,23 +1294,24 @@ def _handle_device_status(text, _session_id):
 def _handle_find_client(text, _session_id):
     """Find a client by IP or MAC address."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     mac = IntentClassifier.extract_mac(text)
     # Try to extract IP
-    ip_m = re.search(r'\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b', text)
+    ip_m = re.search(r"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b", text)
     ip = ip_m.group(1) if ip_m else None
 
     if not mac and not ip:
         return ("Please provide a MAC or IP address, e.g. *'find client 192.168.1.50'*", None, 200)
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/clients', params={'limit': 500})
-        clients = r.get('clients', r.get('items', []))
+        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 500})
+        clients = r.get("clients", r.get("items", []))
         found = []
         for c in clients:
-            c_mac = (c.get('macaddr', c.get('mac', '')) or '').lower().replace('-', ':')
-            c_ip  = c.get('ip_address', c.get('ipv4', '')) or ''
+            c_mac = (c.get("macaddr", c.get("mac", "")) or "").lower().replace("-", ":")
+            c_ip = c.get("ip_address", c.get("ipv4", "")) or ""
             if (mac and mac in c_mac) or (ip and ip == c_ip):
                 found.append(c)
 
@@ -1257,13 +1322,16 @@ def _handle_find_client(text, _session_id):
         c = found[0]
         logger.debug(f"find_client raw fields: {list(c.keys())}")
         details = {
-            'MAC':      c.get('macaddr') or c.get('mac') or c.get('macAddress') or '?',
-            'Hostname': c.get('name') or c.get('hostname') or c.get('client_name') or '?',
-            'IP':       c.get('ip_address') or c.get('ipv4') or c.get('ip') or '?',
-            'Status':   c.get('status') or c.get('connection_status') or '?',
-            'Type':     c.get('clientConnectionType') or c.get('client_type') or c.get('type') or '?',
-            'SSID':     c.get('ssid') or c.get('wlanName') or c.get('network') or '?',
-            'AP':       c.get('associated_device') or c.get('ap_serial') or c.get('associated_device_name') or '?',
+            "MAC": c.get("macaddr") or c.get("mac") or c.get("macAddress") or "?",
+            "Hostname": c.get("name") or c.get("hostname") or c.get("client_name") or "?",
+            "IP": c.get("ip_address") or c.get("ipv4") or c.get("ip") or "?",
+            "Status": c.get("status") or c.get("connection_status") or "?",
+            "Type": c.get("clientConnectionType") or c.get("client_type") or c.get("type") or "?",
+            "SSID": c.get("ssid") or c.get("wlanName") or c.get("network") or "?",
+            "AP": c.get("associated_device")
+            or c.get("ap_serial")
+            or c.get("associated_device_name")
+            or "?",
         }
         reply = f"Client found: **{details['Hostname']}** ({details['MAC']}) — {details['Status']}"
         return reply, [details], 200
@@ -1275,6 +1343,7 @@ def _handle_find_client(text, _session_id):
 def _handle_disconnect_client(text, session_id):
     """Force-disconnect a client by MAC address."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     if not _chat_action_allowed(session_id):
@@ -1282,12 +1351,20 @@ def _handle_disconnect_client(text, session_id):
 
     mac = IntentClassifier.extract_mac(text)
     if not mac:
-        return ("Please provide the client MAC address, e.g. *'disconnect client aa:bb:cc:dd:ee:ff'*", None, 200)
+        return (
+            "Please provide the client MAC address, e.g. *'disconnect client aa:bb:cc:dd:ee:ff'*",
+            None,
+            200,
+        )
 
     try:
         # Aruba Central disconnect client endpoint
-        aruba_client.post(f'/network-monitoring/v1/clients/{mac}/disconnect')
-        return (f"Disconnect request sent for client **{mac}**.", {"mac": mac, "action": "disconnect"}, 200)
+        aruba_client.post(f"/network-monitoring/v1/clients/{mac}/disconnect")
+        return (
+            f"Disconnect request sent for client **{mac}**.",
+            {"mac": mac, "action": "disconnect"},
+            200,
+        )
     except Exception as e:
         logger.error(f"Chat disconnect_client error: {e}")
         return f"Could not disconnect client {mac}: {e}", None, 500
@@ -1296,28 +1373,38 @@ def _handle_disconnect_client(text, session_id):
 def _handle_traceroute(text, _session_id):
     """Run traceroute from a switch."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     serial = IntentClassifier.extract_serial(text)
-    dest_m = re.search(r'\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b', text, re.IGNORECASE)
+    dest_m = re.search(
+        r"\b((?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9\-]+\.)+[a-z]{2,})\b", text, re.IGNORECASE
+    )
     dest = dest_m.group(1) if dest_m else None
 
     if not serial:
-        return ("Specify the switch serial, e.g. *'traceroute to 8.8.8.8 from switch SWXXXXXX'*", None, 200)
+        return (
+            "Specify the switch serial, e.g. *'traceroute to 8.8.8.8 from switch SWXXXXXX'*",
+            None,
+            200,
+        )
     if not dest:
         return (f"What destination should I trace from switch **{serial}**?", None, 200)
 
     try:
-        resp = aruba_client._request('POST',
-            f'/network-troubleshooting/v1alpha1/cx/{serial}/traceroute',
-            json={"destination": dest})
+        resp = aruba_client._request(
+            "POST",
+            f"/network-troubleshooting/v1alpha1/cx/{serial}/traceroute",
+            json={"destination": dest},
+        )
         if resp.status_code == 202:
             data = resp.json()
-            task_id = (data.get('location', '') or '').split('/')[-1]
+            task_id = (data.get("location", "") or "").split("/")[-1]
             return (
                 f"Traceroute from **{serial}** to **{dest}** started (task `{task_id}`). "
                 "Check the Troubleshoot page for results.",
-                {"serial": serial, "dest": dest, "task_id": task_id}, 200
+                {"serial": serial, "dest": dest, "task_id": task_id},
+                200,
             )
         return (f"Traceroute request returned HTTP {resp.status_code}.", None, 200)
     except Exception as e:
@@ -1328,11 +1415,12 @@ def _handle_traceroute(text, _session_id):
 def _handle_client_count(_text, _session_id):
     """Show total client count and breakdown by type."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/clients', params={'limit': 500})
-        clients = r.get('clients', r.get('items', []))
+        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 500})
+        clients = r.get("clients", r.get("items", []))
 
         total = len(clients)
         if not clients:
@@ -1342,8 +1430,8 @@ def _handle_client_count(_text, _session_id):
         by_type: dict = {}
         by_status: dict = {}
         for c in clients:
-            ctype = c.get('clientConnectionType', c.get('network_type', c.get('type', 'Unknown')))
-            cstatus = c.get('status', 'Unknown')
+            ctype = c.get("clientConnectionType", c.get("network_type", c.get("type", "Unknown")))
+            cstatus = c.get("status", "Unknown")
             by_type[ctype] = by_type.get(ctype, 0) + 1
             by_status[cstatus] = by_status.get(cstatus, 0) + 1
 
@@ -1355,7 +1443,9 @@ def _handle_client_count(_text, _session_id):
         for s, cnt in sorted(by_status.items(), key=lambda x: -x[1]):
             lines.append(f"- {s}: {cnt}")
 
-        table = [{"Type": t, "Count": cnt} for t, cnt in sorted(by_type.items(), key=lambda x: -x[1])]
+        table = [
+            {"Type": t, "Count": cnt} for t, cnt in sorted(by_type.items(), key=lambda x: -x[1])
+        ]
         return "\n".join(lines), table, 200
 
     except Exception as e:
@@ -1366,11 +1456,12 @@ def _handle_client_count(_text, _session_id):
 def _handle_site_list(_text, _session_id):
     """List all sites with device counts."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-config/v1/sites')
-        sites = r.get('sites', r.get('items', []))
+        r = aruba_client.get("/network-config/v1/sites")
+        sites = r.get("sites", r.get("items", []))
 
         if not sites:
             return "No sites found.", [], 200
@@ -1378,13 +1469,13 @@ def _handle_site_list(_text, _session_id):
         total = len(sites)
         table = [
             {
-                "Name":    s.get('site_name', s.get('name', '?')),
-                "Devices": s.get('associated_device_count', s.get('deviceCount', 0)),
-                "ID":      s.get('site_id', s.get('id', '?')),
+                "Name": s.get("site_name", s.get("name", "?")),
+                "Devices": s.get("associated_device_count", s.get("deviceCount", 0)),
+                "ID": s.get("site_id", s.get("id", "?")),
             }
             for s in sites[:30]
         ]
-        table.sort(key=lambda x: x['Name'])
+        table.sort(key=lambda x: x["Name"])
 
         lines = [f"**{total} site(s)** in your network:"]
         for row in table:
@@ -1402,22 +1493,23 @@ def _handle_site_list(_text, _session_id):
 def _handle_top_bandwidth(_text, _session_id):
     """Show top APs by bandwidth usage."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get('/network-monitoring/v1/top-aps-by-usage', params={'limit': 5})
-        aps = r.get('items', r.get('aps', r.get('data', [])))
+        r = aruba_client.get("/network-monitoring/v1/top-aps-by-usage", params={"limit": 5})
+        aps = r.get("items", r.get("aps", r.get("data", [])))
 
         if not aps:
             # Fallback: try top clients by usage
-            r2 = aruba_client.get('/network-monitoring/v1/clients/usage/topn', params={'limit': 5})
-            clients = r2.get('items', r2.get('clients', []))
+            r2 = aruba_client.get("/network-monitoring/v1/clients/usage/topn", params={"limit": 5})
+            clients = r2.get("items", r2.get("clients", []))
             if clients:
                 table = [
                     {
-                        "Client":  c.get('name', c.get('hostname', c.get('macaddr', '?'))),
-                        "SSID":    c.get('ssid', '?'),
-                        "Usage MB": round(c.get('usage', c.get('total_bytes', 0)) / 1_000_000, 2),
+                        "Client": c.get("name", c.get("hostname", c.get("macaddr", "?"))),
+                        "SSID": c.get("ssid", "?"),
+                        "Usage MB": round(c.get("usage", c.get("total_bytes", 0)) / 1_000_000, 2),
                     }
                     for c in clients[:5]
                 ]
@@ -1429,16 +1521,18 @@ def _handle_top_bandwidth(_text, _session_id):
 
         table = [
             {
-                "AP":      a.get('name', a.get('hostname', '?')),
-                "Site":    a.get('siteName', a.get('site', '?')),
-                "Tx MB":   round(a.get('tx_bytes', a.get('txBytes', 0)) / 1_000_000, 2),
-                "Rx MB":   round(a.get('rx_bytes', a.get('rxBytes', 0)) / 1_000_000, 2),
+                "AP": a.get("name", a.get("hostname", "?")),
+                "Site": a.get("siteName", a.get("site", "?")),
+                "Tx MB": round(a.get("tx_bytes", a.get("txBytes", 0)) / 1_000_000, 2),
+                "Rx MB": round(a.get("rx_bytes", a.get("rxBytes", 0)) / 1_000_000, 2),
             }
             for a in aps[:5]
         ]
         lines = ["**Top 5 APs by bandwidth usage:**"]
         for row in table:
-            lines.append(f"- {row['AP']} ({row['Site']}): Tx {row['Tx MB']} MB / Rx {row['Rx MB']} MB")
+            lines.append(
+                f"- {row['AP']} ({row['Site']}): Tx {row['Tx MB']} MB / Rx {row['Rx MB']} MB"
+            )
 
         return "\n".join(lines), table, 200
 
@@ -1450,15 +1544,24 @@ def _handle_top_bandwidth(_text, _session_id):
 def _handle_device_events(text, _session_id):
     """Show recent events for a specific device (by serial number)."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
-    serial = IntentClassifier.extract_serial(text) if hasattr(IntentClassifier, 'extract_serial') else None
+    serial = (
+        IntentClassifier.extract_serial(text)
+        if hasattr(IntentClassifier, "extract_serial")
+        else None
+    )
     # Fall back to regex extraction
     if not serial:
-        m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+        m = re.search(r"\b([A-Z0-9]{8,14})\b", text.upper())
         serial = m.group(1) if m else None
     if not serial:
-        return "Please provide a device serial number. Example: *'events for device ABC123456'*", None, 200
+        return (
+            "Please provide a device serial number. Example: *'events for device ABC123456'*",
+            None,
+            200,
+        )
     try:
         data = aruba_client.get(
             f"/network-monitoring/v1/events",
@@ -1469,10 +1572,10 @@ def _handle_device_events(text, _session_id):
             return f"No events found for device **{serial}**.", [], 200
         table = [
             {
-                "Time":       e.get("createdAt", e.get("timestamp", ""))[:19].replace("T", " "),
-                "Type":       e.get("eventType", e.get("type", "")),
-                "Severity":   e.get("severity", ""),
-                "Description":e.get("description", e.get("details", ""))[:80],
+                "Time": e.get("createdAt", e.get("timestamp", ""))[:19].replace("T", " "),
+                "Type": e.get("eventType", e.get("type", "")),
+                "Severity": e.get("severity", ""),
+                "Description": e.get("description", e.get("details", ""))[:80],
             }
             for e in events[:15]
         ]
@@ -1485,13 +1588,18 @@ def _handle_device_events(text, _session_id):
 def _handle_switch_vlans(text, _session_id):
     """Show VLANs configured on a switch."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     serial = None
-    m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+    m = re.search(r"\b([A-Z0-9]{8,14})\b", text.upper())
     serial = m.group(1) if m else None
     if not serial:
-        return "Please provide a switch serial number. Example: *'VLANs on switch ABC123'*", None, 200
+        return (
+            "Please provide a switch serial number. Example: *'VLANs on switch ABC123'*",
+            None,
+            200,
+        )
     try:
         data = aruba_client.get(
             f"/network-monitoring/v1/cx_switches/{serial}/vlan",
@@ -1501,10 +1609,10 @@ def _handle_switch_vlans(text, _session_id):
             return f"No VLAN data found for **{serial}**.", [], 200
         table = [
             {
-                "VLAN ID":   v.get("vlanId", v.get("id", "")),
-                "Name":      v.get("name", ""),
-                "Status":    v.get("status", ""),
-                "Ports":     v.get("portCount", ""),
+                "VLAN ID": v.get("vlanId", v.get("id", "")),
+                "Name": v.get("name", ""),
+                "Status": v.get("status", ""),
+                "Ports": v.get("portCount", ""),
             }
             for v in vlans[:30]
         ]
@@ -1517,10 +1625,11 @@ def _handle_switch_vlans(text, _session_id):
 def _handle_ap_radios(text, _session_id):
     """Show radio info for an AP."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     serial = None
-    m = re.search(r'\b([A-Z0-9]{8,14})\b', text.upper())
+    m = re.search(r"\b([A-Z0-9]{8,14})\b", text.upper())
     serial = m.group(1) if m else None
     if not serial:
         return "Please provide an AP serial number. Example: *'radios on AP ABC123'*", None, 200
@@ -1533,12 +1642,14 @@ def _handle_ap_radios(text, _session_id):
             return f"No radio data found for AP **{serial}**.", [], 200
         table = [
             {
-                "Radio":       r.get("radioNumber", r.get("index", "")),
-                "Band":        r.get("radioType", r.get("band", "")),
-                "Channel":     r.get("channel", ""),
-                "TX Power":    f"{r.get('txPower', '')} dBm" if r.get("txPower") else "",
-                "Clients":     r.get("clientCount", ""),
-                "Utilization": f"{r.get('utilization', '')}%" if r.get("utilization") is not None else "",
+                "Radio": r.get("radioNumber", r.get("index", "")),
+                "Band": r.get("radioType", r.get("band", "")),
+                "Channel": r.get("channel", ""),
+                "TX Power": f"{r.get('txPower', '')} dBm" if r.get("txPower") else "",
+                "Clients": r.get("clientCount", ""),
+                "Utilization": (
+                    f"{r.get('utilization', '')}%" if r.get("utilization") is not None else ""
+                ),
             }
             for r in radios
         ]
@@ -1551,6 +1662,7 @@ def _handle_ap_radios(text, _session_id):
 def _handle_audit_logs(_text, _session_id):
     """Show recent audit log entries (configuration changes)."""
     import app as _app
+
     aruba_client = _app.aruba_client
 
     try:
@@ -1563,11 +1675,11 @@ def _handle_audit_logs(_text, _session_id):
             return "No recent audit log entries found.", [], 200
         table = [
             {
-                "Time":      l.get("ts", l.get("timestamp", ""))[:19].replace("T", " "),
-                "User":      l.get("user_str", l.get("username", "")),
-                "Action":    l.get("description", l.get("action", ""))[:60],
-                "Target":    l.get("target", l.get("device", "")),
-                "Result":    l.get("result", ""),
+                "Time": l.get("ts", l.get("timestamp", ""))[:19].replace("T", " "),
+                "User": l.get("user_str", l.get("username", "")),
+                "Action": l.get("description", l.get("action", ""))[:60],
+                "Target": l.get("target", l.get("device", "")),
+                "Result": l.get("result", ""),
             }
             for l in logs[:15]
         ]
@@ -1581,17 +1693,23 @@ def _handle_unknown(text, _session_id):
     # Try to give a smart suggestion based on words in the message
     hints = []
     msg_lower = text.lower()
-    if any(w in msg_lower for w in ['device','router','switch','ap','gateway']): hints.append("*'show devices down'* or *'device inventory'*")
-    if any(w in msg_lower for w in ['client','user','connected','phone']): hints.append("*'show clients on SSID CorpWiFi'* or *'find client 192.168.1.5'*")
-    if any(w in msg_lower for w in ['alert','alarm','problem','issue']): hints.append("*'show alerts'* or *'show critical alerts'*")
-    if any(w in msg_lower for w in ['site','location','office']): hints.append("*'site health'*")
+    if any(w in msg_lower for w in ["device", "router", "switch", "ap", "gateway"]):
+        hints.append("*'show devices down'* or *'device inventory'*")
+    if any(w in msg_lower for w in ["client", "user", "connected", "phone"]):
+        hints.append("*'show clients on SSID CorpWiFi'* or *'find client 192.168.1.5'*")
+    if any(w in msg_lower for w in ["alert", "alarm", "problem", "issue"]):
+        hints.append("*'show alerts'* or *'show critical alerts'*")
+    if any(w in msg_lower for w in ["site", "location", "office"]):
+        hints.append("*'site health'*")
     if not hints:
         hints = ["*'how many APs are down'*", "*'show devices down'*", "*'device inventory'*"]
 
     return (
-        "I didn't quite catch that. Try:\n" + "\n".join(f"- {h}" for h in hints) +
-        "\n\nType **help** to see everything I can do.",
-        None, 200
+        "I didn't quite catch that. Try:\n"
+        + "\n".join(f"- {h}" for h in hints)
+        + "\n\nType **help** to see everything I can do.",
+        None,
+        200,
     )
 
 
@@ -1599,8 +1717,8 @@ def _handle_unknown(text, _session_id):
 # Ollama LLM Agent — natural language understanding
 # ---------------------------------------------------------------------------
 
-_OLLAMA_URL   = os.environ.get('OLLAMA_URL',   'http://localhost:11434')
-_OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'qwen3.5:cloud')
+_OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
+_OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:cloud")
 
 _OLLAMA_SYSTEM_PROMPT = """\
 You are a network assistant. Output ONLY valid JSON — no other text, no markdown.
@@ -1647,6 +1765,7 @@ User: "what is BGP"                     → {"action":"respond","message":"BGP (
 User: "thanks"                          → {"action":"respond","message":"You're welcome! Let me know if you need anything else."}
 """
 
+
 class OllamaAgent:
     """LLM-powered intent classifier using local Ollama."""
 
@@ -1681,11 +1800,11 @@ class OllamaAgent:
             resp = httpx.post(
                 f"{_OLLAMA_URL}/api/chat",
                 json={
-                    "model":   _OLLAMA_MODEL,
+                    "model": _OLLAMA_MODEL,
                     "messages": messages,
-                    "stream":  False,
-                    "format":  "json",
-                    "think":   False,
+                    "stream": False,
+                    "format": "json",
+                    "think": False,
                     "options": {"temperature": 0.05, "num_predict": 512},
                 },
                 timeout=60.0,
@@ -1696,28 +1815,31 @@ class OllamaAgent:
             json_start = content.find("{")
             if json_start > 0:
                 content = content[json_start:]
-            parsed  = json.loads(content)
+            parsed = json.loads(content)
 
             action = parsed.get("action")
             if action == "tool":
-                tool   = parsed.get("tool", "")
+                tool = parsed.get("tool", "")
                 params = parsed.get("params") or {}
                 if tool in _HANDLERS_KEYS:
                     return {"name": tool, "params": params, "via": "ollama"}
                 # Ollama hallucinated a tool name — ask it to answer directly instead
                 logger.warning(f"Ollama picked unknown tool '{tool}' — retrying as respond")
                 retry_msgs = [
-                    {"role": "system", "content": 'Output ONLY: {"action":"respond","message":"YOUR_ANSWER"}'},
-                    {"role": "user",   "content": text},
+                    {
+                        "role": "system",
+                        "content": 'Output ONLY: {"action":"respond","message":"YOUR_ANSWER"}',
+                    },
+                    {"role": "user", "content": text},
                 ]
                 retry_resp = httpx.post(
                     f"{_OLLAMA_URL}/api/chat",
                     json={
-                        "model":   _OLLAMA_MODEL,
+                        "model": _OLLAMA_MODEL,
                         "messages": retry_msgs,
-                        "stream":  False,
-                        "format":  "json",
-                        "think":   False,
+                        "stream": False,
+                        "format": "json",
+                        "think": False,
                         "options": {"temperature": 0.1, "num_predict": 512},
                     },
                     timeout=60.0,
@@ -1752,33 +1874,33 @@ class OllamaAgent:
 # Intent → handler dispatch table
 # ---------------------------------------------------------------------------
 _HANDLERS = {
-    "help":               _handle_help,
-    "ap_status":          _handle_ap_status,
-    "site_health":        _handle_site_health,
-    "clients_by_ssid":    _handle_clients_by_ssid,
-    "client_by_mac":      _handle_client_by_mac,
+    "help": _handle_help,
+    "ap_status": _handle_ap_status,
+    "site_health": _handle_site_health,
+    "clients_by_ssid": _handle_clients_by_ssid,
+    "client_by_mac": _handle_client_by_mac,
     "switch_port_errors": _handle_switch_port_errors,
-    "bounce_ap":          _handle_bounce_ap,
-    "bounce_port":        _handle_bounce_port,
-    "alert_summary":      _handle_alert_summary,
-    "firmware_status":    _handle_firmware_status,
-    "wlan_list":          _handle_wlan_list,
-    "top_clients":        _handle_top_clients,
-    "device_inventory":   _handle_device_inventory,
-    "ack_alert":          _handle_ack_alert,
-    "ping_test":          _handle_ping_test,
-    "device_status":      _handle_device_status,
-    "find_client":        _handle_find_client,
-    "disconnect_client":  _handle_disconnect_client,
-    "traceroute":         _handle_traceroute,
-    "client_count":       _handle_client_count,
-    "site_list":          _handle_site_list,
-    "top_bandwidth":      _handle_top_bandwidth,
+    "bounce_ap": _handle_bounce_ap,
+    "bounce_port": _handle_bounce_port,
+    "alert_summary": _handle_alert_summary,
+    "firmware_status": _handle_firmware_status,
+    "wlan_list": _handle_wlan_list,
+    "top_clients": _handle_top_clients,
+    "device_inventory": _handle_device_inventory,
+    "ack_alert": _handle_ack_alert,
+    "ping_test": _handle_ping_test,
+    "device_status": _handle_device_status,
+    "find_client": _handle_find_client,
+    "disconnect_client": _handle_disconnect_client,
+    "traceroute": _handle_traceroute,
+    "client_count": _handle_client_count,
+    "site_list": _handle_site_list,
+    "top_bandwidth": _handle_top_bandwidth,
     # MCP-sourced tools
-    "device_events":      _handle_device_events,
-    "switch_vlans":       _handle_switch_vlans,
-    "ap_radios":          _handle_ap_radios,
-    "audit_logs":         _handle_audit_logs,
+    "device_events": _handle_device_events,
+    "switch_vlans": _handle_switch_vlans,
+    "ap_radios": _handle_ap_radios,
+    "audit_logs": _handle_audit_logs,
 }
 
 # Used by OllamaAgent to validate tool names (defined after _HANDLERS)
@@ -1789,7 +1911,8 @@ _HANDLERS_KEYS = set(_HANDLERS.keys())
 # Webhook Ingest + SSE Streaming
 # =============================================================================
 
-@chat_bp.route('/api/webhooks/aruba-central', methods=['POST'])
+
+@chat_bp.route("/api/webhooks/aruba-central", methods=["POST"])
 def aruba_webhook():
     """
     Receives push events from Aruba Central (device/AP up-down, alerts, etc).
@@ -1799,17 +1922,24 @@ def aruba_webhook():
     import app as _app
 
     body = request.get_data()
-    webhook_secret = os.environ.get('ARUBA_WEBHOOK_SECRET', '')
+    webhook_secret = os.environ.get("ARUBA_WEBHOOK_SECRET", "")
 
     if not webhook_secret:
         logger.error("Webhook: ARUBA_WEBHOOK_SECRET not configured")
-        return jsonify({"error": "Webhook secret not configured. Set ARUBA_WEBHOOK_SECRET environment variable."}), 403
+        return (
+            jsonify(
+                {
+                    "error": "Webhook secret not configured. Set ARUBA_WEBHOOK_SECRET environment variable."
+                }
+            ),
+            403,
+        )
 
-    sig_header = request.headers.get('X-Aruba-Signature', '')
+    sig_header = request.headers.get("X-Aruba-Signature", "")
     expected = hmac.new(webhook_secret.encode(), body, hashlib.sha256).hexdigest()
     if not sig_header or not hmac.compare_digest(sig_header, expected):
         logger.warning("Webhook: invalid signature rejected")
-        return '', 401
+        return "", 401
 
     try:
         payload = json.loads(body)
@@ -1832,10 +1962,10 @@ def aruba_webhook():
 
     _app._fan_out_event(event)
     logger.info(f"Webhook: ingested type={event['type']} device={event['device']}")
-    return '', 204
+    return "", 204
 
 
-@chat_bp.route('/api/stream/events')
+@chat_bp.route("/api/stream/events")
 def stream_events():
     """
     SSE endpoint — accepts either:
@@ -1845,11 +1975,15 @@ def stream_events():
     import app as _app
 
     # Auth check: allow Grafana key OR valid session
-    grafana_key = os.environ.get('GRAFANA_API_KEY', '')
-    provided_grafana_key = request.headers.get('X-Grafana-API-Key', '')
-    session_id = request.headers.get('X-Session-ID') or request.args.get('session')
+    grafana_key = os.environ.get("GRAFANA_API_KEY", "")
+    provided_grafana_key = request.headers.get("X-Grafana-API-Key", "")
+    session_id = request.headers.get("X-Session-ID") or request.args.get("session")
 
-    if grafana_key and provided_grafana_key and hmac.compare_digest(provided_grafana_key, grafana_key):
+    if (
+        grafana_key
+        and provided_grafana_key
+        and hmac.compare_digest(provided_grafana_key, grafana_key)
+    ):
         pass  # Valid Grafana key
     elif session_id and session_id in _app.active_sessions:
         pass  # Valid browser session
@@ -1881,12 +2015,12 @@ def stream_events():
 
     return Response(
         stream_with_context(generate()),
-        mimetype='text/event-stream',
+        mimetype="text/event-stream",
         headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no',
-            'Connection': 'keep-alive',
-        }
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
     )
 
 
@@ -1894,50 +2028,57 @@ def stream_events():
 # MSP Chatbot Backend routes
 # =============================================================================
 
-@chat_bp.route('/api/chat/llm-status', methods=['GET'])
+
+@chat_bp.route("/api/chat/llm-status", methods=["GET"])
 def chat_llm_status():
     """Return Ollama availability and loaded model info."""
     try:
         r = httpx.get(f"{_OLLAMA_URL}/api/tags", timeout=3.0)
         if r.status_code == 200:
             tags = r.json()
-            models = [m['name'] for m in tags.get('models', [])]
-            model_ready = any(_OLLAMA_MODEL.split(':')[0] in m for m in models)
-            return jsonify({
-                "available": True,
-                "model": _OLLAMA_MODEL,
-                "model_ready": model_ready,
-                "models": models,
-                "url": _OLLAMA_URL,
-            })
+            models = [m["name"] for m in tags.get("models", [])]
+            model_ready = any(_OLLAMA_MODEL.split(":")[0] in m for m in models)
+            return jsonify(
+                {
+                    "available": True,
+                    "model": _OLLAMA_MODEL,
+                    "model_ready": model_ready,
+                    "models": models,
+                    "url": _OLLAMA_URL,
+                }
+            )
     except Exception:
         pass
-    return jsonify({
-        "available": False,
-        "model": _OLLAMA_MODEL,
-        "model_ready": False,
-        "error": "Ollama not reachable",
-    })
+    return jsonify(
+        {
+            "available": False,
+            "model": _OLLAMA_MODEL,
+            "model_ready": False,
+            "error": "Ollama not reachable",
+        }
+    )
 
 
-@chat_bp.route('/api/chat/intents', methods=['GET'])
+@chat_bp.route("/api/chat/intents", methods=["GET"])
 @require_session
 def chat_intents():
     """Return the list of supported chat intents for UI hint rendering."""
-    return jsonify({
-        "intents": [
-            {
-                "name":        i["name"],
-                "description": i["description"],
-                "destructive": i["destructive"],
-            }
-            for i in _INTENTS
-        ],
-        "count": len(_INTENTS),
-    })
+    return jsonify(
+        {
+            "intents": [
+                {
+                    "name": i["name"],
+                    "description": i["description"],
+                    "destructive": i["destructive"],
+                }
+                for i in _INTENTS
+            ],
+            "count": len(_INTENTS),
+        }
+    )
 
 
-@chat_bp.route('/api/chat/message', methods=['POST'])
+@chat_bp.route("/api/chat/message", methods=["POST"])
 @require_session
 def chat_message():
     """
@@ -1952,68 +2093,71 @@ def chat_message():
 
     try:
         body = request.get_json(silent=True) or {}
-        message  = (body.get('message') or '').strip()
-        history  = body.get('history', [])
-        ctx      = body.get('context', {})
+        message = (body.get("message") or "").strip()
+        history = body.get("history", [])
+        ctx = body.get("context", {})
 
         if not message:
-            return jsonify({
-                "error": "message field is required and must not be empty"
-            }), 400
+            return jsonify({"error": "message field is required and must not be empty"}), 400
 
         # Sanity bounds — prevent abuse of history length
         if len(history) > 40:
             history = history[-40:]
         if len(message) > 2000:
-            return jsonify({
-                "error": "message too long (max 2000 characters)"
-            }), 400
+            return jsonify({"error": "message too long (max 2000 characters)"}), 400
 
         # Guard: require aruba_client (same pattern as other endpoints)
         aruba_client = _app.aruba_client
         if not aruba_client:
-            return jsonify({
-                "reply":  "The portal is not connected to Aruba Central. "
-                          "Please configure credentials and try again.",
-                "intent": None,
-                "data":   None,
-                "history": history,
-                "ts":     time.time(),
-            }), 503
+            return (
+                jsonify(
+                    {
+                        "reply": "The portal is not connected to Aruba Central. "
+                        "Please configure credentials and try again.",
+                        "intent": None,
+                        "data": None,
+                        "history": history,
+                        "ts": time.time(),
+                    }
+                ),
+                503,
+            )
 
-        session_id = request.headers.get('X-Session-ID', 'unknown')
+        session_id = request.headers.get("X-Session-ID", "unknown")
 
         # ── Intent classification ────────────────────────────────────────────
         # 1. Try fast regex classifier first
-        intent   = IntentClassifier.classify(message)
-        via      = "regex"
+        intent = IntentClassifier.classify(message)
+        via = "regex"
 
         # 2. If no regex match, try Ollama (if available)
         if intent is None:
             ollama_result = OllamaAgent.classify(message, history)
             if ollama_result:
                 intent = ollama_result
-                via    = "ollama"
+                via = "ollama"
 
         # 3. Handle direct LLM responses (Ollama said "respond" not "tool")
-        if intent and intent.get('name') == '__llm_response__':
+        if intent and intent.get("name") == "__llm_response__":
             logger.info(
                 f"Chat: session={session_id[:8]}... intent=llm_response via=ollama "
                 f"msg={message[:80]!r}"
             )
             new_history = list(history) + [
-                {"role": "user",      "content": message},
-                {"role": "assistant", "content": intent['message']},
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": intent["message"]},
             ]
-            return jsonify({
-                "reply":   intent['message'],
-                "intent":  "llm_response",
-                "via":     "ollama",
-                "model":   _OLLAMA_MODEL,
-                "data":    None,
-                "history": new_history,
-                "ts":      time.time(),
-            })
+            return jsonify(
+                {
+                    "reply": intent["message"],
+                    "intent": "llm_response",
+                    "via": "ollama",
+                    "model": _OLLAMA_MODEL,
+                    "data": None,
+                    "history": new_history,
+                    "ts": time.time(),
+                }
+            )
 
         logger.info(
             f"Chat: session={session_id[:8]}... "
@@ -2023,15 +2167,15 @@ def chat_message():
 
         # Dispatch
         if intent:
-            handler = _HANDLERS.get(intent['name'], _handle_unknown)
+            handler = _HANDLERS.get(intent["name"], _handle_unknown)
         else:
             handler = _handle_unknown
 
         # For find_client, inject Ollama-extracted query param into the message
         # so the handler can extract an IP/MAC it wouldn't find in bare text.
         dispatch_text = message
-        if intent and intent.get('name') == 'find_client':
-            query = (intent.get('params') or {}).get('query', '')
+        if intent and intent.get("name") == "find_client":
+            query = (intent.get("params") or {}).get("query", "")
             if query and query not in message:
                 dispatch_text = f"{message} {query}"
 
@@ -2039,42 +2183,37 @@ def chat_message():
             reply, data, status = handler(dispatch_text, session_id)
         except Exception as handler_err:
             logger.error(
-                f"Chat handler {intent['name'] if intent else '?'} "
-                f"raised: {handler_err}", exc_info=True
+                f"Chat handler {intent['name'] if intent else '?'} " f"raised: {handler_err}",
+                exc_info=True,
             )
-            reply  = (
+            reply = (
                 "An internal error occurred while processing your request. "
                 "Please try again or contact your administrator."
             )
-            data   = None
+            data = None
             status = 500
 
         # Build updated history (stateless — client owns the store)
         new_history = list(history) + [
-            {"role": "user",      "content": message},
+            {"role": "user", "content": message},
             {"role": "assistant", "content": reply},
         ]
 
         # Rate-limit telemetry
-        actions_this_min = len(
-            _chat_action_tracker.get(session_id, _collections.deque())
-        )
-        daily_remaining = max(
-            0,
-            5000 - _app.api_call_tracker.get('daily_calls', 0)
-        )
+        actions_this_min = len(_chat_action_tracker.get(session_id, _collections.deque()))
+        daily_remaining = max(0, 5000 - _app.api_call_tracker.get("daily_calls", 0))
 
         response_body = {
-            "reply":   reply,
-            "intent":  intent['name'] if intent else None,
-            "via":     via,
-            "model":   _OLLAMA_MODEL if via == "ollama" else "regex",
-            "data":    data,
+            "reply": reply,
+            "intent": intent["name"] if intent else None,
+            "via": via,
+            "model": _OLLAMA_MODEL if via == "ollama" else "regex",
+            "data": data,
             "history": new_history,
-            "ts":      time.time(),
+            "ts": time.time(),
             "rate_limit": {
-                "daily_calls_remaining":  daily_remaining,
-                "actions_this_minute":    actions_this_min,
+                "daily_calls_remaining": daily_remaining,
+                "actions_this_minute": actions_this_min,
                 "action_limit_per_minute": _CHAT_ACTION_LIMIT,
             },
         }
@@ -2083,7 +2222,12 @@ def chat_message():
 
     except Exception as e:
         logger.error(f"Chat endpoint fatal error: {e}", exc_info=True)
-        return jsonify({
-            "error": "Internal server error",
-            "reply": "Something went wrong. Please try again.",
-        }), 500
+        return (
+            jsonify(
+                {
+                    "error": "Internal server error",
+                    "reply": "Something went wrong. Please try again.",
+                }
+            ),
+            500,
+        )

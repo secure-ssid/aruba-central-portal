@@ -30,60 +30,66 @@ from flask import Blueprint, request, jsonify, make_response
 
 from .helpers import require_session, api_proxy, cached_get, parallel_get
 
-config_bp = Blueprint('config', __name__)
+config_bp = Blueprint("config", __name__)
 logger = logging.getLogger(__name__)
 
 
 # ============= Network Configuration Endpoints (v1alpha1) =============
 # These endpoints proxy to the network-config/v1alpha1 API for WLAN wizard functionality
 
+
 # WLAN Configuration Endpoints
-@config_bp.route('/api/config/wlan', methods=['GET'])
+@config_bp.route("/api/config/wlan", methods=["GET"])
 @require_session
 def get_wlans_config():
     """Get all WLANs via network-config API."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/wlan-ssids', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/wlan-ssids", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching WLANs config: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/wlan/<ssid_name>', methods=['GET'])
+@config_bp.route("/api/config/wlan/<ssid_name>", methods=["GET"])
 @require_session
 def get_wlan_config(ssid_name):
     """Get specific WLAN configuration."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}')
+        response = aruba_client.get(f"/network-config/v1alpha1/wlan-ssids/{ssid_name}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching WLAN {ssid_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/wlan/<ssid_name>', methods=['POST'])
+@config_bp.route("/api/config/wlan/<ssid_name>", methods=["POST"])
 @require_session
 def create_wlan_config(ssid_name):
     """Create new WLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         wlan_data = request.get_json()
         params = request.args.to_dict()  # Get query parameters
         logger.info(f"Creating WLAN {ssid_name} with data: {wlan_data}")
         logger.info(f"Query parameters: {params}")
-        response = aruba_client.post(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}', data=wlan_data, params=params)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", data=wlan_data, params=params
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating WLAN {ssid_name}: {e}")
         # Try to get more details from the error
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+        if hasattr(e, "response") and hasattr(e.response, "text"):
             logger.error(f"API response: {e.response.text}")
             try:
                 error_json = e.response.json()
@@ -93,58 +99,66 @@ def create_wlan_config(ssid_name):
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/wlan/<ssid_name>', methods=['PATCH'])
+@config_bp.route("/api/config/wlan/<ssid_name>", methods=["PATCH"])
 @require_session
 def update_wlan_config(ssid_name):
     """Update existing WLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         wlan_data = request.get_json()
-        response = aruba_client.patch(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}', json=wlan_data)
+        response = aruba_client.patch(
+            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", json=wlan_data
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error updating WLAN {ssid_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/wlan/<ssid_name>', methods=['DELETE'])
+@config_bp.route("/api/config/wlan/<ssid_name>", methods=["DELETE"])
 @require_session
 def delete_wlan_config(ssid_name):
     """Delete a WLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.delete(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}')
+        response = aruba_client.delete(f"/network-config/v1alpha1/wlan-ssids/{ssid_name}")
         return jsonify({"message": f"WLAN {ssid_name} deleted successfully"}), 200
     except Exception as e:
         logger.error(f"Error deleting WLAN {ssid_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/vlan/<int:vlan_id>', methods=['GET'])
+@config_bp.route("/api/config/vlan/<int:vlan_id>", methods=["GET"])
 @require_session
 def get_vlan_config(vlan_id):
     """Get specific VLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-config/v1alpha1/layer2-vlan/{vlan_id}')
+        response = aruba_client.get(f"/network-config/v1alpha1/layer2-vlan/{vlan_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching VLAN {vlan_id}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/vlan/<int:vlan_id>', methods=['POST'])
+@config_bp.route("/api/config/vlan/<int:vlan_id>", methods=["POST"])
 @require_session
 def create_vlan_config(vlan_id):
     """Create new Layer2 VLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         vlan_data = request.get_json()
-        response = aruba_client.post(f'/network-config/v1alpha1/layer2-vlan/{vlan_id}', data=vlan_data)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/layer2-vlan/{vlan_id}", data=vlan_data
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating VLAN {vlan_id}: {e}")
@@ -152,44 +166,47 @@ def create_vlan_config(vlan_id):
 
 
 # Named VLAN Endpoints
-@config_bp.route('/api/config/named-vlan', methods=['GET'])
+@config_bp.route("/api/config/named-vlan", methods=["GET"])
 @require_session
 def get_named_vlans_config():
     """Get all Named VLANs."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/named-vlan', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/named-vlan", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching Named VLANs: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/named-vlan/<name>', methods=['GET'])
+@config_bp.route("/api/config/named-vlan/<name>", methods=["GET"])
 @require_session
 def get_named_vlan_config(name):
     """Get specific Named VLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-config/v1alpha1/named-vlan/{name}')
+        response = aruba_client.get(f"/network-config/v1alpha1/named-vlan/{name}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching Named VLAN {name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/named-vlan/<name>', methods=['POST'])
+@config_bp.route("/api/config/named-vlan/<name>", methods=["POST"])
 @require_session
 def create_named_vlan_config(name):
     """Create new Named VLAN."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         vlan_data = request.get_json()
-        response = aruba_client.post(f'/network-config/v1alpha1/named-vlan/{name}', data=vlan_data)
+        response = aruba_client.post(f"/network-config/v1alpha1/named-vlan/{name}", data=vlan_data)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating Named VLAN {name}: {e}")
@@ -197,114 +214,127 @@ def create_named_vlan_config(name):
 
 
 # Role Configuration Endpoints
-@config_bp.route('/api/config/roles', methods=['GET'])
+@config_bp.route("/api/config/roles", methods=["GET"])
 @require_session
 def get_roles_config():
     """Get all roles."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/roles', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/roles", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching roles: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/roles/<role_name>', methods=['GET'])
+@config_bp.route("/api/config/roles/<role_name>", methods=["GET"])
 @require_session
 def get_role_config(role_name):
     """Get specific role."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-config/v1alpha1/roles/{role_name}')
+        response = aruba_client.get(f"/network-config/v1alpha1/roles/{role_name}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching role {role_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/roles/<role_name>', methods=['POST'])
+@config_bp.route("/api/config/roles/<role_name>", methods=["POST"])
 @require_session
 def create_role_config(role_name):
     """Create new role."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         role_data = request.get_json()
         params = request.args.to_dict()  # Get query parameters
         logger.info(f"Creating role {role_name} with data: {role_data}")
         logger.info(f"Query parameters: {params}")
-        response = aruba_client.post(f'/network-config/v1alpha1/roles/{role_name}', data=role_data, params=params)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/roles/{role_name}", data=role_data, params=params
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating role {role_name}: {e}")
         # Try to get more details from the error
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+        if hasattr(e, "response") and hasattr(e.response, "text"):
             logger.error(f"API response: {e.response.text}")
         return jsonify({"error": str(e)}), 500
 
 
 # Role-GPID Configuration Endpoints
-@config_bp.route('/api/config/role-gpids/<role_name>', methods=['POST'])
+@config_bp.route("/api/config/role-gpids/<role_name>", methods=["POST"])
 @require_session
 def create_role_gpid_config(role_name):
     """Create new role-gpid."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         gpid_data = request.get_json()
         logger.info(f"Creating role-gpid {role_name} with data: {gpid_data}")
-        response = aruba_client.post(f'/network-config/v1alpha1/role-gpids/{role_name}', data=gpid_data)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/role-gpids/{role_name}", data=gpid_data
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating role-gpid {role_name}: {e}")
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+        if hasattr(e, "response") and hasattr(e.response, "text"):
             logger.error(f"API response: {e.response.text}")
         return jsonify({"error": str(e)}), 500
 
 
 # Policy Configuration Endpoints
-@config_bp.route('/api/config/policies', methods=['GET'])
+@config_bp.route("/api/config/policies", methods=["GET"])
 @require_session
 def get_policies_config():
     """Get all policies."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/policies', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/policies", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching policies: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/policies/<policy_name>', methods=['GET'])
+@config_bp.route("/api/config/policies/<policy_name>", methods=["GET"])
 @require_session
 def get_policy_config(policy_name):
     """Get specific policy."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-config/v1alpha1/policies/{policy_name}')
+        response = aruba_client.get(f"/network-config/v1alpha1/policies/{policy_name}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching policy {policy_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/policies/<policy_name>', methods=['POST'])
+@config_bp.route("/api/config/policies/<policy_name>", methods=["POST"])
 @require_session
 def create_policy_config(policy_name):
     """Create new policy."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         policy_data = request.get_json()
-        response = aruba_client.post(f'/network-config/v1alpha1/policies/{policy_name}', data=policy_data)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/policies/{policy_name}", data=policy_data
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating policy {policy_name}: {e}")
@@ -312,32 +342,33 @@ def create_policy_config(policy_name):
 
 
 # Scope Map Endpoints (for assigning profiles to scopes)
-@config_bp.route('/api/config/scope-maps', methods=['GET', 'POST'])
+@config_bp.route("/api/config/scope-maps", methods=["GET", "POST"])
 @require_session
 def scope_maps():
     """Get all scope maps or create scope map assignments."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        if request.method == 'GET':
+        if request.method == "GET":
             params = request.args.to_dict()
-            response = aruba_client.get('/network-config/v1alpha1/scope-maps', params=params)
+            response = aruba_client.get("/network-config/v1alpha1/scope-maps", params=params)
             return jsonify(response)
         else:  # POST
             # Create scope map with JSON body containing scope-map array
             # Expected format: {"scope-map": [{"scope-id": ..., "persona": ..., "resource": ...}]}
             scope_map_data = request.get_json()
             logger.info(f"Creating scope maps with data: {scope_map_data}")
-            response = aruba_client.post('/network-config/v1alpha1/scope-maps', data=scope_map_data)
+            response = aruba_client.post("/network-config/v1alpha1/scope-maps", data=scope_map_data)
             return jsonify(response)
     except Exception as e:
         logger.error(f"Error with scope maps: {e}")
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+        if hasattr(e, "response") and hasattr(e.response, "text"):
             logger.error(f"API response: {e.response.text}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/scope-maps/<path:scope_resource>', methods=['POST'])
+@config_bp.route("/api/config/scope-maps/<path:scope_resource>", methods=["POST"])
 @require_session
 def create_scope_map(scope_resource):
     """
@@ -346,6 +377,7 @@ def create_scope_map(scope_resource):
     Example: HQ-Site/CAMPUS_AP/wlan-ssids~2FCorp-WiFi
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         # The scope_resource contains: scopeName/persona/resource
@@ -354,40 +386,48 @@ def create_scope_map(scope_resource):
         params = request.args.to_dict()  # Get query parameters
         logger.info(f"Creating scope map {scope_resource} with data: {assignment_data}")
         logger.info(f"Query parameters: {params}")
-        response = aruba_client.post(f'/network-config/v1alpha1/scope-maps/{scope_resource}', data=assignment_data, params=params)
+        response = aruba_client.post(
+            f"/network-config/v1alpha1/scope-maps/{scope_resource}",
+            data=assignment_data,
+            params=params,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating scope map {scope_resource}: {e}")
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
+        if hasattr(e, "response") and hasattr(e.response, "text"):
             logger.error(f"API response: {e.response.text}")
         return jsonify({"error": str(e)}), 500
 
 
 # MPSK (Multi-Pre-Shared-Key) Endpoints
-@config_bp.route('/api/config/nac/mpsk-registration', methods=['GET'])
+@config_bp.route("/api/config/nac/mpsk-registration", methods=["GET"])
 @require_session
 def get_mpsk_registrations():
     """Get all MPSK registrations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/nac/mpsk-registration', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/nac/mpsk-registration", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching MPSK registrations: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/nac/mpsk-registration', methods=['POST'])
+@config_bp.route("/api/config/nac/mpsk-registration", methods=["POST"])
 @require_session
 def create_mpsk_registration():
     """Create new MPSK registration."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         mpsk_data = request.get_json()
-        response = aruba_client.post('/network-config/v1alpha1/nac/mpsk-registration', data=mpsk_data)
+        response = aruba_client.post(
+            "/network-config/v1alpha1/nac/mpsk-registration", data=mpsk_data
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating MPSK registration: {e}")
@@ -395,15 +435,16 @@ def create_mpsk_registration():
 
 
 # Authentication Server Endpoints (for future use)
-@config_bp.route('/api/config/auth-servers', methods=['GET'])
+@config_bp.route("/api/config/auth-servers", methods=["GET"])
 @require_session
 def get_auth_servers():
     """Get all authentication servers."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/auth-servers', params=params)
+        response = aruba_client.get("/network-config/v1alpha1/auth-servers", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching auth servers: {e}")
@@ -411,15 +452,18 @@ def get_auth_servers():
 
 
 # Captive Portal Endpoints (for future use)
-@config_bp.route('/api/config/captive-portal-profiles', methods=['GET'])
+@config_bp.route("/api/config/captive-portal-profiles", methods=["GET"])
 @require_session
 def get_captive_portal_profiles():
     """Get all captive portal profiles."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get('/network-config/v1alpha1/captive-portal-profiles', params=params)
+        response = aruba_client.get(
+            "/network-config/v1alpha1/captive-portal-profiles", params=params
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching captive portal profiles: {e}")
@@ -427,34 +471,36 @@ def get_captive_portal_profiles():
 
 
 # Static Route Configuration Endpoints
-@config_bp.route('/api/config/static-routes', methods=['GET'])
+@config_bp.route("/api/config/static-routes", methods=["GET"])
 @require_session
 def get_static_routes():
     """Get static route configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        device_serial = request.args.get('serial')
+            params["group"] = group
+        device_serial = request.args.get("serial")
         if device_serial:
-            params['serial'] = device_serial
-        response = aruba_client.get('/network-config/v1alpha1/static-route', params=params)
+            params["serial"] = device_serial
+        response = aruba_client.get("/network-config/v1alpha1/static-route", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching static routes: {e}")
         return jsonify({"error": "Failed to fetch static routes"}), 500
 
 
-@config_bp.route('/api/config/static-routes', methods=['POST'])
+@config_bp.route("/api/config/static-routes", methods=["POST"])
 @require_session
 def create_static_route():
     """Create a new static route."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
@@ -462,31 +508,36 @@ def create_static_route():
         data = request.get_json()
         if not data:
             return jsonify({"error": "Request body required"}), 400
-        group = request.args.get('group')
+        group = request.args.get("group")
         params = {}
         if group:
-            params['group'] = group
-        response = aruba_client.post('/network-config/v1alpha1/static-route', data=data, params=params)
+            params["group"] = group
+        response = aruba_client.post(
+            "/network-config/v1alpha1/static-route", data=data, params=params
+        )
         return jsonify(response if response else {"success": True})
     except Exception as e:
         logger.error(f"Error creating static route: {e}")
         return jsonify({"error": "Failed to create static route"}), 500
 
 
-@config_bp.route('/api/config/static-routes/<path:route_id>', methods=['DELETE'])
+@config_bp.route("/api/config/static-routes/<path:route_id>", methods=["DELETE"])
 @require_session
 def delete_static_route(route_id):
     """Delete a static route."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
-        group = request.args.get('group')
+        group = request.args.get("group")
         params = {}
         if group:
-            params['group'] = group
-        response = aruba_client.delete(f'/network-config/v1alpha1/static-route/{route_id}', params=params)
+            params["group"] = group
+        response = aruba_client.delete(
+            f"/network-config/v1alpha1/static-route/{route_id}", params=params
+        )
         return jsonify(response if response else {"success": True})
     except Exception as e:
         logger.error(f"Error deleting static route: {e}")
@@ -494,20 +545,21 @@ def delete_static_route(route_id):
 
 
 # ACL/Firewall Configuration Endpoints (read-only)
-@config_bp.route('/api/config/acls', methods=['GET'])
+@config_bp.route("/api/config/acls", methods=["GET"])
 @require_session
 def get_acls():
     """Get ACL configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/role-acl', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/role-acl", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching ACLs: {e}")
@@ -515,20 +567,21 @@ def get_acls():
 
 
 # STP Configuration Endpoints (read-only)
-@config_bp.route('/api/config/stp', methods=['GET'])
+@config_bp.route("/api/config/stp", methods=["GET"])
 @require_session
 def get_stp_config():
     """Get Spanning Tree Protocol configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/stp', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/stp", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching STP config: {e}")
@@ -536,100 +589,105 @@ def get_stp_config():
 
 
 # Network Services Configuration Endpoints
-@config_bp.route('/api/config/dhcp-pools', methods=['GET'])
+@config_bp.route("/api/config/dhcp-pools", methods=["GET"])
 @require_session
 def get_dhcp_pools():
     """Get DHCP server pool configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/dhcp-server', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/dhcp-server", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching DHCP pools: {e}")
         return jsonify({"error": "Failed to fetch DHCP configuration"}), 500
 
 
-@config_bp.route('/api/config/ntp', methods=['GET'])
+@config_bp.route("/api/config/ntp", methods=["GET"])
 @require_session
 def get_ntp_config():
     """Get NTP server configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/ntp', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/ntp", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching NTP config: {e}")
         return jsonify({"error": "Failed to fetch NTP configuration"}), 500
 
 
-@config_bp.route('/api/config/dns', methods=['GET'])
+@config_bp.route("/api/config/dns", methods=["GET"])
 @require_session
 def get_dns_config():
     """Get DNS resolver configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/dns', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/dns", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching DNS config: {e}")
         return jsonify({"error": "Failed to fetch DNS configuration"}), 500
 
 
-@config_bp.route('/api/config/snmp', methods=['GET'])
+@config_bp.route("/api/config/snmp", methods=["GET"])
 @require_session
 def get_snmp_config():
     """Get SNMP configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/snmp', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/snmp", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching SNMP config: {e}")
         return jsonify({"error": "Failed to fetch SNMP configuration"}), 500
 
 
-@config_bp.route('/api/config/syslog', methods=['GET'])
+@config_bp.route("/api/config/syslog", methods=["GET"])
 @require_session
 def get_syslog_config():
     """Get syslog/logging configurations."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = {}
-        group = request.args.get('group')
+        group = request.args.get("group")
         if group:
-            params['group'] = group
-        response = aruba_client.get('/network-config/v1alpha1/logging', params=params)
+            params["group"] = group
+        response = aruba_client.get("/network-config/v1alpha1/logging", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         logger.error(f"Error fetching syslog config: {e}")
@@ -638,36 +696,38 @@ def get_syslog_config():
 
 # ============= Client Endpoints =============
 
-@config_bp.route('/api/clients', methods=['GET'])
+
+@config_bp.route("/api/clients", methods=["GET"])
 @require_session
 def get_clients():
     """Get connected clients — tries multiple endpoints in order of reliability."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
 
-        site_id = request.args.get('site_id', request.args.get('site-id'))
-        connection_type = request.args.get('connection_type')
-        ssid = request.args.get('ssid')
-        limit = int(request.args.get('limit', 500))
+        site_id = request.args.get("site_id", request.args.get("site-id"))
+        connection_type = request.args.get("connection_type")
+        ssid = request.args.get("ssid")
+        limit = int(request.args.get("limit", 500))
 
         # Build params — use v1 API (matches MCP pipeline which is proven to work)
-        params = {'limit': min(limit, 1000)}
+        params = {"limit": min(limit, 1000)}
         if site_id:
-            params['site-id'] = site_id
+            params["site-id"] = site_id
         if connection_type:
-            params['filter'] = f"clientConnectionType eq '{connection_type}'"
+            params["filter"] = f"clientConnectionType eq '{connection_type}'"
         if ssid:
-            f = params.get('filter', '')
-            params['filter'] = (f + ' and ' if f else '') + f"wlanName eq '{ssid}'"
+            f = params.get("filter", "")
+            params["filter"] = (f + " and " if f else "") + f"wlanName eq '{ssid}'"
 
         # Try v1 first (what MCP uses and what works)
         endpoints_to_try = [
-            ('/network-monitoring/v1/clients', lambda r: r.get('clients', r.get('items', []))),
-            ('/monitoring/v2/clients', lambda r: r.get('clients', r.get('items', []))),
-            ('/monitoring/v1/clients', lambda r: r.get('clients', r.get('items', []))),
+            ("/network-monitoring/v1/clients", lambda r: r.get("clients", r.get("items", []))),
+            ("/monitoring/v2/clients", lambda r: r.get("clients", r.get("items", []))),
+            ("/monitoring/v1/clients", lambda r: r.get("clients", r.get("items", []))),
         ]
 
         all_clients = []
@@ -682,106 +742,113 @@ def get_clients():
                 logger.warning(f"Clients endpoint {endpoint} failed: {e}")
                 continue
 
-        return jsonify({
-            'count': len(all_clients),
-            'clients': all_clients,
-            'items': all_clients,  # keep both keys for compatibility
-            'total': len(all_clients),
-        })
+        return jsonify(
+            {
+                "count": len(all_clients),
+                "clients": all_clients,
+                "items": all_clients,  # keep both keys for compatibility
+                "total": len(all_clients),
+            }
+        )
 
     except Exception as e:
         logger.error(f"Error fetching clients: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/clients/trends', methods=['GET'])
+@config_bp.route("/api/clients/trends", methods=["GET"])
 @require_session
 def get_client_trends():
     """Get client connection trends, optionally filtered by site."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        site_id = request.args.get('site_id', request.args.get('site-id'))
+        site_id = request.args.get("site_id", request.args.get("site-id"))
         params = {}
         if site_id:
-            params['site-id'] = site_id
+            params["site-id"] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1/clients-trend', params=params)
+        response = aruba_client.get("/network-monitoring/v1/clients-trend", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching client trends: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/clients/usage/topn', methods=['GET'])
+@config_bp.route("/api/clients/usage/topn", methods=["GET"])
 @require_session
 def get_top_clients():
     """Get top N clients by usage, optionally filtered by site."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        site_id = request.args.get('site_id', request.args.get('site-id'))
+        site_id = request.args.get("site_id", request.args.get("site-id"))
         params = {}
         if site_id:
-            params['site-id'] = site_id
+            params["site-id"] = site_id
 
-        response = aruba_client.get('/network-monitoring/v1/clients-topn-usage', params=params)
+        response = aruba_client.get("/network-monitoring/v1/clients-topn-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top clients: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/clients/health', methods=['GET'])
+@config_bp.route("/api/clients/health", methods=["GET"])
 @require_session
 def get_client_health_summary():
     """Aggregate client health: counts by status, type, and signal quality."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        params.setdefault('limit', '500')
-        response = aruba_client.get('/network-monitoring/v1/clients', params=params)
-        items = response.get('items', [])
+        params.setdefault("limit", "500")
+        response = aruba_client.get("/network-monitoring/v1/clients", params=params)
+        items = response.get("items", [])
 
         # Aggregate by status
         by_status = {}
         by_type = {}
-        by_signal = {'excellent': 0, 'good': 0, 'fair': 0, 'poor': 0, 'unknown': 0}
+        by_signal = {"excellent": 0, "good": 0, "fair": 0, "poor": 0, "unknown": 0}
 
         for client in items:
-            status = client.get('status', 'UNKNOWN')
+            status = client.get("status", "UNKNOWN")
             by_status[status] = by_status.get(status, 0) + 1
 
-            ctype = client.get('clientConnectionType', client.get('connectionType', 'UNKNOWN'))
+            ctype = client.get("clientConnectionType", client.get("connectionType", "UNKNOWN"))
             by_type[ctype] = by_type.get(ctype, 0) + 1
 
-            snr = client.get('snr', client.get('signalStrength', None))
+            snr = client.get("snr", client.get("signalStrength", None))
             if snr is None:
-                by_signal['unknown'] += 1
+                by_signal["unknown"] += 1
             elif snr >= 40:
-                by_signal['excellent'] += 1
+                by_signal["excellent"] += 1
             elif snr >= 25:
-                by_signal['good'] += 1
+                by_signal["good"] += 1
             elif snr >= 15:
-                by_signal['fair'] += 1
+                by_signal["fair"] += 1
             else:
-                by_signal['poor'] += 1
+                by_signal["poor"] += 1
 
-        return jsonify({
-            'total': response.get('total', len(items)),
-            'count': len(items),
-            'by_status': by_status,
-            'by_connection_type': by_type,
-            'by_signal_quality': by_signal,
-            'items': items
-        })
+        return jsonify(
+            {
+                "total": response.get("total", len(items)),
+                "count": len(items),
+                "by_status": by_status,
+                "by_connection_type": by_type,
+                "by_signal_quality": by_signal,
+                "items": items,
+            }
+        )
     except Exception as e:
         logger.error(f"Error fetching client health: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/clients/<mac>', methods=['GET'])
+@config_bp.route("/api/clients/<mac>", methods=["GET"])
 @require_session
 def get_client_by_mac(mac):
     """Get detailed information for a specific client by MAC address.
@@ -789,16 +856,17 @@ def get_client_by_mac(mac):
     Endpoint: /network-monitoring/v1/clients/{mac-address}
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}')
+        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}")
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching client {mac}: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/clients/<mac>/mobility-trail', methods=['GET'])
+@config_bp.route("/api/clients/<mac>/mobility-trail", methods=["GET"])
 @require_session
 def get_client_mobility_trail(mac):
     """Get mobility trail (roaming history) for a client.
@@ -807,10 +875,11 @@ def get_client_mobility_trail(mac):
     Shows AP-to-AP roaming history for a wireless client.
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get(f'/network-monitoring/v1/clients/{mac}/mobility-trail', params=params)
+        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}/mobility-trail", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching mobility trail for client {mac}: {e}")
@@ -819,13 +888,15 @@ def get_client_mobility_trail(mac):
 
 # ============= Site Health Endpoints =============
 
-@config_bp.route('/api/sites/health', methods=['GET'])
+
+@config_bp.route("/api/sites/health", methods=["GET"])
 @require_session
 def get_sites_health():
     """Get sites health with optional fields parameter.
     If fields=devices fails, fallback to request without fields parameter.
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
@@ -833,46 +904,62 @@ def get_sites_health():
 
         params = request.args.to_dict()
         # Aruba Central sites-health API enforces limit <= 100
-        if 'limit' in params:
-            params['limit'] = min(int(params['limit']), 100)
-        endpoint = '/network-monitoring/v1/sites-health'
+        if "limit" in params:
+            params["limit"] = min(int(params["limit"]), 100)
+        endpoint = "/network-monitoring/v1/sites-health"
 
         # Try with fields parameter if provided
-        if 'fields' in params:
+        if "fields" in params:
             try:
                 logger.info(f"Attempting sites-health with fields={params.get('fields')}")
                 response = cached_get(endpoint, params=params)
-                logger.info(f"Sites health response received: type={type(response)}, is None: {response is None}")
+                logger.info(
+                    f"Sites health response received: type={type(response)}, is None: {response is None}"
+                )
                 if response is None:
                     logger.warning("Aruba Central API returned None/empty response")
                     return jsonify({"count": 0, "items": []})
-                logger.info(f"Response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}")
-                logger.info(f"Response count: {response.get('count', 'N/A') if isinstance(response, dict) else 'N/A'}")
+                logger.info(
+                    f"Response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}"
+                )
+                logger.info(
+                    f"Response count: {response.get('count', 'N/A') if isinstance(response, dict) else 'N/A'}"
+                )
                 return jsonify(response)
             except Exception as e:
                 error_str = str(e)
                 logger.warning(f"Sites health with fields parameter failed: {error_str}")
-                params_without_fields = {k: v for k, v in params.items() if k != 'fields'}
+                params_without_fields = {k: v for k, v in params.items() if k != "fields"}
                 logger.info(f"Retrying sites-health without fields parameter")
                 try:
                     response = cached_get(endpoint, params=params_without_fields)
-                    logger.info(f"Sites health fallback response: type={type(response)}, is None: {response is None}")
+                    logger.info(
+                        f"Sites health fallback response: type={type(response)}, is None: {response is None}"
+                    )
                     if response is None:
                         logger.warning("Aruba Central API returned None/empty response (fallback)")
                         return jsonify({"count": 0, "items": []})
-                    logger.info(f"Fallback response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}")
-                    logger.warning(f"Sites health succeeded without fields parameter. The 'fields' parameter may not be supported.")
+                    logger.info(
+                        f"Fallback response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}"
+                    )
+                    logger.warning(
+                        f"Sites health succeeded without fields parameter. The 'fields' parameter may not be supported."
+                    )
                     return jsonify(response)
                 except Exception as e2:
                     logger.error(f"Sites health failed even without fields: {e2}")
                     raise e
         else:
             response = cached_get(endpoint, params=params)
-            logger.info(f"Sites health response (no fields): type={type(response)}, is None: {response is None}")
+            logger.info(
+                f"Sites health response (no fields): type={type(response)}, is None: {response is None}"
+            )
             if response is None:
                 logger.warning("Aruba Central API returned None/empty response")
                 return jsonify({"count": 0, "items": []})
-            logger.info(f"Response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}")
+            logger.info(
+                f"Response keys: {list(response.keys()) if isinstance(response, dict) else 'not a dict'}"
+            )
             return jsonify(response)
     except Exception as e:
         error_str = str(e)
@@ -881,45 +968,52 @@ def get_sites_health():
         # Extract HTTP error details if available
         if isinstance(e, requests.HTTPError):
             try:
-                error_response_text = e.response.text if hasattr(e, 'response') else None
-                error_status_code = e.response.status_code if hasattr(e, 'response') else None
-                return jsonify({
-                    "error": f"HTTP {error_status_code}: {error_response_text or error_str}",
-                    "endpoint": endpoint,
-                    "params": params
-                }), error_status_code or 500
+                error_response_text = e.response.text if hasattr(e, "response") else None
+                error_status_code = e.response.status_code if hasattr(e, "response") else None
+                return (
+                    jsonify(
+                        {
+                            "error": f"HTTP {error_status_code}: {error_response_text or error_str}",
+                            "endpoint": endpoint,
+                            "params": params,
+                        }
+                    ),
+                    error_status_code or 500,
+                )
             except:
                 pass
 
         return jsonify({"error": error_str, "endpoint": endpoint}), 500
 
 
-@config_bp.route('/api/sites/device-health', methods=['GET'])
+@config_bp.route("/api/sites/device-health", methods=["GET"])
 @require_session
 def get_sites_device_health():
     """Sites device health — caps limit at 100 (API restriction)."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
         params = request.args.to_dict()
-        if 'limit' in params:
-            params['limit'] = min(int(params['limit']), 100)
-        response = aruba_client.get('/network-monitoring/v1/sites-device-health', params=params)
+        if "limit" in params:
+            params["limit"] = min(int(params["limit"]), 100)
+        response = aruba_client.get("/network-monitoring/v1/sites-device-health", params=params)
         return jsonify(response or {"items": []})
     except Exception as e:
         logger.error(f"Sites device health error: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/tenant/device-health', methods=['GET'])
+@config_bp.route("/api/tenant/device-health", methods=["GET"])
 @require_session
-@api_proxy('/network-monitoring/v1/tenant-device-health', error_msg="Tenant device health")
-def get_tenant_device_health(): pass
+@api_proxy("/network-monitoring/v1/tenant-device-health", error_msg="Tenant device health")
+def get_tenant_device_health():
+    pass
 
 
-@config_bp.route('/api/sites/client-health', methods=['GET'])
+@config_bp.route("/api/sites/client-health", methods=["GET"])
 @require_session
 def get_sites_client_health():
     """Get client health metrics aggregated per site.
@@ -927,19 +1021,20 @@ def get_sites_client_health():
     Endpoint: /network-monitoring/v1/sites-client-health
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        if 'site_id' in params and 'site-id' not in params:
-            params['site-id'] = params.pop('site_id')
-        r = aruba_client.get('/network-monitoring/v1/sites-client-health', params=params)
+        if "site_id" in params and "site-id" not in params:
+            params["site-id"] = params.pop("site_id")
+        r = aruba_client.get("/network-monitoring/v1/sites-client-health", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching sites client health: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/tenant/client-health', methods=['GET'])
+@config_bp.route("/api/tenant/client-health", methods=["GET"])
 @require_session
 def get_tenant_client_health():
     """Get client health metrics aggregated at the tenant level.
@@ -947,10 +1042,11 @@ def get_tenant_client_health():
     Endpoint: /network-monitoring/v1/tenant-client-health
     """
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get('/network-monitoring/v1/tenant-client-health', params=params)
+        r = aruba_client.get("/network-monitoring/v1/tenant-client-health", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching tenant client health: {e}")
@@ -959,41 +1055,43 @@ def get_tenant_client_health():
 
 # ============= Network Config Sites Endpoints =============
 
-@config_bp.route('/api/sites/config', methods=['GET', 'POST', 'PUT', 'DELETE'])
+
+@config_bp.route("/api/sites/config", methods=["GET", "POST", "PUT", "DELETE"])
 @require_session
 def sites_config():
     """Handle site configuration operations using network-config API."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
 
-        if request.method == 'GET':
+        if request.method == "GET":
             # GET sites
-            response = aruba_client.get('/network-config/v1alpha1/sites')
+            response = aruba_client.get("/network-config/v1alpha1/sites")
             return jsonify(response if response else [])
 
-        elif request.method == 'POST':
+        elif request.method == "POST":
             # Create new site
             data = request.get_json()
-            response = aruba_client.post('/network-config/v1alpha1/sites', data=data)
+            response = aruba_client.post("/network-config/v1alpha1/sites", data=data)
             return jsonify(response)
 
-        elif request.method == 'PUT':
+        elif request.method == "PUT":
             # Update existing site
             data = request.get_json()
-            response = aruba_client.put('/network-config/v1alpha1/sites', data=data)
+            response = aruba_client.put("/network-config/v1alpha1/sites", data=data)
             return jsonify(response)
 
-        elif request.method == 'DELETE':
+        elif request.method == "DELETE":
             # Delete site
-            scope_id = request.args.get('scope-id')
+            scope_id = request.args.get("scope-id")
             if not scope_id:
                 return jsonify({"error": "scope-id query parameter is required"}), 400
 
-            params = {'scope-id': scope_id}
-            response = aruba_client.delete('/network-config/v1alpha1/sites', params=params)
+            params = {"scope-id": scope_id}
+            response = aruba_client.delete("/network-config/v1alpha1/sites", params=params)
             return jsonify(response)
         else:
             return jsonify({"error": "Method not allowed"}), 405
@@ -1004,124 +1102,182 @@ def sites_config():
 
 # ============= Configuration Endpoints =============
 
-@config_bp.route('/api/sites', methods=['GET'])
-@require_session
-@api_proxy('/network-config/v1/sites', error_msg="Sites", fallback_data={"items": [], "count": 0, "total": 0})
-def get_sites(): pass
 
-@config_bp.route('/api/sites/<site_id>', methods=['GET'])
+@config_bp.route("/api/sites", methods=["GET"])
 @require_session
-@api_proxy(lambda site_id: f'/network-config/v1/sites/{site_id}', error_msg="Site details", fallback_data={})
-def get_site_details(site_id): pass
+@api_proxy(
+    "/network-config/v1/sites",
+    error_msg="Sites",
+    fallback_data={"items": [], "count": 0, "total": 0},
+)
+def get_sites():
+    pass
 
-@config_bp.route('/api/sites', methods=['POST'])
-@require_session
-@api_proxy('/network-config/v1/sites', method='POST', error_msg="Create site")
-def create_site(): pass
 
-@config_bp.route('/api/sites/<site_id>', methods=['DELETE'])
+@config_bp.route("/api/sites/<site_id>", methods=["GET"])
 @require_session
-@api_proxy(lambda site_id: f'/network-config/v1/sites/{site_id}', method='DELETE', error_msg="Delete site")
-def delete_site(site_id): pass
+@api_proxy(
+    lambda site_id: f"/network-config/v1/sites/{site_id}",
+    error_msg="Site details",
+    fallback_data={},
+)
+def get_site_details(site_id):
+    pass
 
-@config_bp.route('/api/groups', methods=['GET'])
-@require_session
-@api_proxy('/configuration/v1/groups', error_msg="Groups", fallback_data={"groups": [], "count": 0, "total": 0})
-def get_groups(): pass
 
-@config_bp.route('/api/templates', methods=['GET'])
+@config_bp.route("/api/sites", methods=["POST"])
 @require_session
-@api_proxy('/configuration/v1/templates', error_msg="Templates", fallback_data={"templates": [], "count": 0, "total": 0})
-def get_templates(): pass
+@api_proxy("/network-config/v1/sites", method="POST", error_msg="Create site")
+def create_site():
+    pass
+
+
+@config_bp.route("/api/sites/<site_id>", methods=["DELETE"])
+@require_session
+@api_proxy(
+    lambda site_id: f"/network-config/v1/sites/{site_id}", method="DELETE", error_msg="Delete site"
+)
+def delete_site(site_id):
+    pass
+
+
+@config_bp.route("/api/groups", methods=["GET"])
+@require_session
+@api_proxy(
+    "/configuration/v1/groups",
+    error_msg="Groups",
+    fallback_data={"groups": [], "count": 0, "total": 0},
+)
+def get_groups():
+    pass
+
+
+@config_bp.route("/api/templates", methods=["GET"])
+@require_session
+@api_proxy(
+    "/configuration/v1/templates",
+    error_msg="Templates",
+    fallback_data={"templates": [], "count": 0, "total": 0},
+)
+def get_templates():
+    pass
 
 
 # ============= NAC (Network Access Control) Endpoints =============
 
-@config_bp.route('/api/nac/user-roles', methods=['GET'])
+
+@config_bp.route("/api/nac/user-roles", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/user_roles', error_msg="NAC user roles")
-def get_nac_user_roles(): pass
+@api_proxy("/configuration/v1/user_roles", error_msg="NAC user roles")
+def get_nac_user_roles():
+    pass
 
-@config_bp.route('/api/nac/device-profiles', methods=['GET'])
+
+@config_bp.route("/api/nac/device-profiles", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/device_profile', error_msg="NAC device profiles")
-def get_nac_device_profiles(): pass
+@api_proxy("/configuration/v1/device_profile", error_msg="NAC device profiles")
+def get_nac_device_profiles():
+    pass
 
 
-@config_bp.route('/api/nac/client-auth', methods=['GET'])
+@config_bp.route("/api/nac/client-auth", methods=["GET"])
 @require_session
 def get_nac_client_auth():
     """Get NAC client authentication status."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        site_id = request.args.get('site_id', request.args.get('site-id'))
+        site_id = request.args.get("site_id", request.args.get("site-id"))
 
         if not site_id:
-            return jsonify({
-                "error": "site-id parameter is required",
-                "message": "Please provide site-id as a query parameter"
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "error": "site-id parameter is required",
+                        "message": "Please provide site-id as a query parameter",
+                    }
+                ),
+                400,
+            )
 
-        params = {'site-id': site_id}
-        response = aruba_client.get('/network-monitoring/v1/clients', params=params)
+        params = {"site-id": site_id}
+        response = aruba_client.get("/network-monitoring/v1/clients", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching NAC client auth: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/nac/policies', methods=['GET'])
+@config_bp.route("/api/nac/policies", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/auth_policies', error_msg="NAC policies")
-def get_nac_policies(): pass
+@api_proxy("/configuration/v1/auth_policies", error_msg="NAC policies")
+def get_nac_policies():
+    pass
 
-@config_bp.route('/api/nac/certificates', methods=['GET'])
-@require_session
-@api_proxy('/configuration/v1/certificates', error_msg="NAC certificates")
-def get_nac_certificates(): pass
 
-@config_bp.route('/api/nac/radius-profiles', methods=['GET'])
+@config_bp.route("/api/nac/certificates", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/radius_server', error_msg="RADIUS profiles")
-def get_nac_radius_profiles(): pass
+@api_proxy("/configuration/v1/certificates", error_msg="NAC certificates")
+def get_nac_certificates():
+    pass
 
-@config_bp.route('/api/nac/onboarding-rules', methods=['GET'])
+
+@config_bp.route("/api/nac/radius-profiles", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/onboarding_rules', error_msg="Onboarding rules")
-def get_nac_onboarding_rules(): pass
+@api_proxy("/configuration/v1/radius_server", error_msg="RADIUS profiles")
+def get_nac_radius_profiles():
+    pass
+
+
+@config_bp.route("/api/nac/onboarding-rules", methods=["GET"])
+@require_session
+@api_proxy("/configuration/v1/onboarding_rules", error_msg="Onboarding rules")
+def get_nac_onboarding_rules():
+    pass
 
 
 # ============= Scope Management Endpoints =============
 
-@config_bp.route('/api/scope/labels', methods=['GET'])
+
+@config_bp.route("/api/scope/labels", methods=["GET"])
 @require_session
-@api_proxy('/central/v2/labels', error_msg="Labels", fallback_data={"labels": [], "count": 0, "total": 0})
-def get_scope_labels(): pass
+@api_proxy(
+    "/central/v2/labels", error_msg="Labels", fallback_data={"labels": [], "count": 0, "total": 0}
+)
+def get_scope_labels():
+    pass
 
-@config_bp.route('/api/scope/labels', methods=['POST'])
+
+@config_bp.route("/api/scope/labels", methods=["POST"])
 @require_session
-@api_proxy('/central/v2/labels', method='POST', error_msg="Create label")
-def create_scope_label(): pass
+@api_proxy("/central/v2/labels", method="POST", error_msg="Create label")
+def create_scope_label():
+    pass
 
-@config_bp.route('/api/scope/labels/<label_id>', methods=['DELETE'])
+
+@config_bp.route("/api/scope/labels/<label_id>", methods=["DELETE"])
 @require_session
-@api_proxy(lambda label_id: f'/central/v2/labels/{label_id}', method='DELETE', error_msg="Delete label")
-def delete_scope_label(label_id): pass
+@api_proxy(
+    lambda label_id: f"/central/v2/labels/{label_id}", method="DELETE", error_msg="Delete label"
+)
+def delete_scope_label(label_id):
+    pass
 
 
-@config_bp.route('/api/scope/label-associations', methods=['GET'])
+@config_bp.route("/api/scope/label-associations", methods=["GET"])
 @require_session
 def get_label_associations():
     """Get device and site associations for labels."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        label_id = request.args.get('label_id')
+        label_id = request.args.get("label_id")
         if not label_id:
             return jsonify({"error": "label_id parameter required"}), 400
 
-        response = aruba_client.get(f'/central/v2/labels/{label_id}/associations')
+        response = aruba_client.get(f"/central/v2/labels/{label_id}/associations")
         return jsonify(response)
     except Exception as e:
         error_str = str(e)
@@ -1132,35 +1288,37 @@ def get_label_associations():
         return jsonify({"error": error_str}), 500
 
 
-@config_bp.route('/api/scope/geofences', methods=['GET'])
+@config_bp.route("/api/scope/geofences", methods=["GET"])
 @require_session
-@api_proxy('/central/v2/geofences', error_msg="Geofences", fallback_data={"geofences": [], "count": 0, "total": 0})
-def get_geofences(): pass
+@api_proxy(
+    "/central/v2/geofences",
+    error_msg="Geofences",
+    fallback_data={"geofences": [], "count": 0, "total": 0},
+)
+def get_geofences():
+    pass
 
 
-@config_bp.route('/api/scope/site-hierarchy', methods=['GET'])
+@config_bp.route("/api/scope/site-hierarchy", methods=["GET"])
 @require_session
 def get_site_hierarchy():
     """Get site hierarchy and relationships."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         # Get all sites first
-        sites_response = cached_get('/central/v2/sites')
-        sites = sites_response.get('sites', [])
+        sites_response = cached_get("/central/v2/sites")
+        sites = sites_response.get("sites", [])
 
         # Build hierarchy structure
-        hierarchy = {
-            'sites': sites,
-            'total': len(sites),
-            'hierarchy': {}
-        }
+        hierarchy = {"sites": sites, "total": len(sites), "hierarchy": {}}
 
         # Group by any parent/child relationships if available
         for site in sites:
-            site_id = site.get('site_id')
+            site_id = site.get("site_id")
             if site_id:
-                hierarchy['hierarchy'][site_id] = site
+                hierarchy["hierarchy"][site_id] = site
 
         return jsonify(hierarchy)
     except Exception as e:
@@ -1174,78 +1332,97 @@ def get_site_hierarchy():
 
 # ============= Application Experience Endpoints =============
 
-@config_bp.route('/api/appexperience/applications', methods=['GET'])
+
+@config_bp.route("/api/appexperience/applications", methods=["GET"])
 @require_session
-@api_proxy('/monitoring/v1/applications', error_msg="Applications")
-def get_applications(): pass
+@api_proxy("/monitoring/v1/applications", error_msg="Applications")
+def get_applications():
+    pass
 
-@config_bp.route('/api/appexperience/app-categories', methods=['GET'])
+
+@config_bp.route("/api/appexperience/app-categories", methods=["GET"])
 @require_session
-@api_proxy('/monitoring/v1/app_categories', error_msg="App categories")
-def get_app_categories(): pass
+@api_proxy("/monitoring/v1/app_categories", error_msg="App categories")
+def get_app_categories():
+    pass
 
 
-@config_bp.route('/api/appexperience/traffic-analysis', methods=['GET'])
+@config_bp.route("/api/appexperience/traffic-analysis", methods=["GET"])
 @require_session
 def get_traffic_analysis():
     """Get application traffic analysis data."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         # Get traffic data with filters
         params = {}
-        if request.args.get('app_name'):
-            params['app_name'] = request.args.get('app_name')
+        if request.args.get("app_name"):
+            params["app_name"] = request.args.get("app_name")
         # Normalize site id
-        site_id = request.args.get('site_id', request.args.get('site-id'))
+        site_id = request.args.get("site_id", request.args.get("site-id"))
         if site_id:
-            params['site-id'] = site_id
+            params["site-id"] = site_id
         # Time range
-        if request.args.get('from_timestamp'):
-            params['from_timestamp'] = request.args.get('from_timestamp')
-        if request.args.get('to_timestamp'):
-            params['to_timestamp'] = request.args.get('to_timestamp')
-        if request.args.get('timeframe'):
-            params['timeframe'] = request.args.get('timeframe')
+        if request.args.get("from_timestamp"):
+            params["from_timestamp"] = request.args.get("from_timestamp")
+        if request.args.get("to_timestamp"):
+            params["to_timestamp"] = request.args.get("to_timestamp")
+        if request.args.get("timeframe"):
+            params["timeframe"] = request.args.get("timeframe")
 
-        response = aruba_client.get('/monitoring/v1/app_analytics', params=params)
+        response = aruba_client.get("/monitoring/v1/app_analytics", params=params)
         return jsonify(response)
     except Exception as e:
         # Gracefully handle 400/404 as empty series (broad match to be robust)
         err_text = str(e)
-        if '404' in err_text or '400' in err_text or 'Not Found' in err_text or 'Bad Request' in err_text:
+        if (
+            "404" in err_text
+            or "400" in err_text
+            or "Not Found" in err_text
+            or "Bad Request" in err_text
+        ):
             logger.warning(f"Traffic analysis error treated as empty: {err_text[:200]}")
             return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching traffic analysis: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/appexperience/qos-policies', methods=['GET'])
+@config_bp.route("/api/appexperience/qos-policies", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/qos', error_msg="QoS policies")
-def get_qos_policies(): pass
+@api_proxy("/configuration/v1/qos", error_msg="QoS policies")
+def get_qos_policies():
+    pass
 
-@config_bp.route('/api/appexperience/dpi-settings', methods=['GET'])
+
+@config_bp.route("/api/appexperience/dpi-settings", methods=["GET"])
 @require_session
-@api_proxy('/configuration/v1/dpi', error_msg="DPI settings")
-def get_dpi_settings(): pass
+@api_proxy("/configuration/v1/dpi", error_msg="DPI settings")
+def get_dpi_settings():
+    pass
 
 
-@config_bp.route('/api/appexperience/app-visibility', methods=['GET'])
+@config_bp.route("/api/appexperience/app-visibility", methods=["GET"])
 @require_session
 def get_app_visibility():
     """Get application visibility settings and stats."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        group = request.args.get('group', 'all')
-        params = {'group': group} if group != 'all' else {}
-        response = aruba_client.get('/monitoring/v1/app_visibility', params=params)
+        group = request.args.get("group", "all")
+        params = {"group": group} if group != "all" else {}
+        response = aruba_client.get("/monitoring/v1/app_visibility", params=params)
         return jsonify(response)
     except Exception as e:
         # Gracefully handle 400/404 as empty (broad match to be robust)
         err_text = str(e)
-        if '404' in err_text or '400' in err_text or 'Not Found' in err_text or 'Bad Request' in err_text:
+        if (
+            "404" in err_text
+            or "400" in err_text
+            or "Not Found" in err_text
+            or "Bad Request" in err_text
+        ):
             logger.warning(f"App visibility error treated as empty: {err_text[:200]}")
             return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching app visibility: {e}")
@@ -1254,161 +1431,139 @@ def get_app_visibility():
 
 # ============= Bulk Configuration Endpoints =============
 
-@config_bp.route('/api/config/bulk-ap-rename', methods=['POST'])
+
+@config_bp.route("/api/config/bulk-ap-rename", methods=["POST"])
 @require_session
 def bulk_ap_rename():
     """Bulk rename access points from CSV data."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
-        ap_mappings = data.get('mappings', [])  # [{'serial': 'xxx', 'new_name': 'yyy'}, ...]
+        ap_mappings = data.get("mappings", [])  # [{'serial': 'xxx', 'new_name': 'yyy'}, ...]
 
         if not ap_mappings:
             return jsonify({"error": "No AP mappings provided"}), 400
 
         results = []
         for mapping in ap_mappings:
-            serial = mapping.get('serial')
-            new_name = mapping.get('new_name')
+            serial = mapping.get("serial")
+            new_name = mapping.get("new_name")
 
             if not serial or not new_name:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": "Missing serial or new_name"
-                })
+                results.append(
+                    {"serial": serial, "status": "failed", "error": "Missing serial or new_name"}
+                )
                 continue
 
             try:
                 # Update AP name via Central API
                 response = aruba_client.post(
-                    f'/configuration/v1/ap/{serial}',
-                    json={"hostname": new_name}
+                    f"/configuration/v1/ap/{serial}", json={"hostname": new_name}
                 )
-                results.append({
-                    "serial": serial,
-                    "new_name": new_name,
-                    "status": "success"
-                })
+                results.append({"serial": serial, "new_name": new_name, "status": "success"})
             except Exception as e:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": str(e)
-                })
+                results.append({"serial": serial, "status": "failed", "error": str(e)})
 
-        success_count = sum(1 for r in results if r['status'] == 'success')
-        return jsonify({
-            "total": len(ap_mappings),
-            "successful": success_count,
-            "failed": len(ap_mappings) - success_count,
-            "results": results
-        })
+        success_count = sum(1 for r in results if r["status"] == "success")
+        return jsonify(
+            {
+                "total": len(ap_mappings),
+                "successful": success_count,
+                "failed": len(ap_mappings) - success_count,
+                "results": results,
+            }
+        )
     except Exception as e:
         logger.error(f"Bulk AP rename error: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/bulk-group-assign', methods=['POST'])
+@config_bp.route("/api/config/bulk-group-assign", methods=["POST"])
 @require_session
 def bulk_group_assign():
     """Bulk assign devices to groups."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
-        device_group_mappings = data.get('mappings', [])  # [{'serial': 'xxx', 'group': 'yyy'}, ...]
+        device_group_mappings = data.get("mappings", [])  # [{'serial': 'xxx', 'group': 'yyy'}, ...]
 
         results = []
         for mapping in device_group_mappings:
-            serial = mapping.get('serial')
-            group = mapping.get('group')
+            serial = mapping.get("serial")
+            group = mapping.get("group")
 
             if not serial or not group:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": "Missing serial or group"
-                })
+                results.append(
+                    {"serial": serial, "status": "failed", "error": "Missing serial or group"}
+                )
                 continue
 
             try:
                 response = aruba_client.post(
-                    f'/configuration/v2/devices/{serial}/group',
-                    json={"group": group}
+                    f"/configuration/v2/devices/{serial}/group", json={"group": group}
                 )
-                results.append({
-                    "serial": serial,
-                    "group": group,
-                    "status": "success"
-                })
+                results.append({"serial": serial, "group": group, "status": "success"})
             except Exception as e:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": str(e)
-                })
+                results.append({"serial": serial, "status": "failed", "error": str(e)})
 
-        success_count = sum(1 for r in results if r['status'] == 'success')
-        return jsonify({
-            "total": len(device_group_mappings),
-            "successful": success_count,
-            "failed": len(device_group_mappings) - success_count,
-            "results": results
-        })
+        success_count = sum(1 for r in results if r["status"] == "success")
+        return jsonify(
+            {
+                "total": len(device_group_mappings),
+                "successful": success_count,
+                "failed": len(device_group_mappings) - success_count,
+                "results": results,
+            }
+        )
     except Exception as e:
         logger.error(f"Bulk group assign error: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/config/bulk-site-assign', methods=['POST'])
+@config_bp.route("/api/config/bulk-site-assign", methods=["POST"])
 @require_session
 def bulk_site_assign():
     """Bulk assign devices to sites."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
-        device_site_mappings = data.get('mappings', [])
+        device_site_mappings = data.get("mappings", [])
 
         results = []
         for mapping in device_site_mappings:
-            serial = mapping.get('serial')
-            site_id = mapping.get('site_id')
+            serial = mapping.get("serial")
+            site_id = mapping.get("site_id")
 
             if not serial or not site_id:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": "Missing serial or site_id"
-                })
+                results.append(
+                    {"serial": serial, "status": "failed", "error": "Missing serial or site_id"}
+                )
                 continue
 
             try:
                 response = aruba_client.post(
-                    f'/central/v2/sites/associations',
-                    json={"device_id": serial, "site_id": site_id}
+                    f"/central/v2/sites/associations",
+                    json={"device_id": serial, "site_id": site_id},
                 )
-                results.append({
-                    "serial": serial,
-                    "site_id": site_id,
-                    "status": "success"
-                })
+                results.append({"serial": serial, "site_id": site_id, "status": "success"})
             except Exception as e:
-                results.append({
-                    "serial": serial,
-                    "status": "failed",
-                    "error": str(e)
-                })
+                results.append({"serial": serial, "status": "failed", "error": str(e)})
 
-        success_count = sum(1 for r in results if r['status'] == 'success')
-        return jsonify({
-            "total": len(device_site_mappings),
-            "successful": success_count,
-            "failed": len(device_site_mappings) - success_count,
-            "results": results
-        })
+        success_count = sum(1 for r in results if r["status"] == "success")
+        return jsonify(
+            {
+                "total": len(device_site_mappings),
+                "successful": success_count,
+                "failed": len(device_site_mappings) - success_count,
+                "results": results,
+            }
+        )
     except Exception as e:
         logger.error(f"Bulk site assign error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1416,33 +1571,53 @@ def bulk_site_assign():
 
 # ============= Show Commands / Configuration Export Endpoints =============
 
-@config_bp.route('/api/troubleshoot/show-run-config', methods=['GET'])
+
+@config_bp.route("/api/troubleshoot/show-run-config", methods=["GET"])
 @require_session
 def show_run_config():
     """Get running configuration from a device."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        serial = request.args.get('serial')
+        serial = request.args.get("serial")
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
         # Fetch running config
         try:
-            response = aruba_client.get(f'/configuration/v1/devices/{serial}/configuration')
+            response = aruba_client.get(f"/configuration/v1/devices/{serial}/configuration")
             # Check if response has configuration field
-            if 'configuration' in response and response['configuration']:
+            if "configuration" in response and response["configuration"]:
                 return jsonify(response)
-            elif 'configuration' in response:
-                return jsonify({"configuration": "", "error": "Configuration is empty. This endpoint may not be supported for this device type."}), 404
+            elif "configuration" in response:
+                return (
+                    jsonify(
+                        {
+                            "configuration": "",
+                            "error": "Configuration is empty. This endpoint may not be supported for this device type.",
+                        }
+                    ),
+                    404,
+                )
             return jsonify(response)
         except Exception as e:
             # Return proper error messages
             err = str(e)
-            if '404' in err or 'Not Found' in err:
-                return jsonify({"error": "Configuration endpoint not found. This device type may not support show run-config."}), 404
-            elif '400' in err or 'Bad Request' in err:
-                return jsonify({"error": "Bad request. The device may not support this command."}), 400
+            if "404" in err or "Not Found" in err:
+                return (
+                    jsonify(
+                        {
+                            "error": "Configuration endpoint not found. This device type may not support show run-config."
+                        }
+                    ),
+                    404,
+                )
+            elif "400" in err or "Bad Request" in err:
+                return (
+                    jsonify({"error": "Bad request. The device may not support this command."}),
+                    400,
+                )
             else:
                 logger.error(f"Show run config error for {serial}: {e}")
                 return jsonify({"error": f"Failed to fetch configuration: {err}"}), 500
@@ -1451,30 +1626,50 @@ def show_run_config():
         return jsonify({"error": f"Internal error: {str(e)}"}), 500
 
 
-@config_bp.route('/api/troubleshoot/show-tech-support', methods=['GET'])
+@config_bp.route("/api/troubleshoot/show-tech-support", methods=["GET"])
 @require_session
 def show_tech_support():
     """Get tech support information from a device."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        serial = request.args.get('serial')
+        serial = request.args.get("serial")
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
         try:
-            response = aruba_client.get(f'/troubleshooting/v1/devices/{serial}/tech-support')
+            response = aruba_client.get(f"/troubleshooting/v1/devices/{serial}/tech-support")
             # Check if response has items
-            if 'items' in response:
-                if not response['items'] or len(response['items']) == 0:
-                    return jsonify({"items": [], "count": 0, "error": "Tech support data is empty. This device may not support this command."}), 404
+            if "items" in response:
+                if not response["items"] or len(response["items"]) == 0:
+                    return (
+                        jsonify(
+                            {
+                                "items": [],
+                                "count": 0,
+                                "error": "Tech support data is empty. This device may not support this command.",
+                            }
+                        ),
+                        404,
+                    )
             return jsonify(response)
         except Exception as e:
             err = str(e)
-            if '404' in err or 'Not Found' in err:
-                return jsonify({"error": "Tech support endpoint not found. This device type may not support this command."}), 404
-            elif '400' in err or 'Bad Request' in err:
-                return jsonify({"error": "Bad request. The device may not support this command."}), 400
+            if "404" in err or "Not Found" in err:
+                return (
+                    jsonify(
+                        {
+                            "error": "Tech support endpoint not found. This device type may not support this command."
+                        }
+                    ),
+                    404,
+                )
+            elif "400" in err or "Bad Request" in err:
+                return (
+                    jsonify({"error": "Bad request. The device may not support this command."}),
+                    400,
+                )
             else:
                 logger.error(f"Show tech support error for {serial}: {e}")
                 return jsonify({"error": f"Failed to fetch tech support: {err}"}), 500
@@ -1483,32 +1678,43 @@ def show_tech_support():
         return jsonify({"error": f"Internal error: {str(e)}"}), 500
 
 
-@config_bp.route('/api/troubleshoot/show-version', methods=['GET'])
+@config_bp.route("/api/troubleshoot/show-version", methods=["GET"])
 @require_session
 def show_version():
     """Get device version information."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        serial = request.args.get('serial')
+        serial = request.args.get("serial")
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
         # Get device details which includes version
-        response = cached_get('/network-monitoring/v1/devices')
+        response = cached_get("/network-monitoring/v1/devices")
 
         # Filter for the specific device
-        if 'items' in response:
-            device = next((d for d in response['items'] if d.get('serial') == serial or d.get('serialNumber') == serial), None)
+        if "items" in response:
+            device = next(
+                (
+                    d
+                    for d in response["items"]
+                    if d.get("serial") == serial or d.get("serialNumber") == serial
+                ),
+                None,
+            )
             if device:
-                return jsonify({
-                    "serial": serial,
-                    "firmware_version": device.get('firmwareVersion') or device.get('firmware_version'),
-                    "model": device.get('model'),
-                    "device_type": device.get('deviceType'),
-                    "uptime": device.get('uptime'),
-                    "status": device.get('status')
-                })
+                return jsonify(
+                    {
+                        "serial": serial,
+                        "firmware_version": device.get("firmwareVersion")
+                        or device.get("firmware_version"),
+                        "model": device.get("model"),
+                        "device_type": device.get("deviceType"),
+                        "uptime": device.get("uptime"),
+                        "status": device.get("status"),
+                    }
+                )
 
         return jsonify({"error": "Device not found"}), 404
     except Exception as e:
@@ -1516,30 +1722,54 @@ def show_version():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/troubleshoot/show-interfaces', methods=['GET'])
+@config_bp.route("/api/troubleshoot/show-interfaces", methods=["GET"])
 @require_session
 def show_interfaces():
     """Get interface information from a switch."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        serial = request.args.get('serial')
+        serial = request.args.get("serial")
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces')
+            response = aruba_client.get(f"/network-monitoring/v1/switches/{serial}/interfaces")
             # Check if response has interfaces
-            if 'interfaces' in response:
-                if not response['interfaces'] or len(response['interfaces']) == 0:
-                    return jsonify({"interfaces": [], "count": 0, "error": "No interfaces found. This command is typically only available for switches."}), 404
+            if "interfaces" in response:
+                if not response["interfaces"] or len(response["interfaces"]) == 0:
+                    return (
+                        jsonify(
+                            {
+                                "interfaces": [],
+                                "count": 0,
+                                "error": "No interfaces found. This command is typically only available for switches.",
+                            }
+                        ),
+                        404,
+                    )
             return jsonify(response)
         except Exception as e:
             err = str(e)
-            if '404' in err or 'Not Found' in err:
-                return jsonify({"error": "Interfaces endpoint not found. This command is typically only available for switches."}), 404
-            elif '400' in err or 'Bad Request' in err:
-                return jsonify({"error": "Bad request. The device may not be a switch or may not support this command."}), 400
+            if "404" in err or "Not Found" in err:
+                return (
+                    jsonify(
+                        {
+                            "error": "Interfaces endpoint not found. This command is typically only available for switches."
+                        }
+                    ),
+                    404,
+                )
+            elif "400" in err or "Bad Request" in err:
+                return (
+                    jsonify(
+                        {
+                            "error": "Bad request. The device may not be a switch or may not support this command."
+                        }
+                    ),
+                    400,
+                )
             else:
                 logger.error(f"Show interfaces error for {serial}: {e}")
                 return jsonify({"error": f"Failed to fetch interfaces: {err}"}), 500
@@ -1548,26 +1778,27 @@ def show_interfaces():
         return jsonify({"error": f"Internal error: {str(e)}"}), 500
 
 
-@config_bp.route('/api/config/export', methods=['GET'])
+@config_bp.route("/api/config/export", methods=["GET"])
 @require_session
 def export_configuration():
     """Export device configuration."""
     import app as _app
     import json
+
     aruba_client = _app.aruba_client
     try:
-        serial = request.args.get('serial')
+        serial = request.args.get("serial")
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        response = aruba_client.get(f'/configuration/v1/devices/{serial}/configuration')
+        response = aruba_client.get(f"/configuration/v1/devices/{serial}/configuration")
 
         # Return as downloadable file
-        config_text = response.get('configuration', json.dumps(response, indent=2))
+        config_text = response.get("configuration", json.dumps(response, indent=2))
 
         resp = make_response(config_text)
-        resp.headers['Content-Type'] = 'text/plain'
-        resp.headers['Content-Disposition'] = f'attachment; filename={serial}_config.txt'
+        resp.headers["Content-Type"] = "text/plain"
+        resp.headers["Content-Disposition"] = f"attachment; filename={serial}_config.txt"
         return resp
     except Exception as e:
         logger.error(f"Config export error: {e}")
@@ -1576,7 +1807,8 @@ def export_configuration():
 
 # ============= Workspace Management Endpoints =============
 
-@config_bp.route('/api/workspace/switch', methods=['POST'])
+
+@config_bp.route("/api/workspace/switch", methods=["POST"])
 @require_session
 def switch_workspace():
     """Switch to a different workspace with new credentials."""
@@ -1587,15 +1819,15 @@ def switch_workspace():
 
     try:
         data = request.get_json()
-        new_client_id = data.get('client_id')
-        new_client_secret = data.get('client_secret')
-        new_customer_id = data.get('customer_id')
-        base_url = data.get('base_url', _app.config["aruba_central"]["base_url"])
+        new_client_id = data.get("client_id")
+        new_client_secret = data.get("client_secret")
+        new_customer_id = data.get("customer_id")
+        base_url = data.get("base_url", _app.config["aruba_central"]["base_url"])
 
         # Optional: GreenLake RBAC credentials for MSP workspace switching
-        gl_client_id = data.get('gl_client_id')
-        gl_client_secret = data.get('gl_client_secret')
-        gl_api_base = data.get('gl_api_base', 'https://global.api.greenlake.hpe.com')
+        gl_client_id = data.get("gl_client_id")
+        gl_client_secret = data.get("gl_client_secret")
+        gl_api_base = data.get("gl_api_base", "https://global.api.greenlake.hpe.com")
 
         if not all([new_client_id, new_client_secret, new_customer_id]):
             return jsonify({"error": "client_id, client_secret, and customer_id are required"}), 400
@@ -1607,171 +1839,187 @@ def switch_workspace():
         _app.config["aruba_central"]["base_url"] = base_url
 
         # Reinitialize token manager and client for Aruba Central
-        _app.token_manager = TokenManager(
-            client_id=new_client_id,
-            client_secret=new_client_secret
-        )
+        _app.token_manager = TokenManager(client_id=new_client_id, client_secret=new_client_secret)
 
-        _app.aruba_client = CentralAPIClient(
-            base_url=base_url,
-            token_manager=_app.token_manager
-        )
+        _app.aruba_client = CentralAPIClient(base_url=base_url, token_manager=_app.token_manager)
 
         # Update GreenLake credentials if provided (for MSP workspace switching)
         if gl_client_id and gl_client_secret:
-            os.environ['GL_RBAC_CLIENT_ID'] = gl_client_id
-            os.environ['GL_RBAC_CLIENT_SECRET'] = gl_client_secret
-            os.environ['GL_API_BASE'] = gl_api_base
+            os.environ["GL_RBAC_CLIENT_ID"] = gl_client_id
+            os.environ["GL_RBAC_CLIENT_SECRET"] = gl_client_secret
+            os.environ["GL_API_BASE"] = gl_api_base
             logger.info("GreenLake RBAC credentials updated for workspace switch")
 
         logger.info(f"Workspace switched to customer_id: {new_customer_id[:16]}...")
 
-        return jsonify({
-            "success": True,
-            "message": "Workspace switched successfully",
-            "customer_id": new_customer_id[:16] + "...",
-            "base_url": base_url,
-            "greenlake_updated": bool(gl_client_id and gl_client_secret)
-        })
+        return jsonify(
+            {
+                "success": True,
+                "message": "Workspace switched successfully",
+                "customer_id": new_customer_id[:16] + "...",
+                "base_url": base_url,
+                "greenlake_updated": bool(gl_client_id and gl_client_secret),
+            }
+        )
     except Exception as e:
         logger.error(f"Workspace switch error: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/workspace/info', methods=['GET'])
+@config_bp.route("/api/workspace/info", methods=["GET"])
 @require_session
 def get_workspace_info():
     """Get current workspace information."""
     import app as _app
+
     try:
-        return jsonify({
-            "customer_id": _app.config["aruba_central"]["customer_id"][:16] + "..." if _app.config else "Unknown",
-            "base_url": _app.config["aruba_central"]["base_url"] if _app.config else "Unknown",
-            "region": _app.config["aruba_central"].get("region", "Unknown") if _app.config else "Unknown"
-        })
+        return jsonify(
+            {
+                "customer_id": (
+                    _app.config["aruba_central"]["customer_id"][:16] + "..."
+                    if _app.config
+                    else "Unknown"
+                ),
+                "base_url": _app.config["aruba_central"]["base_url"] if _app.config else "Unknown",
+                "region": (
+                    _app.config["aruba_central"].get("region", "Unknown")
+                    if _app.config
+                    else "Unknown"
+                ),
+            }
+        )
     except Exception as e:
         logger.error(f"Error getting workspace info: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/cluster/info', methods=['GET'])
+@config_bp.route("/api/cluster/info", methods=["GET"])
 def get_cluster_info():
     """Get information about Aruba Central regional clusters and base URLs."""
     import app as _app
-    return jsonify({
-        "current_base_url": _app.config["aruba_central"]["base_url"] if _app.config else "Not configured",
-        "available_clusters": [
-            {
-                "name": "United States",
-                "region": "us-west",
-                "base_url": "https://internal-apigw.central.arubanetworks.com",
-                "description": "US West region (default for most US customers)"
+
+    return jsonify(
+        {
+            "current_base_url": (
+                _app.config["aruba_central"]["base_url"] if _app.config else "Not configured"
+            ),
+            "available_clusters": [
+                {
+                    "name": "United States",
+                    "region": "us-west",
+                    "base_url": "https://internal-apigw.central.arubanetworks.com",
+                    "description": "US West region (default for most US customers)",
+                },
+                {
+                    "name": "United States - New HPE GreenLake",
+                    "region": "us-hpe-gl",
+                    "base_url": "https://internal.api.central.arubanetworks.com",
+                    "description": "New HPE GreenLake platform (check your Central dashboard URL)",
+                },
+                {
+                    "name": "Europe",
+                    "region": "eu-central",
+                    "base_url": "https://internal-apigw.central.arubanetworks.com",
+                    "description": "Europe Central region",
+                },
+                {
+                    "name": "Asia Pacific",
+                    "region": "apac",
+                    "base_url": "https://internal-apigw.apac.central.arubanetworks.com",
+                    "description": "Asia Pacific region",
+                },
+                {
+                    "name": "Canada",
+                    "region": "ca",
+                    "base_url": "https://internal-apigw.central.arubanetworks.com",
+                    "description": "Canada region",
+                },
+                {
+                    "name": "China",
+                    "region": "cn",
+                    "base_url": "https://internal-apigw.arubanetworks.com.cn",
+                    "description": "China region",
+                },
+            ],
+            "how_to_find": {
+                "step1": "Log into your Aruba Central dashboard",
+                "step2": "Check the URL in your browser",
+                "step3": "Match the domain to the cluster list above",
+                "step4": "Use the corresponding base_url for API calls",
+                "note": "Using the wrong cluster URL will result in authentication failures",
             },
-            {
-                "name": "United States - New HPE GreenLake",
-                "region": "us-hpe-gl",
-                "base_url": "https://internal.api.central.arubanetworks.com",
-                "description": "New HPE GreenLake platform (check your Central dashboard URL)"
-            },
-            {
-                "name": "Europe",
-                "region": "eu-central",
-                "base_url": "https://internal-apigw.central.arubanetworks.com",
-                "description": "Europe Central region"
-            },
-            {
-                "name": "Asia Pacific",
-                "region": "apac",
-                "base_url": "https://internal-apigw.apac.central.arubanetworks.com",
-                "description": "Asia Pacific region"
-            },
-            {
-                "name": "Canada",
-                "region": "ca",
-                "base_url": "https://internal-apigw.central.arubanetworks.com",
-                "description": "Canada region"
-            },
-            {
-                "name": "China",
-                "region": "cn",
-                "base_url": "https://internal-apigw.arubanetworks.com.cn",
-                "description": "China region"
-            }
-        ],
-        "how_to_find": {
-            "step1": "Log into your Aruba Central dashboard",
-            "step2": "Check the URL in your browser",
-            "step3": "Match the domain to the cluster list above",
-            "step4": "Use the corresponding base_url for API calls",
-            "note": "Using the wrong cluster URL will result in authentication failures"
-        },
-        "documentation": "https://developer.arubanetworks.com/aruba-central/docs/api-getting-started"
-    })
+            "documentation": "https://developer.arubanetworks.com/aruba-central/docs/api-getting-started",
+        }
+    )
 
 
 # ============= Services Endpoints =============
 
-@config_bp.route('/api/services/health', methods=['GET'])
+
+@config_bp.route("/api/services/health", methods=["GET"])
 @require_session
 def get_services_health():
     """Get overall service health status."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         # Aggregate health from multiple sources
-        health_status = {
-            'overall_status': 'healthy',
-            'services': [],
-            'timestamp': time.time()
-        }
+        health_status = {"overall_status": "healthy", "services": [], "timestamp": time.time()}
 
         # Fetch all three in parallel (all cached)
-        data = parallel_get([
-            ('/network-monitoring/v1/devices',),
-            ('/network-monitoring/v1/wlans',),
-            ('/central/v2/sites',),
-        ])
+        data = parallel_get(
+            [
+                ("/network-monitoring/v1/devices",),
+                ("/network-monitoring/v1/wlans",),
+                ("/central/v2/sites",),
+            ]
+        )
 
-        devices = data.get('/network-monitoring/v1/devices')
+        devices = data.get("/network-monitoring/v1/devices")
         if devices is not None:
-            health_status['services'].append({
-                'name': 'Device Management',
-                'status': 'up',
-                'details': f"{devices.get('count', 0)} devices monitored"
-            })
+            health_status["services"].append(
+                {
+                    "name": "Device Management",
+                    "status": "up",
+                    "details": f"{devices.get('count', 0)} devices monitored",
+                }
+            )
         else:
-            health_status['services'].append({
-                'name': 'Device Management', 'status': 'error', 'details': 'Unavailable'
-            })
-            health_status['overall_status'] = 'degraded'
+            health_status["services"].append(
+                {"name": "Device Management", "status": "error", "details": "Unavailable"}
+            )
+            health_status["overall_status"] = "degraded"
 
-        wlans = data.get('/network-monitoring/v1/wlans')
+        wlans = data.get("/network-monitoring/v1/wlans")
         if wlans is not None:
-            health_status['services'].append({
-                'name': 'Wireless Services',
-                'status': 'up',
-                'details': f"{wlans.get('count', 0)} WLANs configured"
-            })
+            health_status["services"].append(
+                {
+                    "name": "Wireless Services",
+                    "status": "up",
+                    "details": f"{wlans.get('count', 0)} WLANs configured",
+                }
+            )
         else:
-            health_status['services'].append({
-                'name': 'Wireless Services', 'status': 'error', 'details': 'Unavailable'
-            })
-            health_status['overall_status'] = 'degraded'
+            health_status["services"].append(
+                {"name": "Wireless Services", "status": "error", "details": "Unavailable"}
+            )
+            health_status["overall_status"] = "degraded"
 
-        sites = data.get('/central/v2/sites')
+        sites = data.get("/central/v2/sites")
         if sites is not None:
-            health_status['services'].append({
-                'name': 'Site Management',
-                'status': 'up',
-                'details': f"{sites.get('total', 0)} sites configured"
-            })
+            health_status["services"].append(
+                {
+                    "name": "Site Management",
+                    "status": "up",
+                    "details": f"{sites.get('total', 0)} sites configured",
+                }
+            )
         else:
-            health_status['services'].append({
-                'name': 'Site Management',
-                'status': 'error',
-                'details': str(e)
-            })
-            health_status['overall_status'] = 'degraded'
+            health_status["services"].append(
+                {"name": "Site Management", "status": "error", "details": str(e)}
+            )
+            health_status["overall_status"] = "degraded"
 
         return jsonify(health_status)
     except Exception as e:
@@ -1779,18 +2027,24 @@ def get_services_health():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/services/subscriptions', methods=['GET'])
+@config_bp.route("/api/services/subscriptions", methods=["GET"])
 @require_session
 def get_service_subscriptions():
     """Get service subscriptions and licenses."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         try:
-            response = aruba_client.get('/platform/licensing/v1/subscriptions')
+            response = aruba_client.get("/platform/licensing/v1/subscriptions")
             return jsonify(response)
         except Exception as serr:
-            if '404' in str(serr) or '400' in str(serr) or 'Not Found' in str(serr) or 'Bad Request' in str(serr):
+            if (
+                "404" in str(serr)
+                or "400" in str(serr)
+                or "Not Found" in str(serr)
+                or "Bad Request" in str(serr)
+            ):
                 logger.warning("Service subscriptions not available; returning empty list")
                 return jsonify({"subscriptions": [], "count": 0})
             raise serr
@@ -1799,26 +2053,29 @@ def get_service_subscriptions():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/services/audit-logs', methods=['GET'])
+@config_bp.route("/api/services/audit-logs", methods=["GET"])
 @require_session
 def get_service_audit_logs():
     """Get service audit logs."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        limit = request.args.get('limit', 100)
-        offset = request.args.get('offset', 0)
+        limit = request.args.get("limit", 100)
+        offset = request.args.get("offset", 0)
 
-        params = {
-            'limit': limit,
-            'offset': offset
-        }
+        params = {"limit": limit, "offset": offset}
 
         try:
-            response = aruba_client.get('/platform/auditlogs/v1/logs', params=params)
+            response = aruba_client.get("/platform/auditlogs/v1/logs", params=params)
             return jsonify(response)
         except Exception as aerr:
-            if '404' in str(aerr) or '400' in str(aerr) or 'Not Found' in str(aerr) or 'Bad Request' in str(aerr):
+            if (
+                "404" in str(aerr)
+                or "400" in str(aerr)
+                or "Not Found" in str(aerr)
+                or "Bad Request" in str(aerr)
+            ):
                 logger.warning("Audit logs not available; returning empty list")
                 return jsonify({"logs": [], "count": 0, "offset": int(offset)})
             raise aerr
@@ -1827,27 +2084,30 @@ def get_service_audit_logs():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route('/api/services/capacity', methods=['GET'])
+@config_bp.route("/api/services/capacity", methods=["GET"])
 @require_session
 def get_service_capacity():
     """Get service capacity and usage metrics."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
         # Get device counts and calculate capacity
-        devices = cached_get('/network-monitoring/v1/devices')
+        devices = cached_get("/network-monitoring/v1/devices")
 
         capacity = {
-            'devices': {
-                'total': devices.get('count', 0),
-                'limit': 10000,  # Default limit, adjust based on subscription
-                'percentage': 0
+            "devices": {
+                "total": devices.get("count", 0),
+                "limit": 10000,  # Default limit, adjust based on subscription
+                "percentage": 0,
             },
-            'timestamp': time.time()
+            "timestamp": time.time(),
         }
 
-        if capacity['devices']['limit'] > 0:
-            capacity['devices']['percentage'] = (capacity['devices']['total'] / capacity['devices']['limit']) * 100
+        if capacity["devices"]["limit"] > 0:
+            capacity["devices"]["percentage"] = (
+                capacity["devices"]["total"] / capacity["devices"]["limit"]
+            ) * 100
 
         return jsonify(capacity)
     except Exception as e:
@@ -1857,14 +2117,16 @@ def get_service_capacity():
 
 # ============= Site Health — Individual Site =============
 
-@config_bp.route('/api/sites/<site_id>/health', methods=['GET'])
+
+@config_bp.route("/api/sites/<site_id>/health", methods=["GET"])
 @require_session
 def get_site_health(site_id):
     """Get detailed health metrics for a specific site."""
     import app as _app
+
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f'/network-monitoring/v1/site-health/{site_id}')
+        response = aruba_client.get(f"/network-monitoring/v1/site-health/{site_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching health for site {site_id}: {e}")
