@@ -97,24 +97,20 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
   };
 
   const rollbackResources = async () => {
-    console.log('Rolling back created resources:', createdResources);
-
     for (const resource of createdResources.reverse()) {
       try {
         switch (resource.type) {
           case 'wlan':
-            // Delete WLAN
-            // Note: Actual delete endpoint would be needed
-            console.log(`Would delete WLAN: ${resource.name}`);
+            // TODO: implement WLAN deletion via API
             break;
           case 'role':
-            console.log(`Would delete role: ${resource.name}`);
+            // TODO: implement role deletion via API
             break;
           case 'vlan':
-            console.log(`Would delete VLAN: ${resource.id}`);
+            // TODO: implement VLAN deletion via API
             break;
           case 'named-vlan':
-            console.log(`Would delete named VLAN: ${resource.name}`);
+            // TODO: implement named VLAN deletion via API
             break;
           default:
             break;
@@ -191,7 +187,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
 
       // Step 2: Create WLAN (using system default role - no custom role creation)
       // Custom roles require scope assignment which doesn't work reliably via API
-      console.log('Using system default role (no custom role creation)');
+      // Using system default role (no custom role creation)
 
       // Create WLAN
       try {
@@ -313,16 +309,14 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
 
           await configAPI.scopeMaps.createScopeMap(scopeMapData);
           updateStepStatus('scope-wlan', 'completed');
-          console.log(`Assigned WLAN to site ${data.scopeName} (${data.scopeId})`);
         } catch (error) {
           updateStepStatus('scope-wlan', 'error', error.message);
           // Don't throw - WLAN is created, just not scoped
-          console.warn('Failed to assign WLAN to scope:', error);
-          console.warn('WLAN will broadcast globally instead');
+          // Scope assignment failed; WLAN will broadcast globally instead
         }
       } else {
         // Global deployment - no scope assignment needed
-        console.log('Global deployment - WLAN will broadcast on all APs');
+        // Global deployment - WLAN will broadcast on all APs
       }
 
       // Step 4: Create MPSK keys (if applicable)
@@ -362,7 +356,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
         } catch (error) {
           updateStepStatus('mpsk', 'error', error.message);
           // MPSK is not critical - log but don't fail
-          console.warn('Failed to create MPSK keys:', error);
+          // MPSK key creation failed (non-critical)
         }
       }
 

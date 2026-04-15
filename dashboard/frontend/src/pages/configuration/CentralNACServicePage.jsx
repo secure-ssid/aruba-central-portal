@@ -341,8 +341,9 @@ function CentralNACServicePage() {
   const renderTable = () => {
     if (loading) {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 5, gap: 1.5 }}>
+          <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+          <Typography variant="body2" color="text.secondary">Loading NAC services...</Typography>
         </Box>
       );
     }

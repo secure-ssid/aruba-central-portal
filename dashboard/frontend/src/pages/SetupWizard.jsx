@@ -123,12 +123,27 @@ function SetupWizard({ onComplete }) {
         return (
           <Box>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <CloudIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
+              <Box
+                sx={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: '18px',
+                  background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2.5,
+                  boxShadow: '0 8px 32px rgba(255,102,0,0.3)',
+                }}
+              >
+                <CloudIcon sx={{ fontSize: 36, color: '#fff' }} />
+              </Box>
               <Typography variant="h4" gutterBottom fontWeight={700}>
-                Welcome to Aruba Central Portal
+                Welcome to Aruba Central
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Let's get you connected to your Aruba Central workspace
+              <Typography variant="body2" color="text.secondary">
+                Let's connect you to your Aruba Central workspace
               </Typography>
             </Box>
 
@@ -192,6 +207,12 @@ function SetupWizard({ onComplete }) {
                 size="large"
                 onClick={handleNext}
                 endIcon={<ArrowForwardIcon />}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                }}
               >
                 Get Started
               </Button>
@@ -405,13 +426,37 @@ function SetupWizard({ onComplete }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #000000 0%, #171717 100%)',
+        background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 100%)',
+        position: 'relative',
+        overflow: 'hidden',
         p: 2,
       }}
     >
-      <Card sx={{ maxWidth: 700, width: '100%' }}>
+      {/* Subtle background glow */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.05,
+          background: `
+            radial-gradient(ellipse at 40% 40%, #FF6600 0%, transparent 60%),
+            radial-gradient(ellipse at 60% 80%, #FF6600 0%, transparent 60%)
+          `,
+        }}
+      />
+      <Card sx={{ maxWidth: 700, width: '100%', position: 'relative', zIndex: 1, border: '1px solid rgba(255,255,255,0.08)' }}>
         <CardContent sx={{ p: 4 }}>
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper
+            activeStep={activeStep}
+            sx={{
+              mb: 4,
+              '& .MuiStepIcon-root.Mui-active': { color: '#FF6600' },
+              '& .MuiStepIcon-root.Mui-completed': { color: '#22C55E' },
+            }}
+          >
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

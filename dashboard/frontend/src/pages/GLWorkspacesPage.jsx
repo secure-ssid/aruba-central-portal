@@ -105,7 +105,7 @@ function GLWorkspacesPage() {
         const currentResp = await apiClient.get('/workspace/info');
         setCurrentWorkspace(currentResp.data);
       } catch (e) {
-        console.log('Could not fetch current workspace info');
+        // Current workspace info not available
       }
     } catch (e) {
       if (isGLNotConfiguredError(e)) {
@@ -268,11 +268,11 @@ function GLWorkspacesPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            MSP Workspaces (GreenLake)
+          <Typography variant="h4" fontWeight={700}>
+            MSP Workspaces
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage multi-tenant workspaces and switch between customers
+            GreenLake multi-tenant workspace management
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>

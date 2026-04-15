@@ -851,15 +851,23 @@ function NetworkMonitorPage() {
         </Alert>
       )}
 
-      {/* Loading State */}
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
+      {/* Loading State - only show full spinner on first load */}
+      {loading && sitesHealth.length === 0 && apsMonitoring.length === 0 && switchesMonitoring.length === 0 && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }}>
+          <CircularProgress sx={{ color: '#FF6600' }} />
+          <Typography variant="body2" color="text.secondary">
+            Loading monitoring data...
+          </Typography>
         </Box>
       )}
 
+      {/* Subtle refresh indicator when data already exists */}
+      {loading && (sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0) && (
+        <LinearProgress sx={{ mb: 2, '& .MuiLinearProgress-bar': { bgcolor: '#FF6600' } }} />
+      )}
+
       {/* Stats Overview */}
-      {!loading && (
+      {(sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0 || !loading) && (
         <>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>

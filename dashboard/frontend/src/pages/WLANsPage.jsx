@@ -434,7 +434,6 @@ function WLANsPage() {
       setLoading(true);
       setError('');
       const response = await wlanAPI.getAll();
-      console.log('WLANs API Response:', response);
       // Handle new response format with 'wlans' array
       setWlans(response.wlans || response.items || response.data || []);
     } catch (err) {
@@ -511,66 +510,74 @@ function WLANsPage() {
       )}
 
       {/* Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={2.5} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Card sx={{ background: 'linear-gradient(135deg, rgba(255,102,0,0.06) 0%, transparent 100%)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Total WLANs
                   </Typography>
-                  <Typography variant="h4">{wlans.length}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>{wlans.length}</Typography>
                 </Box>
-                <WifiIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <WifiIcon sx={{ fontSize: 20, color: '#FF6600' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Card sx={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.06) 0%, transparent 100%)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Enabled
                   </Typography>
-                  <Typography variant="h4">{enabledCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#22C55E' }}>{enabledCount}</Typography>
                 </Box>
-                <SignalIcon sx={{ fontSize: 40, color: '#4caf50' }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <SignalIcon sx={{ fontSize: 20, color: '#22C55E' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Card sx={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, transparent 100%)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Bridge Mode
                   </Typography>
-                  <Typography variant="h4">{bridgeCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#3B82F6' }}>{bridgeCount}</Typography>
                 </Box>
-                <LanIcon sx={{ fontSize: 40, color: '#2196f3' }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <LanIcon sx={{ fontSize: 20, color: '#3B82F6' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Card sx={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.06) 0%, transparent 100%)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Tunnel Mode
                   </Typography>
-                  <Typography variant="h4">{tunnelCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B5CF6' }}>{tunnelCount}</Typography>
                 </Box>
-                <RouterIcon sx={{ fontSize: 40, color: '#9c27b0' }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(139,92,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <RouterIcon sx={{ fontSize: 20, color: '#8B5CF6' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -679,9 +686,13 @@ function WLANsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={9} align="center">
-                      <Typography variant="body2" color="text.secondary">
-                        No WLANs found
+                    <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                      <WifiIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No WLANs configured
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        Create a wireless network to get started
                       </Typography>
                     </TableCell>
                   </TableRow>

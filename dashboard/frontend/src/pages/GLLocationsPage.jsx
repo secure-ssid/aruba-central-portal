@@ -3,6 +3,8 @@ import { Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, 
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
@@ -136,9 +138,12 @@ function GLLocationsPage() {
   return (
     <Box>
       <Box sx={{ display:'flex', alignItems:'center', justifyContent:'space-between', mb:2, gap:1, flexWrap:'wrap' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>Locations (GreenLake)</Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Locations</Typography>
+          <Typography variant="body2" color="text.secondary">GreenLake Platform location management</Typography>
+        </Box>
         <Box sx={{ display:'flex', gap:1 }}>
-          <TextField size="small" placeholder="Search" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&fetchLocations()} InputProps={{ startAdornment:<InputAdornment position="start">🔎</InputAdornment> }} />
+          <TextField size="small" placeholder="Search locations" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&fetchLocations()} InputProps={{ startAdornment:<InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }} />
           <Button startIcon={<DownloadIcon/>} onClick={exportCsv} variant="outlined">Export CSV</Button>
           <Button startIcon={<AddIcon/>} onClick={()=>setAddOpen(true)} variant="contained">Add</Button>
           <Button startIcon={<EditIcon/>} onClick={()=>setEditOpen(true)} variant="outlined">Edit</Button>
@@ -180,6 +185,19 @@ function GLLocationsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
+                {locations.length === 0 && !loading && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                      <LocationOnIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No locations found
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        Add locations to organize your GreenLake resources
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
                 {locations.map((l) => (
                   <TableRow key={l.id}>
                     <TableCell padding="checkbox">

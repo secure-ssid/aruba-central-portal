@@ -13,20 +13,13 @@ import {
   Alert,
   CircularProgress,
   Link,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Divider,
   Chip,
 } from '@mui/material';
 import NetworkCheckIcon from '@mui/icons-material/NetworkCheck';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SecurityIcon from '@mui/icons-material/Security';
 import CloudIcon from '@mui/icons-material/Cloud';
-import TimerIcon from '@mui/icons-material/Timer';
-import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { authAPI } from '../services/api';
 
@@ -40,14 +33,10 @@ function LoginPage({ onLogin }) {
     setError('');
 
     try {
-      console.log('Starting login...');
-      const result = await authAPI.login();
-      console.log('Login successful:', result);
+      await authAPI.login();
       onLogin();
-      console.log('Navigating to dashboard...');
       // Navigate to dashboard after successful login
       navigate('/');
-      console.log('Navigation complete');
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message || 'Authentication failed. Please check server configuration.');
@@ -63,12 +52,12 @@ function LoginPage({ onLogin }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #000000 0%, #171717 100%)',
+        background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Animated background elements */}
+      {/* Subtle background glow */}
       <Box
         sx={{
           position: 'absolute',
@@ -76,38 +65,41 @@ function LoginPage({ onLogin }) {
           left: 0,
           right: 0,
           bottom: 0,
-          opacity: 0.1,
+          opacity: 0.07,
           background: `
-            radial-gradient(circle at 20% 50%, #FF6600 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, #FF6600 0%, transparent 50%)
+            radial-gradient(ellipse at 30% 50%, #FF6600 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 70%, #FF6600 0%, transparent 60%)
           `,
         }}
       />
 
       <Card
         sx={{
-          maxWidth: 450,
+          maxWidth: 420,
           width: '100%',
           mx: 2,
           position: 'relative',
           zIndex: 1,
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         <CardContent sx={{ p: 4 }}>
           {/* Logo */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              mb: 3,
-            }}
-          >
-            <NetworkCheckIcon
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+            <Box
               sx={{
-                fontSize: 64,
-                color: 'primary.main',
+                width: 64,
+                height: 64,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 32px rgba(255,102,0,0.3)',
               }}
-            />
+            >
+              <NetworkCheckIcon sx={{ fontSize: 36, color: '#fff' }} />
+            </Box>
           </Box>
 
           {/* Title */}
@@ -123,22 +115,25 @@ function LoginPage({ onLogin }) {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Aruba Central Dashboard
+            Aruba Central
           </Typography>
 
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-              Interactive Configuration & Monitoring Platform
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography variant="body2" color="text.secondary">
+              Network Management Dashboard
             </Typography>
             <Chip
-              icon={<CloudIcon sx={{ fontSize: 16 }} />}
-              label="HPE GreenLake | New Central"
+              icon={<CloudIcon sx={{ fontSize: 14 }} />}
+              label="HPE GreenLake"
               size="small"
               sx={{
-                mt: 1,
-                backgroundColor: 'rgba(255, 102, 0, 0.2)',
+                mt: 1.5,
+                backgroundColor: 'rgba(255, 102, 0, 0.1)',
                 color: 'primary.main',
                 fontWeight: 600,
+                fontSize: '0.7rem',
+                height: 24,
+                border: '1px solid rgba(255,102,0,0.2)',
               }}
             />
           </Box>
@@ -150,130 +145,94 @@ function LoginPage({ onLogin }) {
             </Alert>
           )}
 
-          {/* OAuth2 Client Credentials Flow Info */}
+          {/* Security note — simplified */}
           <Box
             sx={{
-              p: 2.5,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              p: 1.5,
               mb: 3,
-              borderRadius: 2,
-              backgroundColor: 'rgba(255, 102, 0, 0.05)',
-              border: '1px solid rgba(255, 102, 0, 0.2)',
+              borderRadius: '8px',
+              bgcolor: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-              <SecurityIcon sx={{ fontSize: 20, color: 'primary.main', mr: 1 }} />
-              <Typography variant="subtitle2" fontWeight={600}>
-                OAuth2 Client Credentials Authentication
-              </Typography>
-            </Box>
-
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Authentication is handled securely by the backend server using your configured
-              <strong> client_id</strong> and <strong>client_secret</strong>. No user credentials required.
+            <SecurityIcon sx={{ fontSize: 18, color: '#64748B', flexShrink: 0 }} />
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem', lineHeight: 1.5 }}>
+              Authenticated via server-side OAuth2 credentials. No password required.
             </Typography>
-
-            <List dense disablePadding>
-              <ListItem disableGutters sx={{ py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <CheckCircleIcon sx={{ fontSize: 18, color: 'success.main' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography variant="caption" color="text.secondary">
-                      Secure token generation via HPE SSO
-                    </Typography>
-                  }
-                />
-              </ListItem>
-              <ListItem disableGutters sx={{ py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <TimerIcon sx={{ fontSize: 18, color: 'success.main' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography variant="caption" color="text.secondary">
-                      Automatic token refresh (2-hour expiry)
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            </List>
           </Box>
 
-          {/* Login Button */}
+          {/* Login Button — primary CTA */}
           <Button
             fullWidth
             variant="contained"
             size="large"
             onClick={handleLogin}
             disabled={loading}
-            startIcon={loading ? <CircularProgress size={20} /> : <LockOpenIcon />}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LockOpenIcon />}
             sx={{
-              py: 1.5,
-              fontSize: '1.1rem',
-              fontWeight: 600,
-              background: 'linear-gradient(135deg, #FF6600 0%, #FF9933 100%)',
+              py: 1.75,
+              fontSize: '1rem',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+              boxShadow: '0 6px 24px rgba(255,102,0,0.4)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #CC5200 0%, #FF6600 100%)',
+                background: 'linear-gradient(135deg, #E55A00 0%, #FF6600 100%)',
+                boxShadow: '0 8px 32px rgba(255,102,0,0.5)',
+                transform: 'translateY(-1px)',
               },
+              transition: 'all 0.2s ease',
             }}
           >
             {loading ? 'Connecting...' : 'Connect to Aruba Central'}
           </Button>
 
-          {/* Setup Wizard Button */}
+          {/* Setup Wizard — secondary CTA */}
           <Button
             fullWidth
-            variant="outlined"
-            size="large"
+            variant="text"
+            size="small"
             onClick={() => navigate('/setup-wizard')}
-            startIcon={<SettingsIcon />}
+            startIcon={<SettingsIcon sx={{ fontSize: 16 }} />}
             sx={{
-              mt: 2,
-              py: 1.5,
-              fontSize: '1rem',
-              fontWeight: 600,
-              borderColor: 'primary.main',
-              color: 'primary.main',
+              mt: 1.5,
+              py: 1,
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              color: 'text.secondary',
               '&:hover': {
-                borderColor: 'primary.light',
-                backgroundColor: 'rgba(255, 102, 0, 0.08)',
+                color: 'primary.main',
+                backgroundColor: 'rgba(255, 102, 0, 0.05)',
               },
             }}
           >
-            Setup Wizard (Configure Credentials)
+            Configure Credentials
           </Button>
 
-          {/* Footer */}
-          <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid rgba(255, 255, 255, 0.12)' }}>
-            <Typography variant="caption" color="text.secondary" align="center" display="block" gutterBottom>
-              Powered by HPE Aruba Networking Central APIs (New Central / GreenLake)
+          {/* Footer — minimal */}
+          <Box sx={{ mt: 4, pt: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ fontSize: '0.68rem', mb: 1.5 }}>
+              Version 2.0.0
             </Typography>
-            <Typography variant="caption" color="text.secondary" align="center" display="block" paragraph>
-              Version 2.0.0 • API v1alpha1
-            </Typography>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
               <Link
                 href="https://developer.arubanetworks.com/new-central/docs/getting-started-with-rest-apis"
                 target="_blank"
                 rel="noopener"
                 variant="caption"
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                sx={{ color: 'text.disabled', fontSize: '0.68rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
               >
-                <InfoIcon sx={{ fontSize: 14 }} />
-                API Documentation
+                API Docs
               </Link>
               <Link
                 href="https://developer.arubanetworks.com/new-central/docs/generating-and-managing-access-tokens"
                 target="_blank"
                 rel="noopener"
                 variant="caption"
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                sx={{ color: 'text.disabled', fontSize: '0.68rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
               >
-                <SecurityIcon sx={{ fontSize: 14 }} />
                 Token Management
               </Link>
             </Box>

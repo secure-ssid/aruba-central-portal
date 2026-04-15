@@ -246,20 +246,11 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
               map[device.serialNumber.toLowerCase()] = device.serialNumber;
             }
           });
-          console.log('Device map created (WiredInterfacesView):', {
-            size: Object.keys(map).length,
-            sampleKeys: Object.keys(map).slice(0, 20),
-            allKeys: Object.keys(map).sort(),
-            // Check if cx-6300 or SG05KMY0WQ exists
-            hasCx6300: map['cx-6300'] || map['cx6300'],
-            hasSG05KMY0WQ: Object.keys(map).find(k => map[k] === 'SG05KMY0WQ'),
-            devicesWithSG05: devices.filter(d => d.serialNumber === 'SG05KMY0WQ')
-          });
           setDeviceMap(map);
         }
       })
-      .catch((err) => {
-        console.error('Error fetching devices for neighbor mapping:', err);
+      .catch(() => {
+        // Device list fetch failed; neighbor navigation will be unavailable
       });
   }, []);
 
@@ -293,7 +284,6 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
     
     // If deviceMap is empty, try to fetch it
     if (!deviceMap || Object.keys(deviceMap).length === 0) {
-      console.warn('Device map is empty, cannot lookup neighbor:', neighborName);
       return null;
     }
     
@@ -357,9 +347,6 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
       return serial;
     }
     
-    // Only log failures, not successes (to reduce console noise)
-    // console.log('Neighbor lookup failed:', { neighborName, deviceMapSize: Object.keys(deviceMap).length });
-    
     return null;
   };
 
@@ -375,7 +362,9 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
   const isPortConnected = (portNum) => {
     const port = getPortByNumber(portNum);
     if (!port) return false;
-    return port.operStatus === 'Up' || port.status === 'Connected';
+    const oper = (port.operStatus || '').toLowerCase();
+    const stat = (port.status || '').toLowerCase();
+    return oper === 'up' || stat === 'connected' || stat === 'up';
   };
 
   const getPortInfo = (portNum) => {
@@ -384,48 +373,93 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
 
   // Determine port layout based on part number or port count
   const getPortLayout = () => {
-    // Default layout for 14-port switches
-    const defaultMainPorts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-    const defaultFiberPorts = [15, 16];
-    
     if (!ports || ports.length === 0) {
+      // Fallback: show a small default layout
+      const defaultMainPorts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+      const defaultFiberPorts = [15, 16];
       return { type: 'default', mainPorts: defaultMainPorts, fiberPorts: defaultFiberPorts };
     }
-    
-    // Check if this is a 48-port switch (like JL659A or Q9H73A)
+
+    // Parse all port numbers from the API data
     const portNumbers = ports.map(p => {
       const parts = (p.id || p.name || '').split('/');
       return parts.length > 1 ? parseInt(parts[parts.length - 1]) : parseInt(p.id || p.name || '0');
     }).filter(n => !isNaN(n) && n > 0);
-    
+
     if (portNumbers.length === 0) {
+      const defaultMainPorts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+      const defaultFiberPorts = [15, 16];
       return { type: 'default', mainPorts: defaultMainPorts, fiberPorts: defaultFiberPorts };
     }
-    
+
     const maxPortNum = Math.max(...portNumbers);
-    
-    // JL659A and Q9H73A have 48 ports + fiber ports
-    if (partNumber === 'JL659A' || partNumber === 'Q9H73A' || maxPortNum >= 48) {
-      // 48 main ports (1-48) + fiber ports (49+ or SFP+ ports)
-      const mainPorts = Array.from({ length: 48 }, (_, i) => i + 1);
-      // Fiber ports are typically 49-52 or SFP+ ports
-      const fiberPorts = portNumbers
-        .filter(n => n > 48)
-        .sort((a, b) => a - b);
-      
-      return { type: '48port', mainPorts, fiberPorts };
+    const sortedPorts = [...new Set(portNumbers)].sort((a, b) => a - b);
+
+    // Determine how many copper (RJ45) vs fiber/SFP ports based on port data
+    // Ports with speed >= 10G that are above the main port range are likely SFP/fiber
+    // Common layouts: 8+2, 12+2, 24+4, 48+4, etc.
+
+    // Heuristic: find the "break point" between copper and fiber ports
+    // Typical copper port counts: 8, 12, 14, 24, 48
+    // We iterate from LARGEST to SMALLEST so we pick the biggest matching copper count.
+    // This prevents e.g. a 12-port switch from being split at 8.
+    const knownCopperCounts = [48, 24, 14, 12, 8];
+    let copperCount = maxPortNum; // default: all ports are copper
+
+    // Check if there's a natural break: a small number of high ports after a standard copper count
+    for (const cc of knownCopperCounts) {
+      if (cc > maxPortNum) continue; // skip copper counts larger than our port range
+      const portsAbove = sortedPorts.filter(n => n > cc);
+      const portsAtOrBelow = sortedPorts.filter(n => n <= cc);
+      // If we have most ports at or below this boundary and only a few (1-6) above,
+      // and the count below covers the standard copper count well, this is the break
+      if (portsAtOrBelow.length >= cc * 0.8 && portsAbove.length > 0 && portsAbove.length <= 6) {
+        copperCount = cc;
+        break;
+      }
     }
-    
-    // Default layout for 14-port switches
-    return { type: 'default', mainPorts: defaultMainPorts, fiberPorts: defaultFiberPorts };
+
+    // If we didn't find a clean break, use all reported ports as copper
+    if (copperCount === maxPortNum && maxPortNum > 16) {
+      // For large port counts, assume the last 2-4 ports might be fiber
+      const possibleFiberCount = maxPortNum > 24 ? 4 : 2;
+      copperCount = maxPortNum - possibleFiberCount;
+    }
+
+    // Build the main (copper) ports array from 1..copperCount
+    const mainPorts = Array.from({ length: copperCount }, (_, i) => i + 1);
+    // Fiber/SFP ports are everything above copperCount
+    const fiberPorts = sortedPorts.filter(n => n > copperCount).sort((a, b) => a - b);
+
+    // Use the dense 2-row layout for switches with more than 16 copper ports
+    if (copperCount > 16) {
+      return { type: '48port', mainPorts, fiberPorts, copperCount };
+    }
+
+    // For smaller switches (<=16 ports), use the default layout
+    return { type: 'default', mainPorts, fiberPorts, copperCount };
   };
 
   const portLayout = getPortLayout();
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4, gap: 1.5 }}>
+        <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+        <Typography variant="body2" color="text.secondary">
+          Loading port information...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!ports || ports.length === 0) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <LanIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+        <Typography variant="body2" color="text.secondary">
+          No port data available for this switch. The device may be offline or the interfaces API returned no results.
+        </Typography>
       </Box>
     );
   }
@@ -475,23 +509,25 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
             maxWidth: '100%',
             minWidth: 0,
           }}>
-            {/* Combine all ports (1-52) */}
+            {/* Combine all ports dynamically */}
             {(() => {
-              // Ensure we always have ports 1-52, combining main ports and fiber ports
+              // Combine main ports and fiber ports, ensuring full coverage
               const allPortsSet = new Set([...portLayout.mainPorts, ...portLayout.fiberPorts]);
-              // Fill in any missing ports up to 52
-              for (let i = 1; i <= 52; i++) {
+              const maxPort = Math.max(...allPortsSet, 0);
+              // Fill in any gaps up to the max port number
+              for (let i = 1; i <= maxPort; i++) {
                 allPortsSet.add(i);
               }
               const allPorts = Array.from(allPortsSet).sort((a, b) => a - b);
-              const oddPorts = allPorts.filter(p => p % 2 === 1); // 1, 3, 5, ..., 51
-              const evenPorts = allPorts.filter(p => p % 2 === 0); // 2, 4, 6, ..., 52
-              
-              // Split ports for spacing: copper ports (1-48) and fiber ports (49-52)
-              const oddCopper = oddPorts.filter(p => p <= 48);
-              const oddFiber = oddPorts.filter(p => p > 48);
-              const evenCopper = evenPorts.filter(p => p <= 48);
-              const evenFiber = evenPorts.filter(p => p > 48);
+              const oddPorts = allPorts.filter(p => p % 2 === 1);
+              const evenPorts = allPorts.filter(p => p % 2 === 0);
+
+              // Split ports for spacing: use the actual copperCount from layout
+              const cc = portLayout.copperCount || 48;
+              const oddCopper = oddPorts.filter(p => p <= cc);
+              const oddFiber = oddPorts.filter(p => p > cc);
+              const evenCopper = evenPorts.filter(p => p <= cc);
+              const evenFiber = evenPorts.filter(p => p > cc);
               
               const renderPort = (portNum, showNumberAbove = false) => {
                 const port = getPortInfo(portNum);
@@ -700,7 +736,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
                         if (neighborSerial) {
                           navigate(`/devices/${neighborSerial}`);
                         } else if (port?.neighbour) {
-                          console.warn('No serial found for neighbor:', port.neighbour);
+                          // No serial found for this neighbor
                         }
                       }}
                       sx={{
@@ -824,7 +860,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
                       e.stopPropagation();
                       // Only proceed if deviceMap is populated
                       if (!deviceMap || Object.keys(deviceMap).length === 0) {
-                        console.warn('Device map not ready yet, cannot navigate to neighbor');
+                        // Device map not ready yet
                         return;
                       }
                       
@@ -835,10 +871,9 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
                       }
                       
                       if (neighborSerial) {
-                        console.log(`Navigating to neighbor device: ${port?.neighbour} -> ${neighborSerial}`);
                         navigate(`/devices/${neighborSerial}`);
                       } else if (port?.neighbour) {
-                        console.warn('No serial found for neighbor:', port.neighbour, '- cannot navigate');
+                        // No serial found for this neighbor
                       }
                     }}
                     sx={{
@@ -955,7 +990,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
                           e.stopPropagation();
                           // Only proceed if deviceMap is populated
                           if (!deviceMap || Object.keys(deviceMap).length === 0) {
-                            console.warn('Device map not ready yet, cannot navigate to neighbor');
+                            // Device map not ready yet
                             return;
                           }
                           
@@ -966,10 +1001,9 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
                           }
                           
                           if (neighborSerial) {
-                            console.log(`Navigating to neighbor device: ${port?.neighbour} -> ${neighborSerial}`);
-                            navigate(`/devices/${neighborSerial}`);
+                                navigate(`/devices/${neighborSerial}`);
                           } else if (port?.neighbour) {
-                            console.warn('No serial found for neighbor:', port.neighbour, '- cannot navigate');
+                            // No serial found for this neighbor
                           }
                         }}
                         sx={{
@@ -1111,7 +1145,6 @@ function PortOverlay({ ports, imageRef, deviceMap }) {
   // Format speed from bits per second to readable format
   const formatSpeed = (speedBits) => {
     if (!speedBits) return 'N/A';
-    if (speedBits >= 10000000000) return `${speedBits / 10000000000}0G`;
     if (speedBits >= 1000000000) return `${speedBits / 1000000000}G`;
     if (speedBits >= 1000000) return `${speedBits / 1000000}M`;
     if (speedBits >= 1000) return `${speedBits / 1000}K`;
@@ -1125,8 +1158,10 @@ function PortOverlay({ ports, imageRef, deviceMap }) {
         const position = getPortPosition(portName, port.portAlignment || 'Top', port.index || idx + 1);
         if (!position) return null;
 
-        // Check if port is connected - use operStatus and status fields from API
-        const isConnected = port.operStatus === 'Up' || port.status === 'Connected';
+        // Check if port is connected - use operStatus and status fields from API (case-insensitive)
+        const operLower = (port.operStatus || '').toLowerCase();
+        const statusLower = (port.status || '').toLowerCase();
+        const isConnected = operLower === 'up' || statusLower === 'connected' || statusLower === 'up';
         const speed = formatSpeed(port.speed);
         const mode = port.vlanMode || 'Access'; // "Trunk" or "Access"
         const vlanInfo = port.vlanMode === 'Trunk' 
@@ -1204,19 +1239,15 @@ function PortOverlay({ ports, imageRef, deviceMap }) {
                 if (port.neighbour) {
                   // Only proceed if deviceMap is populated
                   if (!deviceMap || Object.keys(deviceMap).length === 0) {
-                    console.warn('Device map not ready yet, cannot navigate to neighbor');
                     return;
                   }
-                  
+
                   // Look up neighbor serial from deviceMap
                   const neighborSerial = getNeighborSerial(port.neighbour);
-                  
+
                   if (neighborSerial) {
                     e.stopPropagation();
-                    console.log(`Navigating to neighbor device: ${port.neighbour} -> ${neighborSerial}`);
                     navigate(`/devices/${neighborSerial}`);
-                  } else {
-                    console.warn('No serial found for neighbor:', port.neighbour, '- cannot navigate');
                   }
                 }
               }}
@@ -1459,15 +1490,11 @@ function DeviceImageDisplay({ partNumber, deviceSerial, deviceType, siteId, onRe
               map[device.serialNumber.toLowerCase()] = device.serialNumber;
             }
           });
-          console.log('Device map created (DeviceImageDisplay):', {
-            size: Object.keys(map).length,
-            sampleKeys: Object.keys(map).slice(0, 20)
-          });
           setDeviceMap(map);
         }
       })
-      .catch((err) => {
-        console.error('Error fetching devices for neighbor mapping:', err);
+      .catch(() => {
+        // Device list fetch failed; neighbor navigation will be unavailable
       });
   }, []);
 
@@ -1649,20 +1676,12 @@ function DeviceDetailPage() {
           // Resolve the serial parameter (might be a name or serial)
           const lowerParam = serialOrName?.toLowerCase();
           const resolved = map[lowerParam] || map[lowerParam?.replace(/[-_]/g, '')] || serialOrName;
-          console.log('Resolving device identifier:', {
-            input: serialOrName,
-            lowerParam,
-            resolved,
-            foundInMap: !!map[lowerParam] || !!map[lowerParam?.replace(/[-_]/g, '')]
-          });
           setResolvedSerial(resolved);
         } else {
-          console.warn('deviceAPI.getAll() did not return devices:', data);
           // Keep the fallback serialOrName
         }
       })
-      .catch((err) => {
-        console.error('Error fetching devices for name resolution:', err);
+      .catch(() => {
         // Keep the fallback serialOrName (already set above)
       });
   }, [serialOrName]);
@@ -1676,7 +1695,6 @@ function DeviceDetailPage() {
 
   const fetchDeviceDetails = async () => {
     if (!resolvedSerial) {
-      console.warn('fetchDeviceDetails called but resolvedSerial is not set');
       setLoading(false);
       setError('Device identifier is required');
       return;
@@ -1685,9 +1703,7 @@ function DeviceDetailPage() {
     try {
       setLoading(true);
       setError('');
-      console.log('Fetching device details for serial:', resolvedSerial);
       const data = await deviceAPI.getDetails(resolvedSerial);
-      console.log('Device details fetched successfully:', data);
       if (!data) {
         throw new Error('Device not found');
       }
@@ -1801,20 +1817,16 @@ function DeviceDetailPage() {
       // Implement actual API calls based on action
       switch (actionDialog.action) {
         case 'reboot':
-          // await deviceAPI.reboot(resolvedSerial);
-          console.log('Reboot device:', resolvedSerial);
+          // TODO: await deviceAPI.reboot(resolvedSerial);
           break;
         case 'sync':
-          // await deviceAPI.syncConfig(resolvedSerial);
-          console.log('Sync configuration:', resolvedSerial);
+          // TODO: await deviceAPI.syncConfig(resolvedSerial);
           break;
         case 'firmware':
-          // await deviceAPI.updateFirmware(resolvedSerial);
-          console.log('Update firmware:', resolvedSerial);
+          // TODO: await deviceAPI.updateFirmware(resolvedSerial);
           break;
         case 'diagnostics':
-          // await deviceAPI.runDiagnostics(resolvedSerial);
-          console.log('Run diagnostics:', resolvedSerial);
+          // TODO: await deviceAPI.runDiagnostics(resolvedSerial);
           break;
         default:
           break;
@@ -1874,8 +1886,11 @@ function DeviceDetailPage() {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 8, gap: 2 }}>
+        <CircularProgress sx={{ color: '#FF6600' }} />
+        <Typography variant="body2" color="text.secondary">
+          Loading device details...
+        </Typography>
       </Box>
     );
   }
@@ -1890,7 +1905,10 @@ function DeviceDetailPage() {
         >
           Back to Devices
         </Button>
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Typography variant="body2" color="text.secondary">
+          The device with identifier "{serialOrName}" could not be loaded. It may not exist or there may be a connection issue with Aruba Central.
+        </Typography>
       </Box>
     );
   }

@@ -143,7 +143,7 @@ function GLPermissionsPage() {
         const roleResp = await apiClient.get('/greenlake/role-permissions');
         setRolePermissions(roleResp.data || {});
       } catch (e) {
-        console.log('Could not fetch role permissions');
+        // Role permissions endpoint not available
       }
     } catch (e) {
       if (isGLNotConfiguredError(e)) {
@@ -194,11 +194,11 @@ function GLPermissionsPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            GreenLake Permissions
+          <Typography variant="h4" fontWeight={700}>
+            Permissions
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            View and manage granular permissions for platform access
+            GreenLake granular permissions for platform access
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>

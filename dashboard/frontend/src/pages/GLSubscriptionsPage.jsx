@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination, Button, TextField, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import SearchIcon from '@mui/icons-material/Search';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
@@ -87,9 +89,12 @@ function GLSubscriptionsPage() {
   return (
     <Box>
       <Box sx={{ display:'flex', alignItems:'center', justifyContent:'space-between', mb:2, gap:1, flexWrap:'wrap' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>Subscriptions (GreenLake)</Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Subscriptions</Typography>
+          <Typography variant="body2" color="text.secondary">GreenLake Platform subscription management</Typography>
+        </Box>
         <Box sx={{ display:'flex', gap:1 }}>
-          <TextField size="small" placeholder="Search" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&fetchSubs()} InputProps={{ startAdornment:<InputAdornment position="start">🔎</InputAdornment> }} />
+          <TextField size="small" placeholder="Search subscriptions" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&fetchSubs()} InputProps={{ startAdornment:<InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }} />
           <Button startIcon={<DownloadIcon/>} onClick={exportCsv} variant="outlined">Export CSV</Button>
           <Button onClick={()=>setAddOpen(true)} variant="contained">Add</Button>
           <Button onClick={()=>setEditOpen(true)} variant="outlined">Edit</Button>
@@ -111,6 +116,19 @@ function GLSubscriptionsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
+                {subs.length === 0 && !loading && (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                      <AssessmentIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No subscriptions found
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        GreenLake subscriptions will appear here
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
                 {subs.map((s) => (
                   <TableRow key={s.id}>
                     <TableCell>{s.type || s.subscriptionType || '-'}</TableCell>

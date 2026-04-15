@@ -1056,7 +1056,7 @@ function TroubleshootPage() {
                 <TableHead>
                   <TableRow>
                     {keys.map((key) => (
-                      <TableCell key={key} sx={{ fontWeight: 'bold', bgcolor: 'grey.100' }}>
+                      <TableCell key={key} sx={{ fontWeight: 'bold', bgcolor: 'rgba(255, 102, 0, 0.08)' }}>
                         {key}
                       </TableCell>
                     ))}
@@ -1127,7 +1127,7 @@ function TroubleshootPage() {
               <TableHead>
                 <TableRow>
                   {keys.map((key) => (
-                    <TableCell key={key} sx={{ fontWeight: 'bold', bgcolor: 'grey.100' }}>
+                    <TableCell key={key} sx={{ fontWeight: 'bold', bgcolor: 'rgba(255, 102, 0, 0.08)' }}>
                       {key}
                     </TableCell>
                   ))}
@@ -1812,45 +1812,7 @@ function TroubleshootPage() {
                   </Typography>
                   <Collapse in={expandedCard === 'cxShowCommands'}>
                     <Box>
-                      <List sx={{ pt: 0, pb: 1 }}>
-                        <ListItem
-                          button
-                          sx={{ borderRadius: 1, mb: 0.5 }}
-                        >
-                          <ListItemIcon>
-                            <UpdateIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Update Firmware"
-                            secondary="Upgrade device firmware"
-                          />
-                        </ListItem>
-                        <ListItem
-                          button
-                          sx={{ borderRadius: 1, mb: 0.5 }}
-                        >
-                          <ListItemIcon>
-                            <HealthAndSafetyIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Check Device Health"
-                            secondary="View configuration issues"
-                          />
-                        </ListItem>
-                        <ListItem
-                          button
-                          sx={{ borderRadius: 1 }}
-                        >
-                          <ListItemIcon>
-                            <BuildIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Troubleshooting"
-                            secondary="Ping, traceroute, and more"
-                          />
-                        </ListItem>
-                      </List>
-                      <Divider sx={{ my: 1 }} />
+                      <Divider sx={{ mb: 1 }} />
                       <DeviceSelector
                         value={cxSerial}
                         onChange={setCxSerial}

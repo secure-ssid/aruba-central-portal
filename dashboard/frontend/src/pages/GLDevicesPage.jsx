@@ -3,6 +3,8 @@ import { Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, 
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
+import DevicesIcon from '@mui/icons-material/Devices';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
@@ -130,7 +132,10 @@ function GLDevicesPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, gap: 1, flexWrap: 'wrap' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>Devices (GreenLake)</Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Devices</Typography>
+          <Typography variant="body2" color="text.secondary">GreenLake Platform device inventory</Typography>
+        </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <TextField
             size="small"
@@ -138,7 +143,7 @@ function GLDevicesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchDevices()}
-            InputProps={{ startAdornment: <InputAdornment position="start">🔎</InputAdornment> }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }}
           />
           <Button startIcon={<DownloadIcon />} onClick={exportCsv} variant="outlined">Export CSV</Button>
           <Button startIcon={<AddIcon />} onClick={() => setAddOpen(true)} variant="contained">Add</Button>
@@ -184,6 +189,19 @@ function GLDevicesPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
+                {devices.length === 0 && !loading && (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                      <DevicesIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No devices found
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        Add devices to your GreenLake inventory to get started
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
                 {devices.map((d) => (
                   <TableRow key={d.id || d.deviceId}>
                     <TableCell padding="checkbox">

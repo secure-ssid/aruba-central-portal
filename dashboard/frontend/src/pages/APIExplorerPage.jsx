@@ -28,9 +28,11 @@ import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import DownloadIcon from '@mui/icons-material/Download';
-import { explorerAPI, sitesConfigAPI, monitoringAPIv2, configAPI, deviceAPI } from '../services/api';
+import { explorerAPI } from '../services/api';
 import DeviceSelector from '../components/DeviceSelector';
 import { getErrorMessage } from '../utils/errorUtils';
+import useSites from '../hooks/useSites';
+import useDeviceInventory from '../hooks/useDeviceInventory';
 
 SyntaxHighlighter.registerLanguage('json', json);
 
@@ -2178,140 +2180,12 @@ function APIExplorerPage() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState('');
-  const [sites, setSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState('');
-  const [loadingSites, setLoadingSites] = useState(false);
-  const [sitesError, setSitesError] = useState('');
   const [selectedDevice, setSelectedDevice] = useState('');
-  const [devices, setDevices] = useState([]);
-  const [loadingDevices, setLoadingDevices] = useState(false);
 
-  // Fetch devices on component mount
-  useEffect(() => {
-    const loadDevices = async () => {
-      try {
-        setLoadingDevices(true);
-        console.log('🔍 Loading devices for API Explorer...');
-        
-        // Try multiple endpoints to get devices (similar to DevicesPage)
-        const [devicesData, switchesData, apsData, gatewaysData] = await Promise.allSettled([
-          deviceAPI.getAll(),
-          deviceAPI.getSwitches(),
-          deviceAPI.getAccessPoints(),
-          monitoringAPIv2.getGatewaysMonitoring(),
-        ]);
-        
-        let allDevices = [];
-        
-        // Process all devices
-        if (devicesData.status === 'fulfilled') {
-          const data = devicesData.value;
-          console.log('✅ Devices API response:', data);
-          let devicesList = [];
-          if (Array.isArray(data)) {
-            devicesList = data;
-          } else if (data && typeof data === 'object') {
-            devicesList = data.items || data.data || data.devices || [];
-          }
-          allDevices = [...allDevices, ...devicesList];
-        } else {
-          console.warn('⚠️ Devices API failed:', devicesData.reason);
-        }
-        
-        // Process switches
-        if (switchesData.status === 'fulfilled') {
-          const data = switchesData.value;
-          let switchesList = [];
-          if (Array.isArray(data)) {
-            switchesList = data;
-          } else if (data && typeof data === 'object') {
-            switchesList = data.items || data.switches || data.data || [];
-          }
-          allDevices = [...allDevices, ...switchesList];
-        } else {
-          console.warn('⚠️ Switches API failed:', switchesData.reason);
-        }
-        
-        // Process APs
-        if (apsData.status === 'fulfilled') {
-          const data = apsData.value;
-          let apsList = [];
-          if (Array.isArray(data)) {
-            apsList = data;
-          } else if (data && typeof data === 'object') {
-            apsList = data.items || data.aps || data.data || [];
-          }
-          allDevices = [...allDevices, ...apsList];
-        } else {
-          console.warn('⚠️ APs API failed:', apsData.reason);
-        }
-        
-        // Process Gateways
-        if (gatewaysData.status === 'fulfilled') {
-          const data = gatewaysData.value;
-          let gwItems = [];
-          if (Array.isArray(data)) {
-            gwItems = data;
-          } else if (data && typeof data === 'object') {
-            gwItems = data.items || data.gateways || data.data || [];
-          }
-          // Normalize gateway data to common format
-          const normalized = gwItems.map((g) => ({
-            serial: g.serialNumber || g.serial || g.id,
-            serialNumber: g.serialNumber || g.serial,
-            name: g.deviceName || g.name || g.hostname || `Gateway ${g.serialNumber || g.serial || g.id}`,
-            deviceName: g.deviceName || g.name || g.hostname,
-            type: 'GATEWAY',
-            deviceType: 'GATEWAY',
-            model: g.model || g.platformModel || g.platform || '',
-            ...g
-          }));
-          allDevices = [...allDevices, ...normalized];
-        } else {
-          console.warn('⚠️ Gateways API failed:', gatewaysData.reason);
-        }
-        
-        // Remove duplicates by serial number
-        const deviceMap = new Map();
-        allDevices.forEach(device => {
-          const serial = device.serial || device.serialNumber || device.device_id || device.id;
-          if (serial && !deviceMap.has(serial)) {
-            deviceMap.set(serial, device);
-          }
-        });
-        
-        // Normalize device data
-        const devicesList = Array.from(deviceMap.values()).map(device => {
-          const serial = device.serial || device.serialNumber || device.device_id || device.id;
-          return {
-            serial: serial,
-            serialNumber: device.serialNumber || device.serial || serial,
-            name: device.name || device.deviceName || device.device_name || device.display_name || device.hostname || `Device ${serial}`,
-            deviceName: device.deviceName || device.name || device.device_name || device.display_name,
-            type: device.device_type || device.type || device.deviceType || 'UNKNOWN',
-            deviceType: device.deviceType || device.device_type || device.type,
-            model: device.model || device.platform || device.platformModel || '',
-            ...device
-          };
-        }).filter(device => device.serial); // Only include devices with serial
-        
-        console.log(`✅ Loaded ${devicesList.length} devices for API Explorer`);
-        setDevices(devicesList);
-      } catch (err) {
-        console.error('❌ Error loading devices:', err);
-        console.error('❌ Error details:', {
-          message: err.message,
-          response: err.response?.data,
-          status: err.response?.status
-        });
-        setDevices([]);
-      } finally {
-        setLoadingDevices(false);
-      }
-    };
-    
-    loadDevices();
-  }, []);
+  // Shared hooks for sites and devices
+  const { sites, loading: loadingSites, error: sitesError } = useSites();
+  const { devices, loading: loadingDevices } = useDeviceInventory();
 
   // Sync selectedDevice when endpoint changes and contains a serial
   useEffect(() => {
@@ -2339,139 +2213,6 @@ function APIExplorerPage() {
       }
     }
   }, [endpoint, devices, selectedDevice]);
-
-  // Fetch sites on component mount
-  useEffect(() => {
-    const loadSites = async () => {
-      try {
-        setLoadingSites(true);
-        let sitesList = [];
-        let lastError = null;
-        
-        // Try Configuration API first (best choice - faster, returns site names/IDs)
-        try {
-          console.log('🔍 [1/3] Trying Configuration API (/network-config/v1alpha1/sites)...');
-          const sitesData = await sitesConfigAPI.getSites({ limit: 100, offset: 0 });
-          console.log('✅ Configuration API response:', sitesData);
-          console.log('✅ Response type:', typeof sitesData, Array.isArray(sitesData) ? 'Array' : 'Object');
-          
-          // Handle different response formats
-          if (Array.isArray(sitesData)) {
-            sitesList = sitesData;
-          } else if (sitesData && typeof sitesData === 'object') {
-            sitesList = sitesData.items || sitesData.data || sitesData.sites || sitesData.results || [];
-          }
-          
-          if (sitesList.length > 0) {
-            // Map Configuration API format to expected format with proper name extraction
-            sitesList = sitesList.map(site => ({
-              scopeId: site.scopeId || site.id || site.siteId || site.site_id,
-              name: site.scopeName || site.name || site.siteName || site.displayName || site.display_name,
-              siteName: site.scopeName || site.name || site.siteName || site.displayName || site.display_name,
-              ...site
-            })).filter(site => site.scopeId);
-            
-            console.log(`✅ Loaded ${sitesList.length} sites from Configuration API`);
-            setSites(sitesList);
-            return;
-          } else {
-            console.warn('⚠️ Configuration API returned empty result');
-            lastError = new Error('Configuration API returned empty result');
-          }
-        } catch (configErr) {
-          console.warn('⚠️ Configuration API failed:', configErr);
-          console.warn('⚠️ Error details:', {
-            message: configErr.message,
-            response: configErr.response?.data,
-            status: configErr.response?.status
-          });
-          lastError = configErr;
-        }
-        
-        // Fallback 1: Try Central v2 Sites API
-        try {
-          console.log('🔍 [2/3] Trying Central v2 Sites API (/central/v2/sites)...');
-          const v2SitesData = await configAPI.getSites();
-          console.log('✅ Central v2 API response:', v2SitesData);
-          
-          if (Array.isArray(v2SitesData)) {
-            sitesList = v2SitesData;
-          } else if (v2SitesData && typeof v2SitesData === 'object') {
-            sitesList = v2SitesData.sites || v2SitesData.items || v2SitesData.data || [];
-          }
-          
-          if (sitesList.length > 0) {
-            // Map v2 format to expected format
-            sitesList = sitesList.map(site => ({
-              scopeId: site.site_id || site.id || site.scopeId,
-              name: site.site_name || site.name || site.display_name,
-              siteName: site.site_name || site.name || site.display_name,
-              ...site
-            })).filter(site => site.scopeId);
-            
-            console.log(`✅ Loaded ${sitesList.length} sites from Central v2 API`);
-            setSites(sitesList);
-            return;
-          } else {
-            console.warn('⚠️ Central v2 API returned empty result');
-          }
-        } catch (v2Err) {
-          console.warn('⚠️ Central v2 API failed:', v2Err);
-          lastError = v2Err;
-        }
-        
-        // Fallback 2: Try Monitoring API (sites-health endpoint)
-        try {
-          console.log('🔍 [3/3] Trying Monitoring API (/network-monitoring/v1alpha1/sites-health)...');
-          const healthData = await monitoringAPIv2.getSitesHealth({ limit: 100, offset: 0 });
-          console.log('✅ Monitoring API response:', healthData);
-          
-          // Extract sites from health data
-          if (Array.isArray(healthData)) {
-            sitesList = healthData;
-          } else if (healthData && typeof healthData === 'object') {
-            const items = healthData.items || healthData.data || healthData.sites || [];
-            // Extract site info from health items
-            sitesList = items.map(item => ({
-              scopeId: item.scopeId || item.siteId || item.id,
-              name: item.scopeName || item.siteName || item.name || item.displayName,
-              siteName: item.scopeName || item.siteName || item.name || item.displayName,
-              ...item
-            })).filter(site => site.scopeId); // Filter out items without IDs
-          }
-          
-          if (sitesList.length > 0) {
-            console.log(`✅ Loaded ${sitesList.length} sites from Monitoring API fallback`);
-            setSites(sitesList);
-            return;
-          } else {
-            console.warn('⚠️ Monitoring API returned empty result');
-          }
-        } catch (monitoringErr) {
-          console.error('❌ Monitoring API also failed:', monitoringErr);
-          lastError = monitoringErr;
-        }
-        
-        // All APIs failed
-        console.error('❌ All site APIs failed. Last error:', lastError);
-        console.error('❌ Setting empty sites list');
-        setSites([]);
-        if (lastError) {
-          const errorMsg = lastError.response?.data?.error || lastError.message || 'Failed to load sites from all available APIs';
-          setSitesError(errorMsg);
-        } else {
-          setSitesError('No sites available. Please check your API configuration.');
-        }
-      } catch (err) {
-        console.error('❌ Unexpected error loading sites:', err);
-        setSites([]);
-      } finally {
-        setLoadingSites(false);
-      }
-    };
-    
-    loadSites();
-  }, []);
 
   // Helper function to extract base endpoint and query params
   const parseEndpoint = (endpointStr) => {
@@ -2561,12 +2302,6 @@ function APIExplorerPage() {
         // Values like %27 become ', + becomes space, etc.
         parsedParams[key] = value;
       });
-      
-      // Log params for debugging
-      console.log('🔍 Request params being sent:', JSON.stringify(parsedParams, null, 2));
-      if (parsedParams.filter) {
-        console.log('🔍 Filter parameter:', parsedParams.filter);
-      }
       
       // Ensure site-id is included if selected (in case it wasn't in endpoint string)
       if (selectedSite && supportsSiteId(endpoint) && !parsedParams['site-id']) {

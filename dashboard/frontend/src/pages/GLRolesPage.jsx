@@ -196,11 +196,11 @@ export default function GLRolesPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            GreenLake Platform Roles
+          <Typography variant="h4" fontWeight={700}>
+            Platform Roles
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage HPE GreenLake platform role assignments
+            GreenLake platform role management and assignments
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>

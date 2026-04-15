@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 
@@ -195,11 +196,11 @@ function GLTagsPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            Tags (GreenLake)
+          <Typography variant="h4" fontWeight={700}>
+            Tags
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage resource tags for organization and filtering
+            GreenLake resource tags for organization and filtering
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
@@ -234,7 +235,7 @@ function GLTagsPage() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchTags()}
             fullWidth
-            InputProps={{ startAdornment: <InputAdornment position="start">🔎</InputAdornment> }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }}
           />
         </CardContent>
       </Card>}
