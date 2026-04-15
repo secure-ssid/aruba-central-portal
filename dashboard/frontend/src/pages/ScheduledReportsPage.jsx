@@ -139,7 +139,7 @@ const REPORT_TYPES = [
     icon: <CloudIcon />,
     color: '#06B6D4',
     description: 'Devices enrolled in HPE GreenLake with subscription status',
-    fetch: () => reportingAPI.getDevicesWithGreenlake(),
+    fetch: () => reportingAPI.getDevicesWithGreenLake(),
     dataPath: (r) => r?.data?.devices || r?.data || [],
   },
 ];
