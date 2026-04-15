@@ -78,8 +78,7 @@ import GlobalSearch from './components/GlobalSearch';
 //       Implement real event feed or remove EventFeedProvider.jsx entirely.
 import EventFeedProvider from './components/EventFeedProvider';
 import ChatDrawer from './components/ChatDrawer';
-// TODO: NetworkHealthBanner (./components/NetworkHealthBanner.jsx) is a stub
-//       that returns null. Implement a real health banner or remove the file.
+import NetworkHealthBanner from './components/NetworkHealthBanner';
 
 // Services
 import { authAPI } from './services/api';
@@ -271,7 +270,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           onSearchClick={() => setSearchOpen(true)}
         />
-        {/* NetworkHealthBanner removed — stub that returned null */}
+        <NetworkHealthBanner />
         <Box sx={{ p: 3 }}>
           <Breadcrumb />
           <ErrorBoundary>

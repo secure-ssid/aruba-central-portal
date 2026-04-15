@@ -60,6 +60,7 @@ import {
   People as PeopleIcon,
   Cloud as CloudIcon,
 } from '@mui/icons-material';
+import StatusChip from '../components/StatusChip';
 import {
   reportingAPI,
   deviceAPI,
@@ -273,22 +274,11 @@ const StatsCard = ({ label, value, icon, color }) => (
   </Card>
 );
 
-const StatusChip = ({ status }) => {
-  const map = {
-    completed: { label: 'Completed', color: '#10B981', bg: 'rgba(16,185,129,0.1)', icon: <CheckIcon fontSize="small" /> },
-    running:   { label: 'Running',   color: '#FF6600', bg: 'rgba(255,102,0,0.1)',  icon: <CircularProgress size={12} sx={{ color: '#FF6600' }} /> },
-    error:     { label: 'Error',     color: '#EF4444', bg: 'rgba(239,68,68,0.1)',  icon: <ErrorIcon fontSize="small" /> },
-    pending:   { label: 'Pending',   color: '#9CA3AF', bg: 'rgba(156,163,175,0.1)', icon: <ScheduleIcon fontSize="small" /> },
-  };
-  const s = map[status] || map.pending;
-  return (
-    <Chip
-      size="small"
-      icon={s.icon}
-      label={s.label}
-      sx={{ color: s.color, bgcolor: s.bg, border: `1px solid ${s.color}40`, '& .MuiChip-icon': { color: s.color } }}
-    />
-  );
+const REPORT_STATUS_ICONS = {
+  completed: <CheckIcon fontSize="small" />,
+  running:   <CircularProgress size={12} />,
+  error:     <ErrorIcon fontSize="small" />,
+  pending:   <ScheduleIcon fontSize="small" />,
 };
 
 // ─── Create Report Dialog ─────────────────────────────────────────────────────
@@ -684,7 +674,7 @@ export default function ScheduledReportsPage() {
                                 <Typography variant="caption" sx={{ color: '#FF6600' }}>Running…</Typography>
                               </Box>
                             ) : (
-                              <StatusChip status={report.status} />
+                              <StatusChip status={report.status} icon={REPORT_STATUS_ICONS[report.status]} />
                             )}
                           </TableCell>
                           <TableCell>

@@ -34,15 +34,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import PeopleIcon from '@mui/icons-material/People';
 import { greenlakeUserAPI } from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
-
-function StatusChip({ status }) {
-  const color =
-    status === 'ACTIVE' ? 'success' :
-    status === 'UNVERIFIED' ? 'warning' :
-    status === 'DISABLED' ? 'default' :
-    'info';
-  return <Chip size="small" color={color} label={status || 'UNKNOWN'} />;
-}
+import StatusChip from '../components/StatusChip';
 
 export default function GLUsersPage() {
   const [loading, setLoading] = useState(false);

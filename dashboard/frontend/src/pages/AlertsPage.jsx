@@ -285,7 +285,7 @@ function AlertsPage() {
                     {alerts.length > 0 ? (
                       alerts.map((alert, index) => (
                         <TableRow
-                          key={index}
+                          key={alert.id || alert.timestamp || index}
                           sx={{
                             bgcolor: getSeverityBgColor(alert.severity),
                             '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
@@ -361,7 +361,7 @@ function AlertsPage() {
                   <TableBody>
                     {events.length > 0 ? (
                       events.map((event, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={event.id || event.timestamp || index}>
                           <TableCell>
                             <Chip
                               size="small"

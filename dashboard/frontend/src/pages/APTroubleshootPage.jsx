@@ -14,7 +14,6 @@ import {
   Button,
   Autocomplete,
   CircularProgress,
-  Chip,
   Divider,
   Collapse,
   Alert,
@@ -58,32 +57,7 @@ import {
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { apiClient, monitoringAPIv2, troubleshootAPI } from '../services/api';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const STATUS_COLORS = {
-  Up: '#22C55E',
-  Down: '#EF4444',
-  up: '#22C55E',
-  down: '#EF4444',
-};
-
-function StatusChip({ status }) {
-  const color = STATUS_COLORS[status] || '#94A3B8';
-  return (
-    <Chip
-      label={status || 'Unknown'}
-      size="small"
-      sx={{
-        backgroundColor: `${color}20`,
-        color,
-        border: `1px solid ${color}40`,
-        fontWeight: 600,
-        fontSize: '0.7rem',
-      }}
-    />
-  );
-}
+import StatusChip from '../components/StatusChip';
 
 function ResultPanel({ result, loading, error }) {
   const [copied, setCopied] = useState(false);
