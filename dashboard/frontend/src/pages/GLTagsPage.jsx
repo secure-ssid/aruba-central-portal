@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, TableContainer, Paper, Button, TextField, InputAdornment, IconButton,
@@ -12,13 +12,14 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import { useGLTags } from '../hooks/useApiQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 function GLTagsPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notConfigured, setNotConfigured] = useState(false);
+  const queryClient = useQueryClient();
+  const [mutationLoading, setMutationLoading] = useState(false);
+  const [mutationError, setMutationError] = useState('');
   const [success, setSuccess] = useState('');
-  const [tags, setTags] = useState([]);
   const [sortBy, setSortBy] = useState('key');
   const [sortDir, setSortDir] = useState('asc');
   const [search, setSearch] = useState('');
@@ -36,76 +37,54 @@ function GLTagsPage() {
     resourceId: '',
   });
 
-  const fetchTags = async () => {
-    if (notConfigured) return;
-    setLoading(true);
-    setError('');
-    try {
-      const resp = await apiClient.get('/greenlake/tags');
-      let items = resp.data?.items || resp.data?.tags || [];
-      if (search.trim()) {
-        const q = search.trim().toLowerCase();
-        items = items.filter((t) =>
-          (t.key || t.tagKey || '').toLowerCase().includes(q) ||
-          (t.value || t.tagValue || '').toLowerCase().includes(q) ||
-          (t.resourceType || '').toLowerCase().includes(q) ||
-          (t.resourceId || '').toLowerCase().includes(q)
-        );
-      }
-      items = [...items].sort((a, b) => {
-        const av = (
-          (sortBy === 'key'
-            ? a.key || a.tagKey
-            : sortBy === 'value'
-            ? a.value || a.tagValue
-            : sortBy === 'type'
-            ? a.resourceType
-            : sortBy === 'rid'
-            ? a.resourceId
-            : '') || ''
-        )
-          .toString()
-          .toLowerCase();
-        const bv = (
-          (sortBy === 'key'
-            ? b.key || b.tagKey
-            : sortBy === 'value'
-            ? b.value || b.tagValue
-            : sortBy === 'type'
-            ? b.resourceType
-            : sortBy === 'rid'
-            ? b.resourceId
-            : '') || ''
-        )
-          .toString()
-          .toLowerCase();
-        if (av < bv) return sortDir === 'asc' ? -1 : 1;
-        if (av > bv) return sortDir === 'asc' ? 1 : -1;
-        return 0;
-      });
-      setTags(items);
-    } catch (e) {
-      if (isGLNotConfiguredError(e)) {
-        setNotConfigured(true);
-      } else {
-        setError(e.response?.data?.error || 'Failed to load tags');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: rawTags = [],
+    error: queryError,
+    isLoading: queryLoading,
+    refetch,
+  } = useGLTags();
 
-  useEffect(() => {
-    fetchTags();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const notConfigured = queryError ? isGLNotConfiguredError(queryError) : false;
+  const error = mutationError || (queryError && !notConfigured
+    ? (queryError.response?.data?.error || 'Failed to load tags')
+    : '');
+  const loading = queryLoading || mutationLoading;
+
+  // Client-side filter + sort (derived from cached query data)
+  const tags = useMemo(() => {
+    let items = [...rawTags];
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      items = items.filter((t) =>
+        (t.key || t.tagKey || '').toLowerCase().includes(q) ||
+        (t.value || t.tagValue || '').toLowerCase().includes(q) ||
+        (t.resourceType || '').toLowerCase().includes(q) ||
+        (t.resourceId || '').toLowerCase().includes(q)
+      );
+    }
+    items.sort((a, b) => {
+      const av = (
+        (sortBy === 'key'   ? a.key   || a.tagKey   :
+         sortBy === 'value' ? a.value || a.tagValue :
+         sortBy === 'type'  ? a.resourceType :
+         sortBy === 'rid'   ? a.resourceId : '') || ''
+      ).toString().toLowerCase();
+      const bv = (
+        (sortBy === 'key'   ? b.key   || b.tagKey   :
+         sortBy === 'value' ? b.value || b.tagValue :
+         sortBy === 'type'  ? b.resourceType :
+         sortBy === 'rid'   ? b.resourceId : '') || ''
+      ).toString().toLowerCase();
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return items;
+  }, [rawTags, search, sortBy, sortDir]);
 
   const handleSort = (c) => {
     if (sortBy === c) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    else {
-      setSortBy(c);
-      setSortDir('asc');
-    }
+    else { setSortBy(c); setSortDir('asc'); }
   };
 
   const exportCsv = () => {
@@ -131,53 +110,55 @@ function GLTagsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const invalidateTags = () => queryClient.invalidateQueries({ queryKey: ['gl-tags'] });
+
   const handleCreate = async () => {
-    setLoading(true);
-    setError('');
+    setMutationLoading(true);
+    setMutationError('');
     setSuccess('');
     try {
       await apiClient.post('/greenlake/tags', formData);
       setSuccess('Tag created successfully');
       setCreateOpen(false);
       setFormData({ id: '', key: '', value: '', resourceType: '', resourceId: '' });
-      await fetchTags();
+      invalidateTags();
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to create tag');
+      setMutationError(e.response?.data?.error || 'Failed to create tag');
     } finally {
-      setLoading(false);
+      setMutationLoading(false);
     }
   };
 
   const handleUpdate = async () => {
-    setLoading(true);
-    setError('');
+    setMutationLoading(true);
+    setMutationError('');
     setSuccess('');
     try {
       await apiClient.patch(`/greenlake/tags/${formData.id}`, formData);
       setSuccess('Tag updated successfully');
       setEditOpen(false);
       setFormData({ id: '', key: '', value: '', resourceType: '', resourceId: '' });
-      await fetchTags();
+      invalidateTags();
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to update tag');
+      setMutationError(e.response?.data?.error || 'Failed to update tag');
     } finally {
-      setLoading(false);
+      setMutationLoading(false);
     }
   };
 
   const handleDelete = async (tagId) => {
     if (!window.confirm('Delete this tag?')) return;
-    setLoading(true);
-    setError('');
+    setMutationLoading(true);
+    setMutationError('');
     setSuccess('');
     try {
       await apiClient.delete(`/greenlake/tags/${tagId}`);
       setSuccess('Tag deleted successfully');
-      await fetchTags();
+      invalidateTags();
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to delete tag');
+      setMutationError(e.response?.data?.error || 'Failed to delete tag');
     } finally {
-      setLoading(false);
+      setMutationLoading(false);
     }
   };
 
@@ -216,7 +197,7 @@ function GLTagsPage() {
           </Button>
           <Tooltip title="Refresh">
             <span>
-              <IconButton onClick={fetchTags} disabled={loading}>
+              <IconButton onClick={() => refetch()} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </span>
@@ -226,22 +207,29 @@ function GLTagsPage() {
 
       {notConfigured && <GreenLakeNotConfigured />}
 
-      {!notConfigured && <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <TextField
-            size="small"
-            placeholder="Search tags by key, value, or resource..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && fetchTags()}
-            fullWidth
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }}
-          />
-        </CardContent>
-      </Card>}
+      {!notConfigured && (
+        <Card sx={{ mb: 2 }}>
+          <CardContent>
+            <TextField
+              size="small"
+              placeholder="Search tags by key, value, or resource..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setMutationError('')}>
           {error}
         </Alert>
       )}
@@ -252,79 +240,81 @@ function GLTagsPage() {
         </Alert>
       )}
 
-      {!notConfigured && <Card>
-        <CardContent>
-          <TableContainer component={Paper} variant="outlined">
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell onClick={() => handleSort('key')} sx={{ cursor: 'pointer' }}>
-                    Key {sortBy === 'key' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={() => handleSort('value')} sx={{ cursor: 'pointer' }}>
-                    Value {sortBy === 'value' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={() => handleSort('type')} sx={{ cursor: 'pointer' }}>
-                    Resource Type {sortBy === 'type' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
-                  </TableCell>
-                  <TableCell onClick={() => handleSort('rid')} sx={{ cursor: 'pointer' }}>
-                    Resource ID {sortBy === 'rid' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
-                  </TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tags.length === 0 ? (
+      {!notConfigured && (
+        <Card>
+          <CardContent>
+            <TableContainer component={Paper} variant="outlined">
+              <Table size="small">
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                        No tags found. Create your first tag to get started.
-                      </Typography>
+                    <TableCell onClick={() => handleSort('key')} sx={{ cursor: 'pointer' }}>
+                      Key {sortBy === 'key' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
                     </TableCell>
+                    <TableCell onClick={() => handleSort('value')} sx={{ cursor: 'pointer' }}>
+                      Value {sortBy === 'value' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+                    </TableCell>
+                    <TableCell onClick={() => handleSort('type')} sx={{ cursor: 'pointer' }}>
+                      Resource Type {sortBy === 'type' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+                    </TableCell>
+                    <TableCell onClick={() => handleSort('rid')} sx={{ cursor: 'pointer' }}>
+                      Resource ID {sortBy === 'rid' ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+                    </TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
-                ) : (
-                  tags.map((tag, idx) => {
-                    const tagId = tag.id || tag.tagId;
-                    return (
-                      <TableRow key={idx}>
-                        <TableCell>{tag.key || tag.tagKey || '-'}</TableCell>
-                        <TableCell>{tag.value || tag.tagValue || '-'}</TableCell>
-                        <TableCell>{tag.resourceType || '-'}</TableCell>
-                        <TableCell>{tag.resourceId || '-'}</TableCell>
-                        <TableCell align="right">
-                          <Tooltip title="Edit">
-                            <span>
-                              <IconButton
-                                size="small"
-                                onClick={() => openEditDialog(tag)}
-                                disabled={loading}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <span>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => handleDelete(tagId)}
-                                disabled={loading}
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>}
+                </TableHead>
+                <TableBody>
+                  {tags.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
+                          No tags found. Create your first tag to get started.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    tags.map((tag) => {
+                      const tagId = tag.id || tag.tagId;
+                      return (
+                        <TableRow key={tagId || `${tag.key}-${tag.value}`}>
+                          <TableCell>{tag.key || tag.tagKey || '-'}</TableCell>
+                          <TableCell>{tag.value || tag.tagValue || '-'}</TableCell>
+                          <TableCell>{tag.resourceType || '-'}</TableCell>
+                          <TableCell>{tag.resourceId || '-'}</TableCell>
+                          <TableCell align="right">
+                            <Tooltip title="Edit">
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => openEditDialog(tag)}
+                                  disabled={loading}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleDelete(tagId)}
+                                  disabled={loading}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Create Tag Dialog */}
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>

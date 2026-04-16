@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -30,10 +30,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Divider,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -45,6 +41,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import { useGLPermissions, useGLRolePermissions } from '../hooks/useApiQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Permission categories and definitions
 const PERMISSION_CATEGORIES = {
@@ -117,63 +115,47 @@ function PermissionChip({ permission, granted }) {
 }
 
 function GLPermissionsPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notConfigured, setNotConfigured] = useState(false);
+  const queryClient = useQueryClient();
+  const [mutationError, setMutationError] = useState('');
   const [success, setSuccess] = useState('');
-  const [permissions, setPermissions] = useState([]);
-  const [rolePermissions, setRolePermissions] = useState({});
   const [createRoleOpen, setCreateRoleOpen] = useState(false);
   const [newRole, setNewRole] = useState({
     name: '',
     description: '',
     permissions: [],
   });
+  const [createLoading, setCreateLoading] = useState(false);
 
-  const fetchPermissions = async () => {
-    if (notConfigured) return;
-    setLoading(true);
-    setError('');
-    try {
-      const resp = await apiClient.get('/greenlake/permissions');
-      setPermissions(resp.data?.permissions || resp.data || []);
+  const {
+    data: permissionsData,
+    error: permissionsQueryError,
+    isLoading: permissionsLoading,
+    refetch: refetchPermissions,
+  } = useGLPermissions();
 
-      // Fetch role-permission mappings
-      try {
-        const roleResp = await apiClient.get('/greenlake/role-permissions');
-        setRolePermissions(roleResp.data || {});
-      } catch (e) {
-        // Role permissions endpoint not available
-      }
-    } catch (e) {
-      if (isGLNotConfiguredError(e)) {
-        setNotConfigured(true);
-      } else {
-        setError(e.response?.data?.error || 'Failed to load permissions');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: rolePermissions = {} } = useGLRolePermissions();
 
-  useEffect(() => {
-    fetchPermissions();
-  }, []);
+  const permissions = permissionsData?.permissions || permissionsData || [];
+  const notConfigured = permissionsQueryError ? isGLNotConfiguredError(permissionsQueryError) : false;
+  const error = mutationError || (permissionsQueryError && !notConfigured
+    ? (permissionsQueryError.response?.data?.error || 'Failed to load permissions')
+    : '');
+  const loading = permissionsLoading || createLoading;
 
   const handleCreateRole = async () => {
-    setLoading(true);
-    setError('');
+    setCreateLoading(true);
+    setMutationError('');
     setSuccess('');
     try {
       await apiClient.post('/greenlake/custom-roles', newRole);
       setSuccess('Custom role created successfully');
       setCreateRoleOpen(false);
       setNewRole({ name: '', description: '', permissions: [] });
-      await fetchPermissions();
+      queryClient.invalidateQueries({ queryKey: ['gl-permissions'] });
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to create role');
+      setMutationError(e.response?.data?.error || 'Failed to create role');
     } finally {
-      setLoading(false);
+      setCreateLoading(false);
     }
   };
 
@@ -211,7 +193,7 @@ function GLPermissionsPage() {
           </Button>
           <Tooltip title="Refresh">
             <span>
-              <IconButton onClick={fetchPermissions} disabled={loading}>
+              <IconButton onClick={() => refetchPermissions()} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </span>
@@ -230,7 +212,7 @@ function GLPermissionsPage() {
       </Alert>}
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setMutationError('')}>
           {error}
         </Alert>
       )}

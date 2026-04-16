@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import { useMemo, useState } from 'react';
+import {
+  Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
+  TableBody, TableContainer, Paper, Pagination, Button, TextField, Dialog,
+  DialogTitle, DialogContent, DialogActions, InputAdornment, Checkbox,
+  FormGroup, FormControlLabel,
+} from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,15 +12,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import DevicesIcon from '@mui/icons-material/Devices';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import { useGLDevices } from '../hooks/useApiQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 function GLDevicesPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notConfigured, setNotConfigured] = useState(false);
-  const [devices, setDevices] = useState([]);
-  const [total, setTotal] = useState(0);
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(25);
+  const [limit] = useState(25);
   const [sortBy, setSortBy] = useState('model');
   const [sortDir, setSortDir] = useState('asc');
   const [search, setSearch] = useState('');
@@ -25,69 +28,60 @@ function GLDevicesPage() {
   const [visibleCols, setVisibleCols] = useState({ model: true, serial: true, id: true, status: true, apps: true });
   const [showCols, setShowCols] = useState(false);
   const [selected, setSelected] = useState(new Set());
+  const [mutationError, setMutationError] = useState('');
 
-  const fetchDevices = async () => {
-    if (notConfigured) return;
-    setLoading(true);
-    setError('');
-    try {
-      const params = { offset: (page - 1) * limit, limit };
-      const resp = await apiClient.get('/greenlake/devices', { params });
-      let items = resp.data?.items || resp.data?.devices || [];
-      // client-side filter
-      if (search.trim()) {
-        const q = search.trim().toLowerCase();
-        items = items.filter((d) =>
-          (d.model || '').toLowerCase().includes(q) ||
-          (d.serialNumber || d.serial || '').toLowerCase().includes(q) ||
-          (d.id || d.deviceId || '').toLowerCase().includes(q)
-        );
-      }
-      // client-side sort
-      items = [...items].sort((a, b) => {
-        const av = ((sortBy === 'model' ? a.model :
-                    sortBy === 'serial' ? (a.serialNumber || a.serial) :
-                    sortBy === 'id' ? (a.id || a.deviceId) :
-                    sortBy === 'status' ? a.status : '') || '').toString().toLowerCase();
-        const bv = ((sortBy === 'model' ? b.model :
-                    sortBy === 'serial' ? (b.serialNumber || b.serial) :
-                    sortBy === 'id' ? (b.id || b.deviceId) :
-                    sortBy === 'status' ? b.status : '') || '').toString().toLowerCase();
-        if (av < bv) return sortDir === 'asc' ? -1 : 1;
-        if (av > bv) return sortDir === 'asc' ? 1 : -1;
-        return 0;
-      });
-      setDevices(items);
-      setTotal(resp.data?.total || 0);
-    } catch (e) {
-      if (isGLNotConfiguredError(e)) {
-        setNotConfigured(true);
-      } else {
-        setError(e.response?.data?.error || 'Failed to load devices');
-      }
-    } finally {
-      setLoading(false);
+  const {
+    data,
+    error: queryError,
+    isLoading: loading,
+    refetch,
+  } = useGLDevices({ page, limit });
+
+  const notConfigured = queryError ? isGLNotConfiguredError(queryError) : false;
+  const error = mutationError || (queryError && !notConfigured
+    ? (queryError.response?.data?.error || 'Failed to load devices')
+    : '');
+
+  const total = data?.total || 0;
+
+  const devices = useMemo(() => {
+    let items = data?.items || data?.devices || [];
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      items = items.filter((d) =>
+        (d.model || '').toLowerCase().includes(q) ||
+        (d.serialNumber || d.serial || '').toLowerCase().includes(q) ||
+        (d.id || d.deviceId || '').toLowerCase().includes(q)
+      );
     }
-  };
-
-  useEffect(() => {
-    fetchDevices();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, sortBy, sortDir]);
+    return [...items].sort((a, b) => {
+      const av = ((
+        sortBy === 'model'  ? a.model :
+        sortBy === 'serial' ? (a.serialNumber || a.serial) :
+        sortBy === 'id'     ? (a.id || a.deviceId) :
+        sortBy === 'status' ? a.status : ''
+      ) || '').toString().toLowerCase();
+      const bv = ((
+        sortBy === 'model'  ? b.model :
+        sortBy === 'serial' ? (b.serialNumber || b.serial) :
+        sortBy === 'id'     ? (b.id || b.deviceId) :
+        sortBy === 'status' ? b.status : ''
+      ) || '').toString().toLowerCase();
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [data, search, sortBy, sortDir]);
 
   const handleSort = (col) => {
-    if (sortBy === col) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortBy(col);
-      setSortDir('asc');
-    }
+    if (sortBy === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else { setSortBy(col); setSortDir('asc'); }
   };
 
   const exportCsv = () => {
     const headers = ['Model', 'Serial', 'Device ID', 'Status', 'Assigned Apps'];
-    const data = selected.size ? devices.filter(d => selected.has(d.id || d.deviceId)) : devices;
-    const rows = data.map((d) => [
+    const exportData = selected.size ? devices.filter((d) => selected.has(d.id || d.deviceId)) : devices;
+    const rows = exportData.map((d) => [
       d.model || '',
       d.serialNumber || d.serial || '',
       d.id || d.deviceId || '',
@@ -106,26 +100,29 @@ function GLDevicesPage() {
     URL.revokeObjectURL(url);
   };
 
+  const invalidateDevices = () => queryClient.invalidateQueries({ queryKey: ['gl-devices'] });
+
   const submitAdd = async () => {
+    setMutationError('');
     try {
       await apiClient.post('/greenlake/devices', form);
       setAddOpen(false);
       setForm({ serialNumber: '', model: '', deviceId: '' });
-      fetchDevices();
+      invalidateDevices();
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to add device');
+      setMutationError(e.response?.data?.error || 'Failed to add device');
     }
   };
 
   const submitUpdate = async () => {
+    setMutationError('');
     try {
-      // For update: send minimal payload; backend currently routes to devices v1
       await apiClient.patch('/greenlake/devices', form);
       setEditOpen(false);
       setForm({ serialNumber: '', model: '', deviceId: '' });
-      fetchDevices();
+      invalidateDevices();
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to update device');
+      setMutationError(e.response?.data?.error || 'Failed to update device');
     }
   };
 
@@ -142,108 +139,136 @@ function GLDevicesPage() {
             placeholder="Search model, serial, id"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && fetchDevices()}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} /></InputAdornment> }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
           />
           <Button startIcon={<DownloadIcon />} onClick={exportCsv} variant="outlined">Export CSV</Button>
           <Button startIcon={<AddIcon />} onClick={() => setAddOpen(true)} variant="contained">Add</Button>
           <Button startIcon={<EditIcon />} onClick={() => setEditOpen(true)} variant="outlined">Update</Button>
-          <Button onClick={() => setShowCols(v => !v)} variant="outlined">Columns</Button>
+          <Button onClick={() => setShowCols((v) => !v)} variant="outlined">Columns</Button>
         </Box>
       </Box>
+
       {showCols && (
         <Box sx={{ mb: 1 }}>
           <FormGroup row>
-            <FormControlLabel control={<Checkbox checked={visibleCols.model} onChange={(e)=>setVisibleCols({...visibleCols, model:e.target.checked})} />} label="Model" />
-            <FormControlLabel control={<Checkbox checked={visibleCols.serial} onChange={(e)=>setVisibleCols({...visibleCols, serial:e.target.checked})} />} label="Serial" />
-            <FormControlLabel control={<Checkbox checked={visibleCols.id} onChange={(e)=>setVisibleCols({...visibleCols, id:e.target.checked})} />} label="Device ID" />
-            <FormControlLabel control={<Checkbox checked={visibleCols.status} onChange={(e)=>setVisibleCols({...visibleCols, status:e.target.checked})} />} label="Status" />
-            <FormControlLabel control={<Checkbox checked={visibleCols.apps} onChange={(e)=>setVisibleCols({...visibleCols, apps:e.target.checked})} />} label="Assigned Apps" />
+            <FormControlLabel control={<Checkbox checked={visibleCols.model} onChange={(e) => setVisibleCols({ ...visibleCols, model: e.target.checked })} />} label="Model" />
+            <FormControlLabel control={<Checkbox checked={visibleCols.serial} onChange={(e) => setVisibleCols({ ...visibleCols, serial: e.target.checked })} />} label="Serial" />
+            <FormControlLabel control={<Checkbox checked={visibleCols.id} onChange={(e) => setVisibleCols({ ...visibleCols, id: e.target.checked })} />} label="Device ID" />
+            <FormControlLabel control={<Checkbox checked={visibleCols.status} onChange={(e) => setVisibleCols({ ...visibleCols, status: e.target.checked })} />} label="Status" />
+            <FormControlLabel control={<Checkbox checked={visibleCols.apps} onChange={(e) => setVisibleCols({ ...visibleCols, apps: e.target.checked })} />} label="Assigned Apps" />
           </FormGroup>
         </Box>
       )}
+
       {notConfigured && <GreenLakeNotConfigured />}
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {!notConfigured && <Card>
-        <CardContent>
-          <TableContainer component={Paper} variant="outlined">
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={selected.size > 0 && selected.size < devices.length}
-                      checked={devices.length > 0 && selected.size === devices.length}
-                      onChange={(e) => {
-                        if (e.target.checked) setSelected(new Set(devices.map(d => d.id || d.deviceId)));
-                        else setSelected(new Set());
-                      }}
-                    />
-                  </TableCell>
-                  {visibleCols.model && <TableCell onClick={() => handleSort('model')} sx={{ cursor: 'pointer' }}>Model {sortBy==='model' ? (sortDir==='asc'?'▲':'▼') : ''}</TableCell>}
-                  {visibleCols.serial && <TableCell onClick={() => handleSort('serial')} sx={{ cursor: 'pointer' }}>Serial {sortBy==='serial' ? (sortDir==='asc'?'▲':'▼') : ''}</TableCell>}
-                  {visibleCols.id && <TableCell onClick={() => handleSort('id')} sx={{ cursor: 'pointer' }}>Device ID {sortBy==='id' ? (sortDir==='asc'?'▲':'▼') : ''}</TableCell>}
-                  {visibleCols.status && <TableCell onClick={() => handleSort('status')} sx={{ cursor: 'pointer' }}>Status {sortBy==='status' ? (sortDir==='asc'?'▲':'▼') : ''}</TableCell>}
-                  {visibleCols.apps && <TableCell>Assigned Apps</TableCell>}
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {devices.length === 0 && !loading && (
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setMutationError('')}>
+          {error}
+        </Alert>
+      )}
+
+      {!notConfigured && (
+        <Card>
+          <CardContent>
+            <TableContainer component={Paper} variant="outlined">
+              <Table size="small">
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                      <DevicesIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
-                      <Typography variant="body2" color="text.secondary" display="block">
-                        No devices found
-                      </Typography>
-                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
-                        Add devices to your GreenLake inventory to get started
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {devices.map((d) => (
-                  <TableRow key={d.id || d.deviceId}>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={selected.has(d.id || d.deviceId)}
+                        indeterminate={selected.size > 0 && selected.size < devices.length}
+                        checked={devices.length > 0 && selected.size === devices.length}
                         onChange={(e) => {
-                          const s = new Set(selected);
-                          const key = d.id || d.deviceId;
-                          if (e.target.checked) s.add(key); else s.delete(key);
-                          setSelected(s);
+                          if (e.target.checked) setSelected(new Set(devices.map((d) => d.id || d.deviceId)));
+                          else setSelected(new Set());
                         }}
                       />
                     </TableCell>
-                    {visibleCols.model && <TableCell>{d.model || '-'}</TableCell>}
-                    {visibleCols.serial && <TableCell>{d.serialNumber || d.serial || '-'}</TableCell>}
-                    {visibleCols.id && <TableCell>{d.id || d.deviceId}</TableCell>}
-                    {visibleCols.status && <TableCell>{d.status || '-'}</TableCell>}
-                    {visibleCols.apps && <TableCell>{Array.isArray(d.assignedApps) ? d.assignedApps.join(', ') : '-'}</TableCell>}
-                    <TableCell>
-                      <Button size="small" onClick={() => { setForm({ serialNumber: d.serialNumber || d.serial || '', model: d.model || '', deviceId: d.id || d.deviceId || '' }); setEditOpen(true); }}>Edit</Button>
-                    </TableCell>
+                    {visibleCols.model  && <TableCell onClick={() => handleSort('model')}  sx={{ cursor: 'pointer' }}>Model  {sortBy === 'model'  ? (sortDir === 'asc' ? '▲' : '▼') : ''}</TableCell>}
+                    {visibleCols.serial && <TableCell onClick={() => handleSort('serial')} sx={{ cursor: 'pointer' }}>Serial {sortBy === 'serial' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</TableCell>}
+                    {visibleCols.id     && <TableCell onClick={() => handleSort('id')}     sx={{ cursor: 'pointer' }}>Device ID {sortBy === 'id' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</TableCell>}
+                    {visibleCols.status && <TableCell onClick={() => handleSort('status')} sx={{ cursor: 'pointer' }}>Status {sortBy === 'status' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</TableCell>}
+                    {visibleCols.apps   && <TableCell>Assigned Apps</TableCell>}
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Pagination count={Math.max(1, Math.ceil(total / limit))} page={page} onChange={(_, p) => setPage(p)} size="small" color="primary" />
-          </Box>
-        </CardContent>
-      </Card>}
+                </TableHead>
+                <TableBody>
+                  {devices.length === 0 && !loading && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                        <DevicesIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                        <Typography variant="body2" color="text.secondary" display="block">
+                          No devices found
+                        </Typography>
+                        <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                          Add devices to your GreenLake inventory to get started
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {devices.map((d) => (
+                    <TableRow key={d.id || d.deviceId}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selected.has(d.id || d.deviceId)}
+                          onChange={(e) => {
+                            const s = new Set(selected);
+                            const key = d.id || d.deviceId;
+                            if (e.target.checked) s.add(key); else s.delete(key);
+                            setSelected(s);
+                          }}
+                        />
+                      </TableCell>
+                      {visibleCols.model  && <TableCell>{d.model || '-'}</TableCell>}
+                      {visibleCols.serial && <TableCell>{d.serialNumber || d.serial || '-'}</TableCell>}
+                      {visibleCols.id     && <TableCell>{d.id || d.deviceId}</TableCell>}
+                      {visibleCols.status && <TableCell>{d.status || '-'}</TableCell>}
+                      {visibleCols.apps   && <TableCell>{Array.isArray(d.assignedApps) ? d.assignedApps.join(', ') : '-'}</TableCell>}
+                      <TableCell>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            setForm({ serialNumber: d.serialNumber || d.serial || '', model: d.model || '', deviceId: d.id || d.deviceId || '' });
+                            setEditOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Pagination
+                count={Math.max(1, Math.ceil(total / limit))}
+                page={page}
+                onChange={(_, p) => setPage(p)}
+                size="small"
+                color="primary"
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add Device Dialog */}
       <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
         <DialogTitle>Add Device</DialogTitle>
         <DialogContent sx={{ display: 'grid', gap: 2, mt: 1 }}>
-          <TextField label="Serial Number" value={form.serialNumber} onChange={(e)=>setForm({...form, serialNumber: e.target.value})} />
-          <TextField label="Model" value={form.model} onChange={(e)=>setForm({...form, model: e.target.value})} />
-          <TextField label="Device ID" value={form.deviceId} onChange={(e)=>setForm({...form, deviceId: e.target.value})} helperText="Optional client-supplied id" />
+          <TextField label="Serial Number" value={form.serialNumber} onChange={(e) => setForm({ ...form, serialNumber: e.target.value })} />
+          <TextField label="Model" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} />
+          <TextField label="Device ID" value={form.deviceId} onChange={(e) => setForm({ ...form, deviceId: e.target.value })} helperText="Optional client-supplied id" />
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setAddOpen(false)}>Cancel</Button>
+          <Button onClick={() => setAddOpen(false)}>Cancel</Button>
           <Button onClick={submitAdd} variant="contained">Add</Button>
         </DialogActions>
       </Dialog>
@@ -252,12 +277,12 @@ function GLDevicesPage() {
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Update Device</DialogTitle>
         <DialogContent sx={{ display: 'grid', gap: 2, mt: 1 }}>
-          <TextField label="Serial Number" value={form.serialNumber} onChange={(e)=>setForm({...form, serialNumber: e.target.value})} />
-          <TextField label="Model" value={form.model} onChange={(e)=>setForm({...form, model: e.target.value})} />
-          <TextField label="Device ID" value={form.deviceId} onChange={(e)=>setForm({...form, deviceId: e.target.value})} />
+          <TextField label="Serial Number" value={form.serialNumber} onChange={(e) => setForm({ ...form, serialNumber: e.target.value })} />
+          <TextField label="Model" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} />
+          <TextField label="Device ID" value={form.deviceId} onChange={(e) => setForm({ ...form, deviceId: e.target.value })} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setEditOpen(false)}>Cancel</Button>
+          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
           <Button onClick={submitUpdate} variant="contained">Update</Button>
         </DialogActions>
       </Dialog>
@@ -266,5 +291,3 @@ function GLDevicesPage() {
 }
 
 export default GLDevicesPage;
-
-
