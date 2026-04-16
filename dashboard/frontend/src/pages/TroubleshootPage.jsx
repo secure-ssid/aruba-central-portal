@@ -109,12 +109,12 @@ function TroubleshootPage() {
       ]);
 
       if (switchesData.status === 'fulfilled') {
-        const switchList = switchesData.value.switches || switchesData.value.items || [];
+        const switchList = switchesData.value.switches || switchesData.value.result || switchesData.value.items || [];
         setSwitches(switchList);
       }
 
       if (apsData.status === 'fulfilled') {
-        const apList = apsData.value.aps || apsData.value.items || [];
+        const apList = apsData.value.aps || apsData.value.result || apsData.value.items || [];
         setAccessPoints(apList);
       }
     } catch (err) {

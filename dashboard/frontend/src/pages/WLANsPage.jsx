@@ -433,7 +433,7 @@ function WLANsPage() {
       setError('');
       const response = await wlanAPI.getAll();
       // Handle new response format with 'wlans' array
-      setWlans(response.wlans || response.items || response.data || []);
+      setWlans(response.wlans || response.result || response.items || response.data || []);
     } catch (err) {
       setError(err.message || 'Failed to load WLANs');
     } finally {
