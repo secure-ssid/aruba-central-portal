@@ -1752,10 +1752,28 @@ def export_configuration():
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        response = aruba_client.get(f"/configuration/v1/devices/{serial}/configuration")
+        # Try New Central path first, fall back to legacy
+        response = None
+        for endpoint in [
+            f"/network-config/v1/devices/{serial}/config",
+            f"/configuration/v1/devices/{serial}/configuration",
+        ]:
+            try:
+                response = aruba_client.get(endpoint)
+                if response and not response.get("error"):
+                    break
+            except Exception:
+                continue
+
+        if not response:
+            return jsonify({"error": "Could not retrieve configuration from device"}), 404
 
         # Return as downloadable file
-        config_text = response.get("configuration", json.dumps(response, indent=2))
+        config_text = (
+            response.get("config")
+            or response.get("configuration")
+            or json.dumps(response, indent=2)
+        )
 
         resp = make_response(config_text)
         resp.headers["Content-Type"] = "text/plain"

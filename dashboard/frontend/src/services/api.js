@@ -643,7 +643,7 @@ export const troubleshootAPI = {
   },
 
   rebootSwitch: async (serial) => {
-    const response = await apiClient.post('/troubleshoot/cx/reboot', { serial });
+    const response = await apiClient.post('/troubleshoot/cx/reboot', { device_serial: serial });
     return response.data;
   },
 
@@ -675,32 +675,32 @@ export const troubleshootAPI = {
   },
 
   portBounce: async (serial, port) => {
-    const response = await apiClient.post('/troubleshoot/cx/port-bounce', { serial, port });
+    const response = await apiClient.post('/troubleshoot/cx/port-bounce', { device_serial: serial, port });
     return response.data;
   },
 
   poeBounce: async (serial, port) => {
-    const response = await apiClient.post('/troubleshoot/cx/poe-bounce', { serial, port });
+    const response = await apiClient.post('/troubleshoot/cx/poe-bounce', { device_serial: serial, port });
     return response.data;
   },
 
   cableTest: async (serial, port) => {
-    const response = await apiClient.post('/troubleshoot/cx/cable-test', { serial, port });
+    const response = await apiClient.post('/troubleshoot/cx/cable-test', { device_serial: serial, port });
     return response.data;
   },
 
   showCXCommand: async (serial, command) => {
-    const response = await apiClient.post('/troubleshoot/cx/show-command', { serial, command });
+    const response = await apiClient.post('/troubleshoot/cx/show-command', { device_serial: serial, command });
     return response.data;
   },
 
   cxHttpTest: async (serial, url) => {
-    const response = await apiClient.post('/troubleshoot/cx/http-test', { serial, url });
+    const response = await apiClient.post('/troubleshoot/cx/http-test', { device_serial: serial, url });
     return response.data;
   },
 
-  cxLocate: async (serial) => {
-    const response = await apiClient.post('/troubleshoot/cx/locate', { serial });
+  cxLocate: async (serial, enable = true) => {
+    const response = await apiClient.post('/troubleshoot/cx/locate', { device_serial: serial, enable });
     return response.data;
   },
 

@@ -595,9 +595,9 @@ function DiagnosticsTab({ device, resolvedSerial }) {
           : 'Run live diagnostics and operations directly on this switch.'}
       </Typography>
       <Grid container spacing={2.5}>
-        {tools.map((tool) => (
-          <Grid item xs={12} sm={6} md={4} key={tool.key}>
-            <ToolCard {...tool} />
+        {tools.map(({ key, ...toolProps }) => (
+          <Grid item xs={12} sm={6} md={4} key={key}>
+            <ToolCard {...toolProps} />
           </Grid>
         ))}
       </Grid>
