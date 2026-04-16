@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 import logging
 
-from .helpers import require_session, api_proxy, cached_get, parallel_get
+from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
 
 devices_bp = Blueprint("devices", __name__)
 logger = logging.getLogger(__name__)
@@ -27,9 +27,20 @@ logger = logging.getLogger(__name__)
 
 @devices_bp.route("/api/devices", methods=["GET"])
 @require_session
-@api_proxy("/network-monitoring/v1/devices", error_msg="Devices")
 def get_devices():
-    pass
+    """Get all devices with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/network-monitoring/v1/devices",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Devices: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
 
 @devices_bp.route("/api/devices/<serial>", methods=["GET"])
@@ -310,14 +321,16 @@ def get_ap_power_consumption(serial):
 @devices_bp.route("/api/switches", methods=["GET"])
 @require_session
 def get_switches():
-    """Get all switches using the v1 switches endpoint."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get all switches with auto-pagination for large deployments."""
     try:
         params = request.args.to_dict()
-        r = aruba_client.get("/network-monitoring/v1/switches", params=params)
-        return jsonify(r)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/switches",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Switches: {e}")
         return jsonify({"error": str(e)}), 500
@@ -325,9 +338,20 @@ def get_switches():
 
 @devices_bp.route("/api/aps", methods=["GET"])
 @require_session
-@api_proxy("/network-monitoring/v1/aps", error_msg="APs")
 def get_access_points():
-    pass
+    """Get all access points with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/network-monitoring/v1/aps",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"APs: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
 
 # ============= Device Information Endpoints (Configuration API) =============

@@ -28,7 +28,7 @@ import logging
 import requests
 from flask import Blueprint, request, jsonify, make_response
 
-from .helpers import require_session, api_proxy, cached_get, parallel_get
+from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
 
 config_bp = Blueprint("config", __name__)
 logger = logging.getLogger(__name__)
@@ -1116,13 +1116,23 @@ def sites_config():
 
 @config_bp.route("/api/sites", methods=["GET"])
 @require_session
-@api_proxy(
-    "/network-config/v1/sites",
-    error_msg="Sites",
-    fallback_data={"items": [], "count": 0, "total": 0},
-)
 def get_sites():
-    pass
+    """Get all sites with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/network-config/v1/sites",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Sites: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"items": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/sites/<site_id>", methods=["GET"])
@@ -1154,13 +1164,24 @@ def delete_site(site_id):
 
 @config_bp.route("/api/groups", methods=["GET"])
 @require_session
-@api_proxy(
-    "/configuration/v1/groups",
-    error_msg="Groups",
-    fallback_data={"groups": [], "count": 0, "total": 0},
-)
 def get_groups():
-    pass
+    """Get all groups with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/configuration/v1/groups",
+            params=params,
+            items_key="groups",
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Groups: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"groups": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/templates", methods=["GET"])
@@ -1253,11 +1274,24 @@ def get_nac_onboarding_rules():
 
 @config_bp.route("/api/scope/labels", methods=["GET"])
 @require_session
-@api_proxy(
-    "/central/v2/labels", error_msg="Labels", fallback_data={"labels": [], "count": 0, "total": 0}
-)
 def get_scope_labels():
-    pass
+    """Get all labels with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/central/v2/labels",
+            params=params,
+            items_key="labels",
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Labels: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"labels": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/scope/labels", methods=["POST"])

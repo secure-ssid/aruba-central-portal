@@ -187,6 +187,71 @@ def cached_get(endpoint, params=None, ttl=None):
     return result
 
 
+def cached_get_paginated(
+    endpoint,
+    params=None,
+    items_key="items",
+    max_pages=10,
+    page_size=100,
+    ttl=None,
+):
+    """Cached wrapper around ``aruba_client.get_all_paginated()``.
+
+    Works like ``cached_get`` but auto-paginates to collect all items.
+    The cache stores the *combined* result so subsequent calls within the
+    TTL window never hit the Aruba Central API.
+
+    If the caller supplies ``offset`` or ``limit`` in *params* the request
+    is treated as an explicit frontend-driven page and forwarded verbatim
+    through the regular ``cached_get`` (no auto-pagination).
+
+    Returns:
+        A dict with ``{items_key: [...], "count": N, "total": N}`` that
+        matches the shape the frontend already expects from single-page
+        responses.
+    """
+    import app as _app
+
+    params = dict(params) if params else {}
+
+    # If the frontend explicitly asks for a specific page, honour it.
+    if "offset" in params or "limit" in params:
+        return cached_get(endpoint, params=params, ttl=ttl)
+
+    cache_key = (
+        f"paginated:{endpoint}:"
+        f"{json.dumps(params, sort_keys=True) if params else ''}"
+    )
+    effective_ttl = ttl if ttl is not None else CACHE_TIERS.get(endpoint, 0)
+
+    if effective_ttl > 0:
+        data, ts = _app._poll_cache_get(cache_key)
+        if data is not None and (time.time() - ts) < effective_ttl:
+            logger.debug(f"Cache HIT (paginated) for {endpoint} (ttl={effective_ttl}s)")
+            return data
+
+    if not _app.aruba_client:
+        raise RuntimeError("Aruba Central client not initialized")
+
+    all_items = _app.aruba_client.get_all_paginated(
+        endpoint,
+        params=params,
+        items_key=items_key,
+        max_pages=max_pages,
+        page_size=page_size,
+    )
+
+    result = {
+        items_key: all_items,
+        "count": len(all_items),
+        "total": len(all_items),
+    }
+
+    if effective_ttl > 0:
+        _app._poll_cache_set(cache_key, result)
+    return result
+
+
 def parallel_get(calls):
     """Fetch multiple endpoints in parallel via ``cached_get``.
 
