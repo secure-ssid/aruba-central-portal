@@ -38,6 +38,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import ShieldIcon from '@mui/icons-material/Shield';
 import { greenlakeRoleAPI } from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import toast from 'react-hot-toast';
 
 const PLATFORM_ROLES = [
   {
@@ -140,7 +141,7 @@ export default function GLRolesPage() {
       const data = await greenlakeRoleAPI.listUsers();
       setUsers(data.items || []);
     } catch (e) {
-      console.error('Failed to load users:', e);
+      // Users list is supplementary; silently degrade — role assignments still load
       setUsers([]);
     }
   };
@@ -148,7 +149,7 @@ export default function GLRolesPage() {
   useEffect(() => {
     load();
     loadUsers();
-  }, []);
+  }, [notConfigured]);
 
   const handleAssignRole = async () => {
     if (!selectedRole || !selectedUser) return;
@@ -159,6 +160,7 @@ export default function GLRolesPage() {
         userId: selectedUser,
         roleId: selectedRole,
       });
+      toast.success('Role assigned successfully');
       setAssignOpen(false);
       setSelectedRole('');
       setSelectedUser('');
@@ -176,6 +178,7 @@ export default function GLRolesPage() {
     setError('');
     try {
       await greenlakeRoleAPI.unassignRole(assignmentId);
+      toast.success('Role unassigned');
       await load();
     } catch (e) {
       setError(e?.response?.data?.error || 'Role unassignment failed');

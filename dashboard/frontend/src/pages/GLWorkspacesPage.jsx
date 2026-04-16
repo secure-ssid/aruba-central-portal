@@ -41,12 +41,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 import StatusChip from '../components/StatusChip';
+import toast from 'react-hot-toast';
 
 function GLWorkspacesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [notConfigured, setNotConfigured] = useState(false);
-  const [success, setSuccess] = useState('');
   const [workspaces, setWorkspaces] = useState([]);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
   const [search, setSearch] = useState('');
@@ -120,10 +120,9 @@ function GLWorkspacesPage() {
   const handleCreate = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.post('/greenlake/workspaces', formData);
-      setSuccess('Workspace created successfully');
+      toast.success('Workspace created successfully');
       setCreateOpen(false);
       setFormData({ id: '', name: '', description: '', status: 'ACTIVE' });
       await fetchWorkspaces();
@@ -137,14 +136,13 @@ function GLWorkspacesPage() {
   const handleUpdate = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.patch(`/greenlake/workspaces/${formData.id}`, {
         name: formData.name,
         description: formData.description,
         status: formData.status,
       });
-      setSuccess('Workspace updated successfully');
+      toast.success('Workspace updated successfully');
       setEditOpen(false);
       setFormData({ id: '', name: '', description: '', status: 'ACTIVE' });
       await fetchWorkspaces();
@@ -160,10 +158,9 @@ function GLWorkspacesPage() {
     if (!window.confirm('Delete this workspace? This action cannot be undone.')) return;
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.delete(`/greenlake/workspaces/${workspaceId}`);
-      setSuccess('Workspace deleted successfully');
+      toast.success('Workspace deleted successfully');
       await fetchWorkspaces();
     } catch (e) {
       setError(e.response?.data?.error || 'Failed to delete workspace');
@@ -175,7 +172,6 @@ function GLWorkspacesPage() {
   const handleSwitch = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       const payload = {
         client_id: switchData.clientId,
@@ -190,7 +186,7 @@ function GLWorkspacesPage() {
       }
 
       const resp = await apiClient.post('/workspace/switch', payload);
-      setSuccess(resp.data.message || 'Workspace switched successfully. Page will reload...');
+      toast.success(resp.data.message || 'Workspace switched successfully. Page will reload...');
       setSwitchOpen(false);
       setSwitchData({
         workspaceId: '',
@@ -215,7 +211,6 @@ function GLWorkspacesPage() {
   const handleTokenTransfer = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       const payload = {
         sourceWorkspaceId: transferData.sourceWorkspaceId,
@@ -225,7 +220,7 @@ function GLWorkspacesPage() {
       };
 
       await apiClient.post('/greenlake/msp/token-transfer', payload);
-      setSuccess('Token transfer completed successfully');
+      toast.success('Token transfer completed successfully');
       setTransferOpen(false);
       setTransferData({
         sourceWorkspaceId: '',
@@ -314,11 +309,6 @@ function GLWorkspacesPage() {
         </Alert>
       )}
 
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess('')}>
-          {success}
-        </Alert>
-      )}
 
       {!notConfigured && (
         <TextField

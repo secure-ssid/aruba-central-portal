@@ -15,12 +15,12 @@ import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 import { useGLTags } from '../hooks/useApiQueries';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 function GLTagsPage() {
   const queryClient = useQueryClient();
   const [mutationLoading, setMutationLoading] = useState(false);
   const [mutationError, setMutationError] = useState('');
-  const [success, setSuccess] = useState('');
   const [sortBy, setSortBy] = useState('key');
   const [sortDir, setSortDir] = useState('asc');
   const [search, setSearch] = useState('');
@@ -119,7 +119,7 @@ function GLTagsPage() {
     setSuccess('');
     try {
       await apiClient.post('/greenlake/tags', formData);
-      setSuccess('Tag created successfully');
+      toast.success('Tag created successfully');
       setCreateOpen(false);
       setFormData({ id: '', key: '', value: '', resourceType: '', resourceId: '' });
       invalidateTags();
@@ -136,7 +136,7 @@ function GLTagsPage() {
     setSuccess('');
     try {
       await apiClient.patch(`/greenlake/tags/${formData.id}`, formData);
-      setSuccess('Tag updated successfully');
+      toast.success('Tag updated successfully');
       setEditOpen(false);
       setFormData({ id: '', key: '', value: '', resourceType: '', resourceId: '' });
       invalidateTags();
@@ -154,7 +154,7 @@ function GLTagsPage() {
     setSuccess('');
     try {
       await apiClient.delete(`/greenlake/tags/${tagId}`);
-      setSuccess('Tag deleted successfully');
+      toast.success('Tag deleted successfully');
       invalidateTags();
     } catch (e) {
       setMutationError(e.response?.data?.error || 'Failed to delete tag');
@@ -235,11 +235,6 @@ function GLTagsPage() {
         </Alert>
       )}
 
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess('')}>
-          {success}
-        </Alert>
-      )}
 
       {!notConfigured && (
         <Card>
