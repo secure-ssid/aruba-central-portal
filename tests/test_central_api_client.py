@@ -14,7 +14,7 @@ from tests.conftest import (
     TEST_BASE_URL,
     add_api_endpoint,
 )
-from utils.central_api_client import CentralAPIClient
+from utils.central_api_client import CentralAPIClient, CentralAPIError
 
 
 class TestCentralAPIClientInit:
@@ -84,13 +84,16 @@ class TestCentralAPIClientGet:
 
     @responses.activate
     def test_get_404_raises_error(self, api_client):
-        """Test that 404 raises HTTPError."""
+        """Test that 404 raises CentralAPIError with correct status_code."""
         responses.add(
             responses.GET, f"{TEST_BASE_URL}/api/notfound", json={"error": "Not found"}, status=404
         )
 
-        with pytest.raises(HTTPError):
+        with pytest.raises(CentralAPIError) as exc_info:
             api_client.get("/api/notfound")
+
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.response is not None
 
 
 class TestCentralAPIClientPost:
@@ -168,9 +171,10 @@ class TestCentralAPIClientRateLimiting:
                 status=429,
             )
 
-        with patch("time.sleep"), pytest.raises(HTTPError):
+        with patch("time.sleep"), pytest.raises(CentralAPIError) as exc_info:
             api_client.get("/api/endpoint")
 
+        assert exc_info.value.status_code == 429
         # 1 initial + 3 retries = 4 calls
         assert len(responses.calls) == 4
 
@@ -187,7 +191,7 @@ class TestCentralAPIClientRateLimiting:
             )
 
         with patch("time.sleep") as mock_sleep:
-            with pytest.raises(HTTPError):
+            with pytest.raises(CentralAPIError):
                 api_client.get("/api/endpoint")
 
             # Check sleep was called with increasing delays
