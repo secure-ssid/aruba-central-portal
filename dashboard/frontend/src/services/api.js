@@ -350,6 +350,21 @@ export const getTopClients = async (siteId) => {
   return response.data;
 };
 
+export const getClientHealth = async (params = {}) => {
+  const response = await apiClient.get('/clients/health', { params });
+  return response.data;
+};
+
+export const getClientByMac = async (mac) => {
+  const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}`);
+  return response.data;
+};
+
+export const getClientMobilityTrail = async (mac, params = {}) => {
+  const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}/mobility-trail`, { params });
+  return response.data;
+};
+
 /**
  * NAC (Network Access Control) API
  */
@@ -621,6 +636,16 @@ export const firmwareAPI = {
     const response = await apiClient.post('/firmware/upgrade', upgradeData);
     return response.data;
   },
+
+  getDetails: async (params = {}) => {
+    const response = await apiClient.get('/firmware/details', { params });
+    return response.data;
+  },
+
+  getCompliancePolicy: async (params = {}) => {
+    const response = await apiClient.get('/firmware/compliance-policy', { params });
+    return response.data;
+  },
 };
 
 /**
@@ -838,6 +863,11 @@ export const monitoringAPIv2 = {
     return response.data;
   },
 
+  getTopAPsByWiredBandwidth: async (params = {}) => {
+    const response = await apiClient.get('/monitoring/aps/top-wired-bandwidth', { params });
+    return response.data;
+  },
+
   // WLANs Monitoring
   getWLANsMonitoring: async (params = {}) => {
     const response = await apiClient.get('/monitoring/wlans', { params });
@@ -910,6 +940,31 @@ export const monitoringAPIv2 = {
 
   getGatewayTunnels: async (serial) => {
     const response = await apiClient.get(`/monitoring/gateways/${serial}/tunnels`);
+    return response.data;
+  },
+
+  getGatewayCPU: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/cpu`, { params });
+    return response.data;
+  },
+
+  getGatewayMemory: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/memory`, { params });
+    return response.data;
+  },
+
+  getGatewayUplinks: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/uplinks`, { params });
+    return response.data;
+  },
+
+  getGatewayWANAvailability: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/wan-availability`, { params });
+    return response.data;
+  },
+
+  getGatewayWANTunnelsHealth: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/wan-tunnels-health`, { params });
     return response.data;
   },
 

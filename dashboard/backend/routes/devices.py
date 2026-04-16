@@ -216,7 +216,7 @@ def run_switch_show_command(serial):
             return jsonify({"error": "Command must start with 'show '"}), 400
 
         response = aruba_client.post(
-            f"/network-troubleshooting/v1alpha1/cx/{serial}/showCommand", json={"command": command}
+            f"/network-troubleshooting/v1alpha1/cx/{serial}/showCommand", data={"command": command}
         )
         logger.info(f"Show command response for {serial}: {response}")
         # Handle different response formats - taskId might be in different fields

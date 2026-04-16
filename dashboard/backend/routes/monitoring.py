@@ -311,10 +311,32 @@ def get_top_aps_bandwidth():
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/aps/bandwidth/top", params=params)
+        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wireless-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top APs by bandwidth: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@monitoring_bp.route("/api/monitoring/aps/top-wired-bandwidth", methods=["GET"])
+@require_session
+def get_top_aps_wired_bandwidth():
+    """Get Access Points with highest wired bandwidth usage."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = {}
+        if request.args.get("limit"):
+            params["limit"] = request.args.get("limit")
+        site_id = request.args.get("site_id", request.args.get("site-id"))
+        if site_id:
+            params["site-id"] = site_id
+
+        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wired-usage", params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching top APs by wired bandwidth: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -537,7 +559,7 @@ def get_ap_throughput_trend(serial):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/throughput", params=params
+            f"/network-monitoring/v1/aps/{serial}/throughput-trends", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -575,7 +597,7 @@ def get_radio_channel_utilization(serial, radio_id):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization",
+            f"/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization-trends",
             params=params,
         )
         return jsonify(response)
@@ -1336,6 +1358,27 @@ def get_gateway_cpu_utilization(serial):
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching CPU utilization for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@monitoring_bp.route("/api/monitoring/gateways/<serial>/memory", methods=["GET"])
+@require_session
+def get_gateway_memory_utilization(serial):
+    """Get memory utilization trends for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/memory-utilization-trends
+    """
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f"/network-monitoring/v1/gateways/{serial}/memory-utilization-trends", params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching memory utilization for gateway {serial}: {e}")
         return jsonify({"error": str(e)}), 500
 
 

@@ -899,29 +899,37 @@ def _handle_switch_port_errors(text, _session_id):
 
         # Fetch interface error stats for each switch — limit to first 10 to
         # avoid burning daily quota; the worst offender usually surfaces fast.
-        results = []
-        for sw in switches[:10]:
+        # Parallelize to reduce latency.
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        def _fetch_switch_errors(sw):
             serial = sw.get("serial", sw.get("serialNumber", ""))
             name = _device_display_name(sw) or serial
             if not serial:
-                continue
+                return None
             try:
                 iface_r = aruba_client.get(f"/network-monitoring/v1/switches/{serial}/interfaces")
                 ifaces = iface_r.get("items", iface_r if isinstance(iface_r, list) else [])
                 total_errors = sum(
                     (i.get("inputErrors", 0) or 0) + (i.get("outputErrors", 0) or 0) for i in ifaces
                 )
-                results.append(
-                    {
-                        "serial": serial,
-                        "name": name,
-                        "site": _cell(_first_present_str(sw, "siteName", "site")),
-                        "total_errors": total_errors,
-                        "iface_count": len(ifaces),
-                    }
-                )
+                return {
+                    "serial": serial,
+                    "name": name,
+                    "site": _cell(_first_present_str(sw, "siteName", "site")),
+                    "total_errors": total_errors,
+                    "iface_count": len(ifaces),
+                }
             except Exception:
-                pass  # skip switches where interface API isn't available
+                return None
+
+        results = []
+        with ThreadPoolExecutor(max_workers=5) as pool:
+            futures = {pool.submit(_fetch_switch_errors, sw): sw for sw in switches[:10]}
+            for future in as_completed(futures):
+                result = future.result()
+                if result is not None:
+                    results.append(result)
 
         if not results:
             return (

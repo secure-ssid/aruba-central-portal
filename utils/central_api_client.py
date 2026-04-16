@@ -82,12 +82,33 @@ class CentralAPIClient:
 
             if response.status_code == 429 and attempt < max_retries:
                 # Rate limit error - retry with exponential backoff
+                # Respect Retry-After header from Central if present
+                retry_after = response.headers.get("Retry-After")
+                if retry_after:
+                    try:
+                        retry_delay = int(retry_after)
+                    except (ValueError, TypeError):
+                        pass  # Fall through to default delay
                 logger.warning(
                     f"Rate limit (429) hit on {method} {url}. "
                     f"Waiting {retry_delay}s before retry {attempt + 1}/{max_retries}"
                 )
                 time.sleep(retry_delay)
                 retry_delay = min(int(retry_delay * 1.5), 300)  # Cap at 5 minutes
+                continue
+
+            if response.status_code == 401 and attempt < max_retries and self.token_manager:
+                # Token may have expired mid-request — force refresh and retry once
+                logger.warning(
+                    f"401 Unauthorized on {method} {url}. "
+                    f"Forcing token refresh (attempt {attempt + 1}/{max_retries})"
+                )
+                try:
+                    access_token = self.token_manager.get_access_token(force_refresh=True)
+                    self._update_token(access_token)
+                except Exception as refresh_err:
+                    logger.error(f"Token refresh failed during retry: {refresh_err}")
+                    return response
                 continue
 
             return response
@@ -167,6 +188,10 @@ class CentralAPIClient:
         response = self._request_with_retry("POST", url, json=data, params=params)
         response.raise_for_status()
 
+        # Handle empty responses (e.g., 204 No Content)
+        if not response.text or response.text.strip() == "":
+            return {}
+
         return response.json()
 
     def put(
@@ -193,6 +218,9 @@ class CentralAPIClient:
 
         response = self._request_with_retry("PUT", url, json=data, params=params)
         response.raise_for_status()
+
+        if not response.text or response.text.strip() == "":
+            return {}
 
         return response.json()
 
@@ -221,6 +249,9 @@ class CentralAPIClient:
         response = self._request_with_retry("PATCH", url, json=data, params=params)
         response.raise_for_status()
 
+        if not response.text or response.text.strip() == "":
+            return {}
+
         return response.json()
 
     def delete(
@@ -246,4 +277,49 @@ class CentralAPIClient:
         response = self._request_with_retry("DELETE", url, params=params)
         response.raise_for_status()
 
+        # DELETE often returns 204 No Content
+        if not response.text or response.text.strip() == "":
+            return {}
+
         return response.json()
+
+    def get_all_paginated(
+        self,
+        endpoint: str,
+        params: dict[str, Any] | None = None,
+        items_key: str = "items",
+        max_pages: int = 20,
+        page_size: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Auto-paginate a GET endpoint that uses offset/limit pagination.
+
+        Central APIs typically return {items: [...], count: N, total: T}.
+        This helper fetches all pages and returns a flat list of items.
+
+        Args:
+            endpoint: API endpoint path
+            params: Base query parameters (offset/limit will be managed)
+            items_key: Key in the response that contains the list of items
+            max_pages: Safety limit on number of pages to fetch
+            page_size: Number of items per page
+
+        Returns:
+            Combined list of all items across pages
+        """
+        all_items: list[dict[str, Any]] = []
+        params = dict(params) if params else {}
+        params["limit"] = page_size
+        params.setdefault("offset", 0)
+
+        for _ in range(max_pages):
+            response = self.get(endpoint, params=params)
+            items = response.get(items_key, [])
+            if not items:
+                break
+            all_items.extend(items)
+            total = response.get("total", response.get("count", len(items)))
+            if len(all_items) >= total:
+                break
+            params["offset"] = len(all_items)
+
+        return all_items

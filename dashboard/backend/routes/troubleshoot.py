@@ -1372,7 +1372,7 @@ def troubleshoot_bandwidth_test():
 
         response = aruba_client.post(
             f'/device-management/v1/device/{device_serial}/action/bandwidth-test',
-            json=data
+            data=data
         )
         return jsonify(response)
     except Exception as e:

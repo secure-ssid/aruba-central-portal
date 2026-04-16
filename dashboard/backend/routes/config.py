@@ -109,7 +109,7 @@ def update_wlan_config(ssid_name):
     try:
         wlan_data = request.get_json()
         response = aruba_client.patch(
-            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", json=wlan_data
+            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", data=wlan_data
         )
         return jsonify(response)
     except Exception as e:
@@ -735,8 +735,19 @@ def get_clients():
             try:
                 response = aruba_client.get(endpoint, params=params)
                 clients = extractor(response)
-                logger.info(f"Clients fetched from {endpoint}: {len(clients)}")
+                total = response.get("total", response.get("count", len(clients)))
+                logger.info(f"Clients fetched from {endpoint}: {len(clients)} (total={total})")
                 all_clients = clients
+
+                # Auto-paginate if Central indicates more results exist
+                page_limit = params.get("limit", 500)
+                while len(all_clients) < total and len(all_clients) < limit:
+                    next_params = {**params, "offset": len(all_clients), "limit": page_limit}
+                    next_resp = aruba_client.get(endpoint, params=next_params)
+                    next_page = extractor(next_resp)
+                    if not next_page:
+                        break
+                    all_clients.extend(next_page)
                 break
             except Exception as e:
                 logger.warning(f"Clients endpoint {endpoint} failed: {e}")
@@ -1460,7 +1471,7 @@ def bulk_ap_rename():
             try:
                 # Update AP name via Central API
                 response = aruba_client.post(
-                    f"/configuration/v1/ap/{serial}", json={"hostname": new_name}
+                    f"/configuration/v1/ap/{serial}", data={"hostname": new_name}
                 )
                 results.append({"serial": serial, "new_name": new_name, "status": "success"})
             except Exception as e:
@@ -1504,7 +1515,7 @@ def bulk_group_assign():
 
             try:
                 response = aruba_client.post(
-                    f"/configuration/v2/devices/{serial}/group", json={"group": group}
+                    f"/configuration/v2/devices/{serial}/group", data={"group": group}
                 )
                 results.append({"serial": serial, "group": group, "status": "success"})
             except Exception as e:
@@ -1549,7 +1560,7 @@ def bulk_site_assign():
             try:
                 response = aruba_client.post(
                     f"/central/v2/sites/associations",
-                    json={"device_id": serial, "site_id": site_id},
+                    data={"device_id": serial, "site_id": site_id},
                 )
                 results.append({"serial": serial, "site_id": site_id, "status": "success"})
             except Exception as e:
