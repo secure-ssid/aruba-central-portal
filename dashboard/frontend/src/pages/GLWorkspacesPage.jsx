@@ -27,6 +27,7 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
@@ -294,22 +295,6 @@ function GLWorkspacesPage() {
 
       {notConfigured && <GreenLakeNotConfigured />}
 
-      {!notConfigured && currentWorkspace && (
-        <Alert severity="info" icon={<BusinessIcon />} sx={{ mb: 2 }}>
-          <Typography variant="body2">
-            <strong>Current Workspace:</strong> {currentWorkspace.customer_id || 'Unknown'}
-            {currentWorkspace.greenlake_updated && ' (GreenLake credentials active)'}
-          </Typography>
-        </Alert>
-      )}
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
-          {error}
-        </Alert>
-      )}
-
-
       {!notConfigured && (
         <TextField
           size="small"
@@ -328,6 +313,21 @@ function GLWorkspacesPage() {
         />
       )}
 
+      {!notConfigured && currentWorkspace && (
+        <Alert severity="info" icon={<BusinessIcon />} sx={{ mb: 2 }}>
+          <Typography variant="body2">
+            <strong>Current Workspace:</strong> {currentWorkspace.customer_id || 'Unknown'}
+            {currentWorkspace.greenlake_updated && ' (GreenLake credentials active)'}
+          </Typography>
+        </Alert>
+      )}
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+
       {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
@@ -344,16 +344,25 @@ function GLWorkspacesPage() {
               </TableHead>
               <TableBody>
                 {loading && workspaces.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <CircularProgress size={24} sx={{ my: 2 }} />
-                    </TableCell>
-                  </TableRow>
+                  [...Array(4)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton width={70} /></TableCell>
+                      <TableCell><Skeleton width={80} /></TableCell>
+                      <TableCell align="right"><Skeleton width={80} /></TableCell>
+                    </TableRow>
+                  ))
                 ) : workspaces.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                        No workspaces found. Create your first workspace to get started.
+                    <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                      <BusinessIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No workspaces found
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        Create your first workspace to get started
                       </Typography>
                     </TableCell>
                   </TableRow>

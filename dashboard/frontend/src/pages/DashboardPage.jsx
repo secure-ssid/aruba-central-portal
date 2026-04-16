@@ -34,6 +34,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import TuneIcon from '@mui/icons-material/TuneOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useNetworkHealth, useDevices, useClients } from '../hooks/useApiQueries';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 // localStorage cache utils removed — React Query handles caching automatically
 
@@ -279,7 +280,7 @@ function DashboardPage() {
             value={stats.totalDevices}
             icon={DevicesIcon}
             color="primary"
-            loading={false}
+            loading={loading}
             trend={trends.totalDevices}
             trendValue={trendValues.totalDevices}
             subtitle="Managed devices"
@@ -292,7 +293,7 @@ function DashboardPage() {
             value={stats.switches}
             icon={RouterIcon}
             color="info"
-            loading={false}
+            loading={loading}
             trend={trends.switches}
             trendValue={trendValues.switches}
             subtitle="Network switches"
@@ -305,7 +306,7 @@ function DashboardPage() {
             value={stats.accessPoints}
             icon={WifiIcon}
             color="purple"
-            loading={false}
+            loading={loading}
             trend={trends.accessPoints}
             trendValue={trendValues.accessPoints}
             subtitle="Wireless APs"
@@ -318,7 +319,7 @@ function DashboardPage() {
             value={stats.clients}
             icon={PeopleIcon}
             color="success"
-            loading={false}
+            loading={loading}
             trend={trends.clients}
             trendValue={trendValues.clients}
             subtitle="Active sessions"
@@ -355,39 +356,68 @@ function DashboardPage() {
                   { label: 'Access Points', value: stats.accessPoints, color: '#8B5CF6', icon: <WifiIcon sx={{ fontSize: 16 }} /> },
                   { label: 'Gateways', value: stats.gateways, color: '#F59E0B', icon: <DevicesIcon sx={{ fontSize: 16 }} /> },
                 ];
+                const pieData = items.filter(i => i.value > 0).map(i => ({ name: i.label, value: i.value, color: i.color }));
                 return (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                    {items.map((item) => (
-                      <Box key={item.label}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ color: item.color, display: 'flex', opacity: 0.85 }}>{item.icon}</Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{item.label}</Typography>
-                          </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: item.color, fontSize: '0.85rem' }}>
-                              {item.value}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
-                              ({total > 0 ? Math.round((item.value / total) * 100) : 0}%)
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={total > 0 ? (item.value / total) * 100 : 0}
-                          sx={{
-                            height: 5,
-                            borderRadius: 3,
-                            bgcolor: 'rgba(255,255,255,0.04)',
-                            '& .MuiLinearProgress-bar': {
-                              borderRadius: 3,
-                              background: `linear-gradient(90deg, ${item.color}, ${item.color}88)`,
-                            },
-                          }}
-                        />
+                  <Box>
+                    {pieData.length > 0 && (
+                      <Box sx={{ height: 120, mb: 2 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={pieData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={32}
+                              outerRadius={52}
+                              paddingAngle={3}
+                              dataKey="value"
+                              isAnimationActive={false}
+                            >
+                              {pieData.map((entry) => (
+                                <Cell key={entry.name} fill={entry.color} opacity={0.85} />
+                              ))}
+                            </Pie>
+                            <RechartsTooltip
+                              contentStyle={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }}
+                              formatter={(value, name) => [value, name]}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
                       </Box>
-                    ))}
+                    )}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                      {items.map((item) => (
+                        <Box key={item.label}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ color: item.color, display: 'flex', opacity: 0.85 }}>{item.icon}</Box>
+                              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{item.label}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                              <Typography variant="body2" sx={{ fontWeight: 600, color: item.color, fontSize: '0.85rem' }}>
+                                {item.value}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                                ({total > 0 ? Math.round((item.value / total) * 100) : 0}%)
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={total > 0 ? (item.value / total) * 100 : 0}
+                            sx={{
+                              height: 5,
+                              borderRadius: 3,
+                              bgcolor: 'rgba(255,255,255,0.04)',
+                              '& .MuiLinearProgress-bar': {
+                                borderRadius: 3,
+                                background: `linear-gradient(90deg, ${item.color}, ${item.color}88)`,
+                              },
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
                   </Box>
                 );
               })()}
