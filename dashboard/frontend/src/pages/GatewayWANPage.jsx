@@ -54,7 +54,8 @@ import { formatUptime, formatBytes } from '../utils/formatUtils';
 
 // ─── Stats Card ───────────────────────────────────────────────────────────────
 
-function StatCard({ title, value, icon, color = 'var(--color-primary)', loading }) {
+// NOTE: hex values required for color prop because it is used with opacity suffixes (e.g. `${color}22`)
+function StatCard({ title, value, icon, color = '#FF6600', loading }) {
   return (
     <Card>
       <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
@@ -696,7 +697,7 @@ export default function GatewayWANPage() {
             title="Total Gateways"
             value={loading ? null : total}
             icon={<DevicesOtherIcon />}
-            color="var(--color-primary)"
+            color="#FF6600"
             loading={loading}
           />
         </Grid>
@@ -705,7 +706,7 @@ export default function GatewayWANPage() {
             title="Online"
             value={loading ? null : online}
             icon={<CheckCircleIcon />}
-            color="var(--color-success)"
+            color="#22C55E"
             loading={loading}
           />
         </Grid>
@@ -714,7 +715,7 @@ export default function GatewayWANPage() {
             title="Offline"
             value={loading ? null : offline}
             icon={<ErrorOutlineIcon />}
-            color="var(--color-error)"
+            color="#EF4444"
             loading={loading}
           />
         </Grid>
@@ -723,7 +724,7 @@ export default function GatewayWANPage() {
             title="Active Tunnels"
             value={loading ? null : activeTunnels}
             icon={<HubIcon />}
-            color="var(--color-secondary)"
+            color="#3B82F6"
             loading={loading}
           />
         </Grid>

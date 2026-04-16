@@ -122,10 +122,10 @@ const HealthCard = memo(function HealthCard({ title, icon: Icon, status, details
     <Card
       sx={{
         height: '100%',
-        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : 'var(--text-disabled)'}30`,
+        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#475569'}30`,
         background: loading
           ? 'transparent'
-          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : 'var(--text-disabled)'}08 0%, transparent 100%)`,
+          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#475569'}08 0%, transparent 100%)`,
       }}
     >
       <CardContent>
@@ -589,7 +589,7 @@ export default function StatusPage() {
             total={deviceSummary.aps.total}
             up={deviceSummary.aps.up}
             down={deviceSummary.aps.down}
-            color="var(--color-secondary)"
+            color={BLUE}
             loading={devicesLoading}
           />
         </Grid>
@@ -600,7 +600,7 @@ export default function StatusPage() {
             total={deviceSummary.switches.total}
             up={deviceSummary.switches.up}
             down={deviceSummary.switches.down}
-            color="var(--color-purple)"
+            color="#8B5CF6"
             loading={devicesLoading}
           />
         </Grid>
