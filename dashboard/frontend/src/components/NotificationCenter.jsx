@@ -107,7 +107,7 @@ const NotificationCenter = () => {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleClick}>
+      <IconButton color="inherit" onClick={handleClick} aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}>
         <Badge badgeContent={unreadCount} color="error">
           <NotificationsIcon />
         </Badge>
@@ -134,7 +134,7 @@ const NotificationCenter = () => {
         }}
       >
         {/* Header */}
-        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Notifications
           </Typography>

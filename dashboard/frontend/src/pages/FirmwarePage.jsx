@@ -82,7 +82,7 @@ function FirmwarePage() {
                     {compliance?.compliant || 'N/A'}
                   </Typography>
                 </Box>
-                <CheckCircleIcon sx={{ fontSize: 40, color: '#4caf50' }} />
+                <CheckCircleIcon sx={{ fontSize: 40, color: '#22C55E' }} />
               </Box>
             </CardContent>
           </Card>
@@ -100,7 +100,7 @@ function FirmwarePage() {
                     {compliance?.non_compliant || 'N/A'}
                   </Typography>
                 </Box>
-                <WarningIcon sx={{ fontSize: 40, color: '#ff9800' }} />
+                <WarningIcon sx={{ fontSize: 40, color: '#F59E0B' }} />
               </Box>
             </CardContent>
           </Card>

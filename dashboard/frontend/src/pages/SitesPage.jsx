@@ -460,7 +460,7 @@ function SitesPage() {
     <Box>
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
             Sites Management
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -744,7 +744,7 @@ function SitesPage() {
                                 size="small"
                                 color="primary"
                                 onClick={() => handleViewDetails(site)}
-                                title="View Health Details"
+                                aria-label="View Health Details"
                               >
                                 <VisibilityIcon fontSize="small" />
                               </IconButton>

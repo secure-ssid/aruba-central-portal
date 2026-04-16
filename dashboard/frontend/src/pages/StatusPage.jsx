@@ -45,11 +45,11 @@ import { healthAPI, tokenAPI, deviceAPI, alertsAPI } from '../services/api';
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const ACCENT = '#FF6600';
-const GREEN = '#4caf50';
-const RED = '#f44336';
-const ORANGE = '#ff9800';
+const GREEN = '#22C55E';
+const RED = '#EF4444';
+const ORANGE = '#F59E0B';
 const YELLOW = '#fdd835';
-const BLUE = '#2196f3';
+const BLUE = '#3B82F6';
 
 const REFRESH_INTERVAL = 60000; // 60 seconds
 
@@ -121,10 +121,10 @@ const HealthCard = memo(function HealthCard({ title, icon: Icon, status, details
     <Card
       sx={{
         height: '100%',
-        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#333'}30`,
+        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#475569'}30`,
         background: loading
           ? 'transparent'
-          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#666'}08 0%, transparent 100%)`,
+          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#475569'}08 0%, transparent 100%)`,
       }}
     >
       <CardContent>
@@ -507,7 +507,7 @@ export default function StatusPage() {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
             System Status
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -588,7 +588,7 @@ export default function StatusPage() {
             total={deviceSummary.aps.total}
             up={deviceSummary.aps.up}
             down={deviceSummary.aps.down}
-            color="#2196f3"
+            color="#3B82F6"
             loading={devicesLoading}
           />
         </Grid>
@@ -599,7 +599,7 @@ export default function StatusPage() {
             total={deviceSummary.switches.total}
             up={deviceSummary.switches.up}
             down={deviceSummary.switches.down}
-            color="#9c27b0"
+            color="#8B5CF6"
             loading={devicesLoading}
           />
         </Grid>

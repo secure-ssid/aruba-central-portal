@@ -392,7 +392,7 @@ def api_proxy(endpoint_builder, method='GET', error_msg="API", fallback_data=Non
                         error_status_code = e.response.status_code if hasattr(e, 'response') else None
                         logger.error(f"{error_msg}: HTTP {error_status_code} - {error_response_text}")
                         error_str = f"HTTP {error_status_code}: {error_response_text or error_str}"
-                    except:
+                    except Exception:
                         pass
                 
                 # Check for AttributeError (aruba_client method not found)

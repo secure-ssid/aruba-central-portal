@@ -704,16 +704,16 @@ function NetworkMonitorPage() {
                             sx={{
                               backgroundColor:
                                 healthStatus === 'healthy'
-                                  ? 'rgba(76, 175, 80, 0.15)'
+                                  ? 'rgba(34, 197, 94, 0.15)'
                                   : healthStatus === 'unhealthy'
-                                  ? 'rgba(244, 67, 54, 0.15)'
-                                  : 'rgba(255, 152, 0, 0.15)',
+                                  ? 'rgba(239, 68, 68, 0.15)'
+                                  : 'rgba(245, 158, 11, 0.15)',
                               color:
                                 healthStatus === 'healthy'
-                                  ? '#4caf50'
+                                  ? '#22C55E'
                                   : healthStatus === 'unhealthy'
-                                  ? '#f44336'
-                                  : '#ff9800',
+                                  ? '#EF4444'
+                                  : '#F59E0B',
                               fontWeight: 600,
                               '& .MuiChip-icon': {
                                 color: 'inherit',

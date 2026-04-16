@@ -143,6 +143,8 @@ def configure_credentials():
 
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
         client_id = data.get('client_id', '').strip()
         client_secret = data.get('client_secret', '').strip()
         customer_id = data.get('customer_id', '').strip()
@@ -158,8 +160,15 @@ def configure_credentials():
             gl_api_base = (rbac.get('api_base') or 'https://global.api.greenlake.hpe.com').strip()
 
         # Validate inputs
-        if not all([client_id, client_secret]):
-            return jsonify({"error": "Client ID and Client Secret are required"}), 400
+        if not all([client_id, client_secret, customer_id]):
+            return jsonify({"error": "Client ID, Client Secret, and Customer ID are required"}), 400
+
+        # Sanitize: reject values containing newlines to prevent .env injection
+        all_values = [client_id, client_secret, customer_id, base_url,
+                      rbac_client_id, rbac_client_secret, gl_api_base]
+        for val in all_values:
+            if '\n' in val or '\r' in val:
+                return jsonify({"error": "Credential values must not contain newline characters"}), 400
 
         # Write to .env file
         env_path = Path(__file__).parent.parent.parent.parent / '.env'

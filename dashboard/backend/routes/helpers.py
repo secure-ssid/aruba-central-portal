@@ -93,6 +93,9 @@ def cached_get(endpoint, params=None, ttl=None):
             logger.debug(f"Cache HIT for {endpoint} (ttl={effective_ttl}s)")
             return data
 
+    if not _app.aruba_client:
+        raise RuntimeError("Aruba Central client not initialized")
+
     result = _app.aruba_client.get(endpoint, params=params)
 
     if effective_ttl > 0:

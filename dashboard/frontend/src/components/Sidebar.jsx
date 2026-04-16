@@ -237,6 +237,7 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
           <IconButton
             size="small"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(item.path); }}
+            aria-label={isFavorite ? `Remove ${item.text} from favorites` : `Add ${item.text} to favorites`}
             sx={{
               ml: 0.25,
               color: isFavorite ? '#F59E0B' : 'rgba(255,255,255,0.15)',
@@ -314,6 +315,8 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
       variant="persistent"
       anchor="left"
       open={open}
+      SlideProps={{ role: 'navigation' }}
+      aria-label="Main navigation"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
@@ -435,7 +438,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 primary="Search…"
                 sx={{ '& .MuiTypography-root': { color: '#475569', fontSize: '0.82rem' } }}
               />
-              <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+              <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
                 ⌘K
               </Typography>
             </ListItemButton>
@@ -488,7 +491,11 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 {/* Group header — clickable to collapse when not icon-only */}
                 {!collapsed ? (
                   <Box
+                    component="button"
+                    type="button"
                     onClick={() => toggleGroup(group.id)}
+                    aria-expanded={isExpanded}
+                    aria-label={`${group.title} navigation group`}
                     sx={{
                       px: 2,
                       pt: 1.5,
@@ -497,6 +504,9 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                       alignItems: 'center',
                       cursor: 'pointer',
                       userSelect: 'none',
+                      width: '100%',
+                      border: 'none',
+                      background: 'none',
                       '&:hover .group-label': { color: '#64748B' },
                     }}
                   >
@@ -504,7 +514,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                       className="group-label"
                       variant="caption"
                       sx={{
-                        color: '#334155',
+                        color: '#475569',
                         fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '0.1em',
@@ -536,7 +546,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                         transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
                         transition: 'transform 0.2s',
                         display: 'flex',
-                        color: '#334155',
+                        color: '#475569',
                       }}
                     >
                       <ExpandMoreIcon sx={{ fontSize: 14 }} />
@@ -609,7 +619,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 Connected
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.65rem' }}>
+              <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.65rem' }}>
                 Aruba Central
               </Typography>
             </Box>

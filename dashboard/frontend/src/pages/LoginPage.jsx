@@ -104,6 +104,7 @@ function LoginPage({ onLogin }) {
           {/* Title */}
           <Typography
             variant="h4"
+            component="h1"
             align="center"
             gutterBottom
             sx={{

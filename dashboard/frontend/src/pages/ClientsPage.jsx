@@ -424,7 +424,7 @@ function ClientsPage() {
     <Box sx={{ p: 3 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">
+        <Typography variant="h4" component="h1">
           Clients
         </Typography>
       </Box>
@@ -471,18 +471,18 @@ function ClientsPage() {
               onClick={() => handleStatusClick('disconnected')}
               sx={{
                 ...(selectedStatus === 'disconnected' && {
-                  backgroundColor: '#ffc107',
+                  backgroundColor: '#F59E0B',
                   color: 'white',
                   '&:hover': {
-                    backgroundColor: '#ffb300',
+                    backgroundColor: '#D97706',
                   },
                 }),
                 ...(selectedStatus !== 'disconnected' && {
-                  borderColor: '#ffc107',
-                  color: '#ffc107',
+                  borderColor: '#F59E0B',
+                  color: '#F59E0B',
                   '&:hover': {
-                    borderColor: '#ffb300',
-                    backgroundColor: 'rgba(255, 193, 7, 0.04)',
+                    borderColor: '#D97706',
+                    backgroundColor: 'rgba(245, 158, 11, 0.04)',
                   },
                 }),
               }}
@@ -508,14 +508,14 @@ function ClientsPage() {
                   backgroundColor: '#FF6600',
                   color: 'white',
                   '&:hover': {
-                    backgroundColor: '#CC5200',
+                    backgroundColor: '#CC4E00',
                   },
                 }),
                 ...(!selectedTypes.includes('wireless') && {
                   borderColor: '#FF6600',
                   color: '#FF6600',
                   '&:hover': {
-                    borderColor: '#CC5200',
+                    borderColor: '#CC4E00',
                     backgroundColor: 'rgba(255, 102, 0, 0.04)',
                   },
                 }),
@@ -609,7 +609,8 @@ function ClientsPage() {
       {/* Search and Actions Bar */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <TextField
-          placeholder="Q Search"
+          placeholder="Search clients..."
+          aria-label="Search clients"
           variant="outlined"
           size="small"
           value={searchTerm}
@@ -622,7 +623,7 @@ function ClientsPage() {
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton size="small">
+                <IconButton size="small" aria-label="Filter clients">
                   <FilterIcon />
                 </IconButton>
               </InputAdornment>
@@ -633,7 +634,7 @@ function ClientsPage() {
         <Typography variant="body2" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
           {filteredClients.length} items
         </Typography>
-        <Button variant="outlined" size="small" sx={{ whiteSpace: 'nowrap' }}>
+        <Button type="button" variant="outlined" size="small" sx={{ whiteSpace: 'nowrap' }}>
           Create Tag
         </Button>
         <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -671,12 +672,20 @@ function ClientsPage() {
               <TableRow>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Name"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('name')}
                   >
@@ -688,12 +697,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Type"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('type')}
                   >
@@ -705,12 +722,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by MAC Address"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('mac')}
                   >
@@ -722,12 +747,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by IP Address"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('ip')}
                   >
@@ -739,12 +772,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by VLAN"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('vlan')}
                   >
@@ -756,12 +797,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Connected To"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('connectedTo')}
                   >
@@ -773,12 +822,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Port"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('port')}
                   >
@@ -790,12 +847,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Role"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('role')}
                   >
@@ -807,12 +872,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by SSID"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('ssid')}
                   >
@@ -824,12 +897,20 @@ function ClientsPage() {
                 </TableCell>
                 <TableCell>
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label="Sort by Site Name"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
                       cursor: 'pointer',
                       userSelect: 'none',
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      font: 'inherit',
+                      padding: 0,
                     }}
                     onClick={() => handleSort('site')}
                   >
@@ -861,10 +942,10 @@ function ClientsPage() {
                 const isDisconnected = status === 'disconnected';
                 const experience = client.experience || 'Good';
 
-                const statusColor = isConnected ? '#4caf50'
-                  : isFailed ? '#f44336'
-                  : (isConnecting || isDisconnected) ? 'rgb(249, 192, 0)'
-                  : '#9e9e9e';
+                const statusColor = isConnected ? '#22C55E'
+                  : isFailed ? '#EF4444'
+                  : (isConnecting || isDisconnected) ? '#F59E0B'
+                  : '#94A3B8';
 
                 const clientKind = getClientConnectionKind(client);
                 const clientType = clientKind;
@@ -936,8 +1017,8 @@ function ClientsPage() {
                             },
                           }),
                           ...(clientType !== 'wireless' && clientType !== 'wired' && {
-                            backgroundColor: '#e0e0e0',
-                            color: '#424242',
+                            backgroundColor: 'rgba(148, 163, 184, 0.15)',
+                            color: '#94A3B8',
                           }),
                         }}
                       />

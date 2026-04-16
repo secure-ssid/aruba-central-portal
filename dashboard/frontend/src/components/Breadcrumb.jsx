@@ -68,6 +68,7 @@ function Breadcrumb() {
           <HomeIcon
             sx={{ mr: 0.5, color: 'primary.main' }}
             fontSize="small"
+            aria-hidden="true"
           />
           <Typography
             variant="body2"

@@ -64,7 +64,7 @@ const VLANsNetworksPage           = lazy(() => import('./pages/configuration/VLA
 const WirelessPage                = lazy(() => import('./pages/configuration/WirelessPage'));
 
 const LazyFallback = () => (
-  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }} role="status" aria-label="Loading page">
     <CircularProgress size={28} sx={{ color: '#FF6600' }} />
   </Box>
 );
@@ -422,6 +422,8 @@ function App() {
           justifyContent="center"
           alignItems="center"
           minHeight="100vh"
+          role="status"
+          aria-live="polite"
         >
           <div>Loading...</div>
         </Box>

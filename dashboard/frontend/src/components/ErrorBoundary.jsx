@@ -33,6 +33,7 @@ class ErrorBoundary extends React.Component {
               {this.state.error?.message || 'An unexpected error occurred'}
             </Typography>
             <Button
+              type="button"
               variant="contained"
               onClick={() => {
                 this.setState({ hasError: false, error: null });

@@ -149,7 +149,7 @@ function AlertsPage() {
     <Box>
       <Box sx={{ mb: 3.5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
             Alerts & Events
           </Typography>
           <Typography variant="body2" color="text.secondary">

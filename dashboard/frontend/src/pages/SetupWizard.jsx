@@ -127,7 +127,7 @@ function SetupWizard({ onComplete }) {
                 sx={{
                   width: 72,
                   height: 72,
-                  borderRadius: '18px',
+                  borderRadius: '16px',
                   background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
                   display: 'flex',
                   alignItems: 'center',
@@ -139,7 +139,7 @@ function SetupWizard({ onComplete }) {
               >
                 <CloudIcon sx={{ fontSize: 36, color: '#fff' }} />
               </Box>
-              <Typography variant="h4" gutterBottom fontWeight={700}>
+              <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
                 Welcome to Aruba Central
               </Typography>
               <Typography variant="body2" color="text.secondary">

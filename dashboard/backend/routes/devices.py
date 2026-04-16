@@ -208,6 +208,8 @@ def run_switch_show_command(serial):
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
         command = data.get("command", "")
 
         if not command.startswith("show "):

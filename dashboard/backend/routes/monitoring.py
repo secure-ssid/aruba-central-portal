@@ -73,10 +73,15 @@ def api_explorer():
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
         endpoint = data.get("endpoint", "")
         method = data.get("method", "GET").upper()
         params = data.get("params", {})
         body = data.get("body", {})
+
+        if not endpoint:
+            return jsonify({"error": "endpoint field is required"}), 400
 
         # Sanitize endpoint
         if not endpoint.startswith("/"):

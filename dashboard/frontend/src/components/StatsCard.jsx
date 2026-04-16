@@ -50,6 +50,7 @@ function StatsCard({
           : {},
       }}
       onClick={onClick}
+      {...(onClick ? { tabIndex: 0, role: 'button', 'aria-label': title, onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } } : {})}
     >
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
@@ -99,7 +100,7 @@ function StatsCard({
               justifyContent: 'space-between',
               mt: 2,
               pt: 2,
-              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             {subtitle && (

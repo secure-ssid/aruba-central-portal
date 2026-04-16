@@ -22,7 +22,7 @@ import os
 import urllib.parse
 import requests
 
-from .helpers import require_session, api_proxy
+from .helpers import require_session, api_proxy, cached_get
 
 troubleshoot_bp = Blueprint('troubleshoot', __name__)
 logger = logging.getLogger(__name__)
@@ -1488,8 +1488,8 @@ def show_version():
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        # Get device details which includes version
-        response = aruba_client.get(f'/network-monitoring/v1/devices')
+        # Get device details which includes version (use cached_get to reduce API calls)
+        response = cached_get('/network-monitoring/v1/devices')
 
         # Filter for the specific device
         if 'items' in response:

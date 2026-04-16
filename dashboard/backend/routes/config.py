@@ -94,7 +94,7 @@ def create_wlan_config(ssid_name):
             try:
                 error_json = e.response.json()
                 logger.error(f"API error details: {error_json}")
-            except:
+            except Exception:
                 pass
         return jsonify({"error": str(e)}), 500
 
@@ -980,7 +980,7 @@ def get_sites_health():
                     ),
                     error_status_code or 500,
                 )
-            except:
+            except Exception:
                 pass
 
         return jsonify({"error": error_str, "endpoint": endpoint}), 500
@@ -1832,6 +1832,10 @@ def switch_workspace():
         if not all([new_client_id, new_client_secret, new_customer_id]):
             return jsonify({"error": "client_id, client_secret, and customer_id are required"}), 400
 
+        # Validate base_url is a proper HTTPS URL
+        if base_url and not base_url.startswith("https://"):
+            return jsonify({"error": "base_url must use HTTPS"}), 400
+
         # Update configuration
         _app.config["aruba_central"]["client_id"] = new_client_id
         _app.config["aruba_central"]["client_secret"] = new_client_secret
@@ -2017,7 +2021,7 @@ def get_services_health():
             )
         else:
             health_status["services"].append(
-                {"name": "Site Management", "status": "error", "details": str(e)}
+                {"name": "Site Management", "status": "error", "details": "Unavailable"}
             )
             health_status["overall_status"] = "degraded"
 

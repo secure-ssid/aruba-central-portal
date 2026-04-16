@@ -38,11 +38,11 @@ const CANVAS_PADDING = 80;
 const ACCENT = '#FF6600';
 const ACCENT_DIM = 'rgba(255, 102, 0, 0.3)';
 const NODE_BG = 'rgba(30, 30, 40, 0.85)';
-const NODE_BORDER = 'rgba(255, 255, 255, 0.12)';
+const NODE_BORDER = 'rgba(255, 255, 255, 0.08)';
 const NODE_HOVER_BORDER = ACCENT;
-const STATUS_UP = '#4caf50';
-const STATUS_DOWN = '#f44336';
-const STATUS_UNKNOWN = '#9e9e9e';
+const STATUS_UP = '#22C55E';
+const STATUS_DOWN = '#EF4444';
+const STATUS_UNKNOWN = '#94A3B8';
 const LINE_COLOR = 'rgba(255, 102, 0, 0.35)';
 const LINE_HIGHLIGHT = ACCENT;
 
@@ -278,7 +278,7 @@ function getNodeIcon(type) {
     case 'ap':
       return { icon: 'wifi', color: '#ffa726' };
     default:
-      return { icon: 'globe', color: '#999' };
+      return { icon: 'globe', color: '#94A3B8' };
   }
 }
 
@@ -664,7 +664,7 @@ export default function TopologyPage() {
               onClick={zoomIn}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}
@@ -678,7 +678,7 @@ export default function TopologyPage() {
               onClick={zoomOut}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}
@@ -692,7 +692,7 @@ export default function TopologyPage() {
               onClick={resetView}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}

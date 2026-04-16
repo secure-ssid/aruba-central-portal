@@ -115,7 +115,10 @@ const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loa
 const QuickLink = memo(function QuickLink({ title, description, icon: Icon, onClick }) {
   return (
     <Box
+      component="button"
+      type="button"
       onClick={onClick}
+      aria-label={title}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -123,6 +126,10 @@ const QuickLink = memo(function QuickLink({ title, description, icon: Icon, onCl
         p: 1.5,
         borderRadius: '8px',
         cursor: 'pointer',
+        border: 'none',
+        background: 'none',
+        width: '100%',
+        textAlign: 'left',
         transition: 'all 0.15s ease',
         '&:hover': {
           bgcolor: 'rgba(255,255,255,0.04)',
@@ -241,7 +248,7 @@ function DashboardPage() {
       {/* Page Header */}
       <Box sx={{ mb: 3.5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
             Network Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">

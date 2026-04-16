@@ -83,7 +83,7 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
       elevation={0}
       sx={{
         backgroundColor: 'background.paper',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
       <Toolbar>
@@ -120,6 +120,7 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
               onClick={handleRefreshToken}
               disabled={refreshing}
               size="small"
+              aria-label="Refresh access token"
             >
               {refreshing ? (
                 <CircularProgress size={20} color="inherit" />
@@ -130,7 +131,7 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
           </Tooltip>
 
           <Tooltip title="Search (⌘K)">
-            <IconButton color="inherit" onClick={onSearchClick}>
+            <IconButton color="inherit" onClick={onSearchClick} aria-label="Search">
               <SearchIcon />
             </IconButton>
           </Tooltip>

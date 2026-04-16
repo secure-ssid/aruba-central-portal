@@ -533,7 +533,10 @@ function ChatDrawer({ pageContext = '' }) {
       {/* ── Floating toggle button (visible when collapsed) ─────────────── */}
       {isCollapsed && (
         <Box
+          component="button"
+          type="button"
           onClick={() => { setDrawerState('half'); setUnreadReply(0); }}
+          aria-label={`Open network assistant${unreadReply > 0 ? `, ${unreadReply} unread` : ''}`}
           sx={{
             position:  'fixed',
             bottom:    24,
@@ -542,6 +545,7 @@ function ChatDrawer({ pageContext = '' }) {
             width:     56,
             height:    56,
             borderRadius: '50%',
+            border:    'none',
             background: `linear-gradient(135deg, ${ORANGE} 0%, #FF8C42 100%)`,
             boxShadow: '0 4px 20px rgba(255,102,0,0.55), 0 0 0 0 rgba(255,102,0,0.4)',
             display:   'flex',
@@ -575,6 +579,9 @@ function ChatDrawer({ pageContext = '' }) {
 
       {/* ── Right-side chat panel ──────────────────────────────────────────── */}
       <Box
+        component="aside"
+        role="complementary"
+        aria-label="Network assistant chat"
         sx={{
           position:      'fixed',
           right:         0,
@@ -787,6 +794,7 @@ function ChatDrawer({ pageContext = '' }) {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask about your network... (Enter to send, Shift+Enter for newline)"
+              aria-label="Chat message"
               multiline
               maxRows={3}
               fullWidth
@@ -820,8 +828,8 @@ function ChatDrawer({ pageContext = '' }) {
                     flexShrink: 0,
                     '&:hover': {
                       bgcolor: inputValue.trim() && !isLoading
-                        ? '#e65c00'
-                        : 'rgba(255,255,255,0.12)',
+                        ? '#E55A00'
+                        : 'rgba(255,255,255,0.10)',
                     },
                     '&.Mui-disabled': {
                       color:  'rgba(255,255,255,0.3)',

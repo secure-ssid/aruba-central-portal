@@ -18,7 +18,7 @@ export default function GreenLakeNotConfigured() {
       sx={{
         mt: 2,
         p: 4,
-        borderRadius: '12px',
+        borderRadius: '10px',
         border: '1px solid rgba(245,158,11,0.15)',
         bgcolor: 'rgba(245,158,11,0.04)',
         textAlign: 'center',
@@ -28,7 +28,7 @@ export default function GreenLakeNotConfigured() {
         sx={{
           width: 56,
           height: 56,
-          borderRadius: '14px',
+          borderRadius: '12px',
           bgcolor: 'rgba(245,158,11,0.08)',
           display: 'flex',
           alignItems: 'center',
@@ -67,7 +67,7 @@ export default function GreenLakeNotConfigured() {
             bgcolor: 'rgba(245,158,11,0.06)',
           },
         }}
-        onClick={() => window.open('/settings', '_self')}
+        href="/settings"
       >
         Go to Settings
       </Button>
