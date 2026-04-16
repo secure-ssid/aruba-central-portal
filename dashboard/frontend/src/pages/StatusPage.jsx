@@ -4,7 +4,8 @@
  * Auto-refreshes every 60 seconds
  */
 
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
   Grid,
@@ -40,7 +41,8 @@ import WifiIcon from '@mui/icons-material/Wifi';
 import RouterIcon from '@mui/icons-material/Router';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
-import { healthAPI, tokenAPI, deviceAPI, alertsAPI } from '../services/api';
+import { healthAPI, tokenAPI } from '../services/api';
+import { useDevices, useAlerts, useTokenInfo } from '../hooks/useApiQueries';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -54,32 +56,7 @@ const BLUE = '#3B82F6';
 
 const REFRESH_INTERVAL = 60000; // 60 seconds
 
-const CACHE_KEY = 'status_page_cache';
-const CACHE_TTL = 5 * 60 * 1000;
-
-const cacheUtils = {
-  get: (key) => {
-    try {
-      const item = localStorage.getItem(key);
-      if (!item) return null;
-      const { data, timestamp } = JSON.parse(item);
-      if (Date.now() - timestamp > CACHE_TTL) {
-        localStorage.removeItem(key);
-        return null;
-      }
-      return data;
-    } catch {
-      return null;
-    }
-  },
-  set: (key, data) => {
-    try {
-      localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
-    } catch {
-      // ignore
-    }
-  },
-};
+// localStorage caching removed — React Query handles all caching automatically
 
 // ─── Severity helpers ───────────────────────────────────────────────────────
 
@@ -263,118 +240,59 @@ const DeviceSummaryCard = memo(function DeviceSummaryCard({ title, icon: Icon, t
 // ─── Main StatusPage ────────────────────────────────────────────────────────
 
 export default function StatusPage() {
-  const cached = cacheUtils.get(CACHE_KEY);
+  const queryClient = useQueryClient();
 
-  const [health, setHealth] = useState(cached?.health || null);
-  const [tokenInfo, setTokenInfo] = useState(cached?.tokenInfo || null);
-  const [devices, setDevices] = useState(cached?.devices || null);
-  const [alerts, setAlerts] = useState(cached?.alerts || null);
-
-  const [healthLoading, setHealthLoading] = useState(!cached?.health);
-  const [tokenLoading, setTokenLoading] = useState(!cached?.tokenInfo);
-  const [devicesLoading, setDevicesLoading] = useState(!cached?.devices);
-  const [alertsLoading, setAlertsLoading] = useState(!cached?.alerts);
-
-  const [healthError, setHealthError] = useState('');
-  const [tokenError, setTokenError] = useState('');
-  const [devicesError, setDevicesError] = useState('');
-  const [alertsError, setAlertsError] = useState('');
-
-  const [apiResponseTime, setApiResponseTime] = useState(null);
-  const [lastRefresh, setLastRefresh] = useState(cached ? new Date() : null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // ── Fetch health ──────────────────────────────────────────────────────
-
-  const fetchHealth = useCallback(async () => {
-    setHealthLoading(true);
-    setHealthError('');
-    try {
+  // ── React Query hooks — shared cache with Dashboard, TopBar, etc. ──
+  // Health endpoint is StatusPage-specific, so we define a local query.
+  const healthQuery = useQuery({
+    queryKey: ['backend-health'],
+    queryFn: async () => {
       const t0 = performance.now();
       const data = await healthAPI.check();
-      const elapsed = Math.round(performance.now() - t0);
-      setApiResponseTime(elapsed);
-      setHealth(data);
-    } catch (err) {
-      setHealthError(err.message || 'Failed to reach backend');
-    } finally {
-      setHealthLoading(false);
-    }
-  }, []);
+      data._responseTime = Math.round(performance.now() - t0);
+      return data;
+    },
+    staleTime: 30_000,
+    refetchInterval: REFRESH_INTERVAL,
+  });
 
-  // ── Fetch token info ──────────────────────────────────────────────────
+  // Shared hooks — these reuse the cache from DashboardPage, TopBar, etc.
+  const tokenQuery = useTokenInfo({ refetchInterval: REFRESH_INTERVAL });
+  const devicesQuery = useDevices({ refetchInterval: REFRESH_INTERVAL });
+  const alertsQuery = useAlerts({ refetchInterval: REFRESH_INTERVAL });
 
-  const fetchTokenInfo = useCallback(async () => {
-    setTokenLoading(true);
-    setTokenError('');
-    try {
-      const data = await tokenAPI.getInfo();
-      setTokenInfo(data);
-    } catch (err) {
-      setTokenError(err.message || 'Failed to fetch token info');
-    } finally {
-      setTokenLoading(false);
-    }
-  }, []);
+  // Derive simple variables that the rest of the component uses
+  const health = healthQuery.data ?? null;
+  const tokenInfo = tokenQuery.data ?? null;
+  const devices = devicesQuery.data ?? null;
+  const alerts = alertsQuery.data ?? null;
 
-  // ── Fetch devices ─────────────────────────────────────────────────────
+  const healthLoading = healthQuery.isLoading;
+  const tokenLoading = tokenQuery.isLoading;
+  const devicesLoading = devicesQuery.isLoading;
+  const alertsLoading = alertsQuery.isLoading;
 
-  const fetchDevices = useCallback(async () => {
-    setDevicesLoading(true);
-    setDevicesError('');
-    try {
-      const data = await deviceAPI.getAll();
-      setDevices(data);
-    } catch (err) {
-      setDevicesError(err.message || 'Failed to fetch devices');
-    } finally {
-      setDevicesLoading(false);
-    }
-  }, []);
+  const healthError = healthQuery.error?.message || '';
+  const tokenError = tokenQuery.error?.message || '';
+  const devicesError = devicesQuery.error?.message || '';
+  const alertsError = alertsQuery.error?.message || '';
 
-  // ── Fetch alerts ──────────────────────────────────────────────────────
+  const apiResponseTime = health?._responseTime ?? null;
+  const refreshing = healthQuery.isFetching || devicesQuery.isFetching;
+  const lastRefresh = healthQuery.dataUpdatedAt ? new Date(healthQuery.dataUpdatedAt) : null;
 
-  const fetchAlerts = useCallback(async () => {
-    setAlertsLoading(true);
-    setAlertsError('');
-    try {
-      const data = await alertsAPI.getAll(null, 10);
-      setAlerts(data);
-    } catch (err) {
-      setAlertsError(err.message || 'Failed to fetch alerts');
-    } finally {
-      setAlertsLoading(false);
-    }
-  }, []);
+  const fetchAll = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['backend-health'] });
+    queryClient.invalidateQueries({ queryKey: ['token-info'] });
+    queryClient.invalidateQueries({ queryKey: ['devices'] });
+    queryClient.invalidateQueries({ queryKey: ['alerts'] });
+  }, [queryClient]);
 
-  // ── Fetch all ─────────────────────────────────────────────────────────
-
-  const fetchAll = useCallback(async () => {
-    setRefreshing(true);
-    await Promise.allSettled([fetchHealth(), fetchTokenInfo(), fetchDevices(), fetchAlerts()]);
-    setLastRefresh(new Date());
-    setRefreshing(false);
-  }, [fetchHealth, fetchTokenInfo, fetchDevices, fetchAlerts]);
-
-  // Cache on data change
-  useEffect(() => {
-    if (health || tokenInfo || devices || alerts) {
-      cacheUtils.set(CACHE_KEY, { health, tokenInfo, devices, alerts });
-    }
-  }, [health, tokenInfo, devices, alerts]);
-
-  // Initial load + interval
-  useEffect(() => {
-    let mounted = true;
-    fetchAll();
-    const interval = setInterval(() => {
-      if (mounted) fetchAll();
-    }, REFRESH_INTERVAL);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Keep individual retry handlers for the HealthCard retry buttons
+  const fetchHealth = useCallback(() => queryClient.invalidateQueries({ queryKey: ['backend-health'] }), [queryClient]);
+  const fetchTokenInfo = useCallback(() => queryClient.invalidateQueries({ queryKey: ['token-info'] }), [queryClient]);
+  const fetchDevices = useCallback(() => queryClient.invalidateQueries({ queryKey: ['devices'] }), [queryClient]);
+  const fetchAlerts = useCallback(() => queryClient.invalidateQueries({ queryKey: ['alerts'] }), [queryClient]);
 
   // ── Derived: device aggregates ────────────────────────────────────────
 

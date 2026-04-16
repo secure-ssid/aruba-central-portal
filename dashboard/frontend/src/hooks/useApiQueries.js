@@ -37,6 +37,30 @@ export const useDevices = (options = {}) =>
     ...options,
   });
 
+export const useSwitches = (options = {}) =>
+  useQuery({
+    queryKey: ['switches'],
+    queryFn: () => deviceAPI.getSwitches(),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useAccessPoints = (options = {}) =>
+  useQuery({
+    queryKey: ['access-points'],
+    queryFn: () => deviceAPI.getAccessPoints(),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGateways = (options = {}) =>
+  useQuery({
+    queryKey: ['gateways'],
+    queryFn: () => monitoringAPIv2.getGatewaysMonitoring(),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
 export const useSites = (params = {}, options = {}) =>
   useQuery({
     queryKey: ['sites', params],

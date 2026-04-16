@@ -44,13 +44,18 @@ export default defineConfig({
     // Code splitting configuration
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching
+        // Manual chunk splitting for better caching and smaller initial load
         manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'mui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          'chart-vendor': ['recharts'],
-          'syntax-vendor': ['react-syntax-highlighter'],
+          // Core React runtime — cached long-term, rarely changes
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // MUI component library + Emotion runtime
+          'vendor-mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          // Charting library (only needed by pages with graphs)
+          'vendor-charts': ['recharts'],
+          // Data-fetching layer
+          'vendor-query': ['@tanstack/react-query'],
+          // Syntax highlighting (API Explorer, Troubleshoot)
+          'vendor-syntax': ['react-syntax-highlighter'],
         },
         // Chunk file naming
         chunkFileNames: 'js/[name]-[hash].js',

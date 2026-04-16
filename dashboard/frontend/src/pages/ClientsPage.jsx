@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback, useMemo as useMemoReact } from 'react';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import {
   Box,
   Paper,
@@ -33,8 +34,13 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
+import { List } from 'react-window';
 import { getClients, getClientTrends, getTopClients } from '../services/api';
 import useSites from '../hooks/useSites';
+
+/** Threshold: use virtualized rendering when filtered rows exceed this count. */
+const VIRTUALIZE_THRESHOLD = 200;
+const CLIENT_ROW_HEIGHT = 52;
 
 /** `essid` is often a string, sometimes `{ name, ssid, ... }` from Central. */
 function getEssidRaw(client) {
@@ -100,6 +106,346 @@ function getClientConnectionKind(client) {
   return 'unknown';
 }
 
+/**
+ * Sortable header button - shared style for table column headers
+ */
+const SortHeaderButton = ({ label, column, sortColumn, sortDirection, onSort }) => (
+  <Box
+    component="button"
+    type="button"
+    aria-label={`Sort by ${label}`}
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 0.5,
+      cursor: 'pointer',
+      userSelect: 'none',
+      background: 'none',
+      border: 'none',
+      color: 'inherit',
+      font: 'inherit',
+      padding: 0,
+    }}
+    onClick={() => onSort(column)}
+  >
+    {label}
+    {sortColumn === column && (
+      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
+    )}
+  </Box>
+);
+
+/**
+ * Memoized virtual row renderer for the clients table.
+ * Used when the number of sorted/filtered clients exceeds VIRTUALIZE_THRESHOLD.
+ */
+const ClientVirtualRow = memo(function ClientVirtualRow({ index, style, data }) {
+  const { rows, getClientConnectionKind: getKind, getClientSsid: getSsid } = data;
+  const client = rows[index];
+
+  const status = client.status?.toLowerCase() || 'unknown';
+  const isConnected = status === 'connected';
+  const isFailed = status === 'failed';
+  const isConnecting = status === 'connecting';
+  const isDisconnected = status === 'disconnected';
+  const experience = client.experience || 'Good';
+  const statusColor = isConnected ? 'var(--color-success)'
+    : isFailed ? 'var(--color-error)'
+    : (isConnecting || isDisconnected) ? 'var(--color-warning)'
+    : 'var(--text-secondary)';
+
+  const clientKind = getKind(client);
+  const typeChipLabel =
+    client.clientConnectionType || client.connectionType || client.type ||
+    (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
+
+  const statusLabel = isConnected ? `Connected - ${experience} Performance`
+    : isFailed ? 'Failed'
+    : isConnecting ? 'Connecting'
+    : isDisconnected ? 'Disconnected' : '';
+
+  return (
+    <div
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        borderBottom: '1px solid var(--border-subtle, rgba(224,224,224,1))',
+        boxSizing: 'border-box',
+      }}
+      role="row"
+      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+    >
+      {/* Name */}
+      <div style={{ flex: 2, padding: '4px 16px', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 6 }}>
+        {(isConnected || isFailed || isConnecting || isDisconnected) && (
+          <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: statusColor, flexShrink: 0 }} />
+        )}
+        <span style={{ overflow: 'hidden' }}>
+          <Typography variant="body2" fontWeight="medium" noWrap>
+            {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
+          </Typography>
+          {statusLabel && (
+            <Typography variant="caption" color="textSecondary" noWrap display="block">
+              {statusLabel}
+            </Typography>
+          )}
+        </span>
+      </div>
+      {/* Type */}
+      <div style={{ flex: 1, padding: '4px 16px' }}>
+        <Chip
+          size="small"
+          label={typeChipLabel}
+          icon={clientKind === 'wireless' ? <WifiIcon /> : <CableIcon />}
+          sx={{
+            ...(clientKind === 'wireless' && { backgroundColor: 'var(--color-primary)', color: 'white', '& .MuiChip-icon': { color: 'white' } }),
+            ...(clientKind === 'wired' && { backgroundColor: '#01A982', color: 'white', '& .MuiChip-icon': { color: 'white' } }),
+            ...(clientKind !== 'wireless' && clientKind !== 'wired' && { backgroundColor: 'rgba(148,163,184,0.15)', color: 'var(--text-secondary)' }),
+          }}
+        />
+      </div>
+      {/* MAC */}
+      <div style={{ flex: 1.2, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" sx={{ fontFamily: 'monospace' }} noWrap>
+          {client.mac || client.macaddr || client.macAddress || 'N/A'}
+        </Typography>
+      </div>
+      {/* IP */}
+      <div style={{ flex: 1, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap>{client.ipv4 || '-'}</Typography>
+      </div>
+      {/* VLAN */}
+      <div style={{ flex: 0.7, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap>
+          {client.vlanId ? `${client.vlanId}${client.network ? ` (${client.network})` : ''}` : client.network || '-'}
+        </Typography>
+      </div>
+      {/* Connected To */}
+      <div style={{ flex: 1.2, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap>
+          {client.connectedTo || client.connected_to || client.device || client.associatedDevice || '-'}
+        </Typography>
+      </div>
+      {/* Port */}
+      <div style={{ flex: 0.7, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" sx={{ fontFamily: 'monospace' }} noWrap>
+          {client.port || client.portId || client.port_id || client.interface || client.portName || '-'}
+        </Typography>
+      </div>
+      {/* Role */}
+      <div style={{ flex: 0.7, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap>{client.role || '-'}</Typography>
+      </div>
+      {/* SSID */}
+      <div style={{ flex: 1, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap color={getSsid(client) ? 'text.primary' : 'text.secondary'}>
+          {getSsid(client) || '-'}
+        </Typography>
+      </div>
+      {/* Site */}
+      <div style={{ flex: 1, padding: '4px 16px', overflow: 'hidden' }}>
+        <Typography variant="body2" noWrap>{client.siteName || 'Unknown'}</Typography>
+      </div>
+    </div>
+  );
+});
+
+/**
+ * ClientsTable - renders either a standard MUI table or a virtualized table
+ * depending on the number of rows.
+ */
+const ClientsTable = memo(function ClientsTable({
+  sortedClients,
+  selectedSites,
+  sortColumn,
+  sortDirection,
+  handleSort,
+  getClientConnectionKind,
+  getClientSsid,
+}) {
+  const useVirtualized = sortedClients.length > VIRTUALIZE_THRESHOLD;
+
+  const itemData = useMemoReact(
+    () => ({ rows: sortedClients, getClientConnectionKind, getClientSsid }),
+    [sortedClients, getClientConnectionKind, getClientSsid]
+  );
+
+  const headerColumns = [
+    { label: 'Name', column: 'name', flex: 2 },
+    { label: 'Type', column: 'type', flex: 1 },
+    { label: 'MAC Address', column: 'mac', flex: 1.2 },
+    { label: 'IP Address', column: 'ip', flex: 1 },
+    { label: 'VLAN', column: 'vlan', flex: 0.7 },
+    { label: 'Connected To', column: 'connectedTo', flex: 1.2 },
+    { label: 'Port', column: 'port', flex: 0.7 },
+    { label: 'Role', column: 'role', flex: 0.7 },
+    { label: 'SSID', column: 'ssid', flex: 1 },
+    { label: 'Site Name', column: 'site', flex: 1 },
+  ];
+
+  return (
+    <TableContainer>
+      <Table sx={useVirtualized ? { tableLayout: 'fixed' } : undefined}>
+        <TableHead>
+          <TableRow>
+            {headerColumns.map((col) => (
+              <TableCell key={col.column}>
+                <SortHeaderButton
+                  label={col.label}
+                  column={col.column}
+                  sortColumn={sortColumn}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                />
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        {!useVirtualized && (
+          <TableBody>
+            {sortedClients.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body2" color="textSecondary">
+                    {selectedSites.length === 0
+                      ? 'Please select one or more sites to view clients'
+                      : 'No clients found for the selected sites'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              sortedClients.map((client) => {
+                const status = client.status?.toLowerCase() || 'unknown';
+                const isConnected = status === 'connected';
+                const isFailed = status === 'failed';
+                const isConnecting = status === 'connecting';
+                const isDisconnected = status === 'disconnected';
+                const experience = client.experience || 'Good';
+
+                const statusColor = isConnected ? 'var(--color-success)'
+                  : isFailed ? 'var(--color-error)'
+                  : (isConnecting || isDisconnected) ? 'var(--color-warning)'
+                  : 'var(--text-secondary)';
+
+                const clientKind = getClientConnectionKind(client);
+                const clientType = clientKind;
+                const typeChipLabel =
+                  client.clientConnectionType ||
+                  client.connectionType ||
+                  client.type ||
+                  (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
+
+                return (
+                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {(isConnected || isFailed || isConnecting || isDisconnected) && (
+                          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: statusColor }} />
+                        )}
+                        <Box>
+                          <Typography variant="body2" fontWeight="medium">
+                            {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
+                          </Typography>
+                          {isConnected && <Typography variant="caption" color="textSecondary">Connected - {experience} Performance</Typography>}
+                          {isFailed && <Typography variant="caption" color="textSecondary">Failed</Typography>}
+                          {isConnecting && <Typography variant="caption" color="textSecondary">Connecting</Typography>}
+                          {isDisconnected && <Typography variant="caption" color="textSecondary">Disconnected</Typography>}
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        label={typeChipLabel}
+                        icon={clientType === 'wireless' ? <WifiIcon /> : <CableIcon />}
+                        sx={{
+                          ...(clientType === 'wireless' && { backgroundColor: 'var(--color-primary)', color: 'white', '& .MuiChip-icon': { color: 'white' } }),
+                          ...(clientType === 'wired' && { backgroundColor: '#01A982', color: 'white', '& .MuiChip-icon': { color: 'white' } }),
+                          ...(clientType !== 'wireless' && clientType !== 'wired' && { backgroundColor: 'rgba(148, 163, 184, 0.15)', color: 'var(--text-secondary)' }),
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                        {client.mac || client.macaddr || client.macAddress || 'N/A'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Box>
+                        {client.ipv4 && <Typography variant="body2">{client.ipv4}</Typography>}
+                        {client.ipv6 && <Typography variant="caption" color="textSecondary" display="block">{client.ipv6}</Typography>}
+                        {!client.ipv4 && !client.ipv6 && <Typography variant="body2" color="textSecondary">-</Typography>}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {client.vlanId ? (
+                        <Typography variant="body2">{client.vlanId}{client.network && ` (${client.network})`}</Typography>
+                      ) : client.network ? (
+                        <Typography variant="body2">{client.network}</Typography>
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">-</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {client.connectedTo || client.connected_to || client.device || client.associatedDevice || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                        {client.port || client.portId || client.port_id || client.interface || client.portName || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{client.role || '-'}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color={getClientSsid(client) ? 'text.primary' : 'text.secondary'}>
+                        {getClientSsid(client) || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{client.siteName || 'Unknown'}</Typography>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        )}
+      </Table>
+
+      {/* Virtualized body for large client lists */}
+      {useVirtualized && (
+        <>
+          {sortedClients.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="body2" color="textSecondary">
+                {selectedSites.length === 0
+                  ? 'Please select one or more sites to view clients'
+                  : 'No clients found for the selected sites'}
+              </Typography>
+            </Box>
+          ) : (
+            <List
+              height={Math.min(sortedClients.length * CLIENT_ROW_HEIGHT, 600)}
+              itemCount={sortedClients.length}
+              itemSize={CLIENT_ROW_HEIGHT}
+              width="100%"
+              itemData={itemData}
+              overscanCount={15}
+            >
+              {ClientVirtualRow}
+            </List>
+          )}
+        </>
+      )}
+    </TableContainer>
+  );
+});
+
 function ClientsPage() {
   const [clients, setClients] = useState([]);
   const [topClients, setTopClients] = useState([]);
@@ -107,6 +453,7 @@ function ClientsPage() {
   const [loading, setLoading] = useState(false); // Don't block initial render
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebouncedValue(searchTerm, 250);
   const [selectedStatus, setSelectedStatus] = useState(null); // null = all statuses
   const [selectedTypes, setSelectedTypes] = useState(['wireless', 'wired']);
   const [viewMode, setViewMode] = useState('list');
@@ -292,10 +639,10 @@ function ClientsPage() {
   };
 
   const filteredClients = clients.filter((client) => {
-    // Search filter
-    const search = searchTerm.toLowerCase();
+    // Search filter (debounced to avoid per-keystroke re-renders)
+    const search = debouncedSearch.toLowerCase();
     const matchesSearch =
-      !searchTerm ||
+      !debouncedSearch ||
       client.name?.toLowerCase().includes(search) ||
       client.hostname?.toLowerCase().includes(search) ||
       client.mac?.toLowerCase().includes(search) ||
@@ -666,434 +1013,15 @@ function ClientsPage() {
 
       {/* Clients Table */}
       <Paper>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Name"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('name')}
-                  >
-                    Name
-                    {sortColumn === 'name' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Type"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('type')}
-                  >
-                    Type
-                    {sortColumn === 'type' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by MAC Address"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('mac')}
-                  >
-                    MAC Address
-                    {sortColumn === 'mac' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by IP Address"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('ip')}
-                  >
-                    IP Address
-                    {sortColumn === 'ip' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by VLAN"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('vlan')}
-                  >
-                    VLAN
-                    {sortColumn === 'vlan' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Connected To"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('connectedTo')}
-                  >
-                    Connected To
-                    {sortColumn === 'connectedTo' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Port"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('port')}
-                  >
-                    Port
-                    {sortColumn === 'port' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Role"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('role')}
-                  >
-                    Role
-                    {sortColumn === 'role' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by SSID"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('ssid')}
-                  >
-                    SSID
-                    {sortColumn === 'ssid' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    component="button"
-                    type="button"
-                    aria-label="Sort by Site Name"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      font: 'inherit',
-                      padding: 0,
-                    }}
-                    onClick={() => handleSort('site')}
-                  >
-                    Site Name
-                    {sortColumn === 'site' && (
-                      sortDirection === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />
-                    )}
-                  </Box>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedClients.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      {selectedSites.length === 0
-                        ? 'Please select one or more sites to view clients'
-                        : 'No clients found for the selected sites'}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                sortedClients.map((client) => {
-                const status = client.status?.toLowerCase() || 'unknown';
-                const isConnected = status === 'connected';
-                const isFailed = status === 'failed';
-                const isConnecting = status === 'connecting';
-                const isDisconnected = status === 'disconnected';
-                const experience = client.experience || 'Good';
-
-                const statusColor = isConnected ? 'var(--color-success)'
-                  : isFailed ? 'var(--color-error)'
-                  : (isConnecting || isDisconnected) ? 'var(--color-warning)'
-                  : 'var(--text-secondary)';
-
-                const clientKind = getClientConnectionKind(client);
-                const clientType = clientKind;
-                const typeChipLabel =
-                  client.clientConnectionType ||
-                  client.connectionType ||
-                  client.type ||
-                  (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
-
-                return (
-                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {(isConnected || isFailed || isConnecting || isDisconnected) && (
-                          <Box
-                            sx={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              bgcolor: statusColor,
-                            }}
-                          />
-                        )}
-                        <Box>
-                          <Typography variant="body2" fontWeight="medium">
-                            {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
-                          </Typography>
-                          {isConnected && (
-                            <Typography variant="caption" color="textSecondary">
-                              Connected - {experience} Performance
-                            </Typography>
-                          )}
-                          {isFailed && (
-                            <Typography variant="caption" color="textSecondary">
-                              Failed
-                            </Typography>
-                          )}
-                          {isConnecting && (
-                            <Typography variant="caption" color="textSecondary">
-                              Connecting
-                            </Typography>
-                          )}
-                          {isDisconnected && (
-                            <Typography variant="caption" color="textSecondary">
-                              Disconnected
-                            </Typography>
-                          )}
-                        </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        size="small"
-                        label={typeChipLabel}
-                        icon={clientType === 'wireless' ? <WifiIcon /> : <CableIcon />}
-                        sx={{
-                          ...(clientType === 'wireless' && {
-                            backgroundColor: 'var(--color-primary)',
-                            color: 'white',
-                            '& .MuiChip-icon': {
-                              color: 'white',
-                            },
-                          }),
-                          ...(clientType === 'wired' && {
-                            backgroundColor: '#01A982',
-                            color: 'white',
-                            '& .MuiChip-icon': {
-                              color: 'white',
-                            },
-                          }),
-                          ...(clientType !== 'wireless' && clientType !== 'wired' && {
-                            backgroundColor: 'rgba(148, 163, 184, 0.15)',
-                            color: 'var(--text-secondary)',
-                          }),
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {client.mac || client.macaddr || client.macAddress || 'N/A'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        {client.ipv4 && (
-                          <Typography variant="body2">{client.ipv4}</Typography>
-                        )}
-                        {client.ipv6 && (
-                          <Typography variant="caption" color="textSecondary" display="block">
-                            {client.ipv6}
-                          </Typography>
-                        )}
-                        {!client.ipv4 && !client.ipv6 && (
-                          <Typography variant="body2" color="textSecondary">
-                            -
-                          </Typography>
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      {client.vlanId ? (
-                        <Typography variant="body2">
-                          {client.vlanId}
-                          {client.network && ` (${client.network})`}
-                        </Typography>
-                      ) : client.network ? (
-                        <Typography variant="body2">{client.network}</Typography>
-                      ) : (
-                        <Typography variant="body2" color="textSecondary">
-                          -
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {client.connectedTo || client.connected_to || client.device || client.associatedDevice || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {client.port || client.portId || client.port_id || client.interface || client.portName || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {client.role || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        color={getClientSsid(client) ? 'text.primary' : 'text.secondary'}
-                      >
-                        {getClientSsid(client) || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {client.siteName || 'Unknown'}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <ClientsTable
+          sortedClients={sortedClients}
+          selectedSites={selectedSites}
+          sortColumn={sortColumn}
+          sortDirection={sortDirection}
+          handleSort={handleSort}
+          getClientConnectionKind={getClientConnectionKind}
+          getClientSsid={getClientSsid}
+        />
       </Paper>
     </Box>
   );

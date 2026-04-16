@@ -70,17 +70,33 @@ const LazyFallback = () => (
   </Box>
 );
 
-// Components
+/**
+ * Prefetch the JS chunks for the most common navigation targets so they are
+ * already in the browser cache by the time the user clicks.  This triggers
+ * the dynamic import() without rendering the component.
+ *
+ * Called once after the authenticated layout mounts.
+ */
+const prefetchRouteChunks = () => {
+  // Dashboard -> Devices is the most common navigation path
+  import('./pages/DevicesPage');
+  // Dashboard -> Clients is the second most common
+  import('./pages/ClientsPage');
+};
+
+// Components (eagerly loaded — part of authenticated shell)
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Breadcrumb from './components/Breadcrumb';
 import GlobalSearch from './components/GlobalSearch';
 import EventFeedProvider from './components/EventFeedProvider';
-import ChatDrawer from './components/ChatDrawer';
 import NetworkHealthBanner from './components/NetworkHealthBanner';
 
+// Heavy components — lazy-loaded to keep the initial bundle lean
+const ChatDrawer = lazy(() => import('./components/ChatDrawer'));
+
 // Services
-import { authAPI } from './services/api';
+import { authAPI, deviceAPI, sitesConfigAPI, monitoringAPI, alertsAPI } from './services/api';
 
 // Notifications
 import { Toaster } from 'react-hot-toast';
@@ -242,9 +258,42 @@ const darkTheme = createTheme({
 /**
  * Inner authenticated layout — must live inside <Router> so useLocation works.
  * Receives sidebar/search state from App to keep a single source of truth.
+ *
+ * Prefetches critical data on mount so the Dashboard, Devices, and Alerts
+ * pages render immediately from cache instead of showing spinners.
  */
 function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearchOpen, onLogout }) {
   const location = useLocation();
+
+  // ── Prefetch critical data that most pages need ──────────────────────
+  // These calls are fire-and-forget — they populate the React Query cache
+  // in the background so pages that call useDevices(), useSites(), etc.
+  // get an instant cache hit instead of a loading spinner.
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ['devices'],
+      queryFn: () => deviceAPI.getAll(),
+      staleTime: 5 * 60_000,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ['sites', {}],
+      queryFn: () => sitesConfigAPI.getSites({}),
+      staleTime: 5 * 60_000,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ['network-health'],
+      queryFn: () => monitoringAPI.getNetworkHealth(),
+      staleTime: 30_000,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ['alerts'],
+      queryFn: () => alertsAPI.getAll(),
+      staleTime: 30_000,
+    });
+
+    // Prefetch JS chunks for the most common navigation targets
+    prefetchRouteChunks();
+  }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -329,8 +378,10 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
       </Box>
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      {/* Network assistant chat drawer — fixed to viewport bottom */}
-      <ChatDrawer pageContext={location.pathname} />
+      {/* Network assistant chat drawer — lazy-loaded, fixed to viewport */}
+      <Suspense fallback={null}>
+        <ChatDrawer pageContext={location.pathname} />
+      </Suspense>
     </Box>
   );
 }

@@ -2,7 +2,7 @@
  * Top Navigation Bar Component
  */
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -25,7 +25,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { tokenAPI } from '../services/api';
 import { useTokenInfo } from '../hooks/useApiQueries';
 import SearchIcon from '@mui/icons-material/Search';
-import NotificationCenter from './NotificationCenter';
+
+// Lazy-load NotificationCenter — it pulls in alert queries and MUI Menu internals
+const NotificationCenter = lazy(() => import('./NotificationCenter'));
 
 function TopBar({ onLogout, onMenuClick, onSearchClick }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -136,7 +138,13 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
             </IconButton>
           </Tooltip>
 
-          <NotificationCenter />
+          <Suspense fallback={
+            <IconButton color="inherit" aria-label="Notifications loading">
+              <NotificationsIcon />
+            </IconButton>
+          }>
+            <NotificationCenter />
+          </Suspense>
 
           <IconButton
             onClick={handleMenu}
