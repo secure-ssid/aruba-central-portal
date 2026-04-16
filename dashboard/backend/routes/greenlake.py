@@ -290,7 +290,7 @@ def get_alert_details(alert_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/alerts/{alert_id}")
+        response = aruba_client.get(f"/network-notifications/v1/alerts/{alert_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching alert {alert_id}: {e}")
@@ -305,7 +305,21 @@ def acknowledge_alert(alert_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.post(f"/network-monitoring/v1/alerts/{alert_id}/acknowledge")
+        # Try the correct namespace first, fall back to alternatives if needed
+        ack_resp = None
+        for ep, payload in [
+            (f"/network-notifications/v1/alerts/{alert_id}/acknowledge", {}),
+            (f"/network-notifications/v1/alerts/acknowledge", {"alert_id": [alert_id], "action": "ACK"}),
+        ]:
+            try:
+                ack_resp = aruba_client.post(ep, data=payload or None)
+                break
+            except Exception as ack_err:
+                sc = getattr(ack_err, 'status_code', None)
+                if sc == 404 or "404" in str(ack_err) or "Not Found" in str(ack_err):
+                    continue
+                raise ack_err
+        response = ack_resp or {}
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error acknowledging alert {alert_id}: {e}")
