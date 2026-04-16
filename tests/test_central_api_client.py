@@ -363,6 +363,26 @@ class TestGetAllPaginated:
         assert len(responses.calls) == 2
 
     @responses.activate
+    def test_get_all_paginated_prefers_result_when_items_empty(self, api_client):
+        """network-monitoring style bodies may use ``result`` instead of ``items``."""
+        responses.add(
+            responses.GET,
+            f"{TEST_BASE_URL}/network-monitoring/v1/devices",
+            json={
+                "result": [{"serialNumber": "SN1"}],
+                "total": 1,
+            },
+            status=200,
+        )
+
+        result = api_client.get_all_paginated(
+            "/network-monitoring/v1/devices", page_size=100
+        )
+
+        assert result == [{"serialNumber": "SN1"}]
+        assert len(responses.calls) == 1
+
+    @responses.activate
     def test_get_all_paginated_empty_response(self, api_client):
         """Test pagination when first page returns no items."""
         responses.add(

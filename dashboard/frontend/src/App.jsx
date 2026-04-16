@@ -398,7 +398,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
 
 function AppInner() {
   const { mode } = useThemeMode();
-  const theme = useMemo(() => buildTheme(mode), [mode]);
+  const muiTheme = useMemo(() => buildTheme(mode), [mode]);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -483,7 +483,7 @@ function AppInner() {
 
   if (isLoading) {
     return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={muiTheme}>
         <CssBaseline />
         <Box
           display="flex"
@@ -501,7 +501,7 @@ function AppInner() {
 
   return (
     <QueryClientProvider client={queryClient}>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       <Toaster
         position="bottom-right"

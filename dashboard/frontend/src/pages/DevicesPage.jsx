@@ -69,22 +69,33 @@ function DevicesPage() {
   // Derive lists from query data (memoized to avoid re-renders)
   const devices = useMemo(() => {
     const d = devicesQuery.data;
-    return d?.devices || d?.items || (Array.isArray(d) ? d : []);
+    return (
+      d?.devices ||
+      d?.items ||
+      d?.result ||
+      (Array.isArray(d) ? d : [])
+    );
   }, [devicesQuery.data]);
 
   const switches = useMemo(() => {
     const s = switchesQuery.data;
-    return s?.switches || s?.items || (Array.isArray(s) ? s : []);
+    return (
+      s?.switches ||
+      s?.items ||
+      s?.result ||
+      (Array.isArray(s) ? s : [])
+    );
   }, [switchesQuery.data]);
 
   const accessPoints = useMemo(() => {
     const a = apsQuery.data;
-    return a?.aps || a?.items || (Array.isArray(a) ? a : []);
+    return a?.aps || a?.items || a?.result || (Array.isArray(a) ? a : []);
   }, [apsQuery.data]);
 
   const gateways = useMemo(() => {
     const g = gatewaysQuery.data;
-    const gwItems = g?.items || g?.gateways || (Array.isArray(g) ? g : []);
+    const gwItems =
+      g?.items || g?.gateways || g?.result || (Array.isArray(g) ? g : []);
     return gwItems.map((gw) => ({
       deviceName: gw.deviceName || gw.name || gw.hostname || 'N/A',
       serialNumber: gw.serialNumber || gw.serial || gw.id || '',

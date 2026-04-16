@@ -52,6 +52,7 @@ function SetupWizard({ onComplete }) {
   // Form state
   const [clientId, setClientId] = useState('');
   const [clientSecret, setClientSecret] = useState('');
+  const [customerId, setCustomerId] = useState('');
   const [baseUrl, setBaseUrl] = useState(DEFAULT_API_BASE_URL);
   // Optional: GreenLake RBAC (HPE GreenLake Platform) configuration
   const [enableRbac, setEnableRbac] = useState(false);
@@ -72,8 +73,8 @@ function SetupWizard({ onComplete }) {
   };
 
   const handleSave = async () => {
-    if (!clientId || !clientSecret) {
-      setError('Client ID and Client Secret are required');
+    if (!clientId || !clientSecret || !customerId) {
+      setError('Client ID, Client Secret, and Customer ID are required');
       return;
     }
 
@@ -84,6 +85,7 @@ function SetupWizard({ onComplete }) {
       const response = await axios.post(`${API_BASE_URL}/setup/configure`, {
         client_id: clientId,
         client_secret: clientSecret,
+        customer_id: customerId,
         base_url: baseUrl,
         // Optional RBAC block is included only when enabled
         rbac: enableRbac
@@ -178,6 +180,15 @@ function SetupWizard({ onComplete }) {
                   secondary="Generated when creating API credentials"
                 />
               </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <CheckCircleIcon color="success" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Customer ID"
+                  secondary="Your Aruba Central / GreenLake customer (tenant) identifier"
+                />
+              </ListItem>
             </List>
 
             <Divider sx={{ my: 3 }} />
@@ -198,7 +209,8 @@ function SetupWizard({ onComplete }) {
               3. Click <strong>Create</strong> and select <strong>Service Account</strong>
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              4. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong>
+              4. Copy the <strong>Client ID</strong>, <strong>Client Secret</strong>, and note your{' '}
+              <strong>Customer ID</strong> from Account Home / organization details (same values as in Central API docs)
             </Typography>
 
             <Box sx={{ mt: 4, textAlign: 'center' }}>
@@ -299,6 +311,16 @@ function SetupWizard({ onComplete }) {
               }}
             />
 
+            <TextField
+              fullWidth
+              label="Customer ID"
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value.trim())}
+              sx={{ mb: 2 }}
+              placeholder="e.g. 1234567890123456"
+              helperText="Required for Central API scope — find it in Account Home or your API onboarding docs"
+            />
+
             {enableRbac && (
               <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider', mb: 3 }}>
                 <Typography variant="subtitle1" gutterBottom fontWeight={600}>
@@ -340,7 +362,7 @@ function SetupWizard({ onComplete }) {
               <Button
                 variant="contained"
                 onClick={handleNext}
-                disabled={!clientId || !clientSecret}
+                disabled={!clientId || !clientSecret || !customerId}
               >
                 Next
               </Button>
@@ -379,6 +401,15 @@ function SetupWizard({ onComplete }) {
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, fontFamily: 'monospace', fontSize: '0.9rem' }}>
                   {'•'.repeat(20)}...
+                </Typography>
+
+                <Typography variant="subtitle2" gutterBottom color="text.secondary">
+                  Customer ID:
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2, fontFamily: 'monospace', fontSize: '0.9rem' }}>
+                  {customerId.length > 24
+                    ? `${customerId.substring(0, 12)}…${customerId.substring(customerId.length - 6)}`
+                    : customerId}
                 </Typography>
 
               </CardContent>

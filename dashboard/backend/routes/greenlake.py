@@ -20,7 +20,7 @@ from functools import wraps
 
 from flask import Blueprint, Response, jsonify, request, stream_with_context
 
-from .helpers import cached_get, cached_get_paginated, require_session
+from .helpers import cached_get, cached_get_paginated, require_session, monitoring_list_items
 
 greenlake_bp = Blueprint("greenlake", __name__)
 logger = logging.getLogger(__name__)
@@ -1546,10 +1546,9 @@ def get_device_inventory_report():
             except Exception:
                 return jsonify({"devices": [], "count": 0})
 
-        if "items" not in devices_response:
+        devices = monitoring_list_items(devices_response)
+        if not devices:
             return jsonify({"devices": [], "count": 0})
-
-        devices = devices_response["items"]
 
         # Aggregate statistics
         inventory = {
@@ -1672,7 +1671,7 @@ def get_devices_with_greenlake():
         try:
             # Try network-monitoring v1alpha1 first (preferred)
             devices_response = cached_get("/network-monitoring/v1/devices")
-            devices = devices_response.get("items", devices_response.get("devices", []))
+            devices = monitoring_list_items(devices_response)
             if devices:
                 logger.info(
                     f"Fetched {len(devices)} devices from network-monitoring/v1alpha1/devices"
@@ -1683,7 +1682,7 @@ def get_devices_with_greenlake():
             # Fallback to monitoring/v1 API
             try:
                 devices_response = aruba_client.get("/monitoring/v1/devices")
-                devices = devices_response.get("items", devices_response.get("devices", []))
+                devices = monitoring_list_items(devices_response)
                 if devices:
                     logger.info(
                         f"Fetched {len(devices)} devices from monitoring/v1/devices (fallback)"
@@ -1851,8 +1850,8 @@ def grafana_kpis():
         result = {}
         try:
             r = cached_get("/network-monitoring/v1/devices")
-            items = r.get("items", [])
-            total = r.get("count", len(items))
+            items = monitoring_list_items(r)
+            total = r.get("count", r.get("total", len(items)))
             up = sum(
                 1 for d in items if d.get("status", "").upper() in ("UP", "ONLINE", "CONNECTED")
             )
@@ -1878,8 +1877,8 @@ def grafana_kpis():
             )
         try:
             r = cached_get("/network-monitoring/v1/aps")
-            items = r.get("items", [])
-            total = r.get("count", len(items))
+            items = monitoring_list_items(r)
+            total = r.get("count", r.get("total", len(items)))
             up = sum(
                 1 for a in items if a.get("status", "").upper() in ("UP", "ONLINE", "CONNECTED")
             )
@@ -1889,14 +1888,14 @@ def grafana_kpis():
             result.update(total_aps=0, aps_up=0, aps_down=0)
         try:
             r = aruba_client.get("/network-monitoring/v1/clients")
-            result["total_clients"] = r.get("count", len(r.get("items", [])))
+            result["total_clients"] = r.get("count", len(monitoring_list_items(r)))
         except Exception as e:
             logger.warning(f"Grafana KPI clients: {e}")
             result["total_clients"] = 0
         try:
             r = cached_get("/network-monitoring/v1/sites-health")
-            sites = r.get("items", r.get("sites", []))
-            result["total_sites"] = r.get("count", len(sites))
+            sites = monitoring_list_items(r)
+            result["total_sites"] = r.get("count", r.get("total", len(sites)))
             result["healthy_sites"] = sum(
                 1 for s in sites if _safe_int(s.get("health", s.get("healthScore", 0))) >= 80
             )
@@ -1920,7 +1919,7 @@ def grafana_devices_by_type():
     def fetch():
         r = cached_get("/network-monitoring/v1/devices")
         by_type = {}
-        for d in r.get("items", []):
+        for d in monitoring_list_items(r):
             dt = d.get("deviceType", d.get("type", "Unknown"))
             by_type[dt] = by_type.get(dt, 0) + 1
         return [{"type": k, "count": v} for k, v in sorted(by_type.items())]
@@ -1938,7 +1937,7 @@ def grafana_sites_health():
 
     def fetch():
         r = aruba_client.get("/network-monitoring/v1/sites-health")
-        sites = r.get("items", r.get("sites", []))
+        sites = monitoring_list_items(r)
         return [
             {
                 "site": s.get("siteName", s.get("name", "Unknown")),

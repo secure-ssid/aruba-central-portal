@@ -15,6 +15,27 @@ from .token_manager import TokenManager
 logger = logging.getLogger(__name__)
 
 
+def _extract_paginated_list(response: dict[str, Any], preferred_key: str) -> list[dict[str, Any]]:
+    """Pick the array field from a Central paginated JSON body.
+
+    Newer network-monitoring endpoints often use ``result``; older ones use ``items``.
+    Prefer *preferred_key* when it is a non-empty list; otherwise accept the first
+    other known list key with data, then fall back to an empty *preferred* list.
+    """
+    pref = response.get(preferred_key)
+    if isinstance(pref, list) and pref:
+        return pref
+    for key in ("result", "items", "devices", "aps", "switches", "gateways"):
+        if key == preferred_key:
+            continue
+        val = response.get(key)
+        if isinstance(val, list) and val:
+            return val
+    if isinstance(pref, list):
+        return pref
+    return []
+
+
 class CentralAPIError(Exception):
     """Structured error from Aruba Central API.
 
@@ -413,7 +434,7 @@ class CentralAPIClient:
 
         for _ in range(max_pages):
             response = self.get(endpoint, params=params)
-            items = response.get(items_key, [])
+            items = _extract_paginated_list(response, items_key)
             if not items:
                 break
             all_items.extend(items)

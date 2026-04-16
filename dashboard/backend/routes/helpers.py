@@ -18,6 +18,29 @@ from flask import request, jsonify, current_app
 logger = logging.getLogger(__name__)
 
 
+def monitoring_list_items(resp: object) -> list:
+    """Extract the primary list from a Central *network-monitoring* style JSON object.
+
+    Single-page ``cached_get`` responses may use ``items``, ``result``, or resource-specific
+    keys (``devices``, ``aps``, …). Used wherever we previously assumed only ``items``.
+    """
+    if not isinstance(resp, dict):
+        return []
+    preferred_key = "items"
+    pref_val = resp.get(preferred_key)
+    if isinstance(pref_val, list) and pref_val:
+        return pref_val
+    for key in ("result", "devices", "aps", "switches", "gateways", "sites", "items"):
+        if key == preferred_key:
+            continue
+        val = resp.get(key)
+        if isinstance(val, list) and val:
+            return val
+    if isinstance(pref_val, list):
+        return pref_val
+    return []
+
+
 # ── Simple In-Memory Rate Limiter ──────────────────────────────────────────
 # Tracks request timestamps per IP in a sliding window. Thread-safe.
 

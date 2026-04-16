@@ -16,7 +16,14 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 import logging
 
-from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
+from .helpers import (
+    require_session,
+    api_proxy,
+    cached_get,
+    cached_get_paginated,
+    parallel_get,
+    monitoring_list_items,
+)
 
 devices_bp = Blueprint("devices", __name__)
 logger = logging.getLogger(__name__)
@@ -65,7 +72,7 @@ def get_device_details(serial):
             # Fallback: search in cached device list if direct endpoint fails
             r = cached_get("/network-monitoring/v1/devices")
             device = None
-            for d in r.get("items", []):
+            for d in monitoring_list_items(r):
                 if d.get("serial") == serial or d.get("serialNumber") == serial:
                     device = d.copy()
                     break
