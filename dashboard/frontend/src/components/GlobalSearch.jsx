@@ -41,7 +41,7 @@ function GlobalSearch({ open, onClose }) {
     { name: 'WLANs', path: '/wlans', keywords: ['wireless', 'wifi', 'ssid', 'network'] },
     { name: 'Configuration', path: '/configuration', keywords: ['config', 'settings', 'template'] },
     { name: 'NAC', path: '/nac', keywords: ['nac', 'access control', 'security'] },
-    { name: 'Network Monitor', path: '/network-monitor', keywords: ['monitor', 'monitoring', 'health', 'status', 'performance'] },
+    { name: 'Network Monitor', path: '/?view=monitor', keywords: ['monitor', 'monitoring', 'health', 'status', 'performance'] },
     { name: 'Alerts', path: '/alerts', keywords: ['alert', 'notification', 'warning'] },
     { name: 'Analytics', path: '/analytics', keywords: ['analytics', 'reports', 'metrics'] },
     { name: 'Firmware', path: '/firmware', keywords: ['firmware', 'update', 'upgrade'] },
@@ -72,16 +72,17 @@ function GlobalSearch({ open, onClose }) {
         // Search devices
         let devices = [];
         try {
-          const deviceResponse = await deviceAPI.getDevices();
-          devices = (deviceResponse.devices || [])
-            .filter(
-              (device) =>
-                device.serial?.toLowerCase().includes(query) ||
-                device.name?.toLowerCase().includes(query) ||
-                device.model?.toLowerCase().includes(query) ||
-                device.macaddr?.toLowerCase().includes(query)
-            )
-            .slice(0, 5); // Limit to 5 results
+          const deviceResponse = await deviceAPI.getAll();
+          const deviceList = deviceResponse.result || deviceResponse.items || deviceResponse.devices || (Array.isArray(deviceResponse) ? deviceResponse : []);
+          devices = deviceList
+            .filter((device) => {
+              const name = (device.deviceName || device.name || device.hostname || '').toLowerCase();
+              const serial = (device.serialNumber || device.serial || '').toLowerCase();
+              const model = (device.model || '').toLowerCase();
+              const mac = (device.macAddress || device.macaddr || '').toLowerCase();
+              return name.includes(query) || serial.includes(query) || model.includes(query) || mac.includes(query);
+            })
+            .slice(0, 5);
         } catch (err) {
           console.error('Error searching devices:', err);
         }
@@ -230,14 +231,14 @@ function GlobalSearch({ open, onClose }) {
                 {results.devices.map((device) => (
                   <ListItem key={device.serial} disablePadding>
                     <ListItemButton
-                      onClick={() => handleNavigate(`/devices/${device.serial}`)}
+                      onClick={() => handleNavigate(`/devices/${device.serialNumber || device.serial}`)}
                     >
                       <ListItemIcon>
                         <DevicesIcon color="primary" />
                       </ListItemIcon>
                       <ListItemText
-                        primary={device.name || device.serial}
-                        secondary={`${device.model} - ${device.serial}`}
+                        primary={device.deviceName || device.name || device.hostname || device.serialNumber || device.serial}
+                        secondary={`${device.model || ''} · ${device.serialNumber || device.serial || ''}`}
                       />
                       <Chip
                         label={device.status}

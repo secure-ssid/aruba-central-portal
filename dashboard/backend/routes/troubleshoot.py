@@ -1030,6 +1030,42 @@ def troubleshoot_cx_reboot():
 
 # ── AP Troubleshooting Endpoints ──────────────────────────────────────────────
 
+@troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/ping', methods=['POST'])
+@require_session
+def troubleshoot_ap_ping(serial):
+    """Run ping from an AOS AP."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        if not aruba_client:
+            return jsonify({"error": "Server not configured"}), 500
+        data = request.get_json() or {}
+        target = data.get('target', '8.8.8.8')
+        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/ping', data={"target": target})
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error running ping on AP {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/traceroute', methods=['POST'])
+@require_session
+def troubleshoot_ap_traceroute(serial):
+    """Run traceroute from an AOS AP."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        if not aruba_client:
+            return jsonify({"error": "Server not configured"}), 500
+        data = request.get_json() or {}
+        target = data.get('target', '8.8.8.8')
+        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/traceroute', data={"target": target})
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error running traceroute on AP {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/locate', methods=['POST'])
 @require_session
 def troubleshoot_ap_locate(serial):
@@ -1722,105 +1758,3 @@ def get_cluster_info():
         "documentation": "https://developer.arubanetworks.com/aruba-central/docs/api-getting-started"
     })
 
-
-# ============= Webhook Ingest + SSE Streaming =============
-
-@troubleshoot_bp.route('/api/webhooks/aruba-central', methods=['POST'])
-def aruba_webhook():
-    """
-    Receives push events from Aruba Central (device/AP up-down, alerts, etc).
-    Validates HMAC-SHA256 signature when ARUBA_WEBHOOK_SECRET is set.
-    Fan-outs to all active SSE subscribers immediately (<1 s delivery).
-    """
-    import app as _app
-
-    body = request.get_data()
-    webhook_secret = os.environ.get('ARUBA_WEBHOOK_SECRET', '')
-
-    if not webhook_secret:
-        logger.error("Webhook: ARUBA_WEBHOOK_SECRET not configured")
-        return jsonify({"error": "Webhook secret not configured. Set ARUBA_WEBHOOK_SECRET environment variable."}), 403
-
-    sig_header = request.headers.get('X-Aruba-Signature', '')
-    expected = hmac.new(webhook_secret.encode(), body, hashlib.sha256).hexdigest()
-    if not sig_header or not hmac.compare_digest(sig_header, expected):
-        logger.warning("Webhook: invalid signature rejected")
-        return '', 401
-
-    try:
-        payload = json.loads(body)
-    except json.JSONDecodeError:
-        return jsonify({"error": "Invalid JSON"}), 400
-
-    event = {
-        "id": payload.get("nid") or payload.get("event_id"),
-        "ts": payload.get("ts") or int(time.time() * 1000),
-        "type": payload.get("event_type"),
-        "severity": payload.get("severity", "info"),
-        "device": payload.get("device_id"),
-        "site": payload.get("group_name"),
-        "detail": payload,
-        "_ingested_at": int(time.time() * 1000),
-    }
-
-    with _app._event_store_lock:
-        _app._event_store.append(event)
-
-    _app._fan_out_event(event)
-    logger.info(f"Webhook: ingested type={event['type']} device={event['device']}")
-    return '', 204
-
-
-@troubleshoot_bp.route('/api/stream/events')
-def stream_events():
-    """
-    SSE endpoint — accepts either:
-      - X-Grafana-API-Key header (for Grafana Infinity datasource)
-      - X-Session-ID header or ?session= query param (for browser EventSource)
-    """
-    import app as _app
-
-    # Auth check: allow Grafana key OR valid session
-    grafana_key = os.environ.get('GRAFANA_API_KEY', '')
-    provided_grafana_key = request.headers.get('X-Grafana-API-Key', '')
-    session_id = request.headers.get('X-Session-ID') or request.args.get('session')
-
-    if grafana_key and provided_grafana_key and hmac.compare_digest(provided_grafana_key, grafana_key):
-        pass  # Valid Grafana key
-    elif session_id and session_id in _app.active_sessions:
-        pass  # Valid browser session
-    else:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    with _app._event_store_lock:
-        snapshot = list(_app._event_store)[-50:]
-
-    def generate():
-        for past in snapshot:
-            yield f"data: {json.dumps(past)}\n\n"
-
-        q: queue.Queue = queue.Queue(maxsize=200)
-        with _app._sse_subscribers_lock:
-            _app._sse_subscribers.add(q)
-        try:
-            while True:
-                try:
-                    event = q.get(timeout=20)
-                    yield f"data: {json.dumps(event)}\n\n"
-                except queue.Empty:
-                    yield ": keepalive\n\n"
-        except GeneratorExit:
-            pass
-        finally:
-            with _app._sse_subscribers_lock:
-                _app._sse_subscribers.discard(q)
-
-    return Response(
-        stream_with_context(generate()),
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no',
-            'Connection': 'keep-alive',
-        }
-    )

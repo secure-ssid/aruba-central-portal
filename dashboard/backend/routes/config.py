@@ -864,14 +864,35 @@ def get_client_health_summary():
 def get_client_by_mac(mac):
     """Get detailed information for a specific client by MAC address.
 
-    Endpoint: /network-monitoring/v1/clients/{mac-address}
+    Tries the legacy monitoring API first (returns fingerprinting fields:
+    device_type, os_type, manufacturer, os, labels) then falls back to the
+    new network-monitoring v1 API and merges results.
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}")
-        return jsonify(r)
+        legacy_data = {}
+        new_data = {}
+
+        # Legacy API has device fingerprinting: device_type, os_type, manufacturer, os, labels
+        try:
+            legacy_data = aruba_client.get(f"/monitoring/v1/clients/{mac}") or {}
+        except Exception as le:
+            logger.debug(f"Legacy client endpoint failed for {mac}: {le}")
+
+        # New API has connectivity fields
+        try:
+            new_data = aruba_client.get(f"/network-monitoring/v1/clients/{mac}") or {}
+        except Exception as ne:
+            logger.debug(f"New client endpoint failed for {mac}: {ne}")
+
+        if not legacy_data and not new_data:
+            return jsonify({"error": "Client not found"}), 404
+
+        # Merge: new API fields as base, overlay legacy fingerprinting fields on top
+        merged = {**new_data, **legacy_data}
+        return jsonify(merged)
     except Exception as e:
         logger.error(f"Error fetching client {mac}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1188,15 +1209,37 @@ def get_groups():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route("/api/templates", methods=["GET"])
+@config_bp.route("/api/groups", methods=["POST"])
 @require_session
-@api_proxy(
-    "/configuration/v1/templates",
-    error_msg="Templates",
-    fallback_data={"templates": [], "count": 0, "total": 0},
-)
-def get_templates():
-    pass
+def create_group():
+    """Create a new device group."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        data = request.get_json()
+        if not data or not data.get("group"):
+            return jsonify({"error": "group name is required"}), 400
+        response = aruba_client.post("/configuration/v1/groups", json=data)
+        return jsonify(response or {"success": True})
+    except Exception as e:
+        logger.error(f"Error creating group: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/groups/<group_name>", methods=["DELETE"])
+@require_session
+def delete_group(group_name):
+    """Delete a device group by name."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        response = aruba_client.delete(f"/configuration/v1/groups/{group_name}")
+        return jsonify(response or {"success": True})
+    except Exception as e:
+        logger.error(f"Error deleting group {group_name}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 # ============= NAC (Network Access Control) Endpoints =============
@@ -1271,6 +1314,62 @@ def get_nac_radius_profiles():
 @api_proxy("/configuration/v1/onboarding_rules", error_msg="Onboarding rules")
 def get_nac_onboarding_rules():
     pass
+
+
+@config_bp.route("/api/nac/mac-registrations", methods=["GET"])
+@require_session
+def get_mac_registrations():
+    """List all MAC registrations."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = {}
+        if request.args.get("limit"):
+            params["limit"] = request.args.get("limit")
+        if request.args.get("offset"):
+            params["offset"] = request.args.get("offset")
+        response = aruba_client.get("/network-config/v1alpha1/nac/mac-registration", params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching MAC registrations: {e}")
+        err = str(e)
+        if "404" in err or "Not Found" in err:
+            return jsonify({"items": [], "count": 0, "total": 0})
+        return jsonify({"error": err}), 500
+
+
+@config_bp.route("/api/nac/mac-registrations", methods=["POST"])
+@require_session
+def create_mac_registration():
+    """Create a new MAC registration."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        data = request.get_json()
+        if not data or not data.get("macAddress"):
+            return jsonify({"error": "macAddress is required"}), 400
+        response = aruba_client.post("/network-config/v1alpha1/nac/mac-registration", data=data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating MAC registration: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/nac/mac-registrations/<mac_id>", methods=["DELETE"])
+@require_session
+def delete_mac_registration(mac_id):
+    """Delete a MAC registration by ID."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        response = aruba_client.delete(f"/network-config/v1alpha1/nac/mac-registration/{mac_id}")
+        return jsonify(response or {"success": True})
+    except Exception as e:
+        logger.error(f"Error deleting MAC registration {mac_id}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 # ============= Scope Management Endpoints =============
@@ -1733,64 +1832,43 @@ def get_workspace_info():
         return jsonify({"error": str(e)}), 500
 
 
-@config_bp.route("/api/cluster/info", methods=["GET"])
-def get_cluster_info():
-    """Get information about Aruba Central regional clusters and base URLs."""
-    import app as _app
+@config_bp.route("/api/workspace/greenlake", methods=["POST"])
+@require_session
+def save_greenlake_credentials():
+    """Save GreenLake API credentials without changing Central workspace."""
+    import os
 
-    return jsonify(
-        {
-            "current_base_url": (
-                _app.config["aruba_central"]["base_url"] if _app.config else "Not configured"
-            ),
-            "available_clusters": [
-                {
-                    "name": "United States",
-                    "region": "us-west",
-                    "base_url": "https://internal-apigw.central.arubanetworks.com",
-                    "description": "US West region (default for most US customers)",
-                },
-                {
-                    "name": "United States - New HPE GreenLake",
-                    "region": "us-hpe-gl",
-                    "base_url": "https://internal.api.central.arubanetworks.com",
-                    "description": "New HPE GreenLake platform (check your Central dashboard URL)",
-                },
-                {
-                    "name": "Europe",
-                    "region": "eu-central",
-                    "base_url": "https://internal-apigw.central.arubanetworks.com",
-                    "description": "Europe Central region",
-                },
-                {
-                    "name": "Asia Pacific",
-                    "region": "apac",
-                    "base_url": "https://internal-apigw.apac.central.arubanetworks.com",
-                    "description": "Asia Pacific region",
-                },
-                {
-                    "name": "Canada",
-                    "region": "ca",
-                    "base_url": "https://internal-apigw.central.arubanetworks.com",
-                    "description": "Canada region",
-                },
-                {
-                    "name": "China",
-                    "region": "cn",
-                    "base_url": "https://internal-apigw.arubanetworks.com.cn",
-                    "description": "China region",
-                },
-            ],
-            "how_to_find": {
-                "step1": "Log into your Aruba Central dashboard",
-                "step2": "Check the URL in your browser",
-                "step3": "Match the domain to the cluster list above",
-                "step4": "Use the corresponding base_url for API calls",
-                "note": "Using the wrong cluster URL will result in authentication failures",
-            },
-            "documentation": "https://developer.arubanetworks.com/aruba-central/docs/api-getting-started",
-        }
-    )
+    try:
+        data = request.get_json()
+        gl_client_id = data.get("gl_client_id")
+        gl_client_secret = data.get("gl_client_secret")
+        gl_api_base = data.get("gl_api_base", "https://global.api.greenlake.hpe.com")
+
+        if not gl_client_id or not gl_client_secret:
+            return jsonify({"error": "gl_client_id and gl_client_secret are required"}), 400
+
+        os.environ["GL_RBAC_CLIENT_ID"] = gl_client_id
+        os.environ["GL_RBAC_CLIENT_SECRET"] = gl_client_secret
+        os.environ["GL_API_BASE"] = gl_api_base
+
+        logger.info("GreenLake API credentials updated")
+        return jsonify({"success": True, "message": "GreenLake credentials saved successfully"})
+    except Exception as e:
+        logger.error(f"Error saving GreenLake credentials: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/workspace/greenlake/status", methods=["GET"])
+@require_session
+def get_greenlake_status():
+    """Check if GreenLake API credentials are configured."""
+    import os
+
+    configured = bool(os.environ.get("GL_RBAC_CLIENT_ID") and os.environ.get("GL_RBAC_CLIENT_SECRET"))
+    return jsonify({
+        "configured": configured,
+        "api_base": os.environ.get("GL_API_BASE", "https://global.api.greenlake.hpe.com"),
+    })
 
 
 # ============= Site Health — Individual Site =============
@@ -1808,4 +1886,101 @@ def get_site_health(site_id):
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching health for site {site_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ============= Webhook Management Endpoints =============
+
+
+@config_bp.route("/api/config/webhooks", methods=["GET"])
+@require_session
+def list_webhooks():
+    """List all configured webhooks."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        params = {}
+        if request.args.get("limit"):
+            params["limit"] = request.args.get("limit")
+        if request.args.get("offset"):
+            params["offset"] = request.args.get("offset")
+        response = aruba_client.get("/central/v2/webhooks", params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error listing webhooks: {e}")
+        err = str(e)
+        if "404" in err or "Not Found" in err:
+            return jsonify({"webhooks": [], "count": 0, "total": 0})
+        return jsonify({"error": err}), 500
+
+
+@config_bp.route("/api/config/webhooks", methods=["POST"])
+@require_session
+def create_webhook():
+    """Create a new webhook."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        data = request.get_json()
+        response = aruba_client.post("/central/v2/webhooks", json=data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error creating webhook: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/config/webhooks/<webhook_id>", methods=["GET"])
+@require_session
+def get_webhook(webhook_id):
+    """Get a specific webhook by ID."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        response = aruba_client.get(f"/central/v2/webhooks/{webhook_id}")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching webhook {webhook_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/config/webhooks/<webhook_id>", methods=["PUT"])
+@require_session
+def update_webhook(webhook_id):
+    """Update an existing webhook."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        data = request.get_json()
+        response = aruba_client.put(f"/central/v2/webhooks/{webhook_id}", json=data)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error updating webhook {webhook_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/config/webhooks/<webhook_id>", methods=["DELETE"])
+@require_session
+def delete_webhook(webhook_id):
+    """Delete a webhook."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        response = aruba_client.delete(f"/central/v2/webhooks/{webhook_id}")
+        return jsonify(response or {"success": True})
+    except Exception as e:
+        logger.error(f"Error deleting webhook {webhook_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@config_bp.route("/api/config/webhooks/<webhook_id>/rotate-key", methods=["POST"])
+@require_session
+def rotate_webhook_key(webhook_id):
+    """Rotate the secret key for a webhook."""
+    import app as _app
+    aruba_client = _app.aruba_client
+    try:
+        response = aruba_client.post(f"/central/v2/webhooks/{webhook_id}/rotate-key")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error rotating key for webhook {webhook_id}: {e}")
         return jsonify({"error": str(e)}), 500

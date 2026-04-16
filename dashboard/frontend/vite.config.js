@@ -29,6 +29,7 @@ export default defineConfig({
   ].filter(Boolean),
   server: {
     port: 1344,
+    strictPort: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5001',

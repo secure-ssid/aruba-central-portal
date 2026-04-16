@@ -23,10 +23,10 @@ const DashboardPage      = lazy(() => import('./pages/DashboardPage'));
 const DevicesPage        = lazy(() => import('./pages/DevicesPage'));
 const DeviceDetailPage   = lazy(() => import('./pages/DeviceDetailPage'));
 const ClientsPage        = lazy(() => import('./pages/ClientsPage'));
+const ClientDetailPage   = lazy(() => import('./pages/ClientDetailPage'));
 const ConfigurationPage  = lazy(() => import('./pages/ConfigurationPage'));
 const APIExplorerPage    = lazy(() => import('./pages/APIExplorerPage'));
 const UsersPage          = lazy(() => import('./pages/UsersPage'));
-const TroubleshootPage   = lazy(() => import('./pages/TroubleshootPage'));
 const NACPage            = lazy(() => import('./pages/NACPage'));
 const SettingsPage       = lazy(() => import('./pages/SettingsPage'));
 const SitesPage          = lazy(() => import('./pages/SitesPage'));
@@ -34,7 +34,11 @@ const WLANsPage          = lazy(() => import('./pages/WLANsPage'));
 const AlertsPage         = lazy(() => import('./pages/AlertsPage'));
 const AnalyticsPage      = lazy(() => import('./pages/AnalyticsPage'));
 const FirmwarePage       = lazy(() => import('./pages/FirmwarePage'));
+const WebhooksPage       = lazy(() => import('./pages/WebhooksPage'));
 const NetworkMonitorPage = lazy(() => import('./pages/NetworkMonitorPage'));
+const GatewayWANPage     = lazy(() => import('./pages/GatewayWANPage'));
+const TroubleshootPage   = lazy(() => import('./pages/TroubleshootPage'));
+const APTroubleshootPage = lazy(() => import('./pages/APTroubleshootPage'));
 const TopologyPage       = lazy(() => import('./pages/TopologyPage'));
 const StatusPage         = lazy(() => import('./pages/StatusPage'));
 const GLDevicesPage       = lazy(() => import('./pages/GLDevicesPage'));
@@ -46,8 +50,6 @@ const GLUsersPage         = lazy(() => import('./pages/GLUsersPage'));
 const GLRolesPage         = lazy(() => import('./pages/GLRolesPage'));
 const GLPermissionsPage   = lazy(() => import('./pages/GLPermissionsPage'));
 const ReportingPage       = lazy(() => import('./pages/ReportingPage'));
-const GatewayWANPage          = lazy(() => import('./pages/GatewayWANPage'));
-const APTroubleshootPage      = lazy(() => import('./pages/APTroubleshootPage'));
 const ScheduledReportsPage    = lazy(() => import('./pages/ScheduledReportsPage'));
 const AuditLogPage            = lazy(() => import('./pages/AuditLogPage'));
 
@@ -340,6 +342,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/devices" element={<DevicesPage />} />
             <Route path="/devices/:serial" element={<DeviceDetailPage />} />
             <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/clients/:mac" element={<ClientDetailPage />} />
             <Route path="/sites" element={<SitesPage />} />
             <Route path="/wlans" element={<WLANsPage />} />
             <Route path="/configuration" element={<ConfigurationPage />} />
@@ -360,13 +363,14 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/firmware" element={<FirmwarePage />} />
-            <Route path="/troubleshoot" element={<TroubleshootPage />} />
-            <Route path="/network-monitor" element={<NetworkMonitorPage />} />
+            <Route path="/webhooks" element={<WebhooksPage />} />
+            <Route path="/network-monitor" element={<ErrorBoundary><NetworkMonitorPage /></ErrorBoundary>} />
+            <Route path="/gateway-wan" element={<ErrorBoundary><GatewayWANPage /></ErrorBoundary>} />
+            <Route path="/troubleshoot" element={<ErrorBoundary><TroubleshootPage /></ErrorBoundary>} />
+            <Route path="/ap-troubleshoot" element={<ErrorBoundary><APTroubleshootPage /></ErrorBoundary>} />
             <Route path="/topology" element={<TopologyPage />} />
             <Route path="/api-explorer" element={<APIExplorerPage />} />
             <Route path="/reporting" element={<ErrorBoundary><ReportingPage /></ErrorBoundary>} />
-            <Route path="/gateway-wan" element={<ErrorBoundary><GatewayWANPage /></ErrorBoundary>} />
-            <Route path="/ap-troubleshoot" element={<ErrorBoundary><APTroubleshootPage /></ErrorBoundary>} />
             <Route path="/scheduled-reports" element={<ErrorBoundary><ScheduledReportsPage /></ErrorBoundary>} />
             <Route path="/audit-log" element={<ErrorBoundary><AuditLogPage /></ErrorBoundary>} />
             <Route path="/settings" element={<SettingsPage />} />

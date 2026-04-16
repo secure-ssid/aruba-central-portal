@@ -74,7 +74,7 @@ const REPORT_TYPES = [
     color: '#3B82F6',
     description: 'Full inventory of all managed devices with status and firmware',
     fetch: () => reportingAPI.getDeviceInventory(),
-    dataPath: (r) => r?.data?.devices || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.devices || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'wireless_health',
@@ -83,7 +83,7 @@ const REPORT_TYPES = [
     color: '#10B981',
     description: 'AP health scores, channel utilization, and client counts',
     fetch: (params) => reportingAPI.getWirelessHealth(params),
-    dataPath: (r) => r?.data?.aps || r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.aps || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'network_usage',
@@ -92,7 +92,7 @@ const REPORT_TYPES = [
     color: '#FF6600',
     description: 'Bandwidth consumption and top talkers by device and SSID',
     fetch: (params) => reportingAPI.getNetworkUsage(params),
-    dataPath: (r) => r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'top_aps_usage',
@@ -101,7 +101,7 @@ const REPORT_TYPES = [
     color: '#8B5CF6',
     description: 'Access points ranked by wireless data usage',
     fetch: (params) => reportingAPI.getTopAPsByWirelessUsage(params),
-    dataPath: (r) => r?.data?.aps || r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.aps || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'top_aps_clients',
@@ -110,7 +110,7 @@ const REPORT_TYPES = [
     color: '#EC4899',
     description: 'Access points ranked by connected client count',
     fetch: (params) => reportingAPI.getTopAPsByClientCount(params),
-    dataPath: (r) => r?.data?.aps || r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.aps || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'top_ssids',
@@ -119,7 +119,7 @@ const REPORT_TYPES = [
     color: '#F59E0B',
     description: 'WLANs ranked by total data consumption',
     fetch: (params) => reportingAPI.getTopSSIDsByUsage(params),
-    dataPath: (r) => r?.data?.ssids || r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.ssids || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'alerts_summary',
@@ -128,7 +128,7 @@ const REPORT_TYPES = [
     color: '#EF4444',
     description: 'Active and recent alerts across all network devices',
     fetch: (params) => alertsAPI.getAlerts(params),
-    dataPath: (r) => r?.data?.alerts || r?.data?.items || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.alerts || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
   {
     id: 'greenlake_devices',
@@ -137,7 +137,7 @@ const REPORT_TYPES = [
     color: '#06B6D4',
     description: 'Devices enrolled in HPE GreenLake with subscription status',
     fetch: () => reportingAPI.getDevicesWithGreenLake(),
-    dataPath: (r) => r?.data?.devices || r?.data || [],
+    dataPath: (r) => r?.data?.result || r?.data?.devices || r?.data?.items || (Array.isArray(r?.data) ? r.data : []),
   },
 ];
 

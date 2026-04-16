@@ -4,8 +4,7 @@
  * Auto-refreshes every 60 seconds
  */
 
-import { useState, useMemo, useCallback, memo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   Box,
   Grid,
@@ -41,22 +40,46 @@ import WifiIcon from '@mui/icons-material/Wifi';
 import RouterIcon from '@mui/icons-material/Router';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
-import { healthAPI, tokenAPI } from '../services/api';
-import { useDevices, useAlerts, useTokenInfo } from '../hooks/useApiQueries';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { healthAPI, tokenAPI, deviceAPI, alertsAPI } from '../services/api';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-// NOTE: hex values required here because they are used with opacity suffixes (e.g. `${GREEN}30`)
 const ACCENT = '#FF6600';
-const GREEN = '#22C55E';
-const RED = '#EF4444';
-const ORANGE = '#F59E0B';
-const YELLOW = '#FCD34D';
-const BLUE = '#3B82F6';
+const GREEN = '#4caf50';
+const RED = '#f44336';
+const ORANGE = '#ff9800';
+const YELLOW = '#fdd835';
+const BLUE = '#2196f3';
 
 const REFRESH_INTERVAL = 60000; // 60 seconds
 
-// localStorage caching removed — React Query handles all caching automatically
+const CACHE_KEY = 'status_page_cache';
+const CACHE_TTL = 5 * 60 * 1000;
+
+const cacheUtils = {
+  get: (key) => {
+    try {
+      const item = localStorage.getItem(key);
+      if (!item) return null;
+      const { data, timestamp } = JSON.parse(item);
+      if (Date.now() - timestamp > CACHE_TTL) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return data;
+    } catch {
+      return null;
+    }
+  },
+  set: (key, data) => {
+    try {
+      localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+    } catch {
+      // ignore
+    }
+  },
+};
 
 // ─── Severity helpers ───────────────────────────────────────────────────────
 
@@ -99,10 +122,10 @@ const HealthCard = memo(function HealthCard({ title, icon: Icon, status, details
     <Card
       sx={{
         height: '100%',
-        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#475569'}30`,
+        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#333'}30`,
         background: loading
           ? 'transparent'
-          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#475569'}08 0%, transparent 100%)`,
+          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#666'}08 0%, transparent 100%)`,
       }}
     >
       <CardContent>
@@ -240,64 +263,144 @@ const DeviceSummaryCard = memo(function DeviceSummaryCard({ title, icon: Icon, t
 // ─── Main StatusPage ────────────────────────────────────────────────────────
 
 export default function StatusPage() {
-  const queryClient = useQueryClient();
+  const cached = cacheUtils.get(CACHE_KEY);
 
-  // ── React Query hooks — shared cache with Dashboard, TopBar, etc. ──
-  // Health endpoint is StatusPage-specific, so we define a local query.
-  const healthQuery = useQuery({
-    queryKey: ['backend-health'],
-    queryFn: async () => {
+  const [health, setHealth] = useState(cached?.health || null);
+  const [tokenInfo, setTokenInfo] = useState(cached?.tokenInfo || null);
+  const [devices, setDevices] = useState(cached?.devices || null);
+  const [alerts, setAlerts] = useState(cached?.alerts || null);
+
+  const [healthLoading, setHealthLoading] = useState(!cached?.health);
+  const [tokenLoading, setTokenLoading] = useState(!cached?.tokenInfo);
+  const [devicesLoading, setDevicesLoading] = useState(!cached?.devices);
+  const [alertsLoading, setAlertsLoading] = useState(!cached?.alerts);
+  const [acknowledging, setAcknowledging] = useState(new Set());
+
+  const [healthError, setHealthError] = useState('');
+  const [tokenError, setTokenError] = useState('');
+  const [devicesError, setDevicesError] = useState('');
+  const [alertsError, setAlertsError] = useState('');
+
+  const [apiResponseTime, setApiResponseTime] = useState(null);
+  const [lastRefresh, setLastRefresh] = useState(cached ? new Date() : null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // ── Fetch health ──────────────────────────────────────────────────────
+
+  const fetchHealth = useCallback(async () => {
+    setHealthLoading(true);
+    setHealthError('');
+    try {
       const t0 = performance.now();
       const data = await healthAPI.check();
-      data._responseTime = Math.round(performance.now() - t0);
-      return data;
-    },
-    staleTime: 30_000,
-    refetchInterval: REFRESH_INTERVAL,
-  });
+      const elapsed = Math.round(performance.now() - t0);
+      setApiResponseTime(elapsed);
+      setHealth(data);
+    } catch (err) {
+      setHealthError(err.message || 'Failed to reach backend');
+    } finally {
+      setHealthLoading(false);
+    }
+  }, []);
 
-  // Shared hooks — these reuse the cache from DashboardPage, TopBar, etc.
-  const tokenQuery = useTokenInfo({ refetchInterval: REFRESH_INTERVAL });
-  const devicesQuery = useDevices({ refetchInterval: REFRESH_INTERVAL });
-  const alertsQuery = useAlerts({ refetchInterval: REFRESH_INTERVAL });
+  // ── Fetch token info ──────────────────────────────────────────────────
 
-  // Derive simple variables that the rest of the component uses
-  const health = healthQuery.data ?? null;
-  const tokenInfo = tokenQuery.data ?? null;
-  const devices = devicesQuery.data ?? null;
-  const alerts = alertsQuery.data ?? null;
+  const fetchTokenInfo = useCallback(async () => {
+    setTokenLoading(true);
+    setTokenError('');
+    try {
+      const data = await tokenAPI.getInfo();
+      setTokenInfo(data);
+    } catch (err) {
+      setTokenError(err.message || 'Failed to fetch token info');
+    } finally {
+      setTokenLoading(false);
+    }
+  }, []);
 
-  const healthLoading = healthQuery.isLoading;
-  const tokenLoading = tokenQuery.isLoading;
-  const devicesLoading = devicesQuery.isLoading;
-  const alertsLoading = alertsQuery.isLoading;
+  // ── Fetch devices ─────────────────────────────────────────────────────
 
-  const healthError = healthQuery.error?.message || '';
-  const tokenError = tokenQuery.error?.message || '';
-  const devicesError = devicesQuery.error?.message || '';
-  const alertsError = alertsQuery.error?.message || '';
+  const fetchDevices = useCallback(async () => {
+    setDevicesLoading(true);
+    setDevicesError('');
+    try {
+      const data = await deviceAPI.getAll();
+      setDevices(data);
+    } catch (err) {
+      setDevicesError(err.message || 'Failed to fetch devices');
+    } finally {
+      setDevicesLoading(false);
+    }
+  }, []);
 
-  const apiResponseTime = health?._responseTime ?? null;
-  const refreshing = healthQuery.isFetching || devicesQuery.isFetching;
-  const lastRefresh = healthQuery.dataUpdatedAt ? new Date(healthQuery.dataUpdatedAt) : null;
+  // ── Fetch alerts ──────────────────────────────────────────────────────
 
-  const fetchAll = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['backend-health'] });
-    queryClient.invalidateQueries({ queryKey: ['token-info'] });
-    queryClient.invalidateQueries({ queryKey: ['devices'] });
-    queryClient.invalidateQueries({ queryKey: ['alerts'] });
-  }, [queryClient]);
+  const fetchAlerts = useCallback(async () => {
+    setAlertsLoading(true);
+    setAlertsError('');
+    try {
+      const data = await alertsAPI.getAll(null, 1);
+      setAlerts(data);
+    } catch (err) {
+      setAlertsError(err.message || 'Failed to fetch alerts');
+    } finally {
+      setAlertsLoading(false);
+    }
+  }, []);
 
-  // Keep individual retry handlers for the HealthCard retry buttons
-  const fetchHealth = useCallback(() => queryClient.invalidateQueries({ queryKey: ['backend-health'] }), [queryClient]);
-  const fetchTokenInfo = useCallback(() => queryClient.invalidateQueries({ queryKey: ['token-info'] }), [queryClient]);
-  const fetchDevices = useCallback(() => queryClient.invalidateQueries({ queryKey: ['devices'] }), [queryClient]);
-  const fetchAlerts = useCallback(() => queryClient.invalidateQueries({ queryKey: ['alerts'] }), [queryClient]);
+  const handleAcknowledge = useCallback(async (alertId) => {
+    setAcknowledging((prev) => new Set(prev).add(alertId));
+    try {
+      await alertsAPI.acknowledge(alertId);
+      setAlerts((prev) => {
+        const items = prev?.items || prev?.alerts || (Array.isArray(prev) ? prev : []);
+        const updated = items.map((a) =>
+          (a.id || a.alert_id) === alertId ? { ...a, status: 'Acknowledged', acknowledged: true } : a
+        );
+        if (prev?.items) return { ...prev, items: updated };
+        if (prev?.alerts) return { ...prev, alerts: updated };
+        return updated;
+      });
+    } catch (_err) {
+      // Silently fail
+    } finally {
+      setAcknowledging((prev) => { const n = new Set(prev); n.delete(alertId); return n; });
+    }
+  }, []);
+
+  // ── Fetch all ─────────────────────────────────────────────────────────
+
+  const fetchAll = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.allSettled([fetchHealth(), fetchTokenInfo(), fetchDevices(), fetchAlerts()]);
+    setLastRefresh(new Date());
+    setRefreshing(false);
+  }, [fetchHealth, fetchTokenInfo, fetchDevices, fetchAlerts]);
+
+  // Cache on data change
+  useEffect(() => {
+    if (health || tokenInfo || devices || alerts) {
+      cacheUtils.set(CACHE_KEY, { health, tokenInfo, devices, alerts });
+    }
+  }, [health, tokenInfo, devices, alerts]);
+
+  // Initial load + interval
+  useEffect(() => {
+    let mounted = true;
+    fetchAll();
+    const interval = setInterval(() => {
+      if (mounted) fetchAll();
+    }, REFRESH_INTERVAL);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Derived: device aggregates ────────────────────────────────────────
 
   const deviceSummary = useMemo(() => {
-    const items = devices?.items || devices?.devices || (Array.isArray(devices) ? devices : []);
+    const items = devices?.result || devices?.items || devices?.devices || (Array.isArray(devices) ? devices : []);
     const total = items.length;
 
     const byType = { AP: [], SWITCH: [], GATEWAY: [] };
@@ -329,8 +432,7 @@ export default function StatusPage() {
   // ── Derived: alerts list ──────────────────────────────────────────────
 
   const alertsList = useMemo(() => {
-    const raw = alerts?.items || alerts?.alerts || (Array.isArray(alerts) ? alerts : []);
-    return raw.slice(0, 10);
+    return alerts?.items || alerts?.alerts || (Array.isArray(alerts) ? alerts : []);
   }, [alerts]);
 
   // ── Derived: health details ───────────────────────────────────────────
@@ -426,7 +528,7 @@ export default function StatusPage() {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             System Status
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -507,7 +609,7 @@ export default function StatusPage() {
             total={deviceSummary.aps.total}
             up={deviceSummary.aps.up}
             down={deviceSummary.aps.down}
-            color={BLUE}
+            color="#2196f3"
             loading={devicesLoading}
           />
         </Grid>
@@ -518,7 +620,7 @@ export default function StatusPage() {
             total={deviceSummary.switches.total}
             up={deviceSummary.switches.up}
             down={deviceSummary.switches.down}
-            color="#8B5CF6"
+            color="#9c27b0"
             loading={devicesLoading}
           />
         </Grid>
@@ -529,7 +631,7 @@ export default function StatusPage() {
             total={deviceSummary.gateways.total}
             up={deviceSummary.gateways.up}
             down={deviceSummary.gateways.down}
-            color="#06B6D4"
+            color="#00bcd4"
             loading={devicesLoading}
           />
         </Grid>
@@ -550,10 +652,19 @@ export default function StatusPage() {
         </Alert>
       )}
 
-      {/* ─── Section 3: Recent Alerts ─────────────────────────────────── */}
-      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-        Recent Alerts
-      </Typography>
+      {/* ─── Section 3: Alerts ───────────────────────────────────────── */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Alerts
+        </Typography>
+        {alertsList.length > 0 && (
+          <Typography variant="caption" color="text.secondary">
+            {alertsList.filter((a) => !a.acknowledged && (a.status || '').toLowerCase() !== 'acknowledged').length} active
+            {' · '}
+            {alertsList.filter((a) => a.acknowledged || (a.status || '').toLowerCase() === 'acknowledged').length} closed
+          </Typography>
+        )}
+      </Box>
       <Card sx={{ mb: 4 }}>
         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
           {alertsLoading ? (
@@ -583,7 +694,7 @@ export default function StatusPage() {
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <CheckCircleIcon sx={{ fontSize: 48, color: GREEN, mb: 1 }} />
               <Typography variant="body1" color="text.secondary">
-                No recent alerts
+                No alerts
               </Typography>
             </Box>
           ) : (
@@ -593,29 +704,40 @@ export default function StatusPage() {
                   <TableRow>
                     <TableCell sx={{ fontWeight: 600, width: 40 }}>Sev</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Message</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: 180 }}>Timestamp</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: 140 }}>Timestamp</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: 100 }}>Status</TableCell>
+                    <TableCell sx={{ width: 56 }} />
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {alertsList.map((alert, idx) => {
+                    const alertId = alert.id || alert.alert_id;
+                    const isAcknowledged = alert.acknowledged || (alert.status || '').toLowerCase() === 'acknowledged';
                     const sev = getSeverity(alert);
                     const SevIcon = sev.icon;
-                    const msg =
-                      alert.description || alert.message || alert.alert_text || alert.details || alert.name || 'Alert';
+                    const msg = alert.description || alert.message || alert.alert_text || alert.details || alert.name || 'Alert';
                     const ts = alert.timestamp || alert.created_at || alert.time || alert.raised_at;
                     const tsDisplay = ts
                       ? new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts).toLocaleString()
                       : '-';
+                    const busy = acknowledging.has(alertId);
 
                     return (
-                      <TableRow key={alert.id || idx} sx={{ '&:last-child td': { borderBottom: 0 } }}>
+                      <TableRow
+                        key={alertId || idx}
+                        sx={{
+                          '&:last-child td': { borderBottom: 0 },
+                          opacity: isAcknowledged ? 0.55 : 1,
+                          transition: 'opacity 0.2s',
+                        }}
+                      >
                         <TableCell>
                           <Tooltip title={sev.label}>
                             <SevIcon sx={{ color: sev.color, fontSize: 20 }} />
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" sx={{ maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <Typography variant="body2" sx={{ maxWidth: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {msg}
                           </Typography>
                         </TableCell>
@@ -623,6 +745,34 @@ export default function StatusPage() {
                           <Typography variant="caption" color="text.secondary">
                             {tsDisplay}
                           </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={isAcknowledged ? 'Closed' : 'Active'}
+                            size="small"
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: '0.7rem',
+                              bgcolor: isAcknowledged ? 'rgba(100,116,139,0.12)' : 'rgba(239,68,68,0.1)',
+                              color: isAcknowledged ? '#64748B' : '#EF4444',
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {!isAcknowledged && (
+                            <Tooltip title="Mark as closed">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleAcknowledge(alertId)}
+                                disabled={busy || !alertId}
+                                sx={{ color: '#64748B', '&:hover': { color: '#22C55E' } }}
+                              >
+                                {busy
+                                  ? <CircularProgress size={16} />
+                                  : <DoneAllIcon sx={{ fontSize: 18 }} />}
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </TableCell>
                       </TableRow>
                     );

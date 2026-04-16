@@ -138,40 +138,60 @@ def _kpi_with_stale(cache_key: str, fetch_fn):
 def _normalize_alert(a: dict) -> dict:
     """Map Aruba Central alert fields to consistent names for the frontend.
 
-    The network-notifications/v1/alerts API uses camelCase keys (alertType,
-    deviceId, raisedAt) and capitalized severity strings (Critical/Major/Minor).
+    network-notifications/v1/alerts returns camelCase fields:
+      name        → alert type / description (e.g. "Switch Offline")
+      summary     → human-readable detail sentence
+      createdAt   → ISO-8601 string (e.g. "2026-04-08T01:29:57.891Z")
+      status      → "Active" | "Cleared"
+      severity    → "Critical" | "Major" | "Minor" | "Warning" | "Info"
+      siteName    → site the device belongs to
+      deviceType  → "Switch" | "AP" | etc.
+      id          → alert UUID
     """
-    # Description: camelCase first, then snake_case fallbacks
+    # Description: actual field is "name"; fall back to older key names for compatibility
     description = (
-        a.get("alertType")
+        a.get("name")
+        or a.get("alertType")
         or a.get("alert_type")
         or a.get("description")
+        or a.get("summary")
         or a.get("message")
         or a.get("title")
     )
-    # Device: camelCase deviceId is the primary identifier in this API
+
+    # Device identifier: use siteName + deviceType as display since deviceId isn't present
     device = (
         a.get("deviceId")
         or a.get("device_id")
         or a.get("device_serial")
         or a.get("serial")
         or a.get("device_name")
+        or a.get("siteName")
     )
-    # Timestamp: raisedAt/createdAt (camelCase) are the expected fields
+
+    # Timestamp: createdAt is an ISO-8601 string — parse to unix seconds
     raw_ts = (
-        a.get("raisedAt")
-        or a.get("createdAt")
+        a.get("createdAt")
+        or a.get("raisedAt")
+        or a.get("updatedAt")
         or a.get("ts")
         or a.get("created_at")
         or a.get("raise_time")
     )
     if raw_ts:
-        try:
-            ts_num = float(raw_ts)
-            # Normalise to Unix seconds for the frontend (which does * 1000)
-            timestamp = int(ts_num / 1000) if ts_num > 1e10 else int(ts_num)
-        except (TypeError, ValueError):
-            timestamp = None
+        if isinstance(raw_ts, str):
+            try:
+                from datetime import datetime, timezone
+                dt = datetime.fromisoformat(raw_ts.replace("Z", "+00:00"))
+                timestamp = int(dt.timestamp())
+            except (ValueError, TypeError):
+                timestamp = None
+        else:
+            try:
+                ts_num = float(raw_ts)
+                timestamp = int(ts_num / 1000) if ts_num > 1e10 else int(ts_num)
+            except (TypeError, ValueError):
+                timestamp = None
     else:
         timestamp = None
 
@@ -180,13 +200,18 @@ def _normalize_alert(a: dict) -> dict:
     if isinstance(severity, str):
         severity = severity.lower()
 
+    # acknowledged flag from status field
+    status = a.get("status", "")
+    acknowledged = status.lower() in ("cleared", "acknowledged", "closed")
+
     return {
         **a,
         "description": description,
         "device": device,
         "timestamp": timestamp,
         "severity": severity,
-        "_raw_keys": list(a.keys()),  # temporary: helps identify actual field names
+        "acknowledged": acknowledged,
+        "status": status,
     }
 
 
@@ -211,12 +236,24 @@ def get_alerts():
             params["severity"] = severity
 
         last_err = None
-        for ep in ["/network-notifications/v1/alerts", "/network-notifications/v1alpha1/alerts"]:
+        for ep in [
+            "/network-notifications/v1/alerts",
+            "/network-notifications/v1alpha1/alerts",
+            "/network-monitoring/v1/alerts",
+        ]:
             try:
                 response = aruba_client.get(ep, params=params)
-                raw_alerts = response.get("alerts", response.get("items", []))
+                # Aruba Central uses different list keys depending on the endpoint version
+                raw_alerts = (
+                    response.get("alerts")
+                    or response.get("items")
+                    or response.get("notifications")
+                    or response.get("data")
+                    or (response if isinstance(response, list) else [])
+                )
+                logger.info(f"Alerts response keys from {ep}: {list(response.keys()) if isinstance(response, dict) else 'list'}, raw_count={len(raw_alerts)}")
                 normalized = [_normalize_alert(a) for a in raw_alerts]
-                total = response.get("total", response.get("count", len(normalized)))
+                total = response.get("total", response.get("count", response.get("total_count", len(normalized))))
 
                 # Slice to the requested page
                 start = (page - 1) * _ALERTS_PAGE_SIZE

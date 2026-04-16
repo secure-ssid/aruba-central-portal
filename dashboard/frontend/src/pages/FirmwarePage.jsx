@@ -1,9 +1,9 @@
 /**
  * Firmware Management Page
- * View firmware compliance and schedule upgrades
+ * View firmware compliance, per-device versions, and schedule upgrades
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -20,178 +20,157 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField,
+  MenuItem,
   Tooltip,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
 import {
   SystemUpdate as SystemUpdateIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
   Refresh as RefreshIcon,
-  Memory as MemoryIcon,
+  Search as SearchIcon,
+  Clear as ClearIcon,
+  Upgrade as UpgradeIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import { firmwareAPI } from '../services/api';
+import { firmwareAPI, deviceAPI } from '../services/api';
 
-/**
- * Determine compliance status color based on percentage
- */
-const getComplianceColor = (percentage) => {
-  if (percentage >= 90) return 'var(--color-success)';
-  if (percentage >= 60) return 'var(--color-warning)';
-  return 'var(--color-error)';
-};
-
-/**
- * Get compliance label
- */
-const getComplianceLabel = (percentage) => {
-  if (percentage >= 90) return 'Compliant';
-  if (percentage >= 60) return 'Outdated';
-  return 'Critical';
-};
-
-/**
- * Get MUI color name for chip
- */
-const getComplianceChipColor = (percentage) => {
-  if (percentage >= 90) return 'success';
-  if (percentage >= 60) return 'warning';
-  return 'error';
-};
-
-/**
- * Group firmware details data by device model
- */
-const groupByModel = (details) => {
-  if (!details) return [];
-
-  const items = details.items || details.devices || details.data || [];
-  if (!Array.isArray(items) || items.length === 0) return [];
-
-  const groups = {};
-  for (const device of items) {
-    const model = device.model || device.deviceModel || device.platform || 'Unknown';
-    if (!groups[model]) {
-      groups[model] = {
-        model,
-        devices: [],
-        firmwareVersions: new Set(),
-        recommendedVersion: null,
-        compliantCount: 0,
-      };
-    }
-    groups[model].devices.push(device);
-
-    const fw = device.firmwareVersion || device.firmware_version || device.version || 'N/A';
-    groups[model].firmwareVersions.add(fw);
-
-    const recommended = device.recommendedVersion || device.recommended_version
-      || device.targetVersion || device.target_version || null;
-    if (recommended) {
-      groups[model].recommendedVersion = recommended;
-    }
-
-    const isCompliant = device.compliant === true
-      || device.compliance === true
-      || device.status === 'compliant'
-      || device.firmwareCompliance === 'COMPLIANT'
-      || (recommended && fw === recommended);
-    if (isCompliant) {
-      groups[model].compliantCount += 1;
-    }
-  }
-
-  return Object.values(groups).map((g) => ({
-    model: g.model,
-    deviceCount: g.devices.length,
-    firmwareVersions: Array.from(g.firmwareVersions).filter((v) => v !== 'N/A'),
-    recommendedVersion: g.recommendedVersion || 'N/A',
-    compliancePercentage: g.devices.length > 0
-      ? Math.round((g.compliantCount / g.devices.length) * 100)
-      : 0,
-    compliantCount: g.compliantCount,
-  })).sort((a, b) => a.compliancePercentage - b.compliancePercentage);
-};
+const DEVICE_TYPES = ['IAP', 'SWITCH', 'GATEWAY', 'CX'];
 
 function FirmwarePage() {
-  const {
-    data: compliance,
-    isLoading: complianceLoading,
-    error: complianceError,
-    refetch: refetchCompliance,
-  } = useQuery({
-    queryKey: ['firmware-compliance'],
-    queryFn: () => firmwareAPI.getCompliance(),
-    staleTime: 5 * 60_000,
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [compliance, setCompliance] = useState(null);
+  const [devices, setDevices] = useState([]);
+  const [versions, setVersions] = useState([]);
+  const [search, setSearch] = useState('');
+  const [upgradeDialog, setUpgradeDialog] = useState({ open: false, device: null });
+  const [selectedVersion, setSelectedVersion] = useState('');
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeSuccess, setUpgradeSuccess] = useState('');
+  const [versionsLoading, setVersionsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  const fetchAll = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [complianceData, devicesData] = await Promise.all([
+        firmwareAPI.getCompliance().catch(() => null),
+        deviceAPI.getAll().catch(() => ({ items: [] })),
+      ]);
+      setCompliance(complianceData);
+      const items = Array.isArray(devicesData)
+        ? devicesData
+        : devicesData?.result || devicesData?.items || devicesData?.devices || [];
+      setDevices(items);
+    } catch (err) {
+      setError(err.message || 'Failed to load firmware data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openUpgradeDialog = async (device) => {
+    setUpgradeDialog({ open: true, device });
+    setSelectedVersion('');
+    setVersionsLoading(true);
+    try {
+      const typeMap = { SWITCH: 'SWITCH', AP: 'IAP', GATEWAY: 'GATEWAY' };
+      const dtype = typeMap[device.deviceType] || 'IAP';
+      const data = await firmwareAPI.getVersions(dtype);
+      const list = data?.firmware_list || data?.versions || data?.items || [];
+      setVersions(list);
+    } catch {
+      setVersions([]);
+    } finally {
+      setVersionsLoading(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    if (!upgradeDialog.device || !selectedVersion) return;
+    setUpgrading(true);
+    try {
+      await firmwareAPI.scheduleUpgrade({
+        serial: upgradeDialog.device.serialNumber,
+        firmware_version: selectedVersion,
+      });
+      setUpgradeDialog({ open: false, device: null });
+      setUpgradeSuccess(`Upgrade scheduled for ${upgradeDialog.device.deviceName || upgradeDialog.device.serialNumber}`);
+      setTimeout(() => setUpgradeSuccess(''), 5000);
+    } catch (err) {
+      setError(err?.response?.data?.error || err.message || 'Upgrade scheduling failed');
+      setUpgradeDialog({ open: false, device: null });
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const filteredDevices = devices.filter((d) => {
+    const q = search.toLowerCase();
+    return (
+      !q ||
+      d.deviceName?.toLowerCase().includes(q) ||
+      d.serialNumber?.toLowerCase().includes(q) ||
+      d.model?.toLowerCase().includes(q) ||
+      d.firmwareVersion?.toLowerCase().includes(q)
+    );
   });
 
-  const {
-    data: details,
-    isLoading: detailsLoading,
-    error: detailsError,
-  } = useQuery({
-    queryKey: ['firmware-details'],
-    queryFn: () => firmwareAPI.getDetails(),
-    staleTime: 5 * 60_000,
-  });
-
-  const loading = complianceLoading || detailsLoading;
-  const errorMsg = complianceError?.message || detailsError?.message || '';
-
-  const modelGroups = useMemo(() => groupByModel(details), [details]);
-
-  // Compute overall stats from model groups if available
-  const overallStats = useMemo(() => {
-    if (modelGroups.length === 0) return null;
-    const totalDevices = modelGroups.reduce((sum, g) => sum + g.deviceCount, 0);
-    const totalCompliant = modelGroups.reduce((sum, g) => sum + g.compliantCount, 0);
-    return {
-      totalDevices,
-      totalCompliant,
-      totalNonCompliant: totalDevices - totalCompliant,
-      overallPercentage: totalDevices > 0 ? Math.round((totalCompliant / totalDevices) * 100) : 0,
-    };
-  }, [modelGroups]);
+  const compliantCount = compliance?.compliant ?? devices.filter((d) => d.firmwareVersion).length;
+  const nonCompliantCount = compliance?.non_compliant ?? 0;
+  const scheduledCount = compliance?.scheduled ?? 0;
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px" role="status" aria-live="polite">
-        <CircularProgress aria-label="Loading firmware data" />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress size={28} sx={{ color: '#FF6600' }} />
       </Box>
     );
   }
 
   return (
     <Box>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      {/* Header */}
+      <Box sx={{ mb: 3.5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
             Firmware Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Monitor device firmware compliance and schedule upgrades
           </Typography>
         </Box>
-        <Button
-          startIcon={<RefreshIcon />}
-          onClick={() => refetchCompliance()}
-          variant="outlined"
-          size="small"
-        >
+        <Button startIcon={<RefreshIcon />} onClick={fetchAll} variant="outlined" size="small">
           Refresh
         </Button>
       </Box>
 
-      {errorMsg && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          {errorMsg}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+      {upgradeSuccess && (
+        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setUpgradeSuccess('')}>
+          {upgradeSuccess}
         </Alert>
       )}
 
-      {/* Summary Cards */}
+      {/* KPI Cards */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={4}>
           <Card sx={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.06) 0%, transparent 100%)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -199,19 +178,19 @@ function FirmwarePage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Compliant Devices
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-success)' }}>
-                    {overallStats?.totalCompliant ?? compliance?.compliant ?? 'N/A'}
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#22C55E' }}>
+                    {compliantCount ?? 'N/A'}
                   </Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircleIcon sx={{ fontSize: 20, color: 'var(--color-success)' }} />
+                  <CheckCircleIcon sx={{ fontSize: 20, color: '#22C55E' }} />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={4}>
           <Card sx={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.06) 0%, transparent 100%)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -219,19 +198,19 @@ function FirmwarePage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Non-Compliant
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-warning)' }}>
-                    {overallStats?.totalNonCompliant ?? compliance?.non_compliant ?? 'N/A'}
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#F59E0B' }}>
+                    {nonCompliantCount ?? 'N/A'}
                   </Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <WarningIcon sx={{ fontSize: 20, color: 'var(--color-warning)' }} />
+                  <WarningIcon sx={{ fontSize: 20, color: '#F59E0B' }} />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={4}>
           <Card sx={{ background: 'linear-gradient(135deg, rgba(255,102,0,0.06) 0%, transparent 100%)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -239,12 +218,12 @@ function FirmwarePage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Upgrades Scheduled
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-primary)' }}>
-                    {compliance?.scheduled || 0}
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>
+                    {scheduledCount}
                   </Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <SystemUpdateIcon sx={{ fontSize: 20, color: 'var(--color-primary)' }} />
+                  <SystemUpdateIcon sx={{ fontSize: 20, color: '#FF6600' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -252,136 +231,110 @@ function FirmwarePage() {
         </Grid>
       </Grid>
 
-      {/* Compliance Overview by Model */}
-      <Card sx={{ mb: 3 }}>
+      {/* Device Firmware Table */}
+      <Card>
         <CardContent sx={{ p: 0 }}>
-          <Box sx={{ px: 2.5, pt: 2, pb: 1.5, borderBottom: '1px solid var(--border-subtle)' }}>
-            <Typography variant="h6" component="h2" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-              Compliance Overview by Model
+          <Box sx={{ px: 2.5, pt: 2, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Device Firmware Status
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-              Firmware compliance grouped by device model
-            </Typography>
+            <TextField
+              size="small"
+              placeholder="Search devices…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ width: 260 }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} /></InputAdornment>,
+                endAdornment: search ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setSearch('')}><ClearIcon sx={{ fontSize: 16 }} /></IconButton>
+                  </InputAdornment>
+                ) : null,
+              }}
+            />
           </Box>
 
           <TableContainer>
-            <Table size="small" aria-label="Firmware compliance by device model">
+            <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Model</TableCell>
-                  <TableCell sx={{ width: 100 }}>Devices</TableCell>
-                  <TableCell>Current Version(s)</TableCell>
-                  <TableCell>Recommended</TableCell>
-                  <TableCell sx={{ width: 200 }}>Compliance</TableCell>
-                  <TableCell sx={{ width: 120 }}>Status</TableCell>
+                  <TableCell>Device</TableCell>
+                  <TableCell sx={{ width: 100 }}>Type</TableCell>
+                  <TableCell sx={{ width: 140 }}>Model</TableCell>
+                  <TableCell sx={{ width: 180 }}>Firmware Version</TableCell>
+                  <TableCell sx={{ width: 100 }}>Status</TableCell>
+                  <TableCell sx={{ width: 120 }} align="right">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {modelGroups.length > 0 ? (
-                  modelGroups.map((group) => (
-                    <TableRow
-                      key={group.model}
-                      sx={{
-                        bgcolor: group.compliancePercentage < 60 ? 'rgba(239,68,68,0.04)' : 'transparent',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
-                      }}
-                    >
+                {filteredDevices.length > 0 ? (
+                  filteredDevices.map((device, idx) => (
+                    <TableRow key={device.serialNumber || idx} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <MemoryIcon sx={{ fontSize: 18, color: 'var(--text-muted)' }} />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {group.model}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">{group.deviceCount}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                          {group.firmwareVersions.length > 0 ? (
-                            group.firmwareVersions.slice(0, 3).map((v) => (
-                              <Chip
-                                key={v}
-                                size="small"
-                                label={v}
-                                variant="outlined"
-                                sx={{ fontSize: '0.7rem', height: 22, fontFamily: 'monospace' }}
-                              />
-                            ))
-                          ) : (
-                            <Typography variant="body2" color="text.secondary">N/A</Typography>
-                          )}
-                          {group.firmwareVersions.length > 3 && (
-                            <Tooltip title={group.firmwareVersions.slice(3).join(', ')}>
-                              <Chip
-                                size="small"
-                                label={`+${group.firmwareVersions.length - 3}`}
-                                sx={{ fontSize: '0.7rem', height: 22 }}
-                              />
-                            </Tooltip>
-                          )}
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--color-success)' }}
-                        >
-                          {group.recommendedVersion}
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {device.deviceName || device.serialNumber || 'Unknown'}
                         </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box sx={{ flexGrow: 1 }}>
-                            <LinearProgress
-                              variant="determinate"
-                              value={group.compliancePercentage}
-                              aria-label={`${group.compliancePercentage}% compliance for ${group.model}`}
-                              sx={{
-                                height: 8,
-                                borderRadius: 4,
-                                bgcolor: 'rgba(255,255,255,0.06)',
-                                '& .MuiLinearProgress-bar': {
-                                  borderRadius: 4,
-                                  bgcolor: getComplianceColor(group.compliancePercentage),
-                                },
-                              }}
-                            />
-                          </Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              fontWeight: 600,
-                              minWidth: 36,
-                              textAlign: 'right',
-                              color: getComplianceColor(group.compliancePercentage),
-                            }}
-                          >
-                            {group.compliancePercentage}%
-                          </Typography>
-                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                          {device.serialNumber}
+                        </Typography>
                       </TableCell>
                       <TableCell>
                         <Chip
                           size="small"
-                          label={getComplianceLabel(group.compliancePercentage)}
-                          color={getComplianceChipColor(group.compliancePercentage)}
+                          label={device.deviceType || 'N/A'}
                           variant="outlined"
-                          sx={{ fontWeight: 600, fontSize: '0.7rem', height: 22 }}
+                          sx={{ fontSize: '0.68rem', height: 20, fontWeight: 600 }}
                         />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                          {device.model || 'N/A'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>
+                          {device.firmwareVersion || device.softwareVersion || 'Unknown'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={device.status || 'Unknown'}
+                          color={
+                            device.status === 'ONLINE' || device.status === 'Up'
+                              ? 'success'
+                              : device.status === 'OFFLINE' || device.status === 'Down'
+                              ? 'error'
+                              : 'default'
+                          }
+                          sx={{ fontSize: '0.68rem', height: 20, fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="Schedule firmware upgrade">
+                          <span>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={<UpgradeIcon sx={{ fontSize: 14 }} />}
+                              onClick={() => openUpgradeDialog(device)}
+                              disabled={device.status === 'OFFLINE' || !device.serialNumber}
+                              sx={{ fontSize: '0.72rem', py: 0.25 }}
+                            >
+                              Upgrade
+                            </Button>
+                          </span>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                      <SystemUpdateIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
+                      <SystemUpdateIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
                       <Typography variant="body2" color="text.secondary" display="block">
-                        No firmware details available
-                      </Typography>
-                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
-                        Firmware compliance data will appear here when device details are available
+                        {search ? 'No devices match your search' : 'No devices found'}
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -392,39 +345,56 @@ function FirmwarePage() {
         </CardContent>
       </Card>
 
-      {/* Firmware Management Tools */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" component="h2" gutterBottom>
-            Firmware Management Tools
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            Use this page to:
-          </Typography>
-          <Box component="ul" sx={{ pl: 2 }}>
-            <Typography component="li" variant="body2" paragraph>
-              Monitor firmware compliance across all devices
-            </Typography>
-            <Typography component="li" variant="body2" paragraph>
-              View available firmware versions for each device type
-            </Typography>
-            <Typography component="li" variant="body2" paragraph>
-              Schedule firmware upgrades for devices or groups
-            </Typography>
-            <Typography component="li" variant="body2">
-              Track upgrade progress and rollback if needed
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
-            startIcon={<SystemUpdateIcon />}
-            sx={{ mt: 2 }}
-            onClick={() => refetchCompliance()}
-          >
-            Refresh Compliance
+      {/* Upgrade Dialog */}
+      <Dialog open={upgradeDialog.open} onClose={() => setUpgradeDialog({ open: false, device: null })} maxWidth="sm" fullWidth>
+        <DialogTitle>Schedule Firmware Upgrade</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Schedule a firmware upgrade for <strong>{upgradeDialog.device?.deviceName || upgradeDialog.device?.serialNumber}</strong>.
+            The device will upgrade during the next maintenance window.
+          </DialogContentText>
+          {versionsLoading ? (
+            <Box display="flex" justifyContent="center" py={2}>
+              <CircularProgress size={24} sx={{ color: '#FF6600' }} />
+            </Box>
+          ) : (
+            <TextField
+              select
+              fullWidth
+              label="Target Firmware Version"
+              value={selectedVersion}
+              onChange={(e) => setSelectedVersion(e.target.value)}
+              size="small"
+            >
+              {versions.length > 0 ? (
+                versions.map((v, i) => (
+                  <MenuItem key={i} value={v.firmware_version || v.version || v}>
+                    {v.firmware_version || v.version || v}
+                    {v.release_date && ` — ${v.release_date}`}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled value="">
+                  No versions available for this device type
+                </MenuItem>
+              )}
+            </TextField>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUpgradeDialog({ open: false, device: null })} disabled={upgrading}>
+            Cancel
           </Button>
-        </CardContent>
-      </Card>
+          <Button
+            onClick={handleUpgrade}
+            variant="contained"
+            disabled={upgrading || !selectedVersion}
+            sx={{ bgcolor: '#FF6600', '&:hover': { bgcolor: '#E55500' } }}
+          >
+            {upgrading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Schedule Upgrade'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

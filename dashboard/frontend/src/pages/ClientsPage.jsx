@@ -35,6 +35,7 @@ import {
   ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
 import { List } from 'react-window';
+import { useNavigate } from 'react-router-dom';
 import { getClients, getClientTrends, getTopClients } from '../services/api';
 import useSites from '../hooks/useSites';
 
@@ -140,8 +141,9 @@ const SortHeaderButton = ({ label, column, sortColumn, sortDirection, onSort }) 
  * Used when the number of sorted/filtered clients exceeds VIRTUALIZE_THRESHOLD.
  */
 const ClientVirtualRow = memo(function ClientVirtualRow({ index, style, data }) {
-  const { rows, getClientConnectionKind: getKind, getClientSsid: getSsid } = data;
+  const { rows, getClientConnectionKind: getKind, getClientSsid: getSsid, onClientRowClick } = data;
   const client = rows[index];
+  const rowMac = client?.macAddress || client?.mac || client?.macaddr || '';
 
   const status = client.status?.toLowerCase() || 'unknown';
   const isConnected = status === 'connected';
@@ -172,8 +174,10 @@ const ClientVirtualRow = memo(function ClientVirtualRow({ index, style, data }) 
         alignItems: 'center',
         borderBottom: '1px solid var(--border-subtle, rgba(224,224,224,1))',
         boxSizing: 'border-box',
+        cursor: rowMac && onClientRowClick ? 'pointer' : undefined,
       }}
       role="row"
+      onClick={() => rowMac && onClientRowClick?.(rowMac)}
       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
@@ -264,12 +268,13 @@ const ClientsTable = memo(function ClientsTable({
   handleSort,
   getClientConnectionKind,
   getClientSsid,
+  onClientRowClick,
 }) {
   const useVirtualized = sortedClients.length > VIRTUALIZE_THRESHOLD;
 
   const itemData = useMemoReact(
-    () => ({ rows: sortedClients, getClientConnectionKind, getClientSsid }),
-    [sortedClients, getClientConnectionKind, getClientSsid]
+    () => ({ rows: sortedClients, getClientConnectionKind, getClientSsid, onClientRowClick }),
+    [sortedClients, getClientConnectionKind, getClientSsid, onClientRowClick]
   );
 
   const headerColumns = [
@@ -337,15 +342,25 @@ const ClientsTable = memo(function ClientsTable({
                   client.type ||
                   (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
 
+                const rowMac = client.macAddress || client.mac || client.macaddr || '';
                 return (
-                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
+                  <TableRow
+                    key={client.id || client.mac || client.macaddr || client.macAddress}
+                    hover
+                    onClick={() => rowMac && onClientRowClick?.(rowMac)}
+                    sx={{ cursor: rowMac && onClientRowClick ? 'pointer' : undefined }}
+                  >
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {(isConnected || isFailed || isConnecting || isDisconnected) && (
                           <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: statusColor }} />
                         )}
                         <Box>
-                          <Typography variant="body2" fontWeight="medium">
+                          <Typography
+                            variant="body2"
+                            fontWeight="medium"
+                            sx={rowMac && onClientRowClick ? { color: 'primary.main' } : undefined}
+                          >
                             {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
                           </Typography>
                           {isConnected && <Typography variant="caption" color="textSecondary">Connected - {experience} Performance</Typography>}
@@ -447,6 +462,7 @@ const ClientsTable = memo(function ClientsTable({
 });
 
 function ClientsPage() {
+  const navigate = useNavigate();
   const [clients, setClients] = useState([]);
   const [topClients, setTopClients] = useState([]);
   const [trends, setTrends] = useState(null);
@@ -1021,6 +1037,7 @@ function ClientsPage() {
           handleSort={handleSort}
           getClientConnectionKind={getClientConnectionKind}
           getClientSsid={getClientSsid}
+          onClientRowClick={(mac) => mac && navigate(`/clients/${encodeURIComponent(mac)}`)}
         />
       </Paper>
     </Box>

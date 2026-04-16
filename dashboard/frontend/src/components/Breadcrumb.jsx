@@ -21,8 +21,10 @@ const routeLabels = {
   'alerts': 'Alerts',
   'analytics': 'Analytics',
   'firmware': 'Firmware',
-  'troubleshoot': 'Troubleshoot',
+  'webhooks': 'Webhooks',
   'network-monitor': 'Network Monitor',
+  'audit-log': 'Audit Log',
+  'troubleshoot': 'Troubleshoot',
   'topology': 'Topology',
   'status': 'System Status',
   'reporting': 'Reporting',
@@ -38,8 +40,7 @@ function Breadcrumb() {
   const location = useLocation();
   const params = useParams();
   const pathnames = location.pathname.split('/').filter((x) => x);
-
-  // Don't show breadcrumb on login page or root dashboard
+  // Don't show breadcrumb on login page or root overview dashboard
   if (location.pathname === '/login' || pathnames.length === 0) {
     return null;
   }
@@ -129,5 +130,6 @@ function Breadcrumb() {
     </Box>
   );
 }
+
 
 export default Breadcrumb;

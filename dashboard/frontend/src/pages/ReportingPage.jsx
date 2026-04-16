@@ -56,10 +56,8 @@ import {
 } from '@mui/icons-material';
 import {
   reportingAPI,
-  deviceAPI,
   monitoringAPIv2,
   alertsAPI,
-  firmwareAPI,
   wlanAPI,
   configAPI,
   greenlakeUserAPI,
@@ -449,8 +447,8 @@ const REPORT_CATEGORIES = [
         title: 'All Devices',
         icon: <DevicesIcon />,
         color: 'primary.main',
-        defaultFields: ['name', 'serial', 'deviceType', 'model', 'status', 'ipAddress', 'site', 'firmwareVersion'],
-        priorityFields: ['name', 'serial', 'deviceType', 'model', 'status', 'ipAddress', 'site'],
+        defaultFields: ['deviceName', 'serialNumber', 'deviceType', 'model', 'status', 'ipv4', 'siteName', 'softwareVersion'],
+        priorityFields: ['deviceName', 'serialNumber', 'deviceType', 'model', 'status', 'ipv4', 'siteName'],
         filename: 'device_inventory',
       },
       {
@@ -459,11 +457,11 @@ const REPORT_CATEGORIES = [
         icon: <CloudIcon />,
         color: '#01A982',
         defaultFields: [
-          'name', 'serial', 'deviceType', 'model', 'status', 'ipAddress', 'site', 'firmwareVersion',
+          'deviceName', 'serialNumber', 'deviceType', 'model', 'status', 'ipv4', 'siteName', 'softwareVersion',
           'gl_subscriptionKey', 'gl_subscriptionTier', 'gl_subscriptionExpiry', 'gl_matched'
         ],
         priorityFields: [
-          'name', 'serial', 'deviceType', 'status', 'site', 'gl_subscriptionKey', 'gl_subscriptionTier', 'gl_subscriptionExpiry'
+          'deviceName', 'serialNumber', 'deviceType', 'status', 'siteName', 'gl_subscriptionKey', 'gl_subscriptionTier', 'gl_subscriptionExpiry'
         ],
         filename: 'devices_with_greenlake',
       },
@@ -472,8 +470,8 @@ const REPORT_CATEGORIES = [
         title: 'Sites',
         icon: <LocationIcon />,
         color: 'info.main',
-        defaultFields: ['site_name', 'site_id', 'address', 'city', 'state', 'country'],
-        priorityFields: ['site_name', 'site_id', 'address', 'city', 'state', 'country'],
+        defaultFields: ['scopeName', 'id', 'address', 'city', 'state', 'country', 'deviceCount'],
+        priorityFields: ['scopeName', 'id', 'address', 'city', 'state', 'country'],
         filename: 'sites',
       },
     ],
@@ -488,7 +486,7 @@ const REPORT_CATEGORIES = [
         title: 'WLANs / SSIDs',
         icon: <WifiIcon />,
         color: 'secondary.main',
-        defaultFields: ['ssid', 'enabled', 'forwardMode', 'opmode', 'rfBand', 'vlanName', 'hideSsid'],
+        defaultFields: ['ssid', 'enabled', 'forwardMode', 'opmode', 'rfBand', 'vlanName', 'hideSsid', 'maxClientsThreshold'],
         priorityFields: ['ssid', 'enabled', 'forwardMode', 'opmode', 'rfBand', 'vlanName'],
         filename: 'wlans',
       },
@@ -522,18 +520,9 @@ const REPORT_CATEGORIES = [
         title: 'Alerts',
         icon: <WarningIcon />,
         color: 'error.main',
-        defaultFields: ['timestamp', 'type', 'severity', 'description', 'device_serial'],
-        priorityFields: ['timestamp', 'type', 'severity', 'description'],
+        defaultFields: ['createdAt', 'name', 'severity', 'priority', 'summary', 'siteName', 'deviceType', 'status', 'category'],
+        priorityFields: ['createdAt', 'name', 'severity', 'summary', 'siteName'],
         filename: 'alerts',
-      },
-      {
-        id: 'idps',
-        title: 'IDPS Events',
-        icon: <SecurityIcon />,
-        color: 'error.main',
-        defaultFields: ['timestamp', 'threat_name', 'src_ip', 'dst_ip', 'action', 'severity'],
-        priorityFields: ['timestamp', 'threat_name', 'src_ip', 'dst_ip', 'action'],
-        filename: 'idps_events',
       },
     ],
   },
@@ -544,12 +533,12 @@ const REPORT_CATEGORIES = [
     reports: [
       {
         id: 'firmware',
-        title: 'Firmware Compliance',
+        title: 'Firmware Versions',
         icon: <InventoryIcon />,
         color: 'warning.main',
-        defaultFields: ['name', 'serial', 'device_type', 'firmware_version', 'compliance'],
-        priorityFields: ['name', 'serial', 'device_type', 'firmware_version', 'compliance'],
-        filename: 'firmware_compliance',
+        defaultFields: ['deviceName', 'serialNumber', 'deviceType', 'model', 'softwareVersion', 'siteName', 'status'],
+        priorityFields: ['deviceName', 'serialNumber', 'deviceType', 'softwareVersion', 'status'],
+        filename: 'firmware_versions',
       },
     ],
   },
@@ -643,18 +632,18 @@ function ReportingPage() {
         configAPI.getSites().catch((e) => {
           failedAPIs.push('Sites');
           console.error('Sites API failed:', e);
-          return { sites: [] };
+          return { items: [] };
         }),
-        alertsAPI.getAll(null, 100).catch((e) => {
+        alertsAPI.getAll(null, 1).catch((e) => {
           failedAPIs.push('Alerts');
           console.error('Alerts API failed:', e);
           return { alerts: [] };
         }),
       ]);
 
-      const deviceList = devices.items || devices.devices || [];
-      const wlanList = wlans.wlans || wlans.items || [];
-      const siteList = sites.sites || sites.items || [];
+      const deviceList = devices.result || devices.items || devices.devices || [];
+      const wlanList = wlans.wlans || [];
+      const siteList = sites.items || sites.sites || [];
       const alertList = alerts.alerts || alerts.items || [];
 
       setReportData((prev) => ({
@@ -728,7 +717,7 @@ function ReportingPage() {
       switch (reportId) {
         case 'devices': {
           const response = await monitoringAPIv2.getDevicesMonitoring({ limit: 1000 });
-          data = response.items || response.devices || [];
+          data = response.result || response.items || response.devices || [];
           break;
         }
         case 'devices_greenlake': {
@@ -745,7 +734,7 @@ function ReportingPage() {
         }
         case 'wlans': {
           const response = await wlanAPI.getAll();
-          data = response.wlans || response.items || [];
+          data = response.wlans || [];
           break;
         }
         case 'clients': {
@@ -760,22 +749,19 @@ function ReportingPage() {
         }
         case 'sites': {
           const response = await configAPI.getSites();
-          data = response.sites || response.items || [];
+          data = response.items || response.sites || [];
           break;
         }
         case 'alerts': {
-          const response = await alertsAPI.getAll(null, 500);
+          // Backend caps at 100 alerts; page=1 returns the first (and only) batch
+          const response = await alertsAPI.getAll(null, 1);
           data = response.alerts || response.items || [];
           break;
         }
         case 'firmware': {
-          const response = await firmwareAPI.getCompliance();
-          data = response.devices || response.items || [];
-          break;
-        }
-        case 'idps': {
-          const response = await monitoringAPIv2.getIDPSEvents();
-          data = response.events || response.items || [];
+          // Use the monitoring devices API — it has softwareVersion per device
+          const response = await monitoringAPIv2.getDevicesMonitoring({ limit: 1000 });
+          data = response.result || response.items || response.devices || [];
           break;
         }
         // GreenLake Reports

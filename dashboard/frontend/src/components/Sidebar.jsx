@@ -27,7 +27,6 @@ import {
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DevicesIcon from '@mui/icons-material/Devices';
-import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ApiIcon from '@mui/icons-material/Api';
@@ -46,7 +45,6 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -55,6 +53,8 @@ import HubIcon from '@mui/icons-material/Hub';
 import BuildIcon from '@mui/icons-material/Build';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -81,15 +81,16 @@ const managementItems = [
   { text: 'Sites',         icon: <LocationOnIcon />,     path: '/sites' },
   { text: 'Configuration', icon: <TuneIcon />,           path: '/configuration' },
   { text: 'Firmware',      icon: <SystemUpdateIcon />,   path: '/firmware' },
+  { text: 'Webhooks',      icon: <NotificationsIcon />,  path: '/webhooks' },
 ];
 
 const toolsItems = [
   { text: 'Troubleshoot',  icon: <BugReportIcon />,      path: '/troubleshoot' },
   { text: 'AP Toolkit',    icon: <BuildIcon />,          path: '/ap-troubleshoot' },
   { text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
-  { text: 'Analytics',          icon: <AssessmentIcon />,     path: '/analytics' },
-  { text: 'Reporting',          icon: <DescriptionIcon />,    path: '/reporting' },
-  { text: 'Scheduled Reports',  icon: <ScheduleIcon />,       path: '/scheduled-reports' },
+  { text: 'Analytics',     icon: <AssessmentIcon />,     path: '/analytics' },
+  { text: 'Reporting',     icon: <DescriptionIcon />,    path: '/reporting' },
+  { text: 'Scheduled Reports', icon: <ScheduleIcon />,   path: '/scheduled-reports' },
 ];
 
 const systemItems = [
@@ -164,6 +165,10 @@ function CategoryLabel({ title, collapsed }) {
   );
 }
 
+function navItemIsActive(location, item) {
+  return location.pathname === item.path;
+}
+
 // ─── Single nav item ─────────────────────────────────────────────────────────
 
 function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, alertCount }) {
@@ -172,7 +177,7 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
   const button = (
     <ListItemButton
       component={Link}
-      to={item.path}
+      to={item.linkTo || item.path}
       sx={{
         mx: collapsed ? 0.75 : 1,
         mb: 0.25,
@@ -280,7 +285,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
   const location = useLocation();
   const theme = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system', 'gl']);
+  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'gl']);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
@@ -473,7 +478,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                       key={path}
                       item={item}
                       collapsed={collapsed}
-                      isActive={location.pathname === path}
+                      isActive={navItemIsActive(location, item)}
                       isFavorite={true}
                       onToggleFavorite={toggleFavorite}
                       alertCount={alertCount}
@@ -565,7 +570,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                         key={item.path}
                         item={item}
                         collapsed={collapsed}
-                        isActive={location.pathname === item.path}
+                        isActive={navItemIsActive(location, item)}
                         isFavorite={favorites.includes(item.path)}
                         onToggleFavorite={toggleFavorite}
                         alertCount={alertCount}

@@ -1514,6 +1514,23 @@ def get_gw_wan_interfaces(serial):
         return jsonify({"error": "Failed to fetch WAN interfaces"}), 500
 
 
+@monitoring_bp.route("/api/monitoring/sites", methods=["GET"])
+@require_session
+def get_monitoring_sites():
+    """Get sites from network-monitoring API."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = request.args.to_dict()
+        params.setdefault("limit", "100")
+        response = aruba_client.get("/network-monitoring/v1/sites", params=params)
+        return jsonify(response or {"result": []})
+    except Exception as e:
+        logger.error(f"Error fetching monitoring sites: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @monitoring_bp.route("/api/monitoring/gateways/<serial>/wan-tunnels", methods=["GET"])
 @require_session
 def get_gw_wan_tunnels(serial):
