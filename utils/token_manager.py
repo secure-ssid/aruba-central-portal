@@ -92,6 +92,9 @@ class TokenManager:
             with open(self.cache_file, "w") as f:
                 json.dump(cache_data, f, indent=2)
 
+            # Restrict cache file to owner-only read/write (contains sensitive token)
+            os.chmod(self.cache_file, 0o600)
+
             logger.debug("Token saved to cache")
 
         except Exception as e:

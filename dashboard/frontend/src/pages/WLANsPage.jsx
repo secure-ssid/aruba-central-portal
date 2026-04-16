@@ -44,8 +44,107 @@ import {
   Router as RouterIcon,
   Lan as LanIcon,
 } from '@mui/icons-material';
-import { wlanAPI } from '../services/api';
+import { useQuery } from '@tanstack/react-query';
+import { wlanAPI, monitoringAPIv2 } from '../services/api';
 import WLANWizard from './wlans/WLANWizard';
+
+/**
+ * Inline SVG sparkline component for WLAN throughput
+ * Renders a small line chart from an array of numeric values
+ */
+function ThroughputSparkline({ ssid }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['wlan-throughput', ssid],
+    queryFn: () => monitoringAPIv2.getWLANThroughput(ssid),
+    staleTime: 5 * 60_000,
+    retry: 0,
+    enabled: !!ssid,
+  });
+
+  if (isLoading) {
+    return (
+      <Box sx={{ width: 80, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={12} sx={{ color: 'var(--text-muted)' }} />
+      </Box>
+    );
+  }
+
+  // Extract throughput samples from response
+  let samples = [];
+  if (data) {
+    // Common response formats from Aruba Central throughput endpoints
+    if (data.graph?.samples) {
+      samples = data.graph.samples.map((s) => {
+        if (s.data && s.data.length > 0) return s.data[0];
+        return s.throughput ?? s.value ?? 0;
+      });
+    } else if (data.samples) {
+      samples = data.samples.map((s) => s.throughput ?? s.value ?? s.data?.[0] ?? 0);
+    } else if (data.items) {
+      samples = data.items.map((s) => s.throughput ?? s.value ?? 0);
+    } else if (Array.isArray(data)) {
+      samples = data.map((s) => (typeof s === 'number' ? s : s.throughput ?? s.value ?? 0));
+    }
+  }
+
+  // Filter to numeric values only
+  samples = samples.filter((v) => typeof v === 'number' && !isNaN(v));
+
+  if (isError || samples.length < 2) {
+    return (
+      <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+        --
+      </Typography>
+    );
+  }
+
+  // Build SVG sparkline path
+  const width = 80;
+  const height = 24;
+  const padding = 2;
+  const min = Math.min(...samples);
+  const max = Math.max(...samples);
+  const range = max - min || 1;
+  const stepX = (width - padding * 2) / (samples.length - 1);
+
+  const points = samples.map((v, i) => {
+    const x = padding + i * stepX;
+    const y = height - padding - ((v - min) / range) * (height - padding * 2);
+    return `${x},${y}`;
+  });
+
+  const pathD = `M ${points.join(' L ')}`;
+  const lastValue = samples[samples.length - 1];
+  const formatValue = (v) => {
+    if (v >= 1e9) return `${(v / 1e9).toFixed(1)} Gbps`;
+    if (v >= 1e6) return `${(v / 1e6).toFixed(1)} Mbps`;
+    if (v >= 1e3) return `${(v / 1e3).toFixed(1)} Kbps`;
+    return `${Math.round(v)} bps`;
+  };
+
+  return (
+    <Tooltip title={`Latest: ${formatValue(lastValue)}`}>
+      <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+        <svg
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-label={`Throughput sparkline for ${ssid}, latest value ${formatValue(lastValue)}`}
+        >
+          <path
+            d={pathD}
+            fill="none"
+            stroke="var(--color-secondary)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Box>
+    </Tooltip>
+  );
+}
 
 /**
  * Format forward mode for display
@@ -593,6 +692,7 @@ function WLANsPage() {
                 <TableRow>
                   <TableCell>SSID</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Throughput</TableCell>
                   <TableCell>Forward Mode</TableCell>
                   <TableCell>Encryption</TableCell>
                   <TableCell>RF Band</TableCell>
@@ -624,6 +724,13 @@ function WLANsPage() {
                           label={wlan.enabled ? 'Enabled' : 'Disabled'}
                           color={wlan.enabled ? 'success' : 'default'}
                         />
+                      </TableCell>
+                      <TableCell>
+                        {wlan.ssid ? (
+                          <ThroughputSparkline ssid={wlan.ssid} />
+                        ) : (
+                          <Typography variant="caption" color="text.disabled">--</Typography>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Chip
@@ -686,7 +793,7 @@ function WLANsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                    <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
                       <WifiIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                       <Typography variant="body2" color="text.secondary" display="block">
                         No WLANs configured

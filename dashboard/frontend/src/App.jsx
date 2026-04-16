@@ -48,6 +48,7 @@ const ReportingPage       = lazy(() => import('./pages/ReportingPage'));
 const GatewayWANPage          = lazy(() => import('./pages/GatewayWANPage'));
 const APTroubleshootPage      = lazy(() => import('./pages/APTroubleshootPage'));
 const ScheduledReportsPage    = lazy(() => import('./pages/ScheduledReportsPage'));
+const AuditLogPage            = lazy(() => import('./pages/AuditLogPage'));
 
 // Configuration sub-pages
 const ConfigurationIndexPage      = lazy(() => import('./pages/configuration/ConfigurationIndexPage'));
@@ -308,6 +309,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/gateway-wan" element={<ErrorBoundary><GatewayWANPage /></ErrorBoundary>} />
             <Route path="/ap-troubleshoot" element={<ErrorBoundary><APTroubleshootPage /></ErrorBoundary>} />
             <Route path="/scheduled-reports" element={<ErrorBoundary><ScheduledReportsPage /></ErrorBoundary>} />
+            <Route path="/audit-log" element={<ErrorBoundary><AuditLogPage /></ErrorBoundary>} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/status" element={<StatusPage />} />
             {/* Global Layer (MSP) routes */}
