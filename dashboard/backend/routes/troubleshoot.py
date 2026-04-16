@@ -1030,19 +1030,32 @@ def troubleshoot_cx_reboot():
 
 # ── AP Troubleshooting Endpoints ──────────────────────────────────────────────
 
+_AP_TROUBLESHOOTING_BASE = "/network-troubleshooting/v1alpha1/aps"
+
+
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/ping', methods=['POST'])
 @require_session
 def troubleshoot_ap_ping(serial):
-    """Run ping from an AOS AP."""
-    import app as _app
-    aruba_client = _app.aruba_client
+    """Run ping from an AP (async, polls until COMPLETED).
+
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/ping
+    """
     try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
         data = request.get_json() or {}
         target = data.get('target', '8.8.8.8')
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/ping', data={"target": target})
-        return jsonify(response)
+        try:
+            result, status_code = _poll_async_operation(
+                serial,
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/ping',
+                {"destination": target},
+                "AP Ping",
+                max_wait=30, poll_interval=2,
+            )
+            return jsonify(result), status_code
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Error running ping on AP {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1051,16 +1064,26 @@ def troubleshoot_ap_ping(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/traceroute', methods=['POST'])
 @require_session
 def troubleshoot_ap_traceroute(serial):
-    """Run traceroute from an AOS AP."""
-    import app as _app
-    aruba_client = _app.aruba_client
+    """Run traceroute from an AP (async, polls until COMPLETED).
+
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/traceroute
+    """
     try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
         data = request.get_json() or {}
         target = data.get('target', '8.8.8.8')
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/traceroute', data={"target": target})
-        return jsonify(response)
+        try:
+            result, status_code = _poll_async_operation(
+                serial,
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/traceroute',
+                {"destination": target},
+                "AP Traceroute",
+                max_wait=60, poll_interval=2,
+            )
+            return jsonify(result), status_code
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Error running traceroute on AP {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1069,14 +1092,17 @@ def troubleshoot_ap_traceroute(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/locate', methods=['POST'])
 @require_session
 def troubleshoot_ap_locate(serial):
-    """Blink AP LEDs to physically locate it."""
+    """Blink AP LEDs to physically locate it (fire-and-forget, 202 INITIATED).
+
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/locate
+    """
     import app as _app
     aruba_client = _app.aruba_client
 
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/locate', data={})
+        response = aruba_client.post(f'{_AP_TROUBLESHOOTING_BASE}/{serial}/locate', data={})
         return jsonify({"success": True, "message": "AP LED blink initiated", "response": response})
     except Exception as e:
         logger.error(f"Error locating AP {serial}: {e}")
@@ -1086,14 +1112,17 @@ def troubleshoot_ap_locate(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/reboot', methods=['POST'])
 @require_session
 def troubleshoot_ap_reboot(serial):
-    """Reboot an AP remotely."""
+    """Reboot an AP remotely (fire-and-forget, 202 INITIATED).
+
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/reboot
+    """
     import app as _app
     aruba_client = _app.aruba_client
 
     try:
         if not aruba_client:
             return jsonify({"error": "Server not configured"}), 500
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/reboot', data={})
+        response = aruba_client.post(f'{_AP_TROUBLESHOOTING_BASE}/{serial}/reboot', data={})
         return jsonify({"success": True, "message": "AP reboot initiated", "response": response})
     except Exception as e:
         logger.error(f"Error rebooting AP {serial}: {e}")
@@ -1103,7 +1132,10 @@ def troubleshoot_ap_reboot(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/disconnect-user', methods=['POST'])
 @require_session
 def troubleshoot_ap_disconnect_user(serial):
-    """Disconnect a specific client from an AP."""
+    """Disconnect a specific client from an AP by MAC address.
+
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/disconnectUserByMacAddress
+    """
     import app as _app
     aruba_client = _app.aruba_client
 
@@ -1114,7 +1146,10 @@ def troubleshoot_ap_disconnect_user(serial):
         mac = data.get('mac', '')
         if not mac:
             return jsonify({"error": "Client MAC address required"}), 400
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/disconnect-user', data={"mac": mac})
+        response = aruba_client.post(
+            f'{_AP_TROUBLESHOOTING_BASE}/{serial}/disconnectUserByMacAddress',
+            data={"userMacAddress": mac},
+        )
         return jsonify({"success": True, "message": f"Client {mac} disconnect initiated", "response": response})
     except Exception as e:
         logger.error(f"Error disconnecting client from AP {serial}: {e}")
@@ -1124,15 +1159,24 @@ def troubleshoot_ap_disconnect_user(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/speedtest', methods=['POST'])
 @require_session
 def troubleshoot_ap_speedtest(serial):
-    """Run speed test from AP."""
-    import app as _app
-    aruba_client = _app.aruba_client
+    """Run speed test from AP (async, polls until COMPLETED).
 
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/speedtest
+    """
     try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/speedtest', data={})
-        return jsonify({"success": True, "message": "Speed test initiated", "response": response})
+        try:
+            result, status_code = _poll_async_operation(
+                serial,
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/speedtest',
+                {},
+                "AP Speedtest",
+                max_wait=60, poll_interval=2,
+            )
+            return jsonify(result), status_code
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Error running speed test on AP {serial}: {e}")
         return jsonify({"error": "Failed to run speed test"}), 500
@@ -1141,19 +1185,28 @@ def troubleshoot_ap_speedtest(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/nslookup', methods=['POST'])
 @require_session
 def troubleshoot_ap_nslookup(serial):
-    """Run DNS lookup from AP."""
-    import app as _app
-    aruba_client = _app.aruba_client
+    """Run DNS lookup from AP (async, polls until COMPLETED).
 
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/nslookup
+    """
     try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
         data = request.get_json() or {}
         hostname = data.get('hostname', '')
         if not hostname:
             return jsonify({"error": "Hostname required"}), 400
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/nslookup', data={"hostname": hostname})
-        return jsonify({"success": True, "message": f"DNS lookup for {hostname} initiated", "response": response})
+        try:
+            result, status_code = _poll_async_operation(
+                serial,
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/nslookup',
+                {"hostname": hostname},
+                "AP NSLookup",
+                max_wait=30, poll_interval=2,
+            )
+            return jsonify(result), status_code
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Error running DNS lookup on AP {serial}: {e}")
         return jsonify({"error": "Failed to run DNS lookup"}), 500
@@ -1162,19 +1215,28 @@ def troubleshoot_ap_nslookup(serial):
 @troubleshoot_bp.route('/api/troubleshoot/aps/<serial>/http-test', methods=['POST'])
 @require_session
 def troubleshoot_ap_http_test(serial):
-    """Run HTTP connectivity test from AP."""
-    import app as _app
-    aruba_client = _app.aruba_client
+    """Run HTTP connectivity test from AP (async, polls until COMPLETED).
 
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/httpTest
+    """
     try:
-        if not aruba_client:
-            return jsonify({"error": "Server not configured"}), 500
         data = request.get_json() or {}
         url = data.get('url', '')
         if not url:
             return jsonify({"error": "URL required"}), 400
-        response = aruba_client.post(f'/troubleshooting/v1/aps/{serial}/http-test', data={"url": url})
-        return jsonify({"success": True, "message": f"HTTP test to {url} initiated", "response": response})
+        try:
+            result, status_code = _poll_async_operation(
+                serial,
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/httpTest',
+                {"url": url},
+                "AP HTTP Test",
+                max_wait=30, poll_interval=2,
+            )
+            return jsonify(result), status_code
+        except Exception as terr:
+            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+                return jsonify({"status": "unavailable", "result": None})
+            raise terr
     except Exception as e:
         logger.error(f"Error running HTTP test on AP {serial}: {e}")
         return jsonify({"error": "Failed to run HTTP test"}), 500

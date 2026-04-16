@@ -657,6 +657,16 @@ export const troubleshootAPI = {
     return response.data;
   },
 
+  nslookupAP: async (serial, hostname) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/nslookup`, { hostname });
+    return response.data;
+  },
+
+  speedtestAP: async (serial) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/speedtest`);
+    return response.data;
+  },
+
   disconnectUser: async (serial, macAddress) => {
     const response = await apiClient.post(`/troubleshoot/aps/${serial}/disconnect-user`, {
       mac_address: macAddress,

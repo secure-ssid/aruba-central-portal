@@ -121,6 +121,13 @@ function TroubleshootPage() {
   // Show commands state
   const [showCmdSerial, setShowCmdSerial] = useState(deviceFromUrl || '');
 
+  // AP troubleshooting state
+  const [apToolSerial, setApToolSerial] = useState(deviceFromUrl || '');
+  const [apPingTarget, setApPingTarget] = useState('');
+  const [apTracerouteTarget, setApTracerouteTarget] = useState('');
+  const [apNslookupHost, setApNslookupHost] = useState('');
+  const [apHttpUrl, setApHttpUrl] = useState('');
+
   // CX Switch troubleshooting state
   const [cxSerial, setCxSerial] = useState(deviceFromUrl || '');
   const [cxTracerouteTarget, setCxTracerouteTarget] = useState('');
@@ -294,6 +301,140 @@ function TroubleshootPage() {
       setError(getErrorMessage(err, 'Failed to export config'));
     } finally {
       setLoadingState('export', false);
+    }
+  };
+
+  // AP Troubleshooting Handlers
+  const handleApPing = async () => {
+    if (!apToolSerial || !apPingTarget) {
+      setError('Please select an AP and enter a target');
+      return;
+    }
+    setLoadingState('apPing', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.pingAP(apToolSerial, apPingTarget);
+      setResult({ type: 'apPing', data: response });
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP Ping failed'));
+    } finally {
+      setLoadingState('apPing', false);
+    }
+  };
+
+  const handleApTraceroute = async () => {
+    if (!apToolSerial || !apTracerouteTarget) {
+      setError('Please select an AP and enter a target');
+      return;
+    }
+    setLoadingState('apTraceroute', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.tracerouteAP(apToolSerial, apTracerouteTarget);
+      setResult({ type: 'apTraceroute', data: response });
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP Traceroute failed'));
+    } finally {
+      setLoadingState('apTraceroute', false);
+    }
+  };
+
+  const handleApNslookup = async () => {
+    if (!apToolSerial || !apNslookupHost) {
+      setError('Please select an AP and enter a hostname');
+      return;
+    }
+    setLoadingState('apNslookup', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.nslookupAP(apToolSerial, apNslookupHost);
+      setResult({ type: 'apNslookup', data: response });
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP DNS lookup failed'));
+    } finally {
+      setLoadingState('apNslookup', false);
+    }
+  };
+
+  const handleApHttpTest = async () => {
+    if (!apToolSerial || !apHttpUrl) {
+      setError('Please select an AP and enter a URL');
+      return;
+    }
+    setLoadingState('apHttpTest', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.httpTestAP(apToolSerial, apHttpUrl);
+      setResult({ type: 'apHttpTest', data: response });
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP HTTP test failed'));
+    } finally {
+      setLoadingState('apHttpTest', false);
+    }
+  };
+
+  const handleApSpeedtest = async () => {
+    if (!apToolSerial) {
+      setError('Please select an AP');
+      return;
+    }
+    setLoadingState('apSpeedtest', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.speedtestAP(apToolSerial);
+      setResult({ type: 'apSpeedtest', data: response });
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP speed test failed'));
+    } finally {
+      setLoadingState('apSpeedtest', false);
+    }
+  };
+
+  const handleApLocate = async () => {
+    if (!apToolSerial) {
+      setError('Please select an AP');
+      return;
+    }
+    setLoadingState('apLocate', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.locateAP(apToolSerial);
+      setResult({ type: 'apLocate', data: response });
+      setSuccess('AP LED blink initiated');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP Locate failed'));
+    } finally {
+      setLoadingState('apLocate', false);
+    }
+  };
+
+  const handleApReboot = async () => {
+    if (!apToolSerial) {
+      setError('Please select an AP');
+      return;
+    }
+    if (!window.confirm('Are you sure you want to reboot this AP? Clients will be disconnected.')) {
+      return;
+    }
+    setLoadingState('apReboot', true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await troubleshootAPI.rebootAP(apToolSerial);
+      setResult({ type: 'apReboot', data: response });
+      setSuccess('AP reboot initiated');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(getErrorMessage(err, 'AP Reboot failed'));
+    } finally {
+      setLoadingState('apReboot', false);
     }
   };
 
@@ -1386,6 +1527,160 @@ function TroubleshootPage() {
                   <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
                   <Button variant="contained" fullWidth onClick={handleExportConfig} disabled={loading.export || !showCmdSerial} startIcon={loading.export ? <CircularProgress size={20} /> : <DownloadIcon />}>
                     {loading.export ? 'Exporting...' : 'Export Configuration'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP Troubleshooting Section */}
+            <Grid item xs={12}>
+              <Divider sx={{ my: 1 }}>
+                <Chip label="AP Troubleshooting" color="success" />
+              </Divider>
+            </Grid>
+
+            {/* AP Ping */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<NetworkCheckIcon sx={{ fontSize: 18, color: '#2E7D32' }} />}
+                title="AP Ping"
+                description="Run a ping test from an Access Point"
+                accentColor="#2E7D32"
+                cardId="apPing"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Target IP or Hostname" value={apPingTarget} onChange={(e) => setApPingTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
+                  <Button variant="contained" fullWidth onClick={handleApPing} disabled={loading.apPing} startIcon={loading.apPing ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
+                    {loading.apPing ? 'Running...' : 'Run Ping'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP Traceroute */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<RouteIcon sx={{ fontSize: 18, color: '#1B5E20' }} />}
+                title="AP Traceroute"
+                description="Trace the network path from an Access Point"
+                accentColor="#1B5E20"
+                cardId="apTraceroute"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Target IP or Hostname" value={apTracerouteTarget} onChange={(e) => setApTracerouteTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
+                  <Button variant="contained" fullWidth onClick={handleApTraceroute} disabled={loading.apTraceroute} startIcon={loading.apTraceroute ? <CircularProgress size={20} /> : <RouteIcon />}>
+                    {loading.apTraceroute ? 'Running...' : 'Run Traceroute'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP DNS Lookup */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<HttpIcon sx={{ fontSize: 18, color: '#0D47A1' }} />}
+                title="AP DNS Lookup"
+                description="Run a DNS (nslookup) query from an Access Point"
+                accentColor="#0D47A1"
+                cardId="apNslookup"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Hostname" value={apNslookupHost} onChange={(e) => setApNslookupHost(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., google.com" />
+                  <Button variant="contained" fullWidth onClick={handleApNslookup} disabled={loading.apNslookup} startIcon={loading.apNslookup ? <CircularProgress size={20} /> : <HttpIcon />}>
+                    {loading.apNslookup ? 'Running...' : 'Run DNS Lookup'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP HTTP Test */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<HttpIcon sx={{ fontSize: 18, color: '#1565C0' }} />}
+                title="AP HTTP Test"
+                description="Test HTTP connectivity from an Access Point"
+                accentColor="#1565C0"
+                cardId="apHttpTest"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="URL" value={apHttpUrl} onChange={(e) => setApHttpUrl(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., http://example.com" />
+                  <Button variant="contained" fullWidth onClick={handleApHttpTest} disabled={loading.apHttpTest} startIcon={loading.apHttpTest ? <CircularProgress size={20} /> : <HttpIcon />}>
+                    {loading.apHttpTest ? 'Running...' : 'Run HTTP Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP Speed Test */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<NetworkCheckIcon sx={{ fontSize: 18, color: '#00695C' }} />}
+                title="AP Speed Test"
+                description="Run a speed test from an Access Point"
+                accentColor="#00695C"
+                cardId="apSpeedtest"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleApSpeedtest} disabled={loading.apSpeedtest} startIcon={loading.apSpeedtest ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
+                    {loading.apSpeedtest ? 'Running...' : 'Run Speed Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP Locate */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<LocationIcon sx={{ fontSize: 18, color: '#F57F17' }} />}
+                title="AP Locate"
+                description="Flash AP LEDs to physically locate the device"
+                accentColor="#F57F17"
+                cardId="apLocate"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleApLocate} disabled={loading.apLocate} startIcon={loading.apLocate ? <CircularProgress size={20} /> : <LocationIcon />}>
+                    {loading.apLocate ? 'Locating...' : 'Locate AP'}
+                  </Button>
+                </Box>
+              </ToolCard>
+            </Grid>
+
+            {/* AP Reboot */}
+            <Grid item xs={12} md={6}>
+              <ToolCard
+                icon={<RestartIcon sx={{ fontSize: 18, color: '#C62828' }} />}
+                title="AP Reboot"
+                description="Reboot an Access Point remotely (use with caution)"
+                accentColor="#C62828"
+                cardId="apReboot"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Alert severity="warning" sx={{ mb: 1 }}>
+                    Warning: Clients connected to this AP will be disconnected.
+                  </Alert>
+                  <Button variant="contained" color="error" fullWidth onClick={handleApReboot} disabled={loading.apReboot} startIcon={loading.apReboot ? <CircularProgress size={20} /> : <RestartIcon />}>
+                    {loading.apReboot ? 'Rebooting...' : 'Reboot AP'}
                   </Button>
                 </Box>
               </ToolCard>
