@@ -61,8 +61,7 @@ function AlertsPage() {
       const data = await alertsAPI.getAll(undefined, page);
       setAlerts(data.alerts || []);
       setAlertsTotal(data.total || 0);
-      // Debug: capture field keys from the first alert
-      if (data.alerts?.length > 0 && data.alerts[0]._raw_keys) {
+      if (data.alerts && data.alerts.length > 0 && data.alerts[0]._raw_keys) {
         setRawKeys(data.alerts[0]._raw_keys);
       }
     } catch (err) {
@@ -76,7 +75,7 @@ function AlertsPage() {
     try {
       const data = await alertsAPI.getEvents();
       setEvents(data.events || data.items || []);
-    } catch {
+    } catch (_err) {
       // Events endpoint may not be available; fail silently
     }
   };
@@ -106,7 +105,6 @@ function AlertsPage() {
   const getSeverityColor = (severity) => {
     switch (severity?.toLowerCase()) {
       case 'critical':
-        return 'error';
       case 'high':
         return 'error';
       case 'medium':
@@ -134,8 +132,10 @@ function AlertsPage() {
     }
   };
 
-  const criticalCount = alerts.filter(a => a.severity?.toLowerCase() === 'critical').length;
-  const warningCount = alerts.filter(a => ['warning', 'medium'].includes(a.severity?.toLowerCase())).length;
+  const criticalCount = alerts.filter((a) => a.severity?.toLowerCase() === 'critical').length;
+  const warningCount = alerts.filter((a) =>
+    ['warning', 'medium'].includes(a.severity?.toLowerCase())
+  ).length;
 
   if (loading) {
     return (
@@ -177,7 +177,9 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Total Alerts
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>{alertsTotal || alerts.length}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>
+                    {alertsTotal || alerts.length}
+                  </Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <WarningIcon sx={{ fontSize: 20, color: '#FF6600' }} />
@@ -267,8 +269,12 @@ function AlertsPage() {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   Alerts
-                  {alerts.length > 0 && (
-                    <Chip label={alerts.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,102,0,0.15)', color: '#FF6600' }} />
+                  {alertsTotal > 0 && (
+                    <Chip
+                      label={alertsTotal}
+                      size="small"
+                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,102,0,0.15)', color: '#FF6600' }}
+                    />
                   )}
                 </Box>
               }
@@ -278,7 +284,11 @@ function AlertsPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   Events
                   {events.length > 0 && (
-                    <Chip label={events.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,255,255,0.06)', color: 'text.secondary' }} />
+                    <Chip
+                      label={events.length}
+                      size="small"
+                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,255,255,0.06)', color: 'text.secondary' }}
+                    />
                   )}
                 </Box>
               }
@@ -287,101 +297,106 @@ function AlertsPage() {
 
           <Box sx={{ p: 0 }}>
             {tabValue === 0 && (
-              <>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ width: 140 }}>Severity</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell sx={{ width: 160 }}>Device</TableCell>
-                      <TableCell sx={{ width: 180 }}>Timestamp</TableCell>
-                      <TableCell sx={{ width: 120 }}>Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {alerts.length > 0 ? (
-                      alerts.map((alert, index) => (
-                        <TableRow
-                          key={alert.id || alert.timestamp || index}
-                          sx={{
-                            bgcolor: getSeverityBgColor(alert.severity),
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
-                          }}
-                        >
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                              {getSeverityIcon(alert.severity)}
+              <Box>
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ width: 140 }}>Severity</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell sx={{ width: 160 }}>Device</TableCell>
+                        <TableCell sx={{ width: 180 }}>Timestamp</TableCell>
+                        <TableCell sx={{ width: 120 }}>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {alerts.length > 0 ? (
+                        alerts.map((alert, index) => (
+                          <TableRow
+                            key={alert.id || alert.timestamp || index}
+                            sx={{
+                              bgcolor: getSeverityBgColor(alert.severity),
+                              '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
+                            }}
+                          >
+                            <TableCell>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                                {getSeverityIcon(alert.severity)}
+                                <Chip
+                                  size="small"
+                                  label={alert.severity || 'N/A'}
+                                  color={getSeverityColor(alert.severity)}
+                                  variant="outlined"
+                                  sx={{ fontWeight: 600, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                                />
+                              </Box>
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                                {alert.description || 'N/A'}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                                {alert.device || 'N/A'}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+                                {alert.timestamp
+                                  ? new Date(alert.timestamp * 1000).toLocaleString()
+                                  : 'N/A'}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
                               <Chip
                                 size="small"
-                                label={alert.severity || 'N/A'}
-                                color={getSeverityColor(alert.severity)}
-                                variant="outlined"
-                                sx={{ fontWeight: 600, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                                label={alert.acknowledged ? 'Acknowledged' : 'Active'}
+                                color={alert.acknowledged ? 'default' : 'warning'}
+                                variant={alert.acknowledged ? 'outlined' : 'filled'}
+                                sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22 }}
                               />
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
-                              {alert.description || 'N/A'}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                            <NotificationsNoneIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                            <Typography variant="body2" color="text.secondary" display="block">
+                              No active alerts
                             </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
-                              {alert.device || 'N/A'}
+                            <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                              Your network is running smoothly
                             </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {alert.timestamp ? new Date(alert.timestamp * 1000).toLocaleString() : 'N/A'}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              size="small"
-                              label={alert.acknowledged ? 'Acknowledged' : 'Active'}
-                              color={alert.acknowledged ? 'default' : 'warning'}
-                              variant={alert.acknowledged ? 'outlined' : 'filled'}
-                              sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22 }}
-                            />
                           </TableCell>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                          <NotificationsNoneIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
-                          <Typography variant="body2" color="text.secondary" display="block">
-                            No active alerts
-                          </Typography>
-                          <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
-                            Your network is running smoothly
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {alertsTotal > 10 && (
-                <TablePagination
-                  component="div"
-                  count={alertsTotal}
-                  page={alertsPage - 1}
-                  onPageChange={(_, newPage) => setAlertsPage(newPage + 1)}
-                  rowsPerPage={10}
-                  rowsPerPageOptions={[10]}
-                  sx={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-                />
-              )}
-              {rawKeys && (
-                <Box sx={{ p: 1.5, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: 'rgba(255,255,0,0.04)' }}>
-                  <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.disabled' }}>
-                    DEBUG – raw API keys: {rawKeys.join(', ')}
-                  </Typography>
-                </Box>
-              )}
-            </> )}
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                {alertsTotal > 10 && (
+                  <TablePagination
+                    component="div"
+                    count={alertsTotal}
+                    page={alertsPage - 1}
+                    onPageChange={(_e, newPage) => setAlertsPage(newPage + 1)}
+                    rowsPerPage={10}
+                    rowsPerPageOptions={[10]}
+                    sx={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                  />
+                )}
+
+                {rawKeys && (
+                  <Box sx={{ p: 1.5, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: 'rgba(255,255,0,0.04)' }}>
+                    <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.disabled' }}>
+                      DEBUG – raw API keys: {rawKeys.join(', ')}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
 
             {tabValue === 1 && (
               <TableContainer>
@@ -418,7 +433,9 @@ function AlertsPage() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {event.timestamp ? new Date(event.timestamp * 1000).toLocaleString() : 'N/A'}
+                              {event.timestamp
+                                ? new Date(event.timestamp * 1000).toLocaleString()
+                                : 'N/A'}
                             </Typography>
                           </TableCell>
                         </TableRow>
