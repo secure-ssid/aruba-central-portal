@@ -782,26 +782,23 @@ function ClientsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedClients.map((client, index) => {
+                sortedClients.map((client) => {
                 const status = client.status?.toLowerCase() || 'unknown';
                 const isConnected = status === 'connected';
                 const isFailed = status === 'failed';
                 const isConnecting = status === 'connecting';
                 const isDisconnected = status === 'disconnected';
                 const experience = client.experience || 'Good';
-                
-                // Get status indicator color
-                const getStatusColor = () => {
-                  if (isConnected) return '#4caf50'; // Green for connected
-                  if (isFailed) return '#f44336'; // Red for failed
-                  if (isConnecting || isDisconnected) return 'rgb(249, 192, 0)'; // Yellow for connecting/disconnected
-                  return '#9e9e9e'; // Gray for unknown
-                };
-                
+
+                const statusColor = isConnected ? '#4caf50'
+                  : isFailed ? '#f44336'
+                  : (isConnecting || isDisconnected) ? 'rgb(249, 192, 0)'
+                  : '#9e9e9e';
+
                 const clientType = client.type?.toLowerCase();
-                
+
                 return (
-                  <TableRow key={index} hover>
+                  <TableRow key={client.id || client.mac || client.macaddr} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {(isConnected || isFailed || isConnecting || isDisconnected) && (
@@ -810,7 +807,7 @@ function ClientsPage() {
                               width: 8,
                               height: 8,
                               borderRadius: '50%',
-                              bgcolor: getStatusColor(),
+                              bgcolor: statusColor,
                             }}
                           />
                         )}

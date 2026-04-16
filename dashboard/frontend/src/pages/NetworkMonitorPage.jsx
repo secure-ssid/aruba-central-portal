@@ -31,6 +31,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { formatBytes } from '../utils/formatUtils';
 import WifiIcon from '@mui/icons-material/Wifi';
 import RouterIcon from '@mui/icons-material/Router';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -134,13 +135,6 @@ function NetworkMonitorPage() {
     return 'error';
   };
 
-  const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  };
 
   const renderSitesHealth = () => (
     <Card>

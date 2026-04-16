@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  InputAdornment,
   Stack,
   Chip,
   Tooltip,
@@ -36,17 +37,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BusinessIcon from '@mui/icons-material/Business';
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
-
-function WorkspaceStatusChip({ status }) {
-  const color =
-    status === 'ACTIVE' ? 'success' :
-    status === 'PENDING' ? 'warning' :
-    status === 'SUSPENDED' ? 'error' :
-    'default';
-  return <Chip size="small" color={color} label={status || 'UNKNOWN'} />;
-}
+import StatusChip from '../components/StatusChip';
 
 function GLWorkspacesPage() {
   const [loading, setLoading] = useState(false);
@@ -55,6 +49,7 @@ function GLWorkspacesPage() {
   const [success, setSuccess] = useState('');
   const [workspaces, setWorkspaces] = useState([]);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [search, setSearch] = useState('');
 
   // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
@@ -161,6 +156,7 @@ function GLWorkspacesPage() {
   };
 
   const handleDelete = async (workspaceId) => {
+    if (!workspaceId) { setError('Cannot delete: workspace ID is missing'); return; }
     if (!window.confirm('Delete this workspace? This action cannot be undone.')) return;
     setLoading(true);
     setError('');
@@ -324,6 +320,24 @@ function GLWorkspacesPage() {
         </Alert>
       )}
 
+      {!notConfigured && (
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Search workspaces by name, ID, or description..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ mb: 2 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
+
       {!notConfigured && <Card>
         <CardContent>
           <TableContainer component={Paper} variant="outlined">
@@ -354,12 +368,19 @@ function GLWorkspacesPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  workspaces.map((workspace, idx) => {
+                  workspaces.filter((w) => {
+                    if (!search.trim()) return true;
+                    const q = search.trim().toLowerCase();
+                    const wId = (w.id || w.workspaceId || w.tenantId || '').toLowerCase();
+                    return wId.includes(q) ||
+                      (w.name || w.displayName || '').toLowerCase().includes(q) ||
+                      (w.description || '').toLowerCase().includes(q);
+                  }).map((workspace) => {
                     const workspaceId = workspace.id || workspace.workspaceId || workspace.tenantId;
                     const isCurrent = currentWorkspace?.customer_id === workspaceId;
 
                     return (
-                      <TableRow key={workspaceId || idx}>
+                      <TableRow key={workspaceId || workspace.name}>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <span>{workspaceId || '-'}</span>
@@ -377,7 +398,7 @@ function GLWorkspacesPage() {
                         <TableCell>{workspace.name || workspace.displayName || '-'}</TableCell>
                         <TableCell>{workspace.description || '-'}</TableCell>
                         <TableCell>
-                          <WorkspaceStatusChip status={workspace.status} />
+                          <StatusChip status={workspace.status || 'UNKNOWN'} />
                         </TableCell>
                         <TableCell>
                           {workspace.createdAt
