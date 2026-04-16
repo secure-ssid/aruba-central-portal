@@ -76,7 +76,7 @@ const PAPER_BG    = 'var(--bg-paper)';
 const SURFACE_BG  = 'var(--bg-surface-dark)';
 const BORDER_CLR  = 'var(--border-default)';
 
-// Quick-action suggestion chips shown when input is empty
+// Quick-action suggestion chips shown when input is empty (no prior context)
 const SUGGESTION_CHIPS = [
   'Show devices',
   'AP status',
@@ -85,6 +85,38 @@ const SUGGESTION_CHIPS = [
   'Show clients',
   'Help',
 ];
+
+// Follow-up chips shown after an assistant response, keyed by intent name
+const FOLLOWUP_CHIPS = {
+  ap_status:            ['Show down APs', 'AP status at site', 'Bounce an AP', 'Firmware status'],
+  site_health:          ['Show devices', 'Show alerts', 'Show clients', 'Site list'],
+  alert_summary:        ['Critical alerts only', 'Acknowledge alert', 'Show events'],
+  firmware_status:      ['Show devices', 'AP status', 'Device inventory'],
+  client_count:         ['Show clients on SSID', 'Top clients by usage', 'Find client by MAC'],
+  clients_by_ssid:      ['Show all clients', 'Top clients', 'Find client by MAC'],
+  client_by_mac:        ['Show clients on SSID', 'Disconnect client', 'Show alerts'],
+  find_client:          ['Show all clients', 'Disconnect client', 'Client by MAC'],
+  switch_port_errors:   ['Show VLANs on switch', 'Bounce port', 'Show devices'],
+  show_switch_vlans:    ['Switch port status', 'Show devices', 'Site health'],
+  switch_vlans:         ['Switch port status', 'Show devices', 'Site health'],
+  show_switch_interfaces: ['Show VLANs on switch', 'Bounce port', 'Show devices'],
+  wlan_list:            ['Show clients', 'Clients on SSID', 'Site health'],
+  device_inventory:     ['AP status', 'Firmware status', 'Site health'],
+  device_status:        ['Show alerts', 'Firmware status', 'AP status'],
+  ping_test:            ['Run traceroute', 'Show devices', 'AP status'],
+  traceroute:           ['Run ping', 'Show devices', 'AP status'],
+  site_list:            ['Site health', 'Show devices', 'Show clients'],
+  top_clients:          ['Show all clients', 'Top bandwidth', 'Site health'],
+  top_bandwidth:        ['Top clients', 'Show devices', 'AP status'],
+  bounce_ap:            ['AP status', 'Show alerts', 'Show devices'],
+  bounce_port:          ['Switch port status', 'Show VLANs', 'Show devices'],
+  ack_alert:            ['Show alerts', 'AP status', 'Site health'],
+  disconnect_client:    ['Show clients', 'Show alerts', 'AP status'],
+  audit_logs:           ['Show alerts', 'Show devices', 'Site health'],
+  ap_radios:            ['AP status', 'Show clients', 'Site health'],
+  device_events:        ['Show alerts', 'AP status', 'Firmware status'],
+  help:                 ['Show devices', 'AP status', 'Show alerts', 'Show clients'],
+};
 
 // Intent badge colors — maps intent name prefix to a theme-aligned color
 const INTENT_COLORS = {
@@ -107,9 +139,16 @@ const INTENT_COLORS = {
   bounce_ap:          'var(--color-error)',
   bounce_port:        'var(--color-error)',
   ack_alert:          'var(--color-warning)',
-  ping_test:          '#0EA5E9',
-  traceroute:         '#0EA5E9',
-  help:               'var(--text-muted)',
+  ping_test:              '#0EA5E9',
+  traceroute:             '#0EA5E9',
+  help:                   'var(--text-muted)',
+  show_switch_vlans:      '#A855F7',
+  switch_vlans:           '#A855F7',
+  show_switch_interfaces: '#A855F7',
+  device_events:          'var(--color-secondary)',
+  ap_radios:              'var(--color-secondary)',
+  audit_logs:             'var(--text-muted)',
+  llm_response:           'rgba(99,102,241,0.8)',
 };
 
 // ─── Animated "Thinking" dots ─────────────────────────────────────────────────
@@ -386,12 +425,15 @@ function MessageBubble({ msg }) {
 
 function ChatDrawer({ pageContext = '' }) {
   // collapsed | half | full
-  const [drawerState, setDrawerState] = useState('collapsed');
-  const [messages,    setMessages]    = useState([]);
-  const [inputValue,  setInputValue]  = useState('');
-  const [isLoading,   setIsLoading]   = useState(false);
-  const [unreadReply, setUnreadReply] = useState(0);
-  const [llmStatus,   setLlmStatus]   = useState({ available: false, model: null, model_ready: false });
+  const [drawerState,   setDrawerState]   = useState('collapsed');
+  const [messages,      setMessages]      = useState([]);
+  const [inputValue,    setInputValue]    = useState('');
+  const [isLoading,     setIsLoading]     = useState(false);
+  const [unreadReply,   setUnreadReply]   = useState(0);
+  const [llmStatus,     setLlmStatus]     = useState({ available: false, model: null, model_ready: false });
+  const [lastIntent,    setLastIntent]    = useState(null);
+  // Pending destructive action: { text, confirmed } — shows confirm/cancel before executing
+  const [pendingAction, setPendingAction] = useState(null);
 
   const messagesEndRef  = useRef(null);
   const inputRef        = useRef(null);
@@ -469,9 +511,26 @@ function ChatDrawer({ pageContext = '' }) {
 
   // ── Send message ─────────────────────────────────────────────────────────
 
-  const sendMessage = useCallback(async () => {
-    const text = inputValue.trim();
+  // Simple client-side destructive keyword check (mirrors backend intent patterns)
+  const DESTRUCTIVE_PATTERNS = [
+    /\bbounce\b/i, /\breboot\b/i, /\brestart\b/i, /\breset\b/i,
+    /\bdisconnect\b.*\bclient\b/i, /\bkick\b.*\bclient\b/i,
+    /\bpoe\b.*\bbounce\b/i, /\bbounce\b.*\bport\b/i,
+  ];
+
+  const sendMessage = useCallback(async (overrideText) => {
+    const text = (overrideText ?? inputValue).trim();
     if (!text || isLoading) return;
+
+    // If not already confirmed and text matches a destructive pattern, gate it
+    if (overrideText === undefined && DESTRUCTIVE_PATTERNS.some((p) => p.test(text))) {
+      setInputValue('');
+      setPendingAction(text);
+      // Show the user's message in the chat immediately
+      const userMsg = { id: generateId(), role: 'user', content: text, ts: Date.now() };
+      setMessages((prev) => [...prev, userMsg].slice(-MAX_MESSAGES));
+      return;
+    }
 
     const userMsg = {
       id:      generateId(),
@@ -516,16 +575,18 @@ function ChatDrawer({ pageContext = '' }) {
       const json = await res.json();
 
       const assistantMsg = {
-        id:      generateId(),
-        role:    'assistant',
-        content: json.reply ?? '(no reply)',
-        intent:  json.intent,
-        via:     json.via ?? 'regex',
-        model:   json.model ?? null,
-        data:    json.data ?? null,
-        ts:      Date.now(),
+        id:          generateId(),
+        role:        'assistant',
+        content:     json.reply ?? '(no reply)',
+        intent:      json.intent,
+        via:         json.via ?? 'regex',
+        model:       json.model ?? null,
+        data:        json.data ?? null,
+        destructive: json.destructive ?? false,
+        ts:          Date.now(),
       };
 
+      if (json.intent) setLastIntent(json.intent);
       setMessages((prev) => [...prev, assistantMsg].slice(-MAX_MESSAGES));
 
       // Badge if drawer is collapsed
@@ -592,11 +653,30 @@ function ChatDrawer({ pageContext = '' }) {
     setMessages([]);
   };
 
-  // ── Chip click: fill input ───────────────────────────────────────────────
+  // ── Chip click: send directly ────────────────────────────────────────────
 
   const handleChipClick = (label) => {
     setInputValue(label);
     inputRef.current?.focus();
+  };
+
+  // ── Destructive action: confirm / cancel ─────────────────────────────────
+
+  const confirmDestructive = () => {
+    const text = pendingAction;
+    setPendingAction(null);
+    sendMessage(text);
+  };
+
+  const cancelDestructive = () => {
+    setPendingAction(null);
+    const cancelMsg = {
+      id:      generateId(),
+      role:    'system',
+      content: 'Action cancelled.',
+      ts:      Date.now(),
+    };
+    setMessages((prev) => [...prev, cancelMsg].slice(-MAX_MESSAGES));
   };
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -771,6 +851,51 @@ function ChatDrawer({ pageContext = '' }) {
             <MessageBubble key={msg.id} msg={msg} />
           ))}
 
+          {/* Destructive action confirmation */}
+          {pendingAction && !isLoading && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mb: 1, px: 0.5 }}>
+              <Box
+                sx={{
+                  px: 1.5, py: 1,
+                  borderRadius: '4px 16px 16px 16px',
+                  bgcolor: 'rgba(239,68,68,0.1)',
+                  border: '1px solid rgba(239,68,68,0.35)',
+                  fontSize: '0.83rem',
+                  color: 'text.primary',
+                }}
+              >
+                ⚠️ This action may affect network connectivity. Are you sure you want to proceed?
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  component="button"
+                  onClick={confirmDestructive}
+                  sx={{
+                    flex: 1, py: 0.5, borderRadius: 1, border: 'none', cursor: 'pointer',
+                    bgcolor: 'var(--color-error)', color: '#fff',
+                    fontSize: '0.78rem', fontWeight: 600,
+                    '&:hover': { opacity: 0.85 },
+                  }}
+                >
+                  Yes, proceed
+                </Box>
+                <Box
+                  component="button"
+                  onClick={cancelDestructive}
+                  sx={{
+                    flex: 1, py: 0.5, borderRadius: 1,
+                    border: `1px solid ${BORDER_CLR}`, cursor: 'pointer',
+                    bgcolor: 'transparent', color: 'text.secondary',
+                    fontSize: '0.78rem', fontWeight: 600,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
+                  }}
+                >
+                  Cancel
+                </Box>
+              </Box>
+            </Box>
+          )}
+
           {/* Loading indicator */}
           {isLoading && (
             <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.75, mb: 1 }}>
@@ -824,7 +949,7 @@ function ChatDrawer({ pageContext = '' }) {
             bgcolor:     SURFACE_BG,
           }}
         >
-          {/* Suggestion chips — only show when input is empty */}
+          {/* Suggestion / follow-up chips — only show when input is empty */}
           {!inputValue && (
             <Box
               sx={{
@@ -834,7 +959,10 @@ function ChatDrawer({ pageContext = '' }) {
                 pb:         0.25,
               }}
             >
-              {SUGGESTION_CHIPS.map((label) => (
+              {(lastIntent && FOLLOWUP_CHIPS[lastIntent]
+                ? FOLLOWUP_CHIPS[lastIntent]
+                : SUGGESTION_CHIPS
+              ).map((label) => (
                 <Chip
                   key={label}
                   label={label}

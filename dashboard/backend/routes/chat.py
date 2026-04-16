@@ -465,6 +465,37 @@ _intent(
 )
 
 
+# 23. Switch VLANs
+_intent(
+    "show_switch_vlans",
+    "List VLANs configured on a switch",
+    [
+        r"\bvlan[s]?\b.*\bswitch\b",
+        r"\bswitch\b.*\bvlan[s]?\b",
+        r"show.*vlan",
+        r"vlan.*list",
+        r"what.*vlan[s]?\b",
+        r"vlan.*\bon\b",
+    ],
+)
+
+# 24. Switch port / interface list
+_intent(
+    "show_switch_interfaces",
+    "Show ports/interfaces on a switch with status and speed",
+    [
+        r"\bport[s]?\b.*\bswitch\b",
+        r"\bswitch\b.*\bport[s]?\b",
+        r"\binterface[s]?\b.*\bswitch\b",
+        r"switch.*interface",
+        r"show.*port[s]?\b",
+        r"port.*status",
+        r"which.*port[s]?\b.*up",
+        r"which.*port[s]?\b.*down",
+    ],
+)
+
+
 # ---------------------------------------------------------------------------
 # IntentClassifier
 # ---------------------------------------------------------------------------
@@ -1879,14 +1910,17 @@ class OllamaAgent:
             return False
 
     @staticmethod
-    def classify(text: str, history: list = None) -> dict | None:
+    def classify(text: str, history: list = None, context: str = "") -> dict | None:
         """
         Use Ollama to classify intent and extract params.
         Returns {"name": tool_name, "params": {...}, "via": "ollama"}
         or {"name": "__llm_response__", "message": "...", "via": "ollama"}
         or None on failure (fallback to regex).
         """
-        messages = [{"role": "system", "content": _OLLAMA_SYSTEM_PROMPT}]
+        system_content = _OLLAMA_SYSTEM_PROMPT
+        if context:
+            system_content += f"\n\nUser is currently viewing page: {context}"
+        messages = [{"role": "system", "content": system_content}]
 
         # Last 6 turns of history for context
         for h in (history or [])[-6:]:
@@ -1908,7 +1942,7 @@ class OllamaAgent:
                     "think": False,
                     "options": {"temperature": 0.05, "num_predict": 512},
                 },
-                timeout=60.0,
+                timeout=8.0,
             )
             resp.raise_for_status()
             content = resp.json()["message"]["content"]
@@ -1943,7 +1977,7 @@ class OllamaAgent:
                         "think": False,
                         "options": {"temperature": 0.1, "num_predict": 512},
                     },
-                    timeout=60.0,
+                    timeout=8.0,
                 )
                 retry_resp.raise_for_status()
                 retry_content = retry_resp.json()["message"]["content"]
@@ -2000,8 +2034,11 @@ _HANDLERS = {
     # MCP-sourced tools
     "device_events": _handle_device_events,
     "switch_vlans": _handle_switch_vlans,
+    "show_switch_vlans": _handle_switch_vlans,        # alias for new intent
     "ap_radios": _handle_ap_radios,
     "audit_logs": _handle_audit_logs,
+    # New intents
+    "show_switch_interfaces": _handle_switch_port_errors,  # reuse port-status handler
 }
 
 # Used by OllamaAgent to validate tool names (defined after _HANDLERS)
@@ -2233,7 +2270,7 @@ def chat_message():
 
         # 2. If no regex match, try Ollama (if available)
         if intent is None:
-            ollama_result = OllamaAgent.classify(message, history)
+            ollama_result = OllamaAgent.classify(message, history, context=ctx)
             if ollama_result:
                 intent = ollama_result
                 via = "ollama"
@@ -2310,6 +2347,7 @@ def chat_message():
             "via": via,
             "model": _OLLAMA_MODEL if via == "ollama" else "regex",
             "data": data,
+            "destructive": bool(intent and intent.get("destructive")),
             "history": new_history,
             "ts": time.time(),
             "rate_limit": {
