@@ -294,6 +294,7 @@ const WLANWizard = ({ open, onClose, onSuccess }) => {
       onClose={handleClose}
       maxWidth="lg"
       fullWidth
+      aria-labelledby="wlan-wizard-dialog-title"
       PaperProps={{
         sx: {
           minHeight: '80vh',
@@ -301,12 +302,12 @@ const WLANWizard = ({ open, onClose, onSuccess }) => {
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+      <DialogTitle id="wlan-wizard-dialog-title" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <SignalIcon color="primary" />
-          <Typography variant="h6">Create WLAN</Typography>
+          <Typography variant="h6" component="span">Create WLAN</Typography>
         </Box>
-        <IconButton onClick={handleClose} size="small">
+        <IconButton onClick={handleClose} size="small" aria-label="Close wizard">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -359,11 +360,17 @@ const WLANWizard = ({ open, onClose, onSuccess }) => {
         </Box>
 
         {/* Stepper */}
-        <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }} role="navigation" aria-label="WLAN creation progress">
           <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((step) => (
+            {steps.map((step, index) => (
               <Step key={step.id}>
-                <StepLabel>{step.label}</StepLabel>
+                <StepLabel
+                  StepIconProps={{
+                    'aria-current': index === activeStep ? 'step' : undefined,
+                  }}
+                >
+                  {step.label}
+                </StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -377,6 +384,7 @@ const WLANWizard = ({ open, onClose, onSuccess }) => {
         {/* Navigation Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 3, borderTop: 1, borderColor: 'divider', bgcolor: 'background.default' }}>
           <Button
+            type="button"
             onClick={handleBack}
             disabled={activeStep === 0}
             variant="outlined"
@@ -385,12 +393,14 @@ const WLANWizard = ({ open, onClose, onSuccess }) => {
           </Button>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
+              type="button"
               onClick={handleClose}
               variant="outlined"
             >
               Cancel
             </Button>
             <Button
+              type="button"
               onClick={handleNext}
               variant="contained"
               disabled={activeStep === steps.length - 1 || !isStepValid()}

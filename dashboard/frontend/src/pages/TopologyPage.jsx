@@ -35,14 +35,14 @@ const NODE_GAP_X = 30;
 const CANVAS_PADDING = 80;
 
 // --- Color constants ---
-const ACCENT = '#FF6600';
+const ACCENT = 'var(--color-primary)';
 const ACCENT_DIM = 'rgba(255, 102, 0, 0.3)';
 const NODE_BG = 'rgba(30, 30, 40, 0.85)';
-const NODE_BORDER = 'rgba(255, 255, 255, 0.12)';
+const NODE_BORDER = 'var(--border-default)';
 const NODE_HOVER_BORDER = ACCENT;
-const STATUS_UP = '#4caf50';
-const STATUS_DOWN = '#f44336';
-const STATUS_UNKNOWN = '#9e9e9e';
+const STATUS_UP = 'var(--color-success)';
+const STATUS_DOWN = 'var(--color-error)';
+const STATUS_UNKNOWN = 'var(--text-secondary)';
 const LINE_COLOR = 'rgba(255, 102, 0, 0.35)';
 const LINE_HIGHLIGHT = ACCENT;
 
@@ -278,7 +278,7 @@ function getNodeIcon(type) {
     case 'ap':
       return { icon: 'wifi', color: '#ffa726' };
     default:
-      return { icon: 'globe', color: '#999' };
+      return { icon: 'globe', color: 'var(--text-secondary)' };
   }
 }
 
@@ -542,7 +542,7 @@ export default function TopologyPage() {
             alignItems: 'center',
             justifyContent: 'center',
             bgcolor: 'rgba(0,0,0,0.2)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid var(--border-default)',
           }}
         >
           <Box sx={{ textAlign: 'center' }}>
@@ -636,7 +636,7 @@ export default function TopologyPage() {
           minHeight: 400,
           overflow: 'hidden',
           bgcolor: 'rgba(0,0,0,0.2)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid var(--border-default)',
           cursor: isPanning ? 'grabbing' : 'grab',
           userSelect: 'none',
         }}
@@ -664,7 +664,7 @@ export default function TopologyPage() {
               onClick={zoomIn}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid var(--border-default)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}
@@ -678,7 +678,7 @@ export default function TopologyPage() {
               onClick={zoomOut}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid var(--border-default)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}
@@ -692,7 +692,7 @@ export default function TopologyPage() {
               onClick={resetView}
               sx={{
                 bgcolor: 'rgba(30,30,40,0.9)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid var(--border-default)',
                 color: '#fff',
                 '&:hover': { bgcolor: 'rgba(50,50,60,0.9)', borderColor: ACCENT },
               }}
@@ -973,7 +973,7 @@ export default function TopologyPage() {
             borderRadius: 2,
             px: 2,
             py: 1,
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid var(--border-default)',
           }}
         >
           {[

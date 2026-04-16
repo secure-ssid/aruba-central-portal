@@ -127,8 +127,8 @@ function SetupWizard({ onComplete }) {
                 sx={{
                   width: 72,
                   height: 72,
-                  borderRadius: '18px',
-                  background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -139,7 +139,7 @@ function SetupWizard({ onComplete }) {
               >
                 <CloudIcon sx={{ fontSize: 36, color: '#fff' }} />
               </Box>
-              <Typography variant="h4" gutterBottom fontWeight={700}>
+              <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
                 Welcome to Aruba Central
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -426,7 +426,7 @@ function SetupWizard({ onComplete }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 100%)',
+        background: 'linear-gradient(135deg, var(--bg-default) 0%, var(--bg-paper) 100%)',
         position: 'relative',
         overflow: 'hidden',
         p: 2,
@@ -442,19 +442,19 @@ function SetupWizard({ onComplete }) {
           bottom: 0,
           opacity: 0.05,
           background: `
-            radial-gradient(ellipse at 40% 40%, #FF6600 0%, transparent 60%),
-            radial-gradient(ellipse at 60% 80%, #FF6600 0%, transparent 60%)
+            radial-gradient(ellipse at 40% 40%, var(--color-primary) 0%, transparent 60%),
+            radial-gradient(ellipse at 60% 80%, var(--color-primary) 0%, transparent 60%)
           `,
         }}
       />
-      <Card sx={{ maxWidth: 700, width: '100%', position: 'relative', zIndex: 1, border: '1px solid rgba(255,255,255,0.08)' }}>
+      <Card sx={{ maxWidth: 700, width: '100%', position: 'relative', zIndex: 1, border: '1px solid var(--border-default)' }}>
         <CardContent sx={{ p: 4 }}>
           <Stepper
             activeStep={activeStep}
             sx={{
               mb: 4,
-              '& .MuiStepIcon-root.Mui-active': { color: '#FF6600' },
-              '& .MuiStepIcon-root.Mui-completed': { color: '#22C55E' },
+              '& .MuiStepIcon-root.Mui-active': { color: 'var(--color-primary)' },
+              '& .MuiStepIcon-root.Mui-completed': { color: 'var(--color-success)' },
             }}
           >
             {steps.map((label) => (

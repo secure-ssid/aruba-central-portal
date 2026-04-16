@@ -10,7 +10,7 @@ import json
 import re
 import queue
 import threading
-from collections import deque
+from collections import defaultdict, deque
 from pathlib import Path
 import requests
 from flask import Flask, jsonify, request, send_from_directory, Response, stream_with_context, make_response
@@ -106,6 +106,36 @@ def set_cache_headers(response):
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
 
     return response
+
+# ── Global per-IP rate limit for API endpoints (60 req/min) ─────────────────
+_global_rate_store = defaultdict(list)
+_global_rate_lock = threading.Lock()
+
+@app.before_request
+def global_rate_limit():
+    """Apply a default rate limit of 60 requests per minute per IP to all API endpoints."""
+    if not request.path.startswith('/api/'):
+        return None  # Skip non-API routes (static files, etc.)
+
+    ip = request.remote_addr or "unknown"
+    now = time.time()
+    window_start = now - 60
+    max_requests = 60
+
+    with _global_rate_lock:
+        timestamps = _global_rate_store[ip]
+        _global_rate_store[ip] = [t for t in timestamps if t > window_start]
+        if len(_global_rate_store[ip]) >= max_requests:
+            retry_after = int(_global_rate_store[ip][0] + 60 - now) + 1
+            resp = make_response(
+                json.dumps({"error": "Rate limit exceeded. Please try again later.", "retry_after": retry_after}),
+                429,
+            )
+            resp.headers["Content-Type"] = "application/json"
+            resp.headers["Retry-After"] = str(retry_after)
+            return resp
+        _global_rate_store[ip].append(now)
+    return None
 
 # Session management (in production, use Redis or database)
 active_sessions = {}
@@ -392,7 +422,7 @@ def api_proxy(endpoint_builder, method='GET', error_msg="API", fallback_data=Non
                         error_status_code = e.response.status_code if hasattr(e, 'response') else None
                         logger.error(f"{error_msg}: HTTP {error_status_code} - {error_response_text}")
                         error_str = f"HTTP {error_status_code}: {error_response_text or error_str}"
-                    except:
+                    except Exception:
                         pass
                 
                 # Check for AttributeError (aruba_client method not found)

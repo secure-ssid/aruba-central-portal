@@ -28,7 +28,7 @@ import logging
 import requests
 from flask import Blueprint, request, jsonify, make_response
 
-from .helpers import require_session, api_proxy, cached_get, parallel_get
+from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
 
 config_bp = Blueprint("config", __name__)
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ def create_wlan_config(ssid_name):
             try:
                 error_json = e.response.json()
                 logger.error(f"API error details: {error_json}")
-            except:
+            except Exception:
                 pass
         return jsonify({"error": str(e)}), 500
 
@@ -109,7 +109,7 @@ def update_wlan_config(ssid_name):
     try:
         wlan_data = request.get_json()
         response = aruba_client.patch(
-            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", json=wlan_data
+            f"/network-config/v1alpha1/wlan-ssids/{ssid_name}", data=wlan_data
         )
         return jsonify(response)
     except Exception as e:
@@ -735,8 +735,19 @@ def get_clients():
             try:
                 response = aruba_client.get(endpoint, params=params)
                 clients = extractor(response)
-                logger.info(f"Clients fetched from {endpoint}: {len(clients)}")
+                total = response.get("total", response.get("count", len(clients)))
+                logger.info(f"Clients fetched from {endpoint}: {len(clients)} (total={total})")
                 all_clients = clients
+
+                # Auto-paginate if Central indicates more results exist
+                page_limit = params.get("limit", 500)
+                while len(all_clients) < total and len(all_clients) < limit:
+                    next_params = {**params, "offset": len(all_clients), "limit": page_limit}
+                    next_resp = aruba_client.get(endpoint, params=next_params)
+                    next_page = extractor(next_resp)
+                    if not next_page:
+                        break
+                    all_clients.extend(next_page)
                 break
             except Exception as e:
                 logger.warning(f"Clients endpoint {endpoint} failed: {e}")
@@ -980,7 +991,7 @@ def get_sites_health():
                     ),
                     error_status_code or 500,
                 )
-            except:
+            except Exception:
                 pass
 
         return jsonify({"error": error_str, "endpoint": endpoint}), 500
@@ -1105,13 +1116,23 @@ def sites_config():
 
 @config_bp.route("/api/sites", methods=["GET"])
 @require_session
-@api_proxy(
-    "/network-config/v1/sites",
-    error_msg="Sites",
-    fallback_data={"items": [], "count": 0, "total": 0},
-)
 def get_sites():
-    pass
+    """Get all sites with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/network-config/v1/sites",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Sites: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"items": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/sites/<site_id>", methods=["GET"])
@@ -1143,13 +1164,24 @@ def delete_site(site_id):
 
 @config_bp.route("/api/groups", methods=["GET"])
 @require_session
-@api_proxy(
-    "/configuration/v1/groups",
-    error_msg="Groups",
-    fallback_data={"groups": [], "count": 0, "total": 0},
-)
 def get_groups():
-    pass
+    """Get all groups with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/configuration/v1/groups",
+            params=params,
+            items_key="groups",
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Groups: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"groups": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/templates", methods=["GET"])
@@ -1242,11 +1274,24 @@ def get_nac_onboarding_rules():
 
 @config_bp.route("/api/scope/labels", methods=["GET"])
 @require_session
-@api_proxy(
-    "/central/v2/labels", error_msg="Labels", fallback_data={"labels": [], "count": 0, "total": 0}
-)
 def get_scope_labels():
-    pass
+    """Get all labels with auto-pagination for large deployments."""
+    try:
+        params = request.args.to_dict()
+        response = cached_get_paginated(
+            "/central/v2/labels",
+            params=params,
+            items_key="labels",
+            max_pages=10,
+            page_size=100,
+        )
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Labels: {e}", exc_info=True)
+        error_str = str(e)
+        if "404" in error_str or "Not Found" in error_str:
+            return jsonify({"labels": [], "count": 0, "total": 0})
+        return jsonify({"error": error_str}), 500
 
 
 @config_bp.route("/api/scope/labels", methods=["POST"])
@@ -1460,7 +1505,7 @@ def bulk_ap_rename():
             try:
                 # Update AP name via Central API
                 response = aruba_client.post(
-                    f"/configuration/v1/ap/{serial}", json={"hostname": new_name}
+                    f"/configuration/v1/ap/{serial}", data={"hostname": new_name}
                 )
                 results.append({"serial": serial, "new_name": new_name, "status": "success"})
             except Exception as e:
@@ -1504,7 +1549,7 @@ def bulk_group_assign():
 
             try:
                 response = aruba_client.post(
-                    f"/configuration/v2/devices/{serial}/group", json={"group": group}
+                    f"/configuration/v2/devices/{serial}/group", data={"group": group}
                 )
                 results.append({"serial": serial, "group": group, "status": "success"})
             except Exception as e:
@@ -1549,7 +1594,7 @@ def bulk_site_assign():
             try:
                 response = aruba_client.post(
                     f"/central/v2/sites/associations",
-                    json={"device_id": serial, "site_id": site_id},
+                    data={"device_id": serial, "site_id": site_id},
                 )
                 results.append({"serial": serial, "site_id": site_id, "status": "success"})
             except Exception as e:
@@ -1832,6 +1877,10 @@ def switch_workspace():
         if not all([new_client_id, new_client_secret, new_customer_id]):
             return jsonify({"error": "client_id, client_secret, and customer_id are required"}), 400
 
+        # Validate base_url is a proper HTTPS URL
+        if base_url and not base_url.startswith("https://"):
+            return jsonify({"error": "base_url must use HTTPS"}), 400
+
         # Update configuration
         _app.config["aruba_central"]["client_id"] = new_client_id
         _app.config["aruba_central"]["client_secret"] = new_client_secret
@@ -2017,7 +2066,7 @@ def get_services_health():
             )
         else:
             health_status["services"].append(
-                {"name": "Site Management", "status": "error", "details": str(e)}
+                {"name": "Site Management", "status": "error", "details": "Unavailable"}
             )
             health_status["overall_status"] = "degraded"
 

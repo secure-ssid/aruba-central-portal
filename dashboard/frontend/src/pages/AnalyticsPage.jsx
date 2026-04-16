@@ -60,8 +60,8 @@ function AnalyticsPage() {
           <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <TrendingUpIcon sx={{ color: '#FF6600', fontSize: 20 }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <TrendingUpIcon sx={{ color: 'var(--color-primary)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Bandwidth Usage</Typography>
               </Box>
@@ -82,8 +82,8 @@ function AnalyticsPage() {
           <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(33, 150, 243, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <AssessmentIcon sx={{ color: '#2196f3', fontSize: 20 }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <AssessmentIcon sx={{ color: 'var(--color-secondary)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Client Trends</Typography>
               </Box>
@@ -104,16 +104,16 @@ function AnalyticsPage() {
           <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(76, 175, 80, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <SpeedIcon sx={{ color: '#4caf50', fontSize: 20 }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(34, 197, 94, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <SpeedIcon sx={{ color: 'var(--color-success)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">AP Performance</Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Access Point performance metrics and health scores
               </Typography>
-              <Box sx={{ mt: 2, p: 3, bgcolor: 'rgba(76, 175, 80, 0.04)', borderRadius: 2, border: '1px dashed rgba(76, 175, 80, 0.2)', textAlign: 'center' }}>
-                <SpeedIcon sx={{ fontSize: 40, color: 'rgba(76, 175, 80, 0.25)', mb: 1 }} />
+              <Box sx={{ mt: 2, p: 3, bgcolor: 'rgba(34, 197, 94, 0.04)', borderRadius: 2, border: '1px dashed rgba(34, 197, 94, 0.2)', textAlign: 'center' }}>
+                <SpeedIcon sx={{ fontSize: 40, color: 'rgba(34, 197, 94, 0.25)', mb: 1 }} />
                 <Typography variant="body2" color="text.secondary">
                   AP performance data will be displayed once monitoring is connected
                 </Typography>
@@ -123,7 +123,7 @@ function AnalyticsPage() {
         </Grid>
       </Grid>
 
-      <Card sx={{ mt: 3, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+      <Card sx={{ mt: 3, border: '1px solid var(--border-default)' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             About Analytics

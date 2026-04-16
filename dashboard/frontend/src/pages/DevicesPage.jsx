@@ -306,7 +306,7 @@ function DevicesPage() {
     <Box>
       {/* Page Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
           Network Devices
         </Typography>
         <Typography variant="body1" color="text.secondary">

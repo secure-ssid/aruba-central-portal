@@ -13,6 +13,7 @@ import { Chip } from '@mui/material';
  *   <StatusChip status="Up" icon={<CheckCircleIcon sx={{ fontSize: 14 }} />} />
  */
 
+// NOTE: hex values required here because color is used with hex opacity suffixes (e.g. `${color}20`)
 const DEFAULT_COLOR_MAP = {
   // Device / interface health
   Up:       '#22C55E',

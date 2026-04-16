@@ -12,7 +12,7 @@ from flask import Blueprint, request, jsonify
 import logging
 import time
 import requests
-from .helpers import require_session, api_proxy, cached_get, parallel_get
+from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get, rate_limit
 
 monitoring_bp = Blueprint("monitoring", __name__)
 logger = logging.getLogger(__name__)
@@ -62,6 +62,7 @@ def get_network_health():
 
 
 @monitoring_bp.route("/api/explore", methods=["POST"])
+@rate_limit(max_requests=20, window_seconds=60)
 @require_session
 def api_explorer():
     """
@@ -73,10 +74,15 @@ def api_explorer():
     aruba_client = _app.aruba_client
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body is required"}), 400
         endpoint = data.get("endpoint", "")
         method = data.get("method", "GET").upper()
         params = data.get("params", {})
         body = data.get("body", {})
+
+        if not endpoint:
+            return jsonify({"error": "endpoint field is required"}), 400
 
         # Sanitize endpoint
         if not endpoint.startswith("/"):
@@ -305,30 +311,56 @@ def get_top_aps_bandwidth():
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/aps/bandwidth/top", params=params)
+        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wireless-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top APs by bandwidth: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@monitoring_bp.route("/api/monitoring/aps", methods=["GET"])
+@monitoring_bp.route("/api/monitoring/aps/top-wired-bandwidth", methods=["GET"])
 @require_session
-def get_aps_monitoring():
-    """Get list of Access Points with monitoring data."""
+def get_top_aps_wired_bandwidth():
+    """Get Access Points with highest wired bandwidth usage."""
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
         params = {}
+        if request.args.get("limit"):
+            params["limit"] = request.args.get("limit")
+        site_id = request.args.get("site_id", request.args.get("site-id"))
+        if site_id:
+            params["site-id"] = site_id
+
+        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wired-usage", params=params)
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error fetching top APs by wired bandwidth: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@monitoring_bp.route("/api/monitoring/aps", methods=["GET"])
+@require_session
+def get_aps_monitoring():
+    """Get list of Access Points with monitoring data (auto-paginated)."""
+    try:
+        params = {}
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
+        # Forward explicit pagination params — cached_get_paginated will
+        # detect offset/limit and skip auto-pagination in that case.
         if request.args.get("limit"):
             params["limit"] = request.args.get("limit")
         if request.args.get("offset"):
             params["offset"] = request.args.get("offset")
 
-        response = aruba_client.get("/network-monitoring/v1/aps", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/aps",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching APs monitoring: {e}")
@@ -531,7 +563,7 @@ def get_ap_throughput_trend(serial):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/throughput", params=params
+            f"/network-monitoring/v1/aps/{serial}/throughput-trends", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -569,7 +601,7 @@ def get_radio_channel_utilization(serial, radio_id):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization",
+            f"/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization-trends",
             params=params,
         )
         return jsonify(response)
@@ -597,16 +629,18 @@ def get_ap_ports(serial):
 @monitoring_bp.route("/api/monitoring/wlans", methods=["GET"])
 @require_session
 def get_wlans_monitoring():
-    """Get list of WLANs with monitoring data."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get list of WLANs with monitoring data (auto-paginated)."""
     try:
         params = {}
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/wlans", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/wlans",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching WLANs monitoring: {e}")
@@ -640,10 +674,7 @@ def get_wlan_throughput(wlan_name):
 @monitoring_bp.route("/api/monitoring/switches", methods=["GET"])
 @require_session
 def get_switches_monitoring():
-    """Get list of switches with monitoring data."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get list of switches with monitoring data (auto-paginated)."""
     try:
         params = {}
         # Normalize site id key expected by upstream API
@@ -653,10 +684,18 @@ def get_switches_monitoring():
         # Optional timeframe passthrough (e.g., 1h, 1d, 7d)
         if request.args.get("timeframe"):
             params["timeframe"] = request.args.get("timeframe")
+        # Forward explicit pagination params
         if request.args.get("limit"):
             params["limit"] = request.args.get("limit")
+        if request.args.get("offset"):
+            params["offset"] = request.args.get("offset")
 
-        response = aruba_client.get("/network-monitoring/v1/switches", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/switches",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         # Gracefully handle 400/404 as empty list
@@ -792,16 +831,18 @@ def get_switch_ports_monitoring(serial):
 @monitoring_bp.route("/api/monitoring/gateways", methods=["GET"])
 @require_session
 def get_gateways_monitoring():
-    """Get list of gateways with monitoring data."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get list of gateways with monitoring data (auto-paginated)."""
     try:
         params = {}
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/gateways", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/gateways",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching gateways monitoring: {e}")
@@ -940,10 +981,7 @@ def get_gateway_vlans(serial):
 @monitoring_bp.route("/api/monitoring/devices", methods=["GET"])
 @require_session
 def get_devices_monitoring():
-    """Get monitoring data for all devices."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get monitoring data for all devices (auto-paginated)."""
     try:
         params = {}
         if request.args.get("site_id"):
@@ -951,7 +989,12 @@ def get_devices_monitoring():
         if request.args.get("device_type"):
             params["device_type"] = request.args.get("device_type")
 
-        response = aruba_client.get("/network-monitoring/v1/devices", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/devices",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching devices monitoring: {e}")
@@ -1024,10 +1067,7 @@ def get_idps_events():
 @monitoring_bp.route("/api/monitoring/applications", methods=["GET"])
 @require_session
 def get_applications_monitoring():
-    """Get application visibility data from network monitoring API."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get application visibility data from network monitoring API (auto-paginated)."""
     try:
         params = {}
         # Normalize site id key expected by upstream API
@@ -1037,10 +1077,18 @@ def get_applications_monitoring():
         # Optional timeframe passthrough (e.g., 1h, 1d, 7d)
         if request.args.get("timeframe"):
             params["timeframe"] = request.args.get("timeframe")
+        # Forward explicit pagination params
         if request.args.get("limit"):
             params["limit"] = request.args.get("limit")
+        if request.args.get("offset"):
+            params["offset"] = request.args.get("offset")
 
-        response = aruba_client.get("/network-monitoring/v1/applications", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/applications",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         # If upstream provided HTTP details, pass through status and message for easier debugging
@@ -1148,16 +1196,18 @@ def get_top_applications():
 @monitoring_bp.route("/api/monitoring/swarms", methods=["GET"])
 @require_session
 def get_swarms():
-    """Get list of swarms (AP groups)."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
+    """Get list of swarms / AP groups (auto-paginated)."""
     try:
         params = {}
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/swarms", params=params)
+        response = cached_get_paginated(
+            "/network-monitoring/v1/swarms",
+            params=params,
+            max_pages=10,
+            page_size=100,
+        )
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching swarms: {e}")
@@ -1330,6 +1380,27 @@ def get_gateway_cpu_utilization(serial):
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching CPU utilization for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@monitoring_bp.route("/api/monitoring/gateways/<serial>/memory", methods=["GET"])
+@require_session
+def get_gateway_memory_utilization(serial):
+    """Get memory utilization trends for a gateway.
+
+    Endpoint: /network-monitoring/v1/gateways/{serial-number}/memory-utilization-trends
+    """
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = request.args.to_dict()
+        r = aruba_client.get(
+            f"/network-monitoring/v1/gateways/{serial}/memory-utilization-trends", params=params
+        )
+        return jsonify(r)
+    except Exception as e:
+        logger.error(f"Error fetching memory utilization for gateway {serial}: {e}")
         return jsonify({"error": str(e)}), 500
 
 

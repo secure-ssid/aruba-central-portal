@@ -357,7 +357,7 @@ function GLWorkspacesPage() {
                 ) : workspaces.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                      <BusinessIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <BusinessIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                       <Typography variant="body2" color="text.secondary" display="block">
                         No workspaces found
                       </Typography>

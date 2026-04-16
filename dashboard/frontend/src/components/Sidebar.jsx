@@ -60,8 +60,8 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 const DRAWER_WIDTH_OPEN   = 248;
 const DRAWER_WIDTH_CLOSED = 64;
 
-const ACTIVE_ORANGE = '#FF6600';
-const ACTIVE_LIGHT  = '#FF8C42';
+const ACTIVE_ORANGE = 'var(--color-primary)';
+const ACTIVE_LIGHT  = 'var(--color-primary-light)';
 
 // ─── Nav data ────────────────────────────────────────────────────────────────
 
@@ -133,7 +133,7 @@ function PulsingDot() {
           },
         }}
       />
-      <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#EF4444' }} />
+      <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--color-error)' }} />
     </Box>
   );
 }
@@ -142,14 +142,14 @@ function PulsingDot() {
 
 function CategoryLabel({ title, collapsed }) {
   if (collapsed) {
-    return <Box sx={{ height: 16, borderTop: '1px solid rgba(255,255,255,0.06)', mx: 1.5, my: 1 }} />;
+    return <Box sx={{ height: 16, borderTop: '1px solid var(--border-subtle)', mx: 1.5, my: 1 }} />;
   }
   return (
     <Box sx={{ px: 2, pt: 1.5, pb: 0.5 }}>
       <Typography
         variant="caption"
         sx={{
-          color: '#475569',
+          color: 'var(--text-disabled)',
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
@@ -207,7 +207,7 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
       <ListItemIcon
         className="nav-icon"
         sx={{
-          color: isActive ? ACTIVE_ORANGE : '#64748B',
+          color: isActive ? ACTIVE_ORANGE : 'var(--text-muted)',
           minWidth: collapsed ? 0 : 34,
           mr: collapsed ? 0 : 0,
           transition: 'color 0.18s ease, transform 0.18s ease',
@@ -225,8 +225,8 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
               ml: 0.5,
               '& .MuiTypography-root': {
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#F1F5F9' : '#94A3B8',
-                fontSize: '0.88rem',
+                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                fontSize: '0.85rem',
                 letterSpacing: '0.01em',
               },
             }}
@@ -237,11 +237,12 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
           <IconButton
             size="small"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(item.path); }}
+            aria-label={isFavorite ? `Remove ${item.text} from favorites` : `Add ${item.text} to favorites`}
             sx={{
               ml: 0.25,
-              color: isFavorite ? '#F59E0B' : 'rgba(255,255,255,0.15)',
+              color: isFavorite ? 'var(--color-warning)' : 'rgba(255,255,255,0.15)',
               p: 0.25,
-              '&:hover': { color: '#F59E0B' },
+              '&:hover': { color: 'var(--color-warning)' },
               transition: 'color 0.15s',
             }}
           >
@@ -253,7 +254,7 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
       )}
 
       {collapsed && hasAlert && (
-        <Box sx={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: '50%', bgcolor: '#EF4444' }} />
+        <Box sx={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: '50%', bgcolor: 'var(--color-error)' }} />
       )}
     </ListItemButton>
   );
@@ -314,6 +315,8 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
       variant="persistent"
       anchor="left"
       open={open}
+      SlideProps={{ role: 'navigation' }}
+      aria-label="Main navigation"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
@@ -322,7 +325,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
           width: collapsed ? DRAWER_WIDTH_CLOSED : DRAWER_WIDTH_OPEN,
           boxSizing: 'border-box',
           backgroundColor: theme.palette.background.default,
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          borderRight: '1px solid var(--border-subtle)',
           backgroundImage: 'none',
           overflowX: 'hidden',
           transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1)',
@@ -340,7 +343,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
             alignItems: 'center',
             gap: collapsed ? 0 : 1.5,
             justifyContent: collapsed ? 'center' : 'flex-start',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--border-subtle)',
             minHeight: 64,
           }}
         >
@@ -350,7 +353,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               width: 38,
               height: 38,
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -369,7 +372,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                   fontWeight: 800,
                   fontSize: '1.1rem',
                   lineHeight: 1.1,
-                  background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                  background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -381,8 +384,8 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               <Typography
                 sx={{
                   fontWeight: 500,
-                  fontSize: '0.72rem',
-                  color: '#475569',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-disabled)',
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   lineHeight: 1,
@@ -403,10 +406,10 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 sx={{
                   width: '100%',
                   borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  border: '1px solid var(--border-divider)',
                   py: 0.75,
-                  color: '#64748B',
-                  '&:hover': { backgroundColor: 'rgba(255,102,0,0.08)', borderColor: 'rgba(255,102,0,0.4)', color: '#94A3B8' },
+                  color: 'var(--text-muted)',
+                  '&:hover': { backgroundColor: 'rgba(255,102,0,0.08)', borderColor: 'rgba(255,102,0,0.4)', color: 'var(--text-secondary)' },
                   transition: 'all 0.18s',
                 }}
               >
@@ -418,7 +421,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               onClick={onSearchOpen}
               sx={{
                 borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.07)',
+                border: '1px solid var(--border-divider)',
                 py: 0.6,
                 px: 1.25,
                 '&:hover': {
@@ -429,13 +432,13 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               }}
             >
               <ListItemIcon sx={{ minWidth: 28 }}>
-                <SearchIcon sx={{ fontSize: 17, color: '#64748B' }} />
+                <SearchIcon sx={{ fontSize: 17, color: 'var(--text-muted)' }} />
               </ListItemIcon>
               <ListItemText
                 primary="Search…"
-                sx={{ '& .MuiTypography-root': { color: '#475569', fontSize: '0.82rem' } }}
+                sx={{ '& .MuiTypography-root': { color: 'var(--text-disabled)', fontSize: '0.85rem' } }}
               />
-              <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+              <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
                 ⌘K
               </Typography>
             </ListItemButton>
@@ -452,7 +455,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
             overflowX: 'hidden',
             pt: 0.5,
             '&::-webkit-scrollbar': { width: 3 },
-            '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.08)', borderRadius: 2 },
+            '&::-webkit-scrollbar-thumb': { background: 'var(--border-default)', borderRadius: 2 },
           }}
         >
           {/* Pinned favorites */}
@@ -488,7 +491,11 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 {/* Group header — clickable to collapse when not icon-only */}
                 {!collapsed ? (
                   <Box
+                    component="button"
+                    type="button"
                     onClick={() => toggleGroup(group.id)}
+                    aria-expanded={isExpanded}
+                    aria-label={`${group.title} navigation group`}
                     sx={{
                       px: 2,
                       pt: 1.5,
@@ -497,14 +504,17 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                       alignItems: 'center',
                       cursor: 'pointer',
                       userSelect: 'none',
-                      '&:hover .group-label': { color: '#64748B' },
+                      width: '100%',
+                      border: 'none',
+                      background: 'none',
+                      '&:hover .group-label': { color: 'var(--text-muted)' },
                     }}
                   >
                     <Typography
                       className="group-label"
                       variant="caption"
                       sx={{
-                        color: '#334155',
+                        color: 'var(--text-disabled)',
                         fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '0.1em',
@@ -526,7 +536,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                           mr: 0.75,
                         }}
                       >
-                        <Typography variant="caption" sx={{ fontSize: '0.5rem', fontWeight: 700, color: '#3B82F6', letterSpacing: '0.04em' }}>
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', fontWeight: 700, color: 'var(--color-secondary)', letterSpacing: '0.04em' }}>
                           HPE
                         </Typography>
                       </Box>
@@ -536,7 +546,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                         transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
                         transition: 'transform 0.2s',
                         display: 'flex',
-                        color: '#334155',
+                        color: 'var(--text-disabled)',
                       }}
                     >
                       <ExpandMoreIcon sx={{ fontSize: 14 }} />
@@ -569,7 +579,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
         {/* ── Footer ─────────────────────────────────────────────────────── */}
         <Box
           sx={{
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: '1px solid var(--border-subtle)',
             px: collapsed ? 0.75 : 1.5,
             py: 1.25,
           }}
@@ -603,13 +613,13 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                     },
                   }}
                 />
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--color-success)', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
               </Box>
-              <Typography variant="caption" sx={{ color: '#22C55E', fontWeight: 600, fontSize: '0.72rem' }}>
+              <Typography variant="caption" sx={{ color: 'var(--color-success)', fontWeight: 600, fontSize: '0.75rem' }}>
                 Connected
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.65rem' }}>
+              <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
                 Aruba Central
               </Typography>
             </Box>
@@ -641,7 +651,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                       },
                     }}
                   />
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--color-success)', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
                 </Box>
               </Box>
             </Tooltip>
@@ -655,10 +665,10 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               sx={{
                 width: '100%',
                 borderRadius: '8px',
-                color: '#475569',
-                border: '1px solid rgba(255,255,255,0.06)',
+                color: 'var(--text-disabled)',
+                border: '1px solid var(--border-subtle)',
                 py: 0.5,
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.04)', color: '#94A3B8' },
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.04)', color: 'var(--text-secondary)' },
                 transition: 'all 0.18s',
                 justifyContent: collapsed ? 'center' : 'flex-start',
                 px: collapsed ? 1 : 1.5,

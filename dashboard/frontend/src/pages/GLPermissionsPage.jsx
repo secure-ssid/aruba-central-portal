@@ -332,10 +332,10 @@ function GLPermissionsPage() {
                   <TableCell>
                     <strong>{allPermissions.length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>
@@ -344,10 +344,10 @@ function GLPermissionsPage() {
                   <TableCell>
                     <strong>{allPermissions.filter(p => p.includes('view') || p.includes('update') || p.includes('assign') || p.includes('subscribe')).length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><WarningAmberIcon sx={{ color: '#F59E0B', fontSize: 18 }} /></TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><WarningAmberIcon sx={{ color: 'var(--color-warning)', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} /></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>
@@ -356,10 +356,10 @@ function GLPermissionsPage() {
                   <TableCell>
                     <strong>{allPermissions.filter(p => p.includes('view')).length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
-                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
-                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
-                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} /></TableCell>
                 </TableRow>
               </TableBody>
             </Table>

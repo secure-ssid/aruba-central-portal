@@ -8,12 +8,92 @@ The globals (aruba_client, etc.) are read from the app module at request time.
 import json
 import time
 import logging
+import threading
 import requests
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import wraps
 from flask import request, jsonify, current_app
 
 logger = logging.getLogger(__name__)
+
+
+# ── Simple In-Memory Rate Limiter ──────────────────────────────────────────
+# Tracks request timestamps per IP in a sliding window. Thread-safe.
+
+_rate_limit_store: dict = defaultdict(list)
+_rate_limit_lock = threading.Lock()
+
+
+def _cleanup_rate_limit_store():
+    """Periodically remove stale entries older than 2 minutes."""
+    cutoff = time.time() - 120
+    with _rate_limit_lock:
+        stale_keys = [
+            key for key, timestamps in _rate_limit_store.items()
+            if not timestamps or timestamps[-1] < cutoff
+        ]
+        for key in stale_keys:
+            del _rate_limit_store[key]
+
+
+def rate_limit(max_requests=60, window_seconds=60):
+    """Decorator that applies a per-IP sliding-window rate limit.
+
+    Returns HTTP 429 when the limit is exceeded.
+
+    Usage::
+
+        @app.route('/api/login', methods=['POST'])
+        @rate_limit(max_requests=10, window_seconds=60)
+        def login():
+            ...
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            ip = request.remote_addr or "unknown"
+            now = time.time()
+            window_start = now - window_seconds
+            bucket_key = f"{ip}:{f.__name__}"
+
+            with _rate_limit_lock:
+                # Prune timestamps outside the window
+                timestamps = _rate_limit_store[bucket_key]
+                _rate_limit_store[bucket_key] = [
+                    t for t in timestamps if t > window_start
+                ]
+                if len(_rate_limit_store[bucket_key]) >= max_requests:
+                    retry_after = int(
+                        _rate_limit_store[bucket_key][0] + window_seconds - now
+                    ) + 1
+                    resp = jsonify({
+                        "error": "Rate limit exceeded. Please try again later.",
+                        "retry_after": retry_after,
+                    })
+                    resp.status_code = 429
+                    resp.headers["Retry-After"] = str(retry_after)
+                    return resp
+                _rate_limit_store[bucket_key].append(now)
+
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# Periodic cleanup thread to prevent unbounded memory growth
+def _rate_limit_cleanup_loop():
+    while True:
+        time.sleep(120)
+        try:
+            _cleanup_rate_limit_store()
+        except Exception:
+            pass
+
+
+threading.Thread(
+    target=_rate_limit_cleanup_loop, daemon=True, name="rate-limit-cleanup"
+).start()
 
 
 def _get_globals():
@@ -71,7 +151,11 @@ CACHE_TIERS = {
     "/network-monitoring/v1/wlans": 300,
     "/central/v2/sites": 300,
     "/network-monitoring/v1/sites-health": 30,
+    "/network-monitoring/v1/clients": 60,
+    "/network-notifications/v1/alerts": 15,
     "/platform/licensing/v1/subscriptions": 300,
+    "/network-config/v1alpha1/wlan-ssids": 300,
+    "/network-config/v1/sites": 300,
 }
 
 
@@ -93,7 +177,75 @@ def cached_get(endpoint, params=None, ttl=None):
             logger.debug(f"Cache HIT for {endpoint} (ttl={effective_ttl}s)")
             return data
 
+    if not _app.aruba_client:
+        raise RuntimeError("Aruba Central client not initialized")
+
     result = _app.aruba_client.get(endpoint, params=params)
+
+    if effective_ttl > 0:
+        _app._poll_cache_set(cache_key, result)
+    return result
+
+
+def cached_get_paginated(
+    endpoint,
+    params=None,
+    items_key="items",
+    max_pages=10,
+    page_size=100,
+    ttl=None,
+):
+    """Cached wrapper around ``aruba_client.get_all_paginated()``.
+
+    Works like ``cached_get`` but auto-paginates to collect all items.
+    The cache stores the *combined* result so subsequent calls within the
+    TTL window never hit the Aruba Central API.
+
+    If the caller supplies ``offset`` or ``limit`` in *params* the request
+    is treated as an explicit frontend-driven page and forwarded verbatim
+    through the regular ``cached_get`` (no auto-pagination).
+
+    Returns:
+        A dict with ``{items_key: [...], "count": N, "total": N}`` that
+        matches the shape the frontend already expects from single-page
+        responses.
+    """
+    import app as _app
+
+    params = dict(params) if params else {}
+
+    # If the frontend explicitly asks for a specific page, honour it.
+    if "offset" in params or "limit" in params:
+        return cached_get(endpoint, params=params, ttl=ttl)
+
+    cache_key = (
+        f"paginated:{endpoint}:"
+        f"{json.dumps(params, sort_keys=True) if params else ''}"
+    )
+    effective_ttl = ttl if ttl is not None else CACHE_TIERS.get(endpoint, 0)
+
+    if effective_ttl > 0:
+        data, ts = _app._poll_cache_get(cache_key)
+        if data is not None and (time.time() - ts) < effective_ttl:
+            logger.debug(f"Cache HIT (paginated) for {endpoint} (ttl={effective_ttl}s)")
+            return data
+
+    if not _app.aruba_client:
+        raise RuntimeError("Aruba Central client not initialized")
+
+    all_items = _app.aruba_client.get_all_paginated(
+        endpoint,
+        params=params,
+        items_key=items_key,
+        max_pages=max_pages,
+        page_size=page_size,
+    )
+
+    result = {
+        items_key: all_items,
+        "count": len(all_items),
+        "total": len(all_items),
+    }
 
     if effective_ttl > 0:
         _app._poll_cache_set(cache_key, result)

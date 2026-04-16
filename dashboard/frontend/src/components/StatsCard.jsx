@@ -50,6 +50,7 @@ function StatsCard({
           : {},
       }}
       onClick={onClick}
+      {...(onClick ? { tabIndex: 0, role: 'button', 'aria-label': title, onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } } : {})}
     >
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
@@ -79,7 +80,7 @@ function StatsCard({
               sx={{
                 fontWeight: 700,
                 background: `linear-gradient(135deg, ${
-                  color === 'primary' ? '#FF6600' : '#ffffff'
+                  color === 'primary' ? 'var(--color-primary)' : '#ffffff'
                 } 0%, ${color === 'primary' ? '#FF9933' : '#aaaaaa'} 100%)`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
@@ -99,7 +100,7 @@ function StatsCard({
               justifyContent: 'space-between',
               mt: 2,
               pt: 2,
-              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              borderTop: '1px solid var(--border-default)',
             }}
           >
             {subtitle && (

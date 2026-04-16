@@ -494,7 +494,7 @@ function NetworkMonitorPage() {
 
     return (
       <Box sx={{ p: 3, backgroundColor: 'rgba(255, 102, 0, 0.03)' }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#FF6600' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: 'var(--color-primary)' }}>
           Swarm Details
         </Typography>
         <Grid container spacing={3}>
@@ -563,7 +563,7 @@ function NetworkMonitorPage() {
               fontFamily="monospace"
               sx={{
                 cursor: details.conductorSerialNumber ? 'pointer' : 'default',
-                '&:hover': details.conductorSerialNumber ? { color: '#FF6600' } : {},
+                '&:hover': details.conductorSerialNumber ? { color: 'var(--color-primary)' } : {},
               }}
               onClick={() => details.conductorSerialNumber && navigate(`/devices/${details.conductorSerialNumber}`)}
             >
@@ -621,7 +621,7 @@ function NetworkMonitorPage() {
                         onClick={() => handleSwarmExpand(swarmKey)}
                       >
                         <TableCell>
-                          <IconButton size="small" sx={{ color: '#FF6600' }}>
+                          <IconButton size="small" sx={{ color: 'var(--color-primary)' }}>
                             {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                           </IconButton>
                         </TableCell>
@@ -673,7 +673,7 @@ function NetworkMonitorPage() {
                             fontFamily="monospace"
                             sx={{
                               cursor: swarm.conductorSerialNumber ? 'pointer' : 'default',
-                              '&:hover': swarm.conductorSerialNumber ? { color: '#FF6600' } : {},
+                              '&:hover': swarm.conductorSerialNumber ? { color: 'var(--color-primary)' } : {},
                             }}
                             onClick={(e) => {
                               if (swarm.conductorSerialNumber) {
@@ -704,16 +704,16 @@ function NetworkMonitorPage() {
                             sx={{
                               backgroundColor:
                                 healthStatus === 'healthy'
-                                  ? 'rgba(76, 175, 80, 0.15)'
+                                  ? 'rgba(34, 197, 94, 0.15)'
                                   : healthStatus === 'unhealthy'
-                                  ? 'rgba(244, 67, 54, 0.15)'
-                                  : 'rgba(255, 152, 0, 0.15)',
+                                  ? 'rgba(239, 68, 68, 0.15)'
+                                  : 'rgba(245, 158, 11, 0.15)',
                               color:
                                 healthStatus === 'healthy'
-                                  ? '#4caf50'
+                                  ? 'var(--color-success)'
                                   : healthStatus === 'unhealthy'
-                                  ? '#f44336'
-                                  : '#ff9800',
+                                  ? 'var(--color-error)'
+                                  : 'var(--color-warning)',
                               fontWeight: 600,
                               '& .MuiChip-icon': {
                                 color: 'inherit',
@@ -846,7 +846,7 @@ function NetworkMonitorPage() {
       {/* Loading State - only show full spinner on first load */}
       {loading && sitesHealth.length === 0 && apsMonitoring.length === 0 && switchesMonitoring.length === 0 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }}>
-          <CircularProgress sx={{ color: '#FF6600' }} />
+          <CircularProgress sx={{ color: 'var(--color-primary)' }} />
           <Typography variant="body2" color="text.secondary">
             Loading monitoring data...
           </Typography>
@@ -855,7 +855,7 @@ function NetworkMonitorPage() {
 
       {/* Subtle refresh indicator when data already exists */}
       {loading && (sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0) && (
-        <LinearProgress sx={{ mb: 2, '& .MuiLinearProgress-bar': { bgcolor: '#FF6600' } }} />
+        <LinearProgress sx={{ mb: 2, '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-primary)' } }} />
       )}
 
       {/* Stats Overview */}

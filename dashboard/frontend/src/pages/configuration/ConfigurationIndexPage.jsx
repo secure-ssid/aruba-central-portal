@@ -39,7 +39,7 @@ const configurationCategories = [
     description: 'Manage sites, site collections, device groups, and scope hierarchy',
     icon: <LocationIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/scope-management',
-    color: '#FF6600',
+    color: 'var(--color-primary)',
   },
   {
     id: 'application-experience',
@@ -47,7 +47,7 @@ const configurationCategories = [
     description: 'Configure Airgroup, Application Recognition Control, UCC, and policies',
     icon: <AppsIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/application-experience',
-    color: '#2196F3',
+    color: 'var(--color-secondary)',
   },
   {
     id: 'central-nac',
@@ -55,7 +55,7 @@ const configurationCategories = [
     description: 'Configure authorization policies, identity stores, portal profiles, and authentication',
     icon: <SecurityIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/central-nac',
-    color: '#4CAF50',
+    color: 'var(--color-success)',
   },
   {
     id: 'central-nac-service',
@@ -63,7 +63,7 @@ const configurationCategories = [
     description: 'Manage MAC/MPSK registrations, visitors, jobs, images, and certificates',
     icon: <PeopleIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/central-nac-service',
-    color: '#9C27B0',
+    color: 'var(--color-purple)',
   },
   {
     id: 'config-management',
@@ -71,7 +71,7 @@ const configurationCategories = [
     description: 'Manage configuration checkpoints and backups',
     icon: <StorageIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/config-management',
-    color: '#FF9800',
+    color: 'var(--color-warning)',
   },
   {
     id: 'health',
@@ -79,7 +79,7 @@ const configurationCategories = [
     description: 'Monitor device configuration health and issues',
     icon: <HealthIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/health',
-    color: '#F44336',
+    color: 'var(--color-error)',
   },
   {
     id: 'extensions',
@@ -87,7 +87,7 @@ const configurationCategories = [
     description: 'Configure extension integrations like vSphere',
     icon: <ExtensionIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/extensions',
-    color: '#00BCD4',
+    color: '#06B6D4',
   },
   {
     id: 'high-availability',
@@ -95,7 +95,7 @@ const configurationCategories = [
     description: 'Configure switch stacks and VSX profiles',
     icon: <HAIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/high-availability',
-    color: '#795548',
+    color: '#78716C',
   },
   {
     id: 'interface',
@@ -103,7 +103,7 @@ const configurationCategories = [
     description: 'Manage device profiles and interface configurations',
     icon: <InterfaceIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/interface',
-    color: '#607D8B',
+    color: 'var(--text-muted)',
   },
   {
     id: 'interface-security',
@@ -111,7 +111,7 @@ const configurationCategories = [
     description: 'Configure MAC lockout and MACsec policies',
     icon: <LockIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/interface-security',
-    color: '#E91E63',
+    color: '#EC4899',
   },
   {
     id: 'interfaces',
@@ -135,7 +135,7 @@ const configurationCategories = [
     description: 'Configure WLANs, radios, Hotspot2, Passpoint, Mesh, and IDS',
     icon: <WirelessIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/wireless',
-    color: '#FF6600',
+    color: 'var(--color-primary)',
   },
   {
     id: 'greenlake',
@@ -159,7 +159,7 @@ function ConfigurationIndexPage() {
     <Box>
       {/* Page Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
           Configuration Management
         </Typography>
         <Typography variant="body1" color="text.secondary">

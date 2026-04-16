@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { alertsAPI } from '../services/api';
 import { getErrorMessage } from '../utils/errorUtils';
+import { useAlertSSE } from '../components/EventFeedProvider';
 
 function AlertsPage() {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,9 @@ function AlertsPage() {
   const [events, setEvents] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
+  // SSE real-time alert updates (when on page 1 and connected)
+  const { alerts: sseAlerts, alertsConnected } = useAlertSSE();
+
   useEffect(() => {
     fetchAlerts(alertsPage);
   }, [alertsPage]);
@@ -53,6 +57,22 @@ function AlertsPage() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  // When SSE pushes new alerts and we're on page 1, update the display
+  // in real-time without needing a manual refresh.
+  useEffect(() => {
+    if (sseAlerts && alertsConnected && alertsPage === 1) {
+      const sseAlertList = sseAlerts.alerts || [];
+      if (sseAlertList.length > 0) {
+        setAlerts(sseAlertList.slice(0, 10));
+        setAlertsTotal(sseAlerts.total || sseAlertList.length);
+        if (sseAlertList[0]?._raw_keys) {
+          setRawKeys(sseAlertList[0]._raw_keys);
+        }
+        setLoading(false);
+      }
+    }
+  }, [sseAlerts, alertsConnected, alertsPage]);
 
   const fetchAlerts = async (page) => {
     try {
@@ -88,17 +108,17 @@ function AlertsPage() {
   const getSeverityIcon = (severity) => {
     switch (severity?.toLowerCase()) {
       case 'critical':
-        return <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />;
+        return <ErrorIcon sx={{ fontSize: 18, color: 'var(--color-error)' }} />;
       case 'high':
         return <ErrorIcon sx={{ fontSize: 18, color: '#F97316' }} />;
       case 'medium':
       case 'warning':
-        return <WarningIcon sx={{ fontSize: 18, color: '#F59E0B' }} />;
+        return <WarningIcon sx={{ fontSize: 18, color: 'var(--color-warning)' }} />;
       case 'low':
       case 'info':
-        return <InfoIcon sx={{ fontSize: 18, color: '#3B82F6' }} />;
+        return <InfoIcon sx={{ fontSize: 18, color: 'var(--color-secondary)' }} />;
       default:
-        return <InfoIcon sx={{ fontSize: 18, color: '#64748B' }} />;
+        return <InfoIcon sx={{ fontSize: 18, color: 'var(--text-muted)' }} />;
     }
   };
 
@@ -140,7 +160,7 @@ function AlertsPage() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+        <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} />
       </Box>
     );
   }
@@ -149,7 +169,7 @@ function AlertsPage() {
     <Box>
       <Box sx={{ mb: 3.5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
             Alerts & Events
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -177,12 +197,12 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Total Alerts
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-primary)' }}>
                     {alertsTotal || alerts.length}
                   </Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <WarningIcon sx={{ fontSize: 20, color: '#FF6600' }} />
+                  <WarningIcon sx={{ fontSize: 20, color: 'var(--color-primary)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -197,10 +217,10 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Critical
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#EF4444' }}>{criticalCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-error)' }}>{criticalCount}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ErrorIcon sx={{ fontSize: 20, color: '#EF4444' }} />
+                  <ErrorIcon sx={{ fontSize: 20, color: 'var(--color-error)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -215,10 +235,10 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Warnings
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#F59E0B' }}>{warningCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-warning)' }}>{warningCount}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <WarningIcon sx={{ fontSize: 20, color: '#F59E0B' }} />
+                  <WarningIcon sx={{ fontSize: 20, color: 'var(--color-warning)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -233,10 +253,10 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Events
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#22C55E' }}>{events.length}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-success)' }}>{events.length}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircleIcon sx={{ fontSize: 20, color: '#22C55E' }} />
+                  <CheckCircleIcon sx={{ fontSize: 20, color: 'var(--color-success)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -253,7 +273,7 @@ function AlertsPage() {
             sx={{
               px: 2.5,
               pt: 1,
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid var(--border-subtle)',
               '& .MuiTab-root': {
                 textTransform: 'none',
                 fontWeight: 600,
@@ -261,7 +281,7 @@ function AlertsPage() {
                 minHeight: 48,
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: '#FF6600',
+                backgroundColor: 'var(--color-primary)',
               },
             }}
           >
@@ -273,7 +293,7 @@ function AlertsPage() {
                     <Chip
                       label={alertsTotal}
                       size="small"
-                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,102,0,0.15)', color: '#FF6600' }}
+                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,102,0,0.15)', color: 'var(--color-primary)' }}
                     />
                   )}
                 </Box>
@@ -287,7 +307,7 @@ function AlertsPage() {
                     <Chip
                       label={events.length}
                       size="small"
-                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'rgba(255,255,255,0.06)', color: 'text.secondary' }}
+                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: 'var(--border-subtle)', color: 'text.secondary' }}
                     />
                   )}
                 </Box>
@@ -327,22 +347,22 @@ function AlertsPage() {
                                   label={alert.severity || 'N/A'}
                                   color={getSeverityColor(alert.severity)}
                                   variant="outlined"
-                                  sx={{ fontWeight: 600, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                                  sx={{ fontWeight: 600, fontSize: '0.7rem', height: 22, textTransform: 'capitalize' }}
                                 />
                               </Box>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
                                 {alert.description || 'N/A'}
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.85rem', fontFamily: 'monospace' }}>
                                 {alert.device || 'N/A'}
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'text.secondary' }}>
                                 {alert.timestamp
                                   ? new Date(alert.timestamp * 1000).toLocaleString()
                                   : 'N/A'}
@@ -354,7 +374,7 @@ function AlertsPage() {
                                 label={alert.acknowledged ? 'Acknowledged' : 'Active'}
                                 color={alert.acknowledged ? 'default' : 'warning'}
                                 variant={alert.acknowledged ? 'outlined' : 'filled'}
-                                sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22 }}
+                                sx={{ fontWeight: 500, fontSize: '0.7rem', height: 22 }}
                               />
                             </TableCell>
                           </TableRow>
@@ -362,7 +382,7 @@ function AlertsPage() {
                       ) : (
                         <TableRow>
                           <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                            <NotificationsNoneIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                            <NotificationsNoneIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                             <Typography variant="body2" color="text.secondary" display="block">
                               No active alerts
                             </Typography>
@@ -384,12 +404,12 @@ function AlertsPage() {
                     onPageChange={(_e, newPage) => setAlertsPage(newPage + 1)}
                     rowsPerPage={10}
                     rowsPerPageOptions={[10]}
-                    sx={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                    sx={{ borderTop: '1px solid var(--border-subtle)' }}
                   />
                 )}
 
                 {rawKeys && (
-                  <Box sx={{ p: 1.5, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: 'rgba(255,255,0,0.04)' }}>
+                  <Box sx={{ p: 1.5, borderTop: '1px solid var(--border-subtle)', bgcolor: 'rgba(255,255,0,0.04)' }}>
                     <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.disabled' }}>
                       DEBUG – raw API keys: {rawKeys.join(', ')}
                     </Typography>
@@ -418,21 +438,21 @@ function AlertsPage() {
                               size="small"
                               label={event.type || 'Event'}
                               variant="outlined"
-                              sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                              sx={{ fontWeight: 500, fontSize: '0.7rem', height: 22, textTransform: 'capitalize' }}
                             />
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
                               {event.description || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.85rem', fontFamily: 'monospace' }}>
                               {event.device || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'text.secondary' }}>
                               {event.timestamp
                                 ? new Date(event.timestamp * 1000).toLocaleString()
                                 : 'N/A'}
@@ -443,7 +463,7 @@ function AlertsPage() {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
-                          <EventNoteIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                          <EventNoteIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                           <Typography variant="body2" color="text.secondary" display="block">
                             No events recorded
                           </Typography>

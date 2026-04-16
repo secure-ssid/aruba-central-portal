@@ -134,6 +134,7 @@ function GlobalSearch({ open, onClose }) {
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      aria-label="Global search"
       PaperProps={{
         sx: {
           backgroundColor: 'background.paper',
@@ -142,11 +143,12 @@ function GlobalSearch({ open, onClose }) {
       }}
     >
       <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ p: 2, borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+        <Box sx={{ p: 2, borderBottom: '1px solid var(--border-default)' }}>
           <TextField
             autoFocus
             fullWidth
             placeholder="Search devices, sites, or pages..."
+            aria-label="Search devices, sites, or pages"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}

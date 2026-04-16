@@ -284,7 +284,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Typography variant="h6" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <SecurityIcon />
         Authentication & Network
       </Typography>
@@ -294,7 +294,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
 
       {/* Authentication Section */}
       <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <SecurityIcon fontSize="small" />
           Authentication
         </Typography>
@@ -382,6 +382,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
                   <IconButton
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
@@ -410,6 +411,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
                 Additional Pre-Shared Keys (Optional)
               </Typography>
               <Button
+                type="button"
                 startIcon={<AddIcon />}
                 size="small"
                 onClick={handleAddMPSK}
@@ -445,6 +447,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
                         edge="end"
                         onClick={() => handleRemoveMPSK(mpsk.id)}
                         size="small"
+                        aria-label={`Remove key ${index + 1}`}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -463,7 +466,7 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
 
       {/* Network Configuration */}
       <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <NetworkIcon fontSize="small" />
           Network Configuration
         </Typography>

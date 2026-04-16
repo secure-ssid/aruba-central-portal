@@ -107,8 +107,16 @@ export const authAPI = {
   },
 
   getStatus: async () => {
-    const response = await apiClient.get('/auth/status');
-    return response.data;
+    try {
+      const response = await apiClient.get('/auth/status');
+      return response.data;
+    } catch (error) {
+      // Don't throw on 401 — the response interceptor already handles redirect
+      if (error.response?.status === 401) {
+        return { authenticated: false };
+      }
+      throw error;
+    }
   },
 
   isAuthenticated: () => {
@@ -188,23 +196,15 @@ export const deviceAPI = {
   },
 
   runSwitchShowCommand: async (serial, command) => {
-    try {
-      const response = await apiClient.post(`/switches/${serial}/show-command`, {
-        command: command,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(`/switches/${serial}/show-command`, {
+      command: command,
+    });
+    return response.data;
   },
 
   getSwitchShowCommandResult: async (serial, taskId) => {
-    try {
-      const response = await apiClient.get(`/switches/${serial}/show-command/${taskId}`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`/switches/${serial}/show-command/${taskId}`);
+    return response.data;
   },
 
   getDeviceParameters: async (platformModel = null) => {
@@ -347,6 +347,21 @@ export const getClientTrends = async (siteId) => {
 export const getTopClients = async (siteId) => {
   const params = siteId ? { site_id: siteId } : {};
   const response = await apiClient.get('/clients/usage/topn', { params });
+  return response.data;
+};
+
+export const getClientHealth = async (params = {}) => {
+  const response = await apiClient.get('/clients/health', { params });
+  return response.data;
+};
+
+export const getClientByMac = async (mac) => {
+  const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}`);
+  return response.data;
+};
+
+export const getClientMobilityTrail = async (mac, params = {}) => {
+  const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}/mobility-trail`, { params });
   return response.data;
 };
 
@@ -621,6 +636,16 @@ export const firmwareAPI = {
     const response = await apiClient.post('/firmware/upgrade', upgradeData);
     return response.data;
   },
+
+  getDetails: async (params = {}) => {
+    const response = await apiClient.get('/firmware/details', { params });
+    return response.data;
+  },
+
+  getCompliancePolicy: async (params = {}) => {
+    const response = await apiClient.get('/firmware/compliance-policy', { params });
+    return response.data;
+  },
 };
 
 /**
@@ -806,12 +831,14 @@ export const monitoringAPIv2 = {
 
   getAPPower: async (serial, params = {}) => {
     // Mark as optional - don't throw on 404
-    const response = await apiClient.get(`/monitoring/aps/${serial}/power`, { 
+    const response = await apiClient.get(`/monitoring/aps/${serial}/power`, {
       params,
       validateStatus: (status) => status < 500, // Don't throw on 4xx, only 5xx
     });
     if (response.status >= 400) {
-      throw { response: { status: response.status, data: response.data } };
+      const error = new Error(`AP power request failed with status ${response.status}`);
+      error.response = { status: response.status, data: response.data };
+      throw error;
     }
     return response.data;
   },
@@ -833,6 +860,11 @@ export const monitoringAPIv2 = {
 
   getAPPorts: async (serial) => {
     const response = await apiClient.get(`/monitoring/aps/${serial}/ports`);
+    return response.data;
+  },
+
+  getTopAPsByWiredBandwidth: async (params = {}) => {
+    const response = await apiClient.get('/monitoring/aps/top-wired-bandwidth', { params });
     return response.data;
   },
 
@@ -908,6 +940,31 @@ export const monitoringAPIv2 = {
 
   getGatewayTunnels: async (serial) => {
     const response = await apiClient.get(`/monitoring/gateways/${serial}/tunnels`);
+    return response.data;
+  },
+
+  getGatewayCPU: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/cpu`, { params });
+    return response.data;
+  },
+
+  getGatewayMemory: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/memory`, { params });
+    return response.data;
+  },
+
+  getGatewayUplinks: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/uplinks`, { params });
+    return response.data;
+  },
+
+  getGatewayWANAvailability: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/wan-availability`, { params });
+    return response.data;
+  },
+
+  getGatewayWANTunnelsHealth: async (serial, params = {}) => {
+    const response = await apiClient.get(`/monitoring/gateways/${serial}/wan-tunnels-health`, { params });
     return response.data;
   },
 
@@ -997,8 +1054,9 @@ export const tokenAPI = {
  */
 export const clusterAPI = {
   getInfo: async () => {
-    // This endpoint doesn't require authentication
-    const response = await axios.get(`${API_BASE_URL}/cluster/info`);
+    // This endpoint doesn't require authentication but still uses apiClient
+    // for consistent base URL and error handling
+    const response = await apiClient.get('/cluster/info');
     return response.data;
   },
 };

@@ -70,9 +70,9 @@ function ResultPanel({ result, loading, error }) {
     <Box sx={{ mt: 2 }}>
       <Divider sx={{ mb: 1.5 }} />
       {loading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }}>
-          <CircularProgress size={18} sx={{ color: '#FF6600' }} />
-          <Typography variant="body2" sx={{ color: '#94A3B8' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }} role="status" aria-live="polite">
+          <CircularProgress size={18} sx={{ color: 'var(--color-primary)' }} aria-label="Running diagnostic" />
+          <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
             Running...
           </Typography>
         </Box>
@@ -93,7 +93,7 @@ function ResultPanel({ result, loading, error }) {
             }}
           >
             <Tooltip title={copied ? 'Copied!' : 'Copy'}>
-              <IconButton size="small" onClick={handleCopy} sx={{ color: '#64748B' }}>
+              <IconButton size="small" onClick={handleCopy} sx={{ color: "var(--text-muted)" }} aria-label="Copy result to clipboard">
                 <CopyIcon sx={{ fontSize: 14 }} />
               </IconButton>
             </Tooltip>
@@ -101,8 +101,8 @@ function ResultPanel({ result, loading, error }) {
           <Paper
             sx={{
               p: 2,
-              backgroundColor: '#0A0E1A',
-              border: '1px solid rgba(255,255,255,0.07)',
+              backgroundColor: 'var(--bg-default)',
+              border: '1px solid var(--border-divider)',
               borderRadius: 2,
               overflowX: 'auto',
               maxHeight: 400,
@@ -166,15 +166,15 @@ function APInfoCard({ ap, loading }) {
     <Card sx={{ mb: 3, border: '1px solid rgba(255,102,0,0.2)', boxShadow: '0 0 20px rgba(255,102,0,0.05)' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <WifiIcon sx={{ color: '#FF6600', fontSize: 20 }} />
-          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#F1F5F9' }}>
+          <WifiIcon sx={{ color: 'var(--color-primary)', fontSize: 20 }} />
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'var(--text-primary)' }}>
             Access Point Details
           </Typography>
         </Box>
         <Grid container spacing={2}>
           {fields.map(({ label, value }) => (
             <Grid item xs={6} sm={3} key={label}>
-              <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {label}
               </Typography>
               <Box sx={{ mt: 0.25 }}>
@@ -196,6 +196,7 @@ function APInfoCard({ ap, loading }) {
 
 // ─── Tool Card ────────────────────────────────────────────────────────────────
 
+// NOTE: hex values required for accentColor because it is used with opacity suffixes (e.g. `${accentColor}30`)
 function ToolCard({ icon, title, description, children, accentColor = '#FF6600' }) {
   return (
     <Card
@@ -211,7 +212,7 @@ function ToolCard({ icon, title, description, children, accentColor = '#FF6600' 
             sx={{
               width: 36,
               height: 36,
-              borderRadius: '9px',
+              borderRadius: '8px',
               background: `${accentColor}18`,
               border: `1px solid ${accentColor}30`,
               display: 'flex',
@@ -223,10 +224,10 @@ function ToolCard({ icon, title, description, children, accentColor = '#FF6600' 
             {icon}
           </Box>
           <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#F1F5F9', lineHeight: 1.2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>
               {title}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.72rem' }}>
+            <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
               {description}
             </Typography>
           </Box>
@@ -244,19 +245,19 @@ function RadioStatsDisplay({ data }) {
 
   if (!radios || radios.length === 0) {
     return (
-      <Typography variant="body2" sx={{ color: '#64748B', mt: 1 }}>
+      <Typography variant="body2" sx={{ color: 'var(--text-muted)', mt: 1 }}>
         No radio data available
       </Typography>
     );
   }
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 1.5, backgroundColor: '#0A0E1A', border: '1px solid rgba(255,255,255,0.07)' }}>
+    <TableContainer component={Paper} sx={{ mt: 1.5, backgroundColor: 'var(--bg-default)', border: '1px solid var(--border-divider)' }}>
       <Table size="small">
         <TableHead>
           <TableRow>
             {['Radio', 'Band', 'Channel', 'Tx Power', 'Noise', 'Clients', 'Util%'].map((h) => (
-              <TableCell key={h} sx={{ color: '#64748B', fontSize: '0.68rem', py: 0.75 }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: 'var(--text-muted)', fontSize: '0.7rem', py: 0.75 }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -291,30 +292,30 @@ function SpeedTestDisplay({ data }) {
     <Box sx={{ mt: 1.5, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
       {dl != null && (
         <Box sx={{ textAlign: 'center', p: 1.5, borderRadius: 2, backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', flex: 1, minWidth: 80 }}>
-          <Typography variant="h6" sx={{ color: '#22C55E', fontWeight: 700, fontFamily: 'monospace' }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-success)', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof dl === 'number' ? dl.toFixed(1) : dl}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
             Download Mbps
           </Typography>
         </Box>
       )}
       {ul != null && (
         <Box sx={{ textAlign: 'center', p: 1.5, borderRadius: 2, backgroundColor: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', flex: 1, minWidth: 80 }}>
-          <Typography variant="h6" sx={{ color: '#3B82F6', fontWeight: 700, fontFamily: 'monospace' }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-secondary)', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof ul === 'number' ? ul.toFixed(1) : ul}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
             Upload Mbps
           </Typography>
         </Box>
       )}
       {latency != null && (
         <Box sx={{ textAlign: 'center', p: 1.5, borderRadius: 2, backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', flex: 1, minWidth: 80 }}>
-          <Typography variant="h6" sx={{ color: '#F59E0B', fontWeight: 700, fontFamily: 'monospace' }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-warning)', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof latency === 'number' ? latency.toFixed(0) : latency}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
             Latency ms
           </Typography>
         </Box>
@@ -336,20 +337,20 @@ function HTTPTestDisplay({ data }) {
     <Box sx={{ mt: 1.5, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
       {status != null && (
         <Box sx={{ textAlign: 'center', p: 1.5, borderRadius: 2, backgroundColor: isOk ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${isOk ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, flex: 1, minWidth: 80 }}>
-          <Typography variant="h6" sx={{ color: isOk ? '#22C55E' : '#EF4444', fontWeight: 700, fontFamily: 'monospace' }}>
+          <Typography variant="h6" sx={{ color: isOk ? 'var(--color-success)' : 'var(--color-error)', fontWeight: 700, fontFamily: 'monospace' }}>
             {status}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
             Status Code
           </Typography>
         </Box>
       )}
       {latency != null && (
         <Box sx={{ textAlign: 'center', p: 1.5, borderRadius: 2, backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', flex: 1, minWidth: 80 }}>
-          <Typography variant="h6" sx={{ color: '#F59E0B', fontWeight: 700, fontFamily: 'monospace' }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-warning)', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof latency === 'number' ? latency.toFixed(0) : latency}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
             Latency ms
           </Typography>
         </Box>
@@ -569,7 +570,7 @@ export default function APTroubleshootPage() {
               width: 40,
               height: 40,
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -579,10 +580,10 @@ export default function APTroubleshootPage() {
             <BuildIcon sx={{ color: '#fff', fontSize: 22 }} />
           </Box>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#F1F5F9', lineHeight: 1.2 }}>
+            <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>
               AP Troubleshooting Toolkit
             </Typography>
-            <Typography variant="body2" sx={{ color: '#64748B' }}>
+            <Typography variant="body2" sx={{ color: 'var(--text-muted)' }}>
               Comprehensive diagnostic tests for access points
             </Typography>
           </Box>
@@ -592,7 +593,7 @@ export default function APTroubleshootPage() {
       {/* AP Selection */}
       <Card sx={{ mb: 3 }}>
         <CardContent sx={{ p: 2.5 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#94A3B8', mb: 2, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-secondary)', mb: 2, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Select Access Point
           </Typography>
           <Grid container spacing={2} alignItems="center">
@@ -634,18 +635,18 @@ export default function APTroubleshootPage() {
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
                         {ap.name || ap.hostname || 'Unknown AP'}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#64748B', fontFamily: 'monospace' }}>
+                      <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
                         {ap.serial} · {ap.site || 'No site'} · <StatusChip status={ap.status} />
                       </Typography>
                     </Box>
                   </Box>
                 )}
                 isOptionEqualToValue={(a, b) => a.serial === b.serial}
-                sx={{ '& .MuiInputBase-root': { backgroundColor: '#0A0E1A' } }}
+                sx={{ '& .MuiInputBase-root': { backgroundColor: 'var(--bg-default)' } }}
               />
             </Grid>
             <Grid item xs={12} md={1} sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: '#475569' }}>or</Typography>
+              <Typography variant="caption" sx={{ color: 'var(--text-disabled)' }}>or</Typography>
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
@@ -654,13 +655,13 @@ export default function APTroubleshootPage() {
                 onChange={(e) => { setManualSerial(e.target.value); setSelectedAP(null); }}
                 size="small"
                 fullWidth
-                sx={{ '& .MuiInputBase-root': { backgroundColor: '#0A0E1A', fontFamily: 'monospace' } }}
+                sx={{ '& .MuiInputBase-root': { backgroundColor: 'var(--bg-default)', fontFamily: 'monospace' } }}
                 placeholder="e.g. CNXXXXXXXX"
               />
             </Grid>
             <Grid item xs={12} md={1}>
               <Tooltip title="Refresh AP list">
-                <IconButton onClick={fetchAPList} disabled={apListLoading} sx={{ color: '#64748B' }}>
+                <IconButton onClick={fetchAPList} disabled={apListLoading} sx={{ color: 'var(--text-muted)' }} aria-label="Refresh AP list">
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
@@ -688,7 +689,7 @@ export default function APTroubleshootPage() {
         {/* 1. Locate AP */}
         <Grid item xs={12} sm={6} lg={4}>
           <ToolCard
-            icon={<LocateIcon sx={{ color: '#FF6600', fontSize: 18 }} />}
+            icon={<LocateIcon sx={{ color: 'var(--color-primary)', fontSize: 18 }} />}
             title="Locate AP"
             description="Blink the AP LED to physically locate it"
           >
@@ -713,7 +714,7 @@ export default function APTroubleshootPage() {
         {/* 2. Reboot AP */}
         <Grid item xs={12} sm={6} lg={4}>
           <ToolCard
-            icon={<PowerIcon sx={{ color: '#EF4444', fontSize: 18 }} />}
+            icon={<PowerIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} />}
             title="Reboot AP"
             description="Remotely reboot the access point"
             accentColor="#EF4444"
@@ -743,7 +744,7 @@ export default function APTroubleshootPage() {
         {/* 3. Ping Test */}
         <Grid item xs={12} sm={6} lg={4}>
           <ToolCard
-            icon={<NetworkCheckIcon sx={{ color: '#22C55E', fontSize: 18 }} />}
+            icon={<NetworkCheckIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} />}
             title="Ping Test"
             description="Send ICMP pings from this AP to a target"
             accentColor="#22C55E"
@@ -779,7 +780,7 @@ export default function APTroubleshootPage() {
         {/* 4. Traceroute */}
         <Grid item xs={12} sm={6} lg={4}>
           <ToolCard
-            icon={<RouteIcon sx={{ color: '#3B82F6', fontSize: 18 }} />}
+            icon={<RouteIcon sx={{ color: 'var(--color-secondary)', fontSize: 18 }} />}
             title="Traceroute"
             description="Trace the network path to a destination"
             accentColor="#3B82F6"
@@ -801,7 +802,7 @@ export default function APTroubleshootPage() {
               onClick={handleTraceroute}
               disabled={!serial || tools.traceroute.loading}
               startIcon={tools.traceroute.loading ? <CircularProgress size={14} color="inherit" /> : <RouteIcon />}
-              sx={{ background: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)', boxShadow: '0 4px 14px rgba(59,130,246,0.3)', '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)' } }}
+              sx={{ background: 'linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-light) 100%)', boxShadow: '0 4px 14px rgba(59,130,246,0.3)', '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, var(--color-secondary) 100%)' } }}
             >
               {tools.traceroute.loading ? 'Running...' : 'Run Traceroute'}
             </Button>
@@ -816,7 +817,7 @@ export default function APTroubleshootPage() {
         {/* 5. Speed Test */}
         <Grid item xs={12} sm={6} lg={4}>
           <ToolCard
-            icon={<SpeedIcon sx={{ color: '#F59E0B', fontSize: 18 }} />}
+            icon={<SpeedIcon sx={{ color: 'var(--color-warning)', fontSize: 18 }} />}
             title="Speed Test"
             description="Measure AP download and upload throughput"
             accentColor="#F59E0B"
@@ -828,7 +829,7 @@ export default function APTroubleshootPage() {
               onClick={handleSpeedTest}
               disabled={!serial || tools.speedtest.loading}
               startIcon={tools.speedtest.loading ? <CircularProgress size={14} color="inherit" /> : <SpeedIcon />}
-              sx={{ background: 'linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%)', color: '#1C1A0A', boxShadow: '0 4px 14px rgba(245,158,11,0.3)', '&:hover': { background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' } }}
+              sx={{ background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-light) 100%)', color: '#1C1A0A', boxShadow: '0 4px 14px rgba(245,158,11,0.3)', '&:hover': { background: 'linear-gradient(135deg, #D97706 0%, var(--color-warning) 100%)' } }}
             >
               {tools.speedtest.loading ? 'Running...' : 'Run Speed Test'}
             </Button>
@@ -901,7 +902,7 @@ export default function APTroubleshootPage() {
               onChange={(e) => setHttpUrl(e.target.value)}
               size="small"
               fullWidth
-              sx={{ mb: 1.5, '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: '0.82rem' } }}
+              sx={{ mb: 1.5, '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: '0.85rem' } }}
               placeholder="https://www.google.com"
               onKeyDown={(e) => e.key === 'Enter' && handleHTTPTest()}
             />
@@ -996,7 +997,7 @@ export default function APTroubleshootPage() {
               <RadioStatsDisplay data={tools.radiostats.result} />
             )}
             {tools.radiostats.error && !tools.radiostats.loading && (
-              <Alert severity="error" sx={{ mt: 1.5, fontSize: '0.78rem' }}>{tools.radiostats.error}</Alert>
+              <Alert severity="error" sx={{ mt: 1.5, fontSize: '0.75rem' }}>{tools.radiostats.error}</Alert>
             )}
           </ToolCard>
         </Grid>
@@ -1033,23 +1034,23 @@ export default function APTroubleshootPage() {
       <Dialog
         open={rebootConfirmOpen}
         onClose={() => setRebootConfirmOpen(false)}
-        PaperProps={{ sx: { backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.08)' } }}
+        PaperProps={{ sx: { backgroundColor: 'var(--bg-paper)', border: '1px solid var(--border-default)' } }}
       >
-        <DialogTitle sx={{ color: '#EF4444', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <DialogTitle sx={{ color: 'var(--color-error)', display: 'flex', alignItems: 'center', gap: 1 }}>
           <PowerIcon />
           Confirm AP Reboot
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: '#94A3B8' }}>
+          <DialogContentText sx={{ color: 'var(--text-secondary)' }}>
             This will remotely reboot access point{' '}
-            <Box component="span" sx={{ fontFamily: 'monospace', color: '#F1F5F9', fontWeight: 600 }}>
+            <Box component="span" sx={{ fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 600 }}>
               {apDetails?.name || serial}
             </Box>
             {' '}({serial}). All connected clients will be temporarily disconnected. Are you sure?
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setRebootConfirmOpen(false)} sx={{ color: '#64748B' }}>
+          <Button onClick={() => setRebootConfirmOpen(false)} sx={{ color: 'var(--text-muted)' }}>
             Cancel
           </Button>
           <Button onClick={handleReboot} color="error" variant="contained">
@@ -1062,27 +1063,27 @@ export default function APTroubleshootPage() {
       <Dialog
         open={disconnectConfirmOpen}
         onClose={() => setDisconnectConfirmOpen(false)}
-        PaperProps={{ sx: { backgroundColor: '#111827', border: '1px solid rgba(255,255,255,0.08)' } }}
+        PaperProps={{ sx: { backgroundColor: 'var(--bg-paper)', border: '1px solid var(--border-default)' } }}
       >
         <DialogTitle sx={{ color: '#F97316', display: 'flex', alignItems: 'center', gap: 1 }}>
           <PersonRemoveIcon />
           Confirm Client Disconnect
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: '#94A3B8' }}>
+          <DialogContentText sx={{ color: 'var(--text-secondary)' }}>
             Disconnect client{' '}
-            <Box component="span" sx={{ fontFamily: 'monospace', color: '#F1F5F9', fontWeight: 600 }}>
+            <Box component="span" sx={{ fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 600 }}>
               {clientMac}
             </Box>
             {' '}from AP{' '}
-            <Box component="span" sx={{ fontFamily: 'monospace', color: '#F1F5F9', fontWeight: 600 }}>
+            <Box component="span" sx={{ fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 600 }}>
               {apDetails?.name || serial}
             </Box>
             ? The client will need to re-authenticate.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDisconnectConfirmOpen(false)} sx={{ color: '#64748B' }}>
+          <Button onClick={() => setDisconnectConfirmOpen(false)} sx={{ color: 'var(--text-muted)' }}>
             Cancel
           </Button>
           <Button onClick={handleDisconnect} color="warning" variant="contained">

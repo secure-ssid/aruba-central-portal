@@ -30,7 +30,7 @@ function SortableHeader({ column, sortBy, sortDir, onSort }) {
         cursor: 'pointer',
         fontWeight: 600,
         userSelect: 'none',
-        '&:hover': { color: '#FF6600' },
+        '&:hover': { color: 'var(--color-primary)' },
       }}
     >
       {SORT_COLUMNS.find((c) => c.key === column)?.label}{indicator}

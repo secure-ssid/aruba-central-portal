@@ -237,7 +237,7 @@ export default function GLUsersPage() {
             {users.length === 0 && !loading && (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                  <PeopleIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                  <PeopleIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                   <Typography variant="body2" color="text.secondary" display="block">
                     No users found
                   </Typography>

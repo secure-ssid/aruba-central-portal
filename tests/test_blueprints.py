@@ -227,7 +227,7 @@ class TestDevicesBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"devices": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/devices")
         assert resp.status_code == 200
 
@@ -235,7 +235,7 @@ class TestDevicesBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"switches": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/switches")
         assert resp.status_code == 200
 
@@ -243,7 +243,7 @@ class TestDevicesBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"aps": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/aps")
         assert resp.status_code == 200
 
@@ -268,7 +268,7 @@ class TestMonitoringBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"aps": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/monitoring/aps")
         assert resp.status_code == 200
 
@@ -276,7 +276,7 @@ class TestMonitoringBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"switches": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/monitoring/switches")
         assert resp.status_code == 200
 
@@ -284,7 +284,7 @@ class TestMonitoringBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"gateways": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/monitoring/gateways")
         assert resp.status_code == 200
 
@@ -309,7 +309,7 @@ class TestConfigBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"data": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/groups")
         assert resp.status_code == 200
 
@@ -317,7 +317,7 @@ class TestConfigBlueprint:
         import app as m
 
         m.aruba_client = MagicMock()
-        m.aruba_client.get.return_value = {"items": [], "total": 0}
+        m.aruba_client.get_all_paginated.return_value = []
         resp = authed_client.get("/api/sites")
         assert resp.status_code == 200
 

@@ -225,7 +225,7 @@ function GLLocationsPage() {
                   {locations.length === 0 && !loading && (
                     <TableRow>
                       <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                        <LocationOnIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                        <LocationOnIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                         <Typography variant="body2" color="text.secondary" display="block">
                           No locations found
                         </Typography>

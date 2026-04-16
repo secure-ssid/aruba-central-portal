@@ -108,7 +108,7 @@ function SettingsPage() {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
           Settings
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -122,7 +122,7 @@ function SettingsPage() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InfoIcon sx={{ mr: 1, color: '#FF6600' }} />
+                <InfoIcon sx={{ mr: 1, color: 'var(--color-primary)' }} />
                 <Typography variant="h6">Current Workspace</Typography>
               </Box>
 
@@ -161,7 +161,7 @@ function SettingsPage() {
                 </Alert>
               ) : (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+                  <CircularProgress size={20} sx={{ color: 'var(--color-primary)' }} />
                   <Typography variant="body2" color="text.secondary">Loading workspace info...</Typography>
                 </Box>
               )}
@@ -174,7 +174,7 @@ function SettingsPage() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SwapHorizIcon sx={{ mr: 1, color: '#FF6600' }} />
+                <SwapHorizIcon sx={{ mr: 1, color: 'var(--color-primary)' }} />
                 <Typography variant="h6">Switch Workspace</Typography>
               </Box>
 
@@ -265,7 +265,7 @@ function SettingsPage() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <PublicIcon sx={{ mr: 1, color: '#FF6600' }} />
+            <PublicIcon sx={{ mr: 1, color: 'var(--color-primary)' }} />
             <Typography variant="h6">Regional Clusters & Base URLs</Typography>
           </Box>
 
@@ -367,7 +367,7 @@ function SettingsPage() {
             </Alert>
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, gap: 1 }}>
-              <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+              <CircularProgress size={20} sx={{ color: 'var(--color-primary)' }} />
               <Typography variant="body2" color="text.secondary">Loading cluster information...</Typography>
             </Box>
           )}

@@ -298,7 +298,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4, gap: 1.5 }}>
-        <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+        <CircularProgress size={20} sx={{ color: 'var(--color-primary)' }} />
         <Typography variant="body2" color="text.secondary">
           Loading port information...
         </Typography>
@@ -1113,15 +1113,15 @@ function PortOverlay({ ports, imageRef, deviceMap }) {
                 minWidth: '8px',
                 minHeight: '8px',
                 borderRadius: '50%',
-                backgroundColor: isConnected ? 'rgba(76, 175, 80, 0.9)' : 'rgba(158, 158, 158, 0.4)',
+                backgroundColor: isConnected ? 'rgba(34, 197, 94, 0.9)' : 'rgba(148, 163, 184, 0.4)',
                 boxShadow: isConnected
-                  ? '0 0 8px rgba(76, 175, 80, 1), 0 0 16px rgba(76, 175, 80, 0.7), 0 0 24px rgba(76, 175, 80, 0.5)'
+                  ? '0 0 8px rgba(34, 197, 94, 1), 0 0 16px rgba(34, 197, 94, 0.7), 0 0 24px rgba(34, 197, 94, 0.5)'
                   : '0 0 2px rgba(0, 0, 0, 0.3)',
                 cursor: port.neighbour && getNeighborSerial(port.neighbour) ? 'pointer' : 'default',
                 transition: 'all 0.2s ease',
                 transform: hoveredPort === portName ? 'scale(2)' : 'scale(1)',
                 zIndex: hoveredPort === portName ? 10 : 5,
-                border: hoveredPort === portName ? '2px solid rgba(76, 175, 80, 1)' : '1px solid rgba(255, 255, 255, 0.6)',
+                border: hoveredPort === portName ? '2px solid rgba(34, 197, 94, 1)' : '1px solid rgba(255, 255, 255, 0.6)',
                 transformOrigin: 'center',
               }}
             >
@@ -1724,7 +1724,7 @@ function DeviceDetailPage() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 8, gap: 2 }}>
-        <CircularProgress sx={{ color: '#FF6600' }} />
+        <CircularProgress sx={{ color: 'var(--color-primary)' }} />
         <Typography variant="body2" color="text.secondary">
           Loading device details...
         </Typography>

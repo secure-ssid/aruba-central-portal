@@ -54,13 +54,14 @@ import { formatUptime, formatBytes } from '../utils/formatUtils';
 
 // ─── Stats Card ───────────────────────────────────────────────────────────────
 
+// NOTE: hex values required for color prop because it is used with opacity suffixes (e.g. `${color}22`)
 function StatCard({ title, value, icon, color = '#FF6600', loading }) {
   return (
     <Card>
       <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Box>
-            <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem' }}>
+            <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem' }}>
               {title}
             </Typography>
             {loading ? (
@@ -119,7 +120,7 @@ function WANStatusTab({ serial }) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+        <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} />
       </Box>
     );
   }
@@ -146,13 +147,13 @@ function WANStatusTab({ serial }) {
         <TableBody>
           {wanInterfaces.map((iface, idx) => (
             <TableRow key={idx} hover sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
-              <TableCell sx={{ fontWeight: 500, color: '#F1F5F9' }}>
+              <TableCell sx={{ fontWeight: 500, color: 'var(--text-primary)' }}>
                 {iface.name || iface.interface_name || `Interface ${idx + 1}`}
               </TableCell>
-              <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+              <TableCell sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                 {iface.type || iface.wan_type || '—'}
               </TableCell>
-              <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+              <TableCell sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
                 {iface.ip_address || iface.ip || '—'}
               </TableCell>
               <TableCell>
@@ -205,7 +206,7 @@ function VPNTunnelsTab({ serial }) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+        <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} />
       </Box>
     );
   }
@@ -238,23 +239,23 @@ function VPNTunnelsTab({ serial }) {
             const txPct = ((tunnel.tx_bytes || 0) / maxBytes) * 100;
             return (
               <TableRow key={idx} hover sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
-                <TableCell sx={{ fontWeight: 500, color: '#F1F5F9', fontSize: '0.82rem' }}>
+                <TableCell sx={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: '0.85rem' }}>
                   {tunnel.name || tunnel.tunnel_name || `Tunnel ${idx + 1}`}
                 </TableCell>
-                <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                <TableCell sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
                   {tunnel.peer_ip || tunnel.peer || tunnel.remote_ip || '—'}
                 </TableCell>
                 <TableCell>
                   <StatusChip status={tunnel.status || tunnel.state} />
                 </TableCell>
-                <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+                <TableCell sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                   {formatUptime(tunnel.uptime)}
                 </TableCell>
                 <TableCell>
                   <Stack spacing={0.5}>
                     <Box>
                       <Stack direction="row" justifyContent="space-between" mb={0.25}>
-                        <Typography variant="caption" sx={{ color: '#3B82F6', fontSize: '0.65rem' }}>
+                        <Typography variant="caption" sx={{ color: 'var(--color-secondary)', fontSize: '0.65rem' }}>
                           RX {formatBytes(tunnel.rx_bytes)}
                         </Typography>
                       </Stack>
@@ -265,13 +266,13 @@ function VPNTunnelsTab({ serial }) {
                           height: 4,
                           borderRadius: 2,
                           bgcolor: 'rgba(59,130,246,0.15)',
-                          '& .MuiLinearProgress-bar': { bgcolor: '#3B82F6', borderRadius: 2 },
+                          '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-secondary)', borderRadius: 2 },
                         }}
                       />
                     </Box>
                     <Box>
                       <Stack direction="row" justifyContent="space-between" mb={0.25}>
-                        <Typography variant="caption" sx={{ color: '#22C55E', fontSize: '0.65rem' }}>
+                        <Typography variant="caption" sx={{ color: 'var(--color-success)', fontSize: '0.65rem' }}>
                           TX {formatBytes(tunnel.tx_bytes)}
                         </Typography>
                       </Stack>
@@ -282,7 +283,7 @@ function VPNTunnelsTab({ serial }) {
                           height: 4,
                           borderRadius: 2,
                           bgcolor: 'rgba(34,197,94,0.15)',
-                          '& .MuiLinearProgress-bar': { bgcolor: '#22C55E', borderRadius: 2 },
+                          '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-success)', borderRadius: 2 },
                         }}
                       />
                     </Box>
@@ -319,8 +320,8 @@ function GatewayDetailPanel({ serial }) {
           mb: 2,
           minHeight: 36,
           '& .MuiTab-root': { minHeight: 36, fontSize: '0.8rem', textTransform: 'none', fontWeight: 500 },
-          '& .MuiTabs-indicator': { backgroundColor: '#FF6600' },
-          '& .Mui-selected': { color: '#FF6600 !important' },
+          '& .MuiTabs-indicator': { backgroundColor: 'var(--color-primary)' },
+          '& .Mui-selected': { color: 'var(--color-primary) !important' },
         }}
       >
         <Tab label="WAN Status" />
@@ -371,8 +372,8 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
       fullWidth
       PaperProps={{
         sx: {
-          bgcolor: '#111827',
-          border: '1px solid rgba(255,255,255,0.08)',
+          bgcolor: 'var(--bg-paper)',
+          border: '1px solid var(--border-default)',
           borderRadius: 2,
         },
       }}
@@ -382,23 +383,23 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          borderBottom: '1px solid var(--border-divider)',
           pb: 1.5,
         }}
       >
         <Stack direction="row" alignItems="center" spacing={1}>
-          {type === 'iperf' ? <SpeedIcon sx={{ color: '#FF6600' }} /> : <NetworkCheckIcon sx={{ color: '#FF6600' }} />}
+          {type === 'iperf' ? <SpeedIcon sx={{ color: 'var(--color-primary)' }} /> : <NetworkCheckIcon sx={{ color: 'var(--color-primary)' }} />}
           <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
             {title}
           </Typography>
           <Chip
             size="small"
             label={`Serial: ${serial}`}
-            sx={{ bgcolor: 'rgba(255,102,0,0.12)', color: '#FF8C42', fontSize: '0.7rem' }}
+            sx={{ bgcolor: 'rgba(255,102,0,0.12)', color: 'var(--color-primary-light)', fontSize: '0.7rem' }}
           />
         </Stack>
         {!loading && (
-          <IconButton size="small" onClick={onClose} sx={{ color: '#64748B' }}>
+          <IconButton size="small" onClick={onClose} sx={{ color: 'var(--text-muted)' }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         )}
@@ -407,8 +408,8 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
       <DialogContent sx={{ pt: 2 }}>
         {loading && (
           <Stack alignItems="center" spacing={2} py={4}>
-            <CircularProgress sx={{ color: '#FF6600' }} />
-            <Typography variant="body2" sx={{ color: '#94A3B8' }}>
+            <CircularProgress sx={{ color: 'var(--color-primary)' }} />
+            <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
               Running {title}...
             </Typography>
           </Stack>
@@ -425,12 +426,12 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
               component="pre"
               sx={{
                 p: 2,
-                bgcolor: '#0A0E1A',
-                border: '1px solid rgba(255,255,255,0.07)',
+                bgcolor: 'var(--bg-default)',
+                border: '1px solid var(--border-divider)',
                 borderRadius: 1.5,
                 fontFamily: 'monospace',
-                fontSize: '0.78rem',
-                color: '#94A3B8',
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
                 overflowX: 'auto',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-all',
@@ -444,7 +445,7 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
         )}
       </DialogContent>
 
-      <DialogActions sx={{ borderTop: '1px solid rgba(255,255,255,0.07)', px: 2.5, py: 1.5 }}>
+      <DialogActions sx={{ borderTop: '1px solid var(--border-divider)', px: 2.5, py: 1.5 }}>
         <Button onClick={onClose} disabled={loading} variant="outlined" size="small">
           Close
         </Button>
@@ -479,30 +480,30 @@ function GatewayRow({ gateway, onAction }) {
       >
         {/* Expand toggle */}
         <TableCell sx={{ width: 40, pr: 0 }}>
-          <IconButton size="small" onClick={() => setExpanded((v) => !v)} sx={{ color: '#64748B' }}>
+          <IconButton size="small" onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-muted)' }}>
             {expanded ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
           </IconButton>
         </TableCell>
 
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ fontWeight: 500, color: '#F1F5F9' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ fontWeight: 500, color: 'var(--text-primary)' }}>
           {name}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontFamily: 'monospace' }}>
           {serial}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
           {model}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
           {site}
         </TableCell>
         <TableCell onClick={() => setExpanded((v) => !v)}>
           <StatusChip status={status} />
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
           {formatUptime(typeof uptime === 'number' ? uptime : null)}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
           {wanIp}
         </TableCell>
 
@@ -520,8 +521,8 @@ function GatewayRow({ gateway, onAction }) {
                   py: 0.3,
                   px: 1,
                   borderColor: 'rgba(255,102,0,0.4)',
-                  color: '#FF8C42',
-                  '&:hover': { borderColor: '#FF6600', bgcolor: 'rgba(255,102,0,0.08)' },
+                  color: 'var(--color-primary-light)',
+                  '&:hover': { borderColor: 'var(--color-primary)', bgcolor: 'rgba(255,102,0,0.08)' },
                 }}
               >
                 iPerf
@@ -538,8 +539,8 @@ function GatewayRow({ gateway, onAction }) {
                   py: 0.3,
                   px: 1,
                   borderColor: 'rgba(59,130,246,0.4)',
-                  color: '#60A5FA',
-                  '&:hover': { borderColor: '#3B82F6', bgcolor: 'rgba(59,130,246,0.08)' },
+                  color: 'var(--color-secondary-light)',
+                  '&:hover': { borderColor: 'var(--color-secondary)', bgcolor: 'rgba(59,130,246,0.08)' },
                 }}
               >
                 Ping
@@ -619,7 +620,7 @@ export default function GatewayWANPage() {
   }, 0);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0A0E1A' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--bg-default)' }}>
       {/* ── Page Header ── */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
         <Box>
@@ -629,7 +630,7 @@ export default function GatewayWANPage() {
                 width: 36,
                 height: 36,
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -638,11 +639,11 @@ export default function GatewayWANPage() {
             >
               <VpnLockIcon sx={{ color: '#fff', fontSize: 20 }} />
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#F1F5F9' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--text-primary)' }}>
               Gateway WAN / VPN
             </Typography>
           </Stack>
-          <Typography variant="body2" sx={{ color: '#64748B' }}>
+          <Typography variant="body2" sx={{ color: 'var(--text-muted)' }}>
             Monitor WAN interfaces and VPN tunnel health across all gateways
           </Typography>
         </Box>
@@ -655,13 +656,13 @@ export default function GatewayWANPage() {
                 onChange={(e) => setAutoRefresh(e.target.checked)}
                 size="small"
                 sx={{
-                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#FF6600' },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#FF6600' },
+                  '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: 'var(--color-primary)' },
                 }}
               />
             }
             label={
-              <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.75rem' }}>
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
                 Auto-refresh (30s)
               </Typography>
             }
@@ -671,7 +672,7 @@ export default function GatewayWANPage() {
               onClick={() => { setLoading(true); fetchGateways(); }}
               disabled={loading}
               sx={{
-                color: '#FF6600',
+                color: 'var(--color-primary)',
                 border: '1px solid rgba(255,102,0,0.3)',
                 borderRadius: '8px',
                 '&:hover': { bgcolor: 'rgba(255,102,0,0.08)' },
@@ -735,33 +736,33 @@ export default function GatewayWANPage() {
           sx={{
             px: 2.5,
             py: 1.5,
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
             gap: 1,
           }}
         >
-          <RouterIcon sx={{ color: '#FF6600', fontSize: 18 }} />
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#F1F5F9' }}>
+          <RouterIcon sx={{ color: 'var(--color-primary)', fontSize: 18 }} />
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)' }}>
             Gateways
           </Typography>
           {!loading && (
             <Chip
               size="small"
               label={total}
-              sx={{ ml: 0.5, bgcolor: 'rgba(255,102,0,0.12)', color: '#FF8C42', fontSize: '0.7rem', height: 18 }}
+              sx={{ ml: 0.5, bgcolor: 'rgba(255,102,0,0.12)', color: 'var(--color-primary-light)', fontSize: '0.7rem', height: 18 }}
             />
           )}
         </Box>
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress sx={{ color: '#FF6600' }} />
+            <CircularProgress sx={{ color: 'var(--color-primary)' }} />
           </Box>
         ) : gateways.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 6 }}>
-            <RouterIcon sx={{ fontSize: 48, color: '#1C2333', mb: 1 }} />
-            <Typography variant="body2" sx={{ color: '#475569' }}>
+            <RouterIcon sx={{ fontSize: 48, color: 'var(--bg-surface)', mb: 1 }} />
+            <Typography variant="body2" sx={{ color: 'var(--text-disabled)' }}>
               No gateways found
             </Typography>
           </Box>

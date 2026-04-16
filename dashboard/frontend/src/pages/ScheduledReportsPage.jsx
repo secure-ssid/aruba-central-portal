@@ -259,7 +259,7 @@ const saveReports = (reports) => {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const StatsCard = ({ label, value, icon, color }) => (
-  <Card sx={{ bgcolor: '#111827', border: '1px solid #1F2937' }}>
+  <Card sx={{ bgcolor: 'var(--bg-paper)', border: '1px solid #1F2937' }}>
     <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '12px !important' }}>
       <Box sx={{ color, display: 'flex' }}>{icon}</Box>
       <Box>
@@ -314,10 +314,10 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
-      PaperProps={{ sx: { bgcolor: '#111827', border: '1px solid #1F2937' } }}>
+      PaperProps={{ sx: { bgcolor: 'var(--bg-paper)', border: '1px solid #1F2937' } }}>
       <DialogTitle sx={{ color: '#F9FAFB', borderBottom: '1px solid #1F2937' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ReportIcon sx={{ color: '#FF6600' }} />
+          <ReportIcon sx={{ color: 'var(--color-primary)' }} />
           Create Report
         </Box>
       </DialogTitle>
@@ -330,12 +330,12 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
             fullWidth
             size="small"
             placeholder="e.g. Weekly Wireless Health"
-            sx={{ '& .MuiOutlinedInput-root': { bgcolor: '#0A0E1A' } }}
+            sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'var(--bg-default)' } }}
           />
           <FormControl fullWidth size="small">
             <InputLabel>Report Type</InputLabel>
             <Select value={type} onChange={(e) => setType(e.target.value)} label="Report Type"
-              sx={{ bgcolor: '#0A0E1A' }}>
+              sx={{ bgcolor: 'var(--bg-default)' }}>
               {REPORT_TYPES.map((rt) => (
                 <MenuItem key={rt.id} value={rt.id}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -354,7 +354,7 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
           <FormControl fullWidth size="small">
             <InputLabel>Time Range</InputLabel>
             <Select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} label="Time Range"
-              sx={{ bgcolor: '#0A0E1A' }}>
+              sx={{ bgcolor: 'var(--bg-default)' }}>
               {TIME_RANGE_OPTIONS.map((o) => (
                 <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
               ))}
@@ -363,7 +363,7 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
           <FormControl fullWidth size="small">
             <InputLabel>Schedule</InputLabel>
             <Select value={schedule} onChange={(e) => setSchedule(e.target.value)} label="Schedule"
-              sx={{ bgcolor: '#0A0E1A' }}>
+              sx={{ bgcolor: 'var(--bg-default)' }}>
               {SCHEDULE_OPTIONS.map((o) => (
                 <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
               ))}
@@ -372,7 +372,7 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
           <FormControl fullWidth size="small">
             <InputLabel>Export Format</InputLabel>
             <Select value={format} onChange={(e) => setFormat(e.target.value)} label="Export Format"
-              sx={{ bgcolor: '#0A0E1A' }}>
+              sx={{ bgcolor: 'var(--bg-default)' }}>
               <MenuItem value="csv">CSV</MenuItem>
               <MenuItem value="json">JSON</MenuItem>
             </Select>
@@ -385,7 +385,7 @@ const CreateReportDialog = ({ open, onClose, onCreate }) => {
           variant="contained"
           onClick={handleCreate}
           disabled={!name.trim() || !type}
-          sx={{ bgcolor: '#FF6600', '&:hover': { bgcolor: '#CC4E00' } }}
+          sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
         >
           Create Report
         </Button>
@@ -402,11 +402,11 @@ const ResultsDialog = ({ open, onClose, report, data }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth
-      PaperProps={{ sx: { bgcolor: '#111827', border: '1px solid #1F2937', maxHeight: '80vh' } }}>
+      PaperProps={{ sx: { bgcolor: 'var(--bg-paper)', border: '1px solid #1F2937', maxHeight: '80vh' } }}>
       <DialogTitle sx={{ color: '#F9FAFB', borderBottom: '1px solid #1F2937' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ReportIcon sx={{ color: '#FF6600' }} />
+            <ReportIcon sx={{ color: 'var(--color-primary)' }} />
             {report.name} — Results ({data?.length ?? 0} records)
           </Box>
           <Stack direction="row" spacing={1}>
@@ -414,7 +414,7 @@ const ResultsDialog = ({ open, onClose, report, data }) => {
               size="small"
               startIcon={<DownloadIcon />}
               onClick={() => exportCSV(data, `${filename}.csv`)}
-              sx={{ color: '#3B82F6', borderColor: '#3B82F6', '&:hover': { bgcolor: 'rgba(59,130,246,0.1)' } }}
+              sx={{ color: 'var(--color-secondary)', borderColor: 'var(--color-secondary)', '&:hover': { bgcolor: 'rgba(59,130,246,0.1)' } }}
               variant="outlined"
             >
               CSV
@@ -558,7 +558,7 @@ export default function ScheduledReportsPage() {
   const errors = reports.filter((r) => r.status === 'error').length;
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#0A0E1A', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, bgcolor: 'var(--bg-default)', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
@@ -573,7 +573,7 @@ export default function ScheduledReportsPage() {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setCreateOpen(true)}
-          sx={{ bgcolor: '#FF6600', '&:hover': { bgcolor: '#CC4E00' } }}
+          sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
         >
           New Report
         </Button>
@@ -582,21 +582,21 @@ export default function ScheduledReportsPage() {
       {/* Stats Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} sm={3}>
-          <StatsCard label="Total Reports" value={total} icon={<ReportIcon />} color="#FF6600" />
+          <StatsCard label="Total Reports" value={total} icon={<ReportIcon />} color="var(--color-primary)" />
         </Grid>
         <Grid item xs={6} sm={3}>
           <StatsCard label="Completed" value={completed} icon={<CheckIcon />} color="#10B981" />
         </Grid>
         <Grid item xs={6} sm={3}>
-          <StatsCard label="Scheduled" value={scheduled} icon={<ScheduleIcon />} color="#3B82F6" />
+          <StatsCard label="Scheduled" value={scheduled} icon={<ScheduleIcon />} color="var(--color-secondary)" />
         </Grid>
         <Grid item xs={6} sm={3}>
-          <StatsCard label="Errors" value={errors} icon={<ErrorIcon />} color="#EF4444" />
+          <StatsCard label="Errors" value={errors} icon={<ErrorIcon />} color="var(--color-error)" />
         </Grid>
       </Grid>
 
       {/* Reports Table */}
-      <Card sx={{ bgcolor: '#111827', border: '1px solid #1F2937' }}>
+      <Card sx={{ bgcolor: 'var(--bg-paper)', border: '1px solid #1F2937' }}>
         <CardContent sx={{ p: 0 }}>
           {reports.length === 0 ? (
             <Box sx={{ p: 6, textAlign: 'center' }}>
@@ -609,7 +609,7 @@ export default function ScheduledReportsPage() {
                 variant="outlined"
                 startIcon={<AddIcon />}
                 onClick={() => setCreateOpen(true)}
-                sx={{ mt: 2, color: '#FF6600', borderColor: '#FF6600', '&:hover': { bgcolor: 'rgba(255,102,0,0.1)' } }}
+                sx={{ mt: 2, color: 'var(--color-primary)', borderColor: 'var(--color-primary)', '&:hover': { bgcolor: 'rgba(255,102,0,0.1)' } }}
               >
                 Create Report
               </Button>
@@ -659,15 +659,15 @@ export default function ScheduledReportsPage() {
                               size="small"
                               label={SCHEDULE_OPTIONS.find((o) => o.value === report.schedule)?.label || report.schedule}
                               sx={{ bgcolor: report.schedule !== 'none' ? 'rgba(59,130,246,0.1)' : '#1F2937',
-                                    color: report.schedule !== 'none' ? '#3B82F6' : '#6B7280',
+                                    color: report.schedule !== 'none' ? 'var(--color-secondary)' : '#6B7280',
                                     fontSize: 11 }}
                             />
                           </TableCell>
                           <TableCell>
                             {isRunning ? (
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <CircularProgress size={14} sx={{ color: '#FF6600' }} />
-                                <Typography variant="caption" sx={{ color: '#FF6600' }}>Running…</Typography>
+                                <CircularProgress size={14} sx={{ color: 'var(--color-primary)' }} />
+                                <Typography variant="caption" sx={{ color: 'var(--color-primary)' }}>Running…</Typography>
                               </Box>
                             ) : (
                               <StatusChip status={report.status} icon={REPORT_STATUS_ICONS[report.status]} />
@@ -698,9 +698,9 @@ export default function ScheduledReportsPage() {
                                     size="small"
                                     onClick={() => runReport(report)}
                                     disabled={isRunning}
-                                    sx={{ color: '#FF6600', '&:hover': { bgcolor: 'rgba(255,102,0,0.1)' } }}
+                                    sx={{ color: 'var(--color-primary)', '&:hover': { bgcolor: 'rgba(255,102,0,0.1)' } }}
                                   >
-                                    {isRunning ? <CircularProgress size={16} sx={{ color: '#FF6600' }} /> : <RunIcon fontSize="small" />}
+                                    {isRunning ? <CircularProgress size={16} sx={{ color: 'var(--color-primary)' }} /> : <RunIcon fontSize="small" />}
                                   </IconButton>
                                 </span>
                               </Tooltip>
@@ -710,7 +710,7 @@ export default function ScheduledReportsPage() {
                                     <IconButton
                                       size="small"
                                       onClick={() => viewResults(report)}
-                                      sx={{ color: '#3B82F6', '&:hover': { bgcolor: 'rgba(59,130,246,0.1)' } }}
+                                      sx={{ color: 'var(--color-secondary)', '&:hover': { bgcolor: 'rgba(59,130,246,0.1)' } }}
                                     >
                                       <ReportIcon fontSize="small" />
                                     </IconButton>
@@ -737,7 +737,7 @@ export default function ScheduledReportsPage() {
                                 <IconButton
                                   size="small"
                                   onClick={() => handleDelete(report.id)}
-                                  sx={{ color: '#EF4444', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' } }}
+                                  sx={{ color: 'var(--color-error)', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' } }}
                                 >
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>
@@ -773,7 +773,7 @@ export default function ScheduledReportsPage() {
           {REPORT_TYPES.map((rt) => (
             <Grid item xs={12} sm={6} md={3} key={rt.id}>
               <Card
-                sx={{ bgcolor: '#111827', border: '1px solid #1F2937', cursor: 'pointer',
+                sx={{ bgcolor: 'var(--bg-paper)', border: '1px solid #1F2937', cursor: 'pointer',
                       '&:hover': { border: `1px solid ${rt.color}40`, bgcolor: '#161d2e' },
                       transition: 'all 0.15s' }}
                 onClick={() => setCreateOpen(true)}

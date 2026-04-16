@@ -7,7 +7,9 @@
  * defaults (30 s staleTime, 5 min gcTime, retry: 1).
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAlertSSE } from '../components/EventFeedProvider';
 import {
   monitoringAPI,
   monitoringAPIv2,
@@ -96,14 +98,36 @@ export const useClients = (siteId, options = {}) =>
   });
 
 // ── Alerts / Notifications ────────────────────────────────────────────────
+// Primary: SSE stream pushes real-time alert updates via EventFeedProvider.
+// Fallback: React Query polling resumes automatically when SSE disconnects.
+// The initial fetch on mount always runs so the user sees data immediately.
 
-export const useAlerts = (options = {}) =>
-  useQuery({
+export const useAlerts = (options = {}) => {
+  const queryClient = useQueryClient();
+  const { alerts: sseAlerts, alertsConnected } = useAlertSSE();
+
+  // When SSE delivers new alert data, inject it into React Query cache
+  // so every component reading ['alerts'] gets the update for free.
+  useEffect(() => {
+    if (sseAlerts) {
+      queryClient.setQueryData(['alerts'], sseAlerts);
+    }
+  }, [sseAlerts, queryClient]);
+
+  // Compute fallback polling interval: use caller's refetchInterval if
+  // provided, otherwise default to 30s.  When SSE is connected we disable
+  // polling entirely so we don't waste API calls.
+  const fallbackInterval = options.refetchInterval ?? 30_000;
+
+  return useQuery({
     queryKey: ['alerts'],
     queryFn: () => alertsAPI.getAll(),
     staleTime: 30_000,
     ...options,
+    // Must come AFTER ...options so SSE-connected state always wins.
+    refetchInterval: alertsConnected ? false : fallbackInterval,
   });
+};
 
 // ── Token / Rate Limit ──────────────���─────────────────────────────────────
 

@@ -295,7 +295,7 @@ function ScopeManagementPage() {
     if (loading) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 5, gap: 1.5 }}>
-          <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+          <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} />
           <Typography variant="body2" color="text.secondary">Loading scope data...</Typography>
         </Box>
       );
@@ -323,6 +323,10 @@ function ScopeManagementPage() {
                     '&:hover': { backgroundColor: 'action.hover' },
                   }}
                   onClick={() => handleSort(column.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(column.id); } }}
+                  tabIndex={0}
+                  role="columnheader"
+                  aria-sort={sortConfig.column === column.id ? (sortConfig.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography variant="subtitle2" fontWeight={600}>
@@ -391,7 +395,7 @@ function ScopeManagementPage() {
       {/* Page Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
             Site Configuration
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -416,12 +420,13 @@ function ScopeManagementPage() {
           <Tooltip title="Column Settings">
             <IconButton
               onClick={(e) => setColumnMenuAnchor(e.currentTarget)}
+              aria-label="Column settings"
             >
               <ViewColumnIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Refresh">
-            <IconButton onClick={fetchData}>
+            <IconButton onClick={fetchData} aria-label="Refresh data">
               <RefreshIcon />
             </IconButton>
           </Tooltip>

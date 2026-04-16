@@ -69,10 +69,10 @@ const PANEL_WIDTH_OPEN = 400;
 const PANEL_WIDTH_WIDE = 560;
 const TOPBAR_HEIGHT    = 64; // px — matches TopBar height
 
-const ORANGE      = '#FF6600';
-const PAPER_BG    = '#111827';
-const SURFACE_BG  = '#0D1117';
-const BORDER_CLR  = 'rgba(255,255,255,0.08)';
+const ORANGE      = 'var(--color-primary)';
+const PAPER_BG    = 'var(--bg-paper)';
+const SURFACE_BG  = 'var(--bg-surface-dark)';
+const BORDER_CLR  = 'var(--border-default)';
 
 // Quick-action suggestion chips shown when input is empty
 const SUGGESTION_CHIPS = [
@@ -84,30 +84,30 @@ const SUGGESTION_CHIPS = [
   'Help',
 ];
 
-// Intent badge colors — maps intent name prefix to a MUI color string
+// Intent badge colors — maps intent name prefix to a theme-aligned color
 const INTENT_COLORS = {
-  ap_status:          '#1976d2',
-  site_health:        '#388e3c',
-  site_list:          '#388e3c',
-  client_count:       '#7b1fa2',
-  clients_by_ssid:    '#7b1fa2',
-  client_by_mac:      '#7b1fa2',
-  find_client:        '#7b1fa2',
-  disconnect_client:  '#c62828',
-  alert_summary:      '#e65100',
-  firmware_status:    '#0288d1',
-  wlan_list:          '#00796b',
-  top_clients:        '#5d4037',
-  top_bandwidth:      '#5d4037',
-  device_inventory:   '#37474f',
-  device_status:      '#37474f',
-  switch_port_errors: '#6a1b9a',
-  bounce_ap:          '#c62828',
-  bounce_port:        '#c62828',
-  ack_alert:          '#e65100',
-  ping_test:          '#0277bd',
-  traceroute:         '#0277bd',
-  help:               '#546e7a',
+  ap_status:          'var(--color-secondary)',
+  site_health:        'var(--color-success)',
+  site_list:          'var(--color-success)',
+  client_count:       'var(--color-purple)',
+  clients_by_ssid:    'var(--color-purple)',
+  client_by_mac:      'var(--color-purple)',
+  find_client:        'var(--color-purple)',
+  disconnect_client:  'var(--color-error)',
+  alert_summary:      'var(--color-warning)',
+  firmware_status:    'var(--color-secondary)',
+  wlan_list:          '#06B6D4',
+  top_clients:        '#78716C',
+  top_bandwidth:      '#78716C',
+  device_inventory:   'var(--text-muted)',
+  device_status:      'var(--text-muted)',
+  switch_port_errors: '#A855F7',
+  bounce_ap:          'var(--color-error)',
+  bounce_port:        'var(--color-error)',
+  ack_alert:          'var(--color-warning)',
+  ping_test:          '#0EA5E9',
+  traceroute:         '#0EA5E9',
+  help:               'var(--text-muted)',
 };
 
 // ─── Animated "Thinking" dots ─────────────────────────────────────────────────
@@ -225,7 +225,7 @@ function MessageBubble({ msg }) {
     );
   }
 
-  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || '#546e7a') : null;
+  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || 'var(--text-muted)') : null;
 
   return (
     <Box
@@ -342,20 +342,35 @@ function ChatDrawer({ pageContext = '' }) {
   const [unreadReply, setUnreadReply] = useState(0);
   const [llmStatus,   setLlmStatus]   = useState({ available: false, model: null, model_ready: false });
 
-  const messagesEndRef = useRef(null);
-  const inputRef       = useRef(null);
+  const messagesEndRef  = useRef(null);
+  const inputRef        = useRef(null);
+  const sendControllerRef = useRef(null);
 
   // ── Fetch LLM status on mount ────────────────────────────────────────────
   useEffect(() => {
+    const controller = new AbortController();
     const checkLLM = async () => {
       try {
-        const res = await fetch(`${API_BASE}/chat/llm-status`);
+        const res = await fetch(`${API_BASE}/chat/llm-status`, {
+          signal: controller.signal,
+        });
         if (res.ok) setLlmStatus(await res.json());
-      } catch { /* Ollama not up yet */ }
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        /* Ollama not up yet */
+      }
     };
     checkLLM();
     const interval = setInterval(checkLLM, 30_000);
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, []);
+
+  // ── Abort pending send on unmount ────────────────────────────────────────
+  useEffect(() => {
+    return () => sendControllerRef.current?.abort();
   }, []);
 
   // ── Width calculation (right-side panel) ────────────────────────────────
@@ -421,6 +436,11 @@ function ChatDrawer({ pageContext = '' }) {
     setTimeout(() => inputRef.current?.focus(), 0);
 
     try {
+      // Abort any previous in-flight send request
+      sendControllerRef.current?.abort();
+      const controller = new AbortController();
+      sendControllerRef.current = controller;
+
       const sessionId = localStorage.getItem(SESSION_KEY);
       const headers   = { 'Content-Type': 'application/json' };
       if (sessionId) headers['X-Session-ID'] = sessionId;
@@ -435,6 +455,7 @@ function ChatDrawer({ pageContext = '' }) {
         method:  'POST',
         headers,
         body:    JSON.stringify({ message: text, context: pageContext, history }),
+        signal:  controller.signal,
       });
 
       if (!res.ok) {
@@ -466,6 +487,7 @@ function ChatDrawer({ pageContext = '' }) {
         });
       }
     } catch (err) {
+      if (err.name === 'AbortError') return;
       const errMsg = {
         id:      generateId(),
         role:    'system',
@@ -533,7 +555,10 @@ function ChatDrawer({ pageContext = '' }) {
       {/* ── Floating toggle button (visible when collapsed) ─────────────── */}
       {isCollapsed && (
         <Box
+          component="button"
+          type="button"
           onClick={() => { setDrawerState('half'); setUnreadReply(0); }}
+          aria-label={`Open network assistant${unreadReply > 0 ? `, ${unreadReply} unread` : ''}`}
           sx={{
             position:  'fixed',
             bottom:    24,
@@ -542,7 +567,8 @@ function ChatDrawer({ pageContext = '' }) {
             width:     56,
             height:    56,
             borderRadius: '50%',
-            background: `linear-gradient(135deg, ${ORANGE} 0%, #FF8C42 100%)`,
+            border:    'none',
+            background: `linear-gradient(135deg, ${ORANGE} 0%, var(--color-primary-light) 100%)`,
             boxShadow: '0 4px 20px rgba(255,102,0,0.55), 0 0 0 0 rgba(255,102,0,0.4)',
             display:   'flex',
             alignItems: 'center',
@@ -562,7 +588,7 @@ function ChatDrawer({ pageContext = '' }) {
             <Box sx={{
               position: 'absolute', top: -3, right: -3,
               width: 20, height: 20, borderRadius: '50%',
-              bgcolor: '#EF4444', border: '2px solid #0A0E1A',
+              bgcolor: 'var(--color-error)', border: '2px solid var(--bg-default)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
@@ -575,6 +601,9 @@ function ChatDrawer({ pageContext = '' }) {
 
       {/* ── Right-side chat panel ──────────────────────────────────────────── */}
       <Box
+        component="aside"
+        role="complementary"
+        aria-label="Network assistant chat"
         sx={{
           position:      'fixed',
           right:         0,
@@ -604,7 +633,7 @@ function ChatDrawer({ pageContext = '' }) {
         }}
       >
         <Box sx={{
-          width: 32, height: 32, borderRadius: '9px',
+          width: 32, height: 32, borderRadius: '8px',
           bgcolor: 'rgba(255,102,0,0.15)',
           border: '1.5px solid rgba(255,102,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -614,7 +643,7 @@ function ChatDrawer({ pageContext = '' }) {
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.85rem', color: '#F1F5F9' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
               Network Assistant
             </Typography>
             {llmStatus.available && (
@@ -622,16 +651,16 @@ function ChatDrawer({ pageContext = '' }) {
                 label={llmStatus.model_ready ? (llmStatus.model || 'AI') : 'Loading…'}
                 size="small"
                 sx={{
-                  height: 15, fontSize: '0.58rem', fontWeight: 700,
+                  height: 15, fontSize: '0.6rem', fontWeight: 700,
                   bgcolor: llmStatus.model_ready ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-                  color:   llmStatus.model_ready ? '#22C55E' : '#F59E0B',
+                  color:   llmStatus.model_ready ? 'var(--color-success)' : 'var(--color-warning)',
                   border:  `1px solid ${llmStatus.model_ready ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
                   borderRadius: '4px', '& .MuiChip-label': { px: 0.6 },
                 }}
               />
             )}
           </Box>
-          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.65rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
             {llmStatus.available && llmStatus.model_ready ? `AI · ${llmStatus.model}` : 'Aruba Central API'}
           </Typography>
         </Box>
@@ -787,6 +816,7 @@ function ChatDrawer({ pageContext = '' }) {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask about your network... (Enter to send, Shift+Enter for newline)"
+              aria-label="Chat message"
               multiline
               maxRows={3}
               fullWidth
@@ -813,15 +843,15 @@ function ChatDrawer({ pageContext = '' }) {
                   onClick={sendMessage}
                   disabled={!inputValue.trim() || isLoading}
                   sx={{
-                    bgcolor:   inputValue.trim() && !isLoading ? ORANGE : 'rgba(255,255,255,0.08)',
+                    bgcolor:   inputValue.trim() && !isLoading ? ORANGE : 'var(--border-default)',
                     color:     '#fff',
                     width:     36,
                     height:    36,
                     flexShrink: 0,
                     '&:hover': {
                       bgcolor: inputValue.trim() && !isLoading
-                        ? '#e65c00'
-                        : 'rgba(255,255,255,0.12)',
+                        ? 'var(--color-primary-hover)'
+                        : 'rgba(255,255,255,0.10)',
                     },
                     '&.Mui-disabled': {
                       color:  'rgba(255,255,255,0.3)',
