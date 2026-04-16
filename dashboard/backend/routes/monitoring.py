@@ -1040,6 +1040,10 @@ def get_firewall_sessions():
         response = aruba_client.get("/network-monitoring/v1/firewall/sessions", params=params)
         return jsonify(response)
     except Exception as e:
+        sc = getattr(e, 'status_code', None)
+        if sc in (400, 404) or any(x in str(e) for x in ('404', 'Not Found', 'Route Not Found')):
+            logger.warning(f"Firewall sessions endpoint unavailable: {e}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching firewall sessions: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1064,6 +1068,10 @@ def get_idps_events():
         response = aruba_client.get("/network-monitoring/v1/idps/events", params=params)
         return jsonify(response)
     except Exception as e:
+        sc = getattr(e, 'status_code', None)
+        if sc in (400, 404) or any(x in str(e) for x in ('404', 'Not Found', 'Route Not Found')):
+            logger.warning(f"IDPS events endpoint unavailable: {e}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching IDPS events: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1142,20 +1150,10 @@ def get_top_applications():
         try:
             apps_response = aruba_client.get("/network-monitoring/v1/applications", params=params)
         except Exception as apps_err:
-            try:
-                from requests.exceptions import HTTPError
-
-                if (
-                    isinstance(apps_err, HTTPError)
-                    and getattr(apps_err, "response", None) is not None
-                    and apps_err.response.status_code in (400, 404)
-                ):
-                    logger.warning(
-                        f"Applications endpoint unavailable/invalid params (status {apps_err.response.status_code}); returning empty list"
-                    )
-                    return jsonify({"count": 0, "items": []})
-            except Exception:
-                pass
+            sc = getattr(apps_err, 'status_code', None)
+            if sc in (400, 404) or any(x in str(apps_err) for x in ('400', '404', 'Not Found', 'Bad Request', 'Route Not Found')):
+                logger.warning(f"Applications endpoint unavailable/bad params: {apps_err}")
+                return jsonify({"count": 0, "items": []})
             raise apps_err
 
         # Extract list safely
@@ -1529,6 +1527,10 @@ def get_monitoring_sites():
         response = aruba_client.get("/network-monitoring/v1/sites", params=params)
         return jsonify(response or {"result": []})
     except Exception as e:
+        sc = getattr(e, 'status_code', None)
+        if sc in (400, 404) or any(x in str(e) for x in ('404', 'Not Found', 'Route Not Found')):
+            logger.warning(f"Monitoring sites endpoint unavailable: {e}")
+            return jsonify({"result": [], "count": 0})
         logger.error(f"Error fetching monitoring sites: {e}")
         return jsonify({"error": str(e)}), 500
 

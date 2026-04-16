@@ -562,6 +562,10 @@ def get_acls():
         response = aruba_client.get("/network-config/v1alpha1/role-acl", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
+        sc = getattr(e, 'status_code', None)
+        if sc in (400, 404) or any(x in str(e) for x in ('404', 'Not Found', 'Bad Request')):
+            logger.warning(f"ACL endpoint unavailable: {e}")
+            return jsonify({"items": [], "count": 0})
         logger.error(f"Error fetching ACLs: {e}")
         return jsonify({"error": "Failed to fetch ACL configuration"}), 500
 
@@ -1358,10 +1362,12 @@ def get_mac_registrations():
         response = aruba_client.get("/network-config/v1alpha1/nac/mac-registration", params=params)
         return jsonify(response)
     except Exception as e:
-        logger.error(f"Error fetching MAC registrations: {e}")
+        sc = getattr(e, 'status_code', None)
         err = str(e)
-        if "404" in err or "Not Found" in err:
+        if sc in (400, 404) or any(x in err for x in ('404', 'Not Found', 'Invalid module', 'module name', 'Bad Request')):
+            logger.warning(f"MAC registrations endpoint unavailable: {e}")
             return jsonify({"items": [], "count": 0, "total": 0})
+        logger.error(f"Error fetching MAC registrations: {e}")
         return jsonify({"error": err}), 500
 
 
