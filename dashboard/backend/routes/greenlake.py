@@ -9,15 +9,18 @@ Extracted from app.py — covers:
   /api/grafana/
 """
 
-import os
 import hmac
-import time
+import json
 import logging
+import os
+import queue
+import threading
+import time
 from functools import wraps
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, Response, jsonify, request, stream_with_context
 
-from .helpers import require_session, cached_get
+from .helpers import cached_get, cached_get_paginated, require_session
 
 greenlake_bp = Blueprint("greenlake", __name__)
 logger = logging.getLogger(__name__)
@@ -272,6 +275,146 @@ def acknowledge_alert(alert_id):
         return jsonify({"error": str(e)}), 500
 
 
+# ── SSE Alert Stream ────────────────────────────────────────────────────────
+# Server-side polling (every 15s) with diff-based push to connected clients.
+# Saves ~2,880 API calls/day per browser client vs 30s frontend polling.
+
+_alert_stream_subscribers: set = set()
+_alert_stream_lock = threading.Lock()
+_alert_last_snapshot: list = []
+_alert_snapshot_lock = threading.Lock()
+_alert_poller_started = False
+_alert_poller_lock = threading.Lock()
+
+
+def _fetch_alerts_snapshot():
+    """Fetch current alerts from Aruba Central and return normalised list."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    if not aruba_client:
+        return []
+
+    for ep in ["/network-notifications/v1/alerts", "/network-notifications/v1alpha1/alerts"]:
+        try:
+            response = aruba_client.get(ep, params={"limit": 100})
+            raw_alerts = response.get("alerts", response.get("items", []))
+            return [_normalize_alert(a) for a in raw_alerts]
+        except Exception:
+            continue
+    return []
+
+
+def _alerts_differ(old_alerts, new_alerts):
+    """Check whether two alert snapshots differ (by id set + count)."""
+    old_ids = {a.get("id") or a.get("alertId") or i for i, a in enumerate(old_alerts)}
+    new_ids = {a.get("id") or a.get("alertId") or i for i, a in enumerate(new_alerts)}
+    return old_ids != new_ids or len(old_alerts) != len(new_alerts)
+
+
+def _alert_poller_loop():
+    """Background thread: poll Central every 15s and fan-out diffs to SSE clients."""
+    global _alert_last_snapshot
+    logger.info("Alert SSE poller started")
+    while True:
+        try:
+            new_snapshot = _fetch_alerts_snapshot()
+            with _alert_snapshot_lock:
+                changed = _alerts_differ(_alert_last_snapshot, new_snapshot)
+                if changed:
+                    _alert_last_snapshot = new_snapshot
+
+            if changed:
+                payload = json.dumps({
+                    "alerts": new_snapshot,
+                    "total": len(new_snapshot),
+                    "timestamp": time.time(),
+                })
+                with _alert_stream_lock:
+                    dead = set()
+                    for q in _alert_stream_subscribers:
+                        try:
+                            q.put_nowait(("alert", payload))
+                        except queue.Full:
+                            dead.add(q)
+                    _alert_stream_subscribers.difference_update(dead)
+        except Exception as e:
+            logger.error(f"Alert poller error: {e}")
+
+        time.sleep(15)
+
+
+def _ensure_alert_poller():
+    """Start the background alert poller thread exactly once."""
+    global _alert_poller_started
+    with _alert_poller_lock:
+        if not _alert_poller_started:
+            _alert_poller_started = True
+            t = threading.Thread(target=_alert_poller_loop, daemon=True, name="alert-sse-poller")
+            t.start()
+
+
+@greenlake_bp.route("/api/alerts/stream")
+def stream_alerts():
+    """SSE endpoint for real-time alert updates.
+
+    Authenticates via X-Session-ID header or ?session= query param.
+    Events:
+      - event: alert   — full alert snapshot whenever alerts change
+      - event: heartbeat — keepalive every 20s
+    """
+    import app as _app
+
+    # Auth check
+    session_id = request.headers.get("X-Session-ID") or request.args.get("session")
+    if not session_id or session_id not in _app.active_sessions:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # Ensure background poller is running
+    _ensure_alert_poller()
+
+    # Grab current snapshot for immediate send
+    with _alert_snapshot_lock:
+        initial = list(_alert_last_snapshot)
+
+    def generate():
+        # Send initial snapshot immediately so the client has data on connect
+        initial_payload = json.dumps({
+            "alerts": initial,
+            "total": len(initial),
+            "timestamp": time.time(),
+        })
+        yield f"event: alert\ndata: {initial_payload}\n\n"
+
+        # Register this client's queue
+        q: queue.Queue = queue.Queue(maxsize=200)
+        with _alert_stream_lock:
+            _alert_stream_subscribers.add(q)
+        try:
+            while True:
+                try:
+                    event_type, payload = q.get(timeout=20)
+                    yield f"event: {event_type}\ndata: {payload}\n\n"
+                except queue.Empty:
+                    # Send heartbeat to keep connection alive
+                    yield f"event: heartbeat\ndata: {json.dumps({'ts': time.time()})}\n\n"
+        except GeneratorExit:
+            pass
+        finally:
+            with _alert_stream_lock:
+                _alert_stream_subscribers.discard(q)
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
+
 @greenlake_bp.route("/api/events", methods=["GET"])
 @require_session
 def get_events():
@@ -477,7 +620,7 @@ def get_clients_trend():
 @greenlake_bp.route("/api/greenlake/users", methods=["GET"])
 @require_session
 def greenlake_list_users():
-    """List users from HPE GreenLake Identity service."""
+    """List users from HPE GreenLake Identity service (auto-paginated)."""
     try:
         client = _get_greenlake_client()
         if not client:
@@ -489,12 +632,19 @@ def greenlake_list_users():
             params["filter"] = filter_str
         offset = request.args.get("offset")
         limit = request.args.get("limit")
-        if offset is not None:
-            params["offset"] = offset
-        if limit is not None:
-            params["limit"] = limit
-        data = client.get("/identity/v1/users", params=params)
-        return jsonify(data)
+        # If explicit pagination params provided, do a single-page fetch
+        if offset is not None or limit is not None:
+            if offset is not None:
+                params["offset"] = offset
+            if limit is not None:
+                params["limit"] = limit
+            data = client.get("/identity/v1/users", params=params)
+            return jsonify(data)
+        # Auto-paginate to collect all users
+        all_items = client.get_all_paginated(
+            "/identity/v1/users", params=params, max_pages=10, page_size=100
+        )
+        return jsonify({"items": all_items, "count": len(all_items), "total": len(all_items)})
     except Exception as e:
         logger.error(f"GreenLake users fetch error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -552,22 +702,27 @@ def greenlake_user_detail(user_id):
 @greenlake_bp.route("/api/greenlake/devices", methods=["GET"])
 @require_session
 def greenlake_list_devices():
-    """List devices from HPE GreenLake Device Management."""
+    """List devices from HPE GreenLake Device Management (auto-paginated)."""
     try:
         client = _get_greenlake_client()
         if not client:
             return jsonify({"error": "GreenLake RBAC not configured"}), 400
         params = {}
-        # pagination
+        # If explicit pagination params provided, do a single-page fetch
         offset = request.args.get("offset")
         limit = request.args.get("limit")
-        if offset is not None:
-            params["offset"] = offset
-        if limit is not None:
-            params["limit"] = limit
-        # v1 devices list
-        data = client.get("/devices/v1/devices", params=params)
-        return jsonify(data)
+        if offset is not None or limit is not None:
+            if offset is not None:
+                params["offset"] = offset
+            if limit is not None:
+                params["limit"] = limit
+            data = client.get("/devices/v1/devices", params=params)
+            return jsonify(data)
+        # Auto-paginate to collect all devices
+        all_items = client.get_all_paginated(
+            "/devices/v1/devices", params=params, max_pages=10, page_size=100
+        )
+        return jsonify({"items": all_items, "count": len(all_items), "total": len(all_items)})
     except Exception as e:
         logger.error(f"GreenLake devices fetch error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -660,20 +815,27 @@ def greenlake_delete_tag(tag_id):
 @greenlake_bp.route("/api/greenlake/subscriptions", methods=["GET"])
 @require_session
 def greenlake_list_subscriptions():
-    """List subscriptions from HPE GreenLake Subscription Management."""
+    """List subscriptions from HPE GreenLake Subscription Management (auto-paginated)."""
     try:
         client = _get_greenlake_client()
         if not client:
             return jsonify({"error": "GreenLake RBAC not configured"}), 400
         params = {}
+        # If explicit pagination params provided, do a single-page fetch
         offset = request.args.get("offset")
         limit = request.args.get("limit")
-        if offset is not None:
-            params["offset"] = offset
-        if limit is not None:
-            params["limit"] = limit
-        data = client.get("/subscriptions/v1/subscriptions", params=params)
-        return jsonify(data)
+        if offset is not None or limit is not None:
+            if offset is not None:
+                params["offset"] = offset
+            if limit is not None:
+                params["limit"] = limit
+            data = client.get("/subscriptions/v1/subscriptions", params=params)
+            return jsonify(data)
+        # Auto-paginate to collect all subscriptions
+        all_items = client.get_all_paginated(
+            "/subscriptions/v1/subscriptions", params=params, max_pages=10, page_size=100
+        )
+        return jsonify({"items": all_items, "count": len(all_items), "total": len(all_items)})
     except Exception as e:
         logger.error(f"GreenLake subscriptions fetch error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -839,21 +1001,46 @@ def greenlake_msp_token_transfer():
 @greenlake_bp.route("/api/greenlake/locations", methods=["GET"])
 @require_session
 def greenlake_list_locations():
-    """List locations from HPE GreenLake Locations service."""
+    """List locations from HPE GreenLake Locations service (auto-paginated)."""
     try:
         client = _get_greenlake_client()
         if not client:
             return jsonify({"error": "GreenLake RBAC not configured"}), 400
         params = {}
+        # If explicit pagination params provided, do a single-page fetch
         offset = request.args.get("offset")
         limit = request.args.get("limit")
-        if offset is not None:
-            params["offset"] = offset
-        if limit is not None:
-            params["limit"] = limit
+        if offset is not None or limit is not None:
+            if offset is not None:
+                params["offset"] = offset
+            if limit is not None:
+                params["limit"] = limit
+            try:
+                data = client.get("/locations/v1/locations", params=params)
+                return jsonify(data)
+            except Exception as e:
+                err = str(e)
+                if (
+                    "404" in err
+                    or "Not Found" in err
+                    or "400" in err
+                    or "Bad Request" in err
+                    or "403" in err
+                    or "Unauthorized" in err
+                ):
+                    return (
+                        jsonify(
+                            {"items": [], "count": 0, "error": "GreenLake Locations not available"}
+                        ),
+                        404,
+                    )
+                return jsonify({"items": [], "count": 0})
+        # Auto-paginate to collect all locations
         try:
-            data = client.get("/locations/v1/locations", params=params)
-            return jsonify(data)
+            all_items = client.get_all_paginated(
+                "/locations/v1/locations", params=params, max_pages=10, page_size=100
+            )
+            return jsonify({"items": all_items, "count": len(all_items), "total": len(all_items)})
         except Exception as e:
             err = str(e)
             if (

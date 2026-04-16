@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { alertsAPI } from '../services/api';
 import { getErrorMessage } from '../utils/errorUtils';
+import { useAlertSSE } from '../components/EventFeedProvider';
 
 function AlertsPage() {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,9 @@ function AlertsPage() {
   const [events, setEvents] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
+  // SSE real-time alert updates (when on page 1 and connected)
+  const { alerts: sseAlerts, alertsConnected } = useAlertSSE();
+
   useEffect(() => {
     fetchAlerts(alertsPage);
   }, [alertsPage]);
@@ -53,6 +57,22 @@ function AlertsPage() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  // When SSE pushes new alerts and we're on page 1, update the display
+  // in real-time without needing a manual refresh.
+  useEffect(() => {
+    if (sseAlerts && alertsConnected && alertsPage === 1) {
+      const sseAlertList = sseAlerts.alerts || [];
+      if (sseAlertList.length > 0) {
+        setAlerts(sseAlertList.slice(0, 10));
+        setAlertsTotal(sseAlerts.total || sseAlertList.length);
+        if (sseAlertList[0]?._raw_keys) {
+          setRawKeys(sseAlertList[0]._raw_keys);
+        }
+        setLoading(false);
+      }
+    }
+  }, [sseAlerts, alertsConnected, alertsPage]);
 
   const fetchAlerts = async (page) => {
     try {
