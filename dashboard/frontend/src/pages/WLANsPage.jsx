@@ -519,10 +519,10 @@ function WLANsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Total WLANs
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>{wlans.length}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-primary)' }}>{wlans.length}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <WifiIcon sx={{ fontSize: 20, color: '#FF6600' }} />
+                  <WifiIcon sx={{ fontSize: 20, color: 'var(--color-primary)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -537,10 +537,10 @@ function WLANsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Enabled
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#22C55E' }}>{enabledCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-success)' }}>{enabledCount}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <SignalIcon sx={{ fontSize: 20, color: '#22C55E' }} />
+                  <SignalIcon sx={{ fontSize: 20, color: 'var(--color-success)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -555,10 +555,10 @@ function WLANsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Bridge Mode
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#3B82F6' }}>{bridgeCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-secondary)' }}>{bridgeCount}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <LanIcon sx={{ fontSize: 20, color: '#3B82F6' }} />
+                  <LanIcon sx={{ fontSize: 20, color: 'var(--color-secondary)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -573,10 +573,10 @@ function WLANsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Tunnel Mode
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B5CF6' }}>{tunnelCount}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-purple)' }}>{tunnelCount}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(139,92,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <RouterIcon sx={{ fontSize: 20, color: '#8B5CF6' }} />
+                  <RouterIcon sx={{ fontSize: 20, color: 'var(--color-purple)' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -687,7 +687,7 @@ function WLANsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                      <WifiIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <WifiIcon sx={{ fontSize: 40, color: 'var(--border-default)', mb: 1.5 }} />
                       <Typography variant="body2" color="text.secondary" display="block">
                         No WLANs configured
                       </Typography>

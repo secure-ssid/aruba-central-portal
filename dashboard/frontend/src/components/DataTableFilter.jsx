@@ -121,7 +121,7 @@ function DataTableFilter({
             <IconButton
               onClick={handleSortClick}
               sx={{
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--border-default)',
                 '&:hover': {
                   borderColor: 'primary.main',
                 },
@@ -138,7 +138,7 @@ function DataTableFilter({
             <IconButton
               onClick={handleFilterClick}
               sx={{
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--border-default)',
                 '&:hover': {
                   borderColor: 'primary.main',
                 },
@@ -155,7 +155,7 @@ function DataTableFilter({
             <IconButton
               onClick={handleExportClick}
               sx={{
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--border-default)',
                 '&:hover': {
                   borderColor: 'primary.main',
                 },

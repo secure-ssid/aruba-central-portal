@@ -43,6 +43,7 @@ import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } 
  */
 const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loading, trend, trendValue, subtitle, onClick }) {
   // Map theme color names to actual colors
+  // NOTE: hex values required here because they are used with opacity suffixes (e.g. `${color}08`)
   const colorMap = useMemo(() => ({
     'primary': '#FF6600',
     'info': '#3B82F6',
@@ -59,7 +60,7 @@ const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loa
       sx={{
         height: '100%',
         background: `linear-gradient(135deg, ${actualColor}08 0%, transparent 100%)`,
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: '1px solid var(--border-subtle)',
         cursor: onClick ? 'pointer' : 'default',
         '&:hover': onClick ? {
           transform: 'translateY(-2px)',
@@ -138,13 +139,13 @@ const QuickLink = memo(function QuickLink({ title, description, icon: Icon, onCl
       }}
     >
       <Box sx={{ width: 36, height: 36, borderRadius: '8px', bgcolor: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {Icon && <Icon sx={{ fontSize: 18, color: '#94A3B8' }} />}
+        {Icon && <Icon sx={{ fontSize: 18, color: 'var(--text-secondary)' }} />}
       </Box>
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem' }}>{title}</Typography>
         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>{description}</Typography>
       </Box>
-      <ArrowForwardIcon className="quick-arrow" sx={{ fontSize: 16, color: '#475569', opacity: 0, transform: 'translateX(-4px)', transition: 'all 0.15s ease' }} />
+      <ArrowForwardIcon className="quick-arrow" sx={{ fontSize: 16, color: 'var(--text-disabled)', opacity: 0, transform: 'translateX(-4px)', transition: 'all 0.15s ease' }} />
     </Box>
   );
 });
@@ -258,14 +259,14 @@ function DashboardPage() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {refreshing && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CircularProgress size={16} sx={{ color: '#475569' }} />
+              <CircularProgress size={16} sx={{ color: 'var(--text-disabled)' }} />
               <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.7rem' }}>
                 Refreshing
               </Typography>
             </Box>
           )}
           <Tooltip title="Refresh all data">
-            <IconButton size="small" onClick={handleRefresh} sx={{ color: '#64748B', '&:hover': { color: '#94A3B8' } }}>
+            <IconButton size="small" onClick={handleRefresh} sx={{ color: 'var(--text-muted)', '&:hover': { color: 'var(--text-secondary)' } }}>
               <RefreshIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
@@ -346,7 +347,7 @@ function DashboardPage() {
       <Grid container spacing={2.5}>
         {/* Device Distribution */}
         <Grid item xs={12} md={5}>
-          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <Card sx={{ height: '100%', border: '1px solid var(--border-subtle)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem' }}>
@@ -359,6 +360,7 @@ function DashboardPage() {
               {(() => {
                 const total = stats.switches + stats.accessPoints + stats.gateways || 1;
                 const items = [
+                  // NOTE: hex values required here because they are used with opacity suffixes and Recharts fill
                   { label: 'Switches', value: stats.switches, color: '#3B82F6', icon: <RouterIcon sx={{ fontSize: 16 }} /> },
                   { label: 'Access Points', value: stats.accessPoints, color: '#8B5CF6', icon: <WifiIcon sx={{ fontSize: 16 }} /> },
                   { label: 'Gateways', value: stats.gateways, color: '#F59E0B', icon: <DevicesIcon sx={{ fontSize: 16 }} /> },
@@ -385,7 +387,7 @@ function DashboardPage() {
                               ))}
                             </Pie>
                             <RechartsTooltip
-                              contentStyle={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }}
+                              contentStyle={{ background: 'var(--bg-paper)', border: '1px solid var(--border-default)', borderRadius: 8, fontSize: 12 }}
                               formatter={(value, name) => [value, name]}
                             />
                           </PieChart>
@@ -434,7 +436,7 @@ function DashboardPage() {
 
         {/* System Status */}
         <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <Card sx={{ height: '100%', border: '1px solid var(--border-subtle)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem', mb: 2.5 }}>
                 System Status
@@ -452,18 +454,18 @@ function DashboardPage() {
                 border: error ? '1px solid rgba(239,68,68,0.12)' : '1px solid rgba(34,197,94,0.12)',
               }}>
                 <Box sx={{ position: 'relative', display: 'flex' }}>
-                  <SignalCellularAltIcon sx={{ fontSize: 28, color: error ? '#EF4444' : '#22C55E' }} />
+                  <SignalCellularAltIcon sx={{ fontSize: 28, color: error ? 'var(--color-error)' : 'var(--color-success)' }} />
                   {!error && (
                     <Box sx={{
                       position: 'absolute', top: -1, right: -1, width: 8, height: 8,
-                      borderRadius: '50%', bgcolor: '#22C55E',
+                      borderRadius: '50%', bgcolor: 'var(--color-success)',
                       boxShadow: '0 0 6px rgba(34,197,94,0.5)',
                       animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
                     }} />
                   )}
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem', color: error ? '#EF4444' : '#22C55E' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem', color: error ? 'var(--color-error)' : 'var(--color-success)' }}>
                     {error ? 'Connection Issue' : 'All Systems Operational'}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
@@ -516,7 +518,7 @@ function DashboardPage() {
 
         {/* Quick Navigation */}
         <Grid item xs={12} md={3}>
-          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <Card sx={{ height: '100%', border: '1px solid var(--border-subtle)' }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem', mb: 1.5 }}>
                 Quick Access

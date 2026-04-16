@@ -82,7 +82,7 @@ function FirmwarePage() {
                     {compliance?.compliant || 'N/A'}
                   </Typography>
                 </Box>
-                <CheckCircleIcon sx={{ fontSize: 40, color: '#22C55E' }} />
+                <CheckCircleIcon sx={{ fontSize: 40, color: 'var(--color-success)' }} />
               </Box>
             </CardContent>
           </Card>
@@ -100,7 +100,7 @@ function FirmwarePage() {
                     {compliance?.non_compliant || 'N/A'}
                   </Typography>
                 </Box>
-                <WarningIcon sx={{ fontSize: 40, color: '#F59E0B' }} />
+                <WarningIcon sx={{ fontSize: 40, color: 'var(--color-warning)' }} />
               </Box>
             </CardContent>
           </Card>
@@ -118,7 +118,7 @@ function FirmwarePage() {
                     {compliance?.scheduled || 0}
                   </Typography>
                 </Box>
-                <SystemUpdateIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <SystemUpdateIcon sx={{ fontSize: 40, color: 'var(--color-primary)' }} />
               </Box>
             </CardContent>
           </Card>

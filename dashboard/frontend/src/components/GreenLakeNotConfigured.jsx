@@ -37,18 +37,18 @@ export default function GreenLakeNotConfigured() {
           mb: 2,
         }}
       >
-        <CloudOffIcon sx={{ fontSize: 28, color: '#F59E0B' }} />
+        <CloudOffIcon sx={{ fontSize: 28, color: 'var(--color-warning)' }} />
       </Box>
       <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, fontSize: '1rem' }}>
         GreenLake Integration Not Configured
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 420, mx: 'auto', lineHeight: 1.6 }}>
         This feature requires GreenLake RBAC credentials. Set the{' '}
-        <Typography component="code" variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#F59E0B', bgcolor: 'rgba(245,158,11,0.08)', px: 0.5, py: 0.15, borderRadius: '4px' }}>
+        <Typography component="code" variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--color-warning)', bgcolor: 'rgba(245,158,11,0.08)', px: 0.5, py: 0.15, borderRadius: '4px' }}>
           GL_RBAC_CLIENT_ID
         </Typography>{' '}
         and{' '}
-        <Typography component="code" variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#F59E0B', bgcolor: 'rgba(245,158,11,0.08)', px: 0.5, py: 0.15, borderRadius: '4px' }}>
+        <Typography component="code" variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--color-warning)', bgcolor: 'rgba(245,158,11,0.08)', px: 0.5, py: 0.15, borderRadius: '4px' }}>
           GL_RBAC_CLIENT_SECRET
         </Typography>{' '}
         environment variables and restart the backend.
@@ -59,7 +59,7 @@ export default function GreenLakeNotConfigured() {
         startIcon={<SettingsIcon sx={{ fontSize: 16 }} />}
         sx={{
           borderColor: 'rgba(245,158,11,0.3)',
-          color: '#F59E0B',
+          color: 'var(--color-warning)',
           fontWeight: 600,
           fontSize: '0.75rem',
           '&:hover': {

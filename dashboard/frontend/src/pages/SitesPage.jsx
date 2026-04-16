@@ -501,7 +501,7 @@ function SitesPage() {
                   </Typography>
                   <Typography variant="h4">{total || sites.length}</Typography>
                 </Box>
-                <LocationOnIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <LocationOnIcon sx={{ fontSize: 40, color: 'var(--color-primary)' }} />
               </Box>
             </CardContent>
           </Card>

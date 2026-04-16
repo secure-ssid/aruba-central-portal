@@ -237,7 +237,7 @@ function WirelessPage() {
         <CardContent>
           {loading ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 5, gap: 1.5 }} role="status" aria-live="polite">
-              <CircularProgress size={28} sx={{ color: '#FF6600' }} aria-label="Loading wireless configuration" />
+              <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} aria-label="Loading wireless configuration" />
               <Typography variant="body2" color="text.secondary">Loading wireless configuration...</Typography>
             </Box>
           ) : sortedData.length === 0 ? (

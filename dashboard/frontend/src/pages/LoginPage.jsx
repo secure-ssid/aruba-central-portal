@@ -51,7 +51,7 @@ function LoginPage({ onLogin }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 100%)',
+        background: 'linear-gradient(135deg, var(--bg-default) 0%, var(--bg-paper) 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -66,8 +66,8 @@ function LoginPage({ onLogin }) {
           bottom: 0,
           opacity: 0.07,
           background: `
-            radial-gradient(ellipse at 30% 50%, #FF6600 0%, transparent 60%),
-            radial-gradient(ellipse at 70% 70%, #FF6600 0%, transparent 60%)
+            radial-gradient(ellipse at 30% 50%, var(--color-primary) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 70%, var(--color-primary) 0%, transparent 60%)
           `,
         }}
       />
@@ -79,7 +79,7 @@ function LoginPage({ onLogin }) {
           mx: 2,
           position: 'relative',
           zIndex: 1,
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid var(--border-default)',
         }}
       >
         <CardContent sx={{ p: 4 }}>
@@ -90,7 +90,7 @@ function LoginPage({ onLogin }) {
                 width: 64,
                 height: 64,
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -109,7 +109,7 @@ function LoginPage({ onLogin }) {
             gutterBottom
             sx={{
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #FF6600 0%, #FF9933 100%)',
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, #FF9933 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -155,10 +155,10 @@ function LoginPage({ onLogin }) {
               mb: 3,
               borderRadius: '8px',
               bgcolor: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              border: '1px solid var(--border-subtle)',
             }}
           >
-            <SecurityIcon sx={{ fontSize: 18, color: '#64748B', flexShrink: 0 }} />
+            <SecurityIcon sx={{ fontSize: 18, color: 'var(--text-muted)', flexShrink: 0 }} />
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
               Authenticated via server-side OAuth2 credentials. No password required.
             </Typography>
@@ -176,10 +176,10 @@ function LoginPage({ onLogin }) {
               py: 1.75,
               fontSize: '1rem',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
               boxShadow: '0 6px 24px rgba(255,102,0,0.4)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #E55A00 0%, #FF6600 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%)',
                 boxShadow: '0 8px 32px rgba(255,102,0,0.5)',
                 transform: 'translateY(-1px)',
               },
@@ -212,7 +212,7 @@ function LoginPage({ onLogin }) {
           </Button>
 
           {/* Footer — minimal */}
-          <Box sx={{ mt: 4, pt: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Box sx={{ mt: 4, pt: 2.5, borderTop: '1px solid var(--border-subtle)' }}>
             <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ fontSize: '0.7rem', mb: 1.5 }}>
               Version 2.0.0
             </Typography>

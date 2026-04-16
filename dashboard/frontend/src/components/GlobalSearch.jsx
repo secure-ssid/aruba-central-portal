@@ -143,7 +143,7 @@ function GlobalSearch({ open, onClose }) {
       }}
     >
       <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ p: 2, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <Box sx={{ p: 2, borderBottom: '1px solid var(--border-default)' }}>
           <TextField
             autoFocus
             fullWidth

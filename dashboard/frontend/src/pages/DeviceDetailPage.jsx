@@ -298,7 +298,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4, gap: 1.5 }}>
-        <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+        <CircularProgress size={20} sx={{ color: 'var(--color-primary)' }} />
         <Typography variant="body2" color="text.secondary">
           Loading port information...
         </Typography>
@@ -1724,7 +1724,7 @@ function DeviceDetailPage() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 8, gap: 2 }}>
-        <CircularProgress sx={{ color: '#FF6600' }} />
+        <CircularProgress sx={{ color: 'var(--color-primary)' }} />
         <Typography variant="body2" color="text.secondary">
           Loading device details...
         </Typography>

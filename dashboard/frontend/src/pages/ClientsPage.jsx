@@ -471,15 +471,15 @@ function ClientsPage() {
               onClick={() => handleStatusClick('disconnected')}
               sx={{
                 ...(selectedStatus === 'disconnected' && {
-                  backgroundColor: '#F59E0B',
+                  backgroundColor: 'var(--color-warning)',
                   color: 'white',
                   '&:hover': {
                     backgroundColor: '#D97706',
                   },
                 }),
                 ...(selectedStatus !== 'disconnected' && {
-                  borderColor: '#F59E0B',
-                  color: '#F59E0B',
+                  borderColor: 'var(--color-warning)',
+                  color: 'var(--color-warning)',
                   '&:hover': {
                     borderColor: '#D97706',
                     backgroundColor: 'rgba(245, 158, 11, 0.04)',
@@ -505,17 +505,17 @@ function ClientsPage() {
               startIcon={selectedTypes.includes('wireless') && <CheckCircleIcon />}
               sx={{
                 ...(selectedTypes.includes('wireless') && {
-                  backgroundColor: '#FF6600',
+                  backgroundColor: 'var(--color-primary)',
                   color: 'white',
                   '&:hover': {
-                    backgroundColor: '#CC4E00',
+                    backgroundColor: 'var(--color-primary-dark)',
                   },
                 }),
                 ...(!selectedTypes.includes('wireless') && {
-                  borderColor: '#FF6600',
-                  color: '#FF6600',
+                  borderColor: 'var(--color-primary)',
+                  color: 'var(--color-primary)',
                   '&:hover': {
-                    borderColor: '#CC4E00',
+                    borderColor: 'var(--color-primary-dark)',
                     backgroundColor: 'rgba(255, 102, 0, 0.04)',
                   },
                 }),
@@ -942,10 +942,10 @@ function ClientsPage() {
                 const isDisconnected = status === 'disconnected';
                 const experience = client.experience || 'Good';
 
-                const statusColor = isConnected ? '#22C55E'
-                  : isFailed ? '#EF4444'
-                  : (isConnecting || isDisconnected) ? '#F59E0B'
-                  : '#94A3B8';
+                const statusColor = isConnected ? 'var(--color-success)'
+                  : isFailed ? 'var(--color-error)'
+                  : (isConnecting || isDisconnected) ? 'var(--color-warning)'
+                  : 'var(--text-secondary)';
 
                 const clientKind = getClientConnectionKind(client);
                 const clientType = clientKind;
@@ -1003,7 +1003,7 @@ function ClientsPage() {
                         icon={clientType === 'wireless' ? <WifiIcon /> : <CableIcon />}
                         sx={{
                           ...(clientType === 'wireless' && {
-                            backgroundColor: '#FF6600',
+                            backgroundColor: 'var(--color-primary)',
                             color: 'white',
                             '& .MuiChip-icon': {
                               color: 'white',
@@ -1018,7 +1018,7 @@ function ClientsPage() {
                           }),
                           ...(clientType !== 'wireless' && clientType !== 'wired' && {
                             backgroundColor: 'rgba(148, 163, 184, 0.15)',
-                            color: '#94A3B8',
+                            color: 'var(--text-secondary)',
                           }),
                         }}
                       />

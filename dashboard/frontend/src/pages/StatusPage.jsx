@@ -44,6 +44,7 @@ import { healthAPI, tokenAPI, deviceAPI, alertsAPI } from '../services/api';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+// NOTE: hex values required here because they are used with opacity suffixes (e.g. `${GREEN}30`)
 const ACCENT = '#FF6600';
 const GREEN = '#22C55E';
 const RED = '#EF4444';
@@ -121,10 +122,10 @@ const HealthCard = memo(function HealthCard({ title, icon: Icon, status, details
     <Card
       sx={{
         height: '100%',
-        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : '#475569'}30`,
+        border: `1px solid ${isOk && !loading && !error ? GREEN : error ? RED : 'var(--text-disabled)'}30`,
         background: loading
           ? 'transparent'
-          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : '#475569'}08 0%, transparent 100%)`,
+          : `linear-gradient(135deg, ${isOk && !error ? GREEN : error ? RED : 'var(--text-disabled)'}08 0%, transparent 100%)`,
       }}
     >
       <CardContent>
@@ -588,7 +589,7 @@ export default function StatusPage() {
             total={deviceSummary.aps.total}
             up={deviceSummary.aps.up}
             down={deviceSummary.aps.down}
-            color="#3B82F6"
+            color="var(--color-secondary)"
             loading={devicesLoading}
           />
         </Grid>
@@ -599,7 +600,7 @@ export default function StatusPage() {
             total={deviceSummary.switches.total}
             up={deviceSummary.switches.up}
             down={deviceSummary.switches.down}
-            color="#8B5CF6"
+            color="var(--color-purple)"
             loading={devicesLoading}
           />
         </Grid>

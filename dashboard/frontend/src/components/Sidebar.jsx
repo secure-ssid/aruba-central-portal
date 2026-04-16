@@ -142,7 +142,7 @@ function PulsingDot() {
 
 function CategoryLabel({ title, collapsed }) {
   if (collapsed) {
-    return <Box sx={{ height: 16, borderTop: '1px solid rgba(255,255,255,0.06)', mx: 1.5, my: 1 }} />;
+    return <Box sx={{ height: 16, borderTop: '1px solid var(--border-subtle)', mx: 1.5, my: 1 }} />;
   }
   return (
     <Box sx={{ px: 2, pt: 1.5, pb: 0.5 }}>
@@ -325,7 +325,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
           width: collapsed ? DRAWER_WIDTH_CLOSED : DRAWER_WIDTH_OPEN,
           boxSizing: 'border-box',
           backgroundColor: theme.palette.background.default,
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          borderRight: '1px solid var(--border-subtle)',
           backgroundImage: 'none',
           overflowX: 'hidden',
           transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1)',
@@ -343,7 +343,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
             alignItems: 'center',
             gap: collapsed ? 0 : 1.5,
             justifyContent: collapsed ? 'center' : 'flex-start',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--border-subtle)',
             minHeight: 64,
           }}
         >
@@ -406,7 +406,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 sx={{
                   width: '100%',
                   borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  border: '1px solid var(--border-divider)',
                   py: 0.75,
                   color: 'var(--text-muted)',
                   '&:hover': { backgroundColor: 'rgba(255,102,0,0.08)', borderColor: 'rgba(255,102,0,0.4)', color: 'var(--text-secondary)' },
@@ -421,7 +421,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               onClick={onSearchOpen}
               sx={{
                 borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.07)',
+                border: '1px solid var(--border-divider)',
                 py: 0.6,
                 px: 1.25,
                 '&:hover': {
@@ -455,7 +455,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
             overflowX: 'hidden',
             pt: 0.5,
             '&::-webkit-scrollbar': { width: 3 },
-            '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.08)', borderRadius: 2 },
+            '&::-webkit-scrollbar-thumb': { background: 'var(--border-default)', borderRadius: 2 },
           }}
         >
           {/* Pinned favorites */}
@@ -579,7 +579,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
         {/* ── Footer ─────────────────────────────────────────────────────── */}
         <Box
           sx={{
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: '1px solid var(--border-subtle)',
             px: collapsed ? 0.75 : 1.5,
             py: 1.25,
           }}

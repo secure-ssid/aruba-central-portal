@@ -2065,7 +2065,7 @@ function ConfigurationPage() {
         <CardContent>
           {loading ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }} role="status" aria-live="polite">
-              <CircularProgress sx={{ color: '#FF6600' }} aria-label="Loading configuration data" />
+              <CircularProgress sx={{ color: 'var(--color-primary)' }} aria-label="Loading configuration data" />
               <Typography variant="body2" color="text.secondary">
                 Loading configuration data from Aruba Central...
               </Typography>

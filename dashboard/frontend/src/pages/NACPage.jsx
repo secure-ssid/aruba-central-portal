@@ -108,7 +108,7 @@ function NACPage() {
                   </Typography>
                   <Typography variant="h4">{userRoles.length}</Typography>
                 </Box>
-                <VerifiedUserIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <VerifiedUserIcon sx={{ fontSize: 40, color: 'var(--color-primary)' }} />
               </Box>
             </CardContent>
           </Card>
@@ -124,7 +124,7 @@ function NACPage() {
                   </Typography>
                   <Typography variant="h4">{deviceProfiles.length}</Typography>
                 </Box>
-                <DeviceHubIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <DeviceHubIcon sx={{ fontSize: 40, color: 'var(--color-primary)' }} />
               </Box>
             </CardContent>
           </Card>
@@ -140,7 +140,7 @@ function NACPage() {
                   </Typography>
                   <Typography variant="h4">{clientAuth.length}</Typography>
                 </Box>
-                <SecurityIcon sx={{ fontSize: 40, color: '#FF6600' }} />
+                <SecurityIcon sx={{ fontSize: 40, color: 'var(--color-primary)' }} />
               </Box>
             </CardContent>
           </Card>

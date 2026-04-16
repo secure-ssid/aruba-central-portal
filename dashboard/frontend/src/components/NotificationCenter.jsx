@@ -134,7 +134,7 @@ const NotificationCenter = () => {
         }}
       >
         {/* Header */}
-        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid var(--border-default)' }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Notifications
           </Typography>

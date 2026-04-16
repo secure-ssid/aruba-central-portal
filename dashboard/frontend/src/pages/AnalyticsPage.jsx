@@ -61,7 +61,7 @@ function AnalyticsPage() {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <TrendingUpIcon sx={{ color: '#FF6600', fontSize: 20 }} />
+                  <TrendingUpIcon sx={{ color: 'var(--color-primary)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Bandwidth Usage</Typography>
               </Box>
@@ -83,7 +83,7 @@ function AnalyticsPage() {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <AssessmentIcon sx={{ color: '#3B82F6', fontSize: 20 }} />
+                  <AssessmentIcon sx={{ color: 'var(--color-secondary)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Client Trends</Typography>
               </Box>
@@ -105,7 +105,7 @@ function AnalyticsPage() {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(34, 197, 94, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
-                  <SpeedIcon sx={{ color: '#22C55E', fontSize: 20 }} />
+                  <SpeedIcon sx={{ color: 'var(--color-success)', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">AP Performance</Typography>
               </Box>
@@ -123,7 +123,7 @@ function AnalyticsPage() {
         </Grid>
       </Grid>
 
-      <Card sx={{ mt: 3, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+      <Card sx={{ mt: 3, border: '1px solid var(--border-default)' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             About Analytics

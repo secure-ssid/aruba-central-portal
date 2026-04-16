@@ -39,7 +39,7 @@ const configurationCategories = [
     description: 'Manage sites, site collections, device groups, and scope hierarchy',
     icon: <LocationIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/scope-management',
-    color: '#FF6600',
+    color: 'var(--color-primary)',
   },
   {
     id: 'application-experience',
@@ -47,7 +47,7 @@ const configurationCategories = [
     description: 'Configure Airgroup, Application Recognition Control, UCC, and policies',
     icon: <AppsIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/application-experience',
-    color: '#3B82F6',
+    color: 'var(--color-secondary)',
   },
   {
     id: 'central-nac',
@@ -55,7 +55,7 @@ const configurationCategories = [
     description: 'Configure authorization policies, identity stores, portal profiles, and authentication',
     icon: <SecurityIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/central-nac',
-    color: '#22C55E',
+    color: 'var(--color-success)',
   },
   {
     id: 'central-nac-service',
@@ -63,7 +63,7 @@ const configurationCategories = [
     description: 'Manage MAC/MPSK registrations, visitors, jobs, images, and certificates',
     icon: <PeopleIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/central-nac-service',
-    color: '#8B5CF6',
+    color: 'var(--color-purple)',
   },
   {
     id: 'config-management',
@@ -71,7 +71,7 @@ const configurationCategories = [
     description: 'Manage configuration checkpoints and backups',
     icon: <StorageIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/config-management',
-    color: '#F59E0B',
+    color: 'var(--color-warning)',
   },
   {
     id: 'health',
@@ -79,7 +79,7 @@ const configurationCategories = [
     description: 'Monitor device configuration health and issues',
     icon: <HealthIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/health',
-    color: '#EF4444',
+    color: 'var(--color-error)',
   },
   {
     id: 'extensions',
@@ -103,7 +103,7 @@ const configurationCategories = [
     description: 'Manage device profiles and interface configurations',
     icon: <InterfaceIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/interface',
-    color: '#64748B',
+    color: 'var(--text-muted)',
   },
   {
     id: 'interface-security',
@@ -135,7 +135,7 @@ const configurationCategories = [
     description: 'Configure WLANs, radios, Hotspot2, Passpoint, Mesh, and IDS',
     icon: <WirelessIcon sx={{ fontSize: 48 }} />,
     path: '/configuration/wireless',
-    color: '#FF6600',
+    color: 'var(--color-primary)',
   },
   {
     id: 'greenlake',

@@ -843,7 +843,7 @@ function ChatDrawer({ pageContext = '' }) {
                   onClick={sendMessage}
                   disabled={!inputValue.trim() || isLoading}
                   sx={{
-                    bgcolor:   inputValue.trim() && !isLoading ? ORANGE : 'rgba(255,255,255,0.08)',
+                    bgcolor:   inputValue.trim() && !isLoading ? ORANGE : 'var(--border-default)',
                     color:     '#fff',
                     width:     36,
                     height:    36,
