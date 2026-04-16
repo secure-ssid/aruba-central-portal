@@ -332,7 +332,7 @@ def troubleshoot_ping():
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -366,7 +366,7 @@ def troubleshoot_traceroute():
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1053,8 +1053,9 @@ def troubleshoot_ap_ping(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
-                return jsonify({"status": "unavailable", "result": None})
+            err_str = str(terr)
+            if any(x in err_str for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+                return jsonify({"status": "unavailable", "result": None, "detail": err_str[:200]})
             raise terr
     except Exception as e:
         logger.error(f"Error running ping on AP {serial}: {e}")
@@ -1081,8 +1082,9 @@ def troubleshoot_ap_traceroute(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
-                return jsonify({"status": "unavailable", "result": None})
+            err_str = str(terr)
+            if any(x in err_str for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+                return jsonify({"status": "unavailable", "result": None, "detail": err_str[:200]})
             raise terr
     except Exception as e:
         logger.error(f"Error running traceroute on AP {serial}: {e}")
@@ -1174,7 +1176,7 @@ def troubleshoot_ap_speedtest(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1204,7 +1206,7 @@ def troubleshoot_ap_nslookup(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1234,7 +1236,7 @@ def troubleshoot_ap_http_test(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr) or 'Not Found' in str(terr) or 'Bad Request' in str(terr):
+            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:

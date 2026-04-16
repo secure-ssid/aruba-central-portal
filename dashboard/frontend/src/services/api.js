@@ -669,7 +669,7 @@ export const troubleshootAPI = {
 
   disconnectUser: async (serial, macAddress) => {
     const response = await apiClient.post(`/troubleshoot/aps/${serial}/disconnect-user`, {
-      mac_address: macAddress,
+      mac: macAddress,
     });
     return response.data;
   },
