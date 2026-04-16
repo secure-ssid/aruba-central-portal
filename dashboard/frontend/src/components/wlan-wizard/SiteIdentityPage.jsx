@@ -72,7 +72,6 @@ const SiteIdentityPage = ({ data, onUpdate }) => {
     try {
       setLoadingSites(true);
       const response = await configAPI.scopeManagement.getSites();
-      console.log('Sites response:', response);
 
       // Extract sites from response
       const sitesData = response.sites || response.items || response.data || [];

@@ -49,46 +49,8 @@ import DevicesOtherIcon from '@mui/icons-material/DevicesOther';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { monitoringAPIv2, apiClient } from '../services/api';
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatUptime(seconds) {
-  if (!seconds && seconds !== 0) return '—';
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}d ${h}h`;
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
-
-function formatBytes(bytes) {
-  if (!bytes && bytes !== 0) return '—';
-  if (bytes === 0) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
-}
-
-function StatusChip({ status }) {
-  const up = status === 'Up' || status === 'up' || status === 'online' || status === 'Up/Up';
-  return (
-    <Chip
-      size="small"
-      icon={up ? <CheckCircleIcon sx={{ fontSize: 14 }} /> : <ErrorOutlineIcon sx={{ fontSize: 14 }} />}
-      label={status || '—'}
-      sx={{
-        backgroundColor: up ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-        color: up ? '#22C55E' : '#EF4444',
-        borderColor: up ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
-        border: '1px solid',
-        fontWeight: 600,
-        fontSize: '0.7rem',
-        '& .MuiChip-icon': { color: 'inherit' },
-      }}
-    />
-  );
-}
+import StatusChip from '../components/StatusChip';
+import { formatUptime, formatBytes } from '../utils/formatUtils';
 
 // ─── Stats Card ───────────────────────────────────────────────────────────────
 

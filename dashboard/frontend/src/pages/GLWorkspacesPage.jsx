@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  InputAdornment,
   Stack,
   Chip,
   Tooltip,
@@ -26,6 +27,7 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
@@ -36,25 +38,19 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BusinessIcon from '@mui/icons-material/Business';
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
-
-function WorkspaceStatusChip({ status }) {
-  const color =
-    status === 'ACTIVE' ? 'success' :
-    status === 'PENDING' ? 'warning' :
-    status === 'SUSPENDED' ? 'error' :
-    'default';
-  return <Chip size="small" color={color} label={status || 'UNKNOWN'} />;
-}
+import StatusChip from '../components/StatusChip';
+import toast from 'react-hot-toast';
 
 function GLWorkspacesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [notConfigured, setNotConfigured] = useState(false);
-  const [success, setSuccess] = useState('');
   const [workspaces, setWorkspaces] = useState([]);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [search, setSearch] = useState('');
 
   // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
@@ -105,7 +101,7 @@ function GLWorkspacesPage() {
         const currentResp = await apiClient.get('/workspace/info');
         setCurrentWorkspace(currentResp.data);
       } catch (e) {
-        console.log('Could not fetch current workspace info');
+        // Current workspace info not available
       }
     } catch (e) {
       if (isGLNotConfiguredError(e)) {
@@ -125,10 +121,9 @@ function GLWorkspacesPage() {
   const handleCreate = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.post('/greenlake/workspaces', formData);
-      setSuccess('Workspace created successfully');
+      toast.success('Workspace created successfully');
       setCreateOpen(false);
       setFormData({ id: '', name: '', description: '', status: 'ACTIVE' });
       await fetchWorkspaces();
@@ -142,14 +137,13 @@ function GLWorkspacesPage() {
   const handleUpdate = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.patch(`/greenlake/workspaces/${formData.id}`, {
         name: formData.name,
         description: formData.description,
         status: formData.status,
       });
-      setSuccess('Workspace updated successfully');
+      toast.success('Workspace updated successfully');
       setEditOpen(false);
       setFormData({ id: '', name: '', description: '', status: 'ACTIVE' });
       await fetchWorkspaces();
@@ -161,13 +155,13 @@ function GLWorkspacesPage() {
   };
 
   const handleDelete = async (workspaceId) => {
+    if (!workspaceId) { setError('Cannot delete: workspace ID is missing'); return; }
     if (!window.confirm('Delete this workspace? This action cannot be undone.')) return;
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       await apiClient.delete(`/greenlake/workspaces/${workspaceId}`);
-      setSuccess('Workspace deleted successfully');
+      toast.success('Workspace deleted successfully');
       await fetchWorkspaces();
     } catch (e) {
       setError(e.response?.data?.error || 'Failed to delete workspace');
@@ -179,7 +173,6 @@ function GLWorkspacesPage() {
   const handleSwitch = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       const payload = {
         client_id: switchData.clientId,
@@ -194,7 +187,7 @@ function GLWorkspacesPage() {
       }
 
       const resp = await apiClient.post('/workspace/switch', payload);
-      setSuccess(resp.data.message || 'Workspace switched successfully. Page will reload...');
+      toast.success(resp.data.message || 'Workspace switched successfully. Page will reload...');
       setSwitchOpen(false);
       setSwitchData({
         workspaceId: '',
@@ -219,7 +212,6 @@ function GLWorkspacesPage() {
   const handleTokenTransfer = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
     try {
       const payload = {
         sourceWorkspaceId: transferData.sourceWorkspaceId,
@@ -229,7 +221,7 @@ function GLWorkspacesPage() {
       };
 
       await apiClient.post('/greenlake/msp/token-transfer', payload);
-      setSuccess('Token transfer completed successfully');
+      toast.success('Token transfer completed successfully');
       setTransferOpen(false);
       setTransferData({
         sourceWorkspaceId: '',
@@ -268,11 +260,11 @@ function GLWorkspacesPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            MSP Workspaces (GreenLake)
+          <Typography variant="h4" fontWeight={700}>
+            MSP Workspaces
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage multi-tenant workspaces and switch between customers
+            GreenLake multi-tenant workspace management
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
@@ -303,6 +295,24 @@ function GLWorkspacesPage() {
 
       {notConfigured && <GreenLakeNotConfigured />}
 
+      {!notConfigured && (
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Search workspaces by name, ID, or description..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ mb: 2 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 18, color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
+
       {!notConfigured && currentWorkspace && (
         <Alert severity="info" icon={<BusinessIcon />} sx={{ mb: 2 }}>
           <Typography variant="body2">
@@ -315,12 +325,6 @@ function GLWorkspacesPage() {
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
           {error}
-        </Alert>
-      )}
-
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess('')}>
-          {success}
         </Alert>
       )}
 
@@ -340,26 +344,42 @@ function GLWorkspacesPage() {
               </TableHead>
               <TableBody>
                 {loading && workspaces.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <CircularProgress size={24} sx={{ my: 2 }} />
-                    </TableCell>
-                  </TableRow>
+                  [...Array(4)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton width={70} /></TableCell>
+                      <TableCell><Skeleton width={80} /></TableCell>
+                      <TableCell align="right"><Skeleton width={80} /></TableCell>
+                    </TableRow>
+                  ))
                 ) : workspaces.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                        No workspaces found. Create your first workspace to get started.
+                    <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                      <BusinessIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        No workspaces found
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                        Create your first workspace to get started
                       </Typography>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  workspaces.map((workspace, idx) => {
+                  workspaces.filter((w) => {
+                    if (!search.trim()) return true;
+                    const q = search.trim().toLowerCase();
+                    const wId = (w.id || w.workspaceId || w.tenantId || '').toLowerCase();
+                    return wId.includes(q) ||
+                      (w.name || w.displayName || '').toLowerCase().includes(q) ||
+                      (w.description || '').toLowerCase().includes(q);
+                  }).map((workspace) => {
                     const workspaceId = workspace.id || workspace.workspaceId || workspace.tenantId;
                     const isCurrent = currentWorkspace?.customer_id === workspaceId;
 
                     return (
-                      <TableRow key={workspaceId || idx}>
+                      <TableRow key={workspaceId || workspace.name}>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <span>{workspaceId || '-'}</span>
@@ -377,7 +397,7 @@ function GLWorkspacesPage() {
                         <TableCell>{workspace.name || workspace.displayName || '-'}</TableCell>
                         <TableCell>{workspace.description || '-'}</TableCell>
                         <TableCell>
-                          <WorkspaceStatusChip status={workspace.status} />
+                          <StatusChip status={workspace.status || 'UNKNOWN'} />
                         </TableCell>
                         <TableCell>
                           {workspace.createdAt

@@ -576,8 +576,8 @@ export const wlanAPI = {
  * Alerts and Events API
  */
 export const alertsAPI = {
-  getAll: async (severity, limit = 100) => {
-    const params = { limit };
+  getAll: async (severity, page = 1) => {
+    const params = { page };
     if (severity) params.severity = severity;
     const response = await apiClient.get('/alerts', { params });
     return response.data;

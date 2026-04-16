@@ -132,28 +132,101 @@ def _kpi_with_stale(cache_key: str, fetch_fn):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+def _normalize_alert(a: dict) -> dict:
+    """Map Aruba Central alert fields to consistent names for the frontend.
+
+    The network-notifications/v1/alerts API uses camelCase keys (alertType,
+    deviceId, raisedAt) and capitalized severity strings (Critical/Major/Minor).
+    """
+    # Description: camelCase first, then snake_case fallbacks
+    description = (
+        a.get("alertType")
+        or a.get("alert_type")
+        or a.get("description")
+        or a.get("message")
+        or a.get("title")
+    )
+    # Device: camelCase deviceId is the primary identifier in this API
+    device = (
+        a.get("deviceId")
+        or a.get("device_id")
+        or a.get("device_serial")
+        or a.get("serial")
+        or a.get("device_name")
+    )
+    # Timestamp: raisedAt/createdAt (camelCase) are the expected fields
+    raw_ts = (
+        a.get("raisedAt")
+        or a.get("createdAt")
+        or a.get("ts")
+        or a.get("created_at")
+        or a.get("raise_time")
+    )
+    if raw_ts:
+        try:
+            ts_num = float(raw_ts)
+            # Normalise to Unix seconds for the frontend (which does * 1000)
+            timestamp = int(ts_num / 1000) if ts_num > 1e10 else int(ts_num)
+        except (TypeError, ValueError):
+            timestamp = None
+    else:
+        timestamp = None
+
+    # Normalise severity to lowercase so the frontend switch works
+    severity = a.get("severity")
+    if isinstance(severity, str):
+        severity = severity.lower()
+
+    return {
+        **a,
+        "description": description,
+        "device": device,
+        "timestamp": timestamp,
+        "severity": severity,
+        "_raw_keys": list(a.keys()),  # temporary: helps identify actual field names
+    }
+
+
+_ALERTS_PAGE_SIZE = 10
+
+
 @greenlake_bp.route("/api/alerts", methods=["GET"])
 @require_session
 def get_alerts():
-    """Get all alerts."""
+    """Get alerts with server-side pagination (page_size=10)."""
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        # Get query parameters for filtering
         severity = request.args.get("severity")
-        limit = request.args.get("limit", 100)
+        page = max(1, int(request.args.get("page", 1)))
+        # Fetch enough for the requested page; API limit capped at 100
+        fetch_limit = min(page * _ALERTS_PAGE_SIZE, 100)
 
-        params = {"limit": limit}
+        params = {"limit": fetch_limit}
         if severity:
             params["severity"] = severity
 
-        # Try correct alert endpoints (network-notifications namespace, not network-monitoring)
         last_err = None
         for ep in ["/network-notifications/v1/alerts", "/network-notifications/v1alpha1/alerts"]:
             try:
                 response = aruba_client.get(ep, params=params)
-                return jsonify(response)
+                raw_alerts = response.get("alerts", response.get("items", []))
+                normalized = [_normalize_alert(a) for a in raw_alerts]
+                total = response.get("total", response.get("count", len(normalized)))
+
+                # Slice to the requested page
+                start = (page - 1) * _ALERTS_PAGE_SIZE
+                page_alerts = normalized[start : start + _ALERTS_PAGE_SIZE]
+                total_pages = max(1, -(-total // _ALERTS_PAGE_SIZE))  # ceil division
+
+                return jsonify({
+                    "alerts": page_alerts,
+                    "total": total,
+                    "page": page,
+                    "page_size": _ALERTS_PAGE_SIZE,
+                    "total_pages": total_pages,
+                })
             except Exception as ep_err:
                 last_err = ep_err
                 if "401" in str(ep_err) or "403" in str(ep_err):
@@ -161,13 +234,12 @@ def get_alerts():
                 continue
         if last_err and ("404" in str(last_err) or "Not Found" in str(last_err)):
             logger.warning(f"Alerts endpoint not available: {last_err}")
-            return jsonify({"alerts": [], "count": 0, "total": 0})
+            return jsonify({"alerts": [], "total": 0, "page": 1, "page_size": _ALERTS_PAGE_SIZE, "total_pages": 1})
         if last_err:
             raise last_err
     except Exception as e:
         logger.error(f"Error fetching alerts: {e}")
-        # Return empty data instead of 500 error
-        return jsonify({"alerts": [], "count": 0, "total": 0, "error": "Alerts API not available"})
+        return jsonify({"alerts": [], "total": 0, "page": 1, "page_size": _ALERTS_PAGE_SIZE, "total_pages": 1, "error": "Alerts API not available"})
 
 
 @greenlake_bp.route("/api/alerts/<alert_id>", methods=["GET"])
@@ -198,6 +270,41 @@ def acknowledge_alert(alert_id):
     except Exception as e:
         logger.error(f"Error acknowledging alert {alert_id}: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@greenlake_bp.route("/api/events", methods=["GET"])
+@require_session
+def get_events():
+    """Get network events."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        event_type = request.args.get("type")
+        limit = request.args.get("limit", 100)
+
+        params = {"limit": limit}
+        if event_type:
+            params["type"] = event_type
+
+        last_err = None
+        for ep in ["/network-monitoring/v1/events", "/network-notifications/v1/events"]:
+            try:
+                response = aruba_client.get(ep, params=params)
+                return jsonify(response)
+            except Exception as ep_err:
+                last_err = ep_err
+                if "401" in str(ep_err) or "403" in str(ep_err):
+                    raise ep_err
+                continue
+        if last_err and ("404" in str(last_err) or "Not Found" in str(last_err)):
+            logger.warning(f"Events endpoint not available: {last_err}")
+            return jsonify({"events": [], "count": 0, "total": 0})
+        if last_err:
+            raise last_err
+    except Exception as e:
+        logger.error(f"Error fetching events: {e}")
+        return jsonify({"events": [], "count": 0, "total": 0, "error": "Events API not available"})
 
 
 # ─────────────────────────────────────────────────────────────────────────────

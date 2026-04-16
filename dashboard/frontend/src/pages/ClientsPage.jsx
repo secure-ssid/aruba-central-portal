@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -33,7 +33,72 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
-import { getClients, getClientTrends, getTopClients, sitesConfigAPI, monitoringAPIv2, configAPI } from '../services/api';
+import { getClients, getClientTrends, getTopClients } from '../services/api';
+import useSites from '../hooks/useSites';
+
+/** `essid` is often a string, sometimes `{ name, ssid, ... }` from Central. */
+function getEssidRaw(client) {
+  if (!client || typeof client !== 'object') return '';
+  const e = client.essid;
+  if (typeof e === 'string' && e.trim()) return e.trim();
+  if (e && typeof e === 'object') {
+    const n = e.name ?? e.ssid ?? e.essid;
+    if (n != null && String(n).trim()) return String(n).trim();
+  }
+  return '';
+}
+
+/**
+ * Best-effort SSID / WLAN name for display and search.
+ * Central commonly uses wlanName; legacy UI used ssid / string essid.
+ */
+function getClientSsid(client) {
+  if (!client || typeof client !== 'object') return '';
+  const fromFields = [
+    client.ssid,
+    client.wlanName,
+    client.wlan_name,
+    client.wlanProfileName,
+    client.wlan_profile_name,
+    client.userWlan,
+    client.connected_ssid,
+    client.associated_ssid,
+    getEssidRaw(client),
+    client.network,
+  ];
+  for (const v of fromFields) {
+    if (v != null && String(v).trim()) return String(v).trim();
+  }
+  return '';
+}
+
+/**
+ * Aruba Central uses clientConnectionType (e.g. WIRELESS / WIRED); older UI code used `type`.
+ * WIRELESS must be detected before WIRED because "WIRELESS".includes("WIRED") is true.
+ */
+function getClientConnectionKind(client) {
+  if (!client || typeof client !== 'object') return 'unknown';
+  const raw =
+    client.clientConnectionType ||
+    client.connectionType ||
+    client.connection_type ||
+    client.network_type ||
+    client.networkType ||
+    client.type ||
+    '';
+  const u = String(raw).toUpperCase().replace(/\s+/g, '_');
+  if (!u) {
+    if (client.ssid || client.wlanName || client.wlan_name || getEssidRaw(client)) return 'wireless';
+    return 'unknown';
+  }
+  if (u.includes('WIRELESS') || u.includes('WLAN') || u.includes('WIFI') || u.includes('802')) {
+    return 'wireless';
+  }
+  if (u.includes('WIRED') || u.includes('ETHERNET') || u === 'ETH') {
+    return 'wired';
+  }
+  return 'unknown';
+}
 
 function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -45,16 +110,29 @@ function ClientsPage() {
   const [selectedStatus, setSelectedStatus] = useState(null); // null = all statuses
   const [selectedTypes, setSelectedTypes] = useState(['wireless', 'wired']);
   const [viewMode, setViewMode] = useState('list');
-  const [sites, setSites] = useState([]);
   const [selectedSites, setSelectedSites] = useState([]);
   const [sitesLoaded, setSitesLoaded] = useState(false);
-  const [loadingSites, setLoadingSites] = useState(true); // Separate loading state for sites
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
 
+  // Shared hook handles multi-API-fallback site loading
+  const { sites, loading: loadingSites, error: sitesError } = useSites();
+
+  // When sites finish loading, select all by default and mark as loaded
   useEffect(() => {
-    loadSites();
-  }, []);
+    if (!loadingSites) {
+      if (sites.length > 0) {
+        const siteIds = sites.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
+        setSelectedSites(siteIds);
+      } else {
+        setSelectedSites([]);
+      }
+      if (sitesError) {
+        setError(sitesError);
+      }
+      setSitesLoaded(true);
+    }
+  }, [sites, loadingSites, sitesError]);
 
   useEffect(() => {
     // Only load data after sites have been loaded (even if empty)
@@ -62,180 +140,6 @@ function ClientsPage() {
       loadData();
     }
   }, [selectedSites, sitesLoaded]);
-
-  const loadSites = async () => {
-    try {
-      setLoadingSites(true);
-      console.log('🔍 Loading sites in ClientsPage...');
-      let sitesList = [];
-      
-      // Try Configuration API first (best choice - faster, returns site names/IDs)
-      let lastError = null;
-      
-      try {
-        console.log('🔍 [1/3] Trying Configuration API (/network-config/v1alpha1/sites)...');
-        let sitesData;
-        try {
-          sitesData = await sitesConfigAPI.getSites({ limit: 100, offset: 0 });
-          console.log('✅ Configuration API response (with params):', sitesData);
-        } catch (firstErr) {
-          console.warn('⚠️ Failed with limit/offset, trying without params:', firstErr);
-          sitesData = await sitesConfigAPI.getSites({});
-          console.log('✅ Configuration API response (without params):', sitesData);
-        }
-        
-        // Handle different response formats
-        if (Array.isArray(sitesData)) {
-          sitesList = sitesData;
-        } else if (sitesData && typeof sitesData === 'object') {
-          sitesList = sitesData.items || sitesData.data || sitesData.sites || sitesData.results || [];
-        }
-        
-        if (sitesList.length > 0) {
-          console.log(`✅ Loaded ${sitesList.length} sites from Configuration API`);
-          setSites(sitesList);
-          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
-          setSelectedSites(siteIds);
-          setError(null);
-          setSitesLoaded(true);
-          return;
-        } else {
-          console.warn('⚠️ Configuration API returned empty result');
-          lastError = new Error('Configuration API returned empty result');
-        }
-      } catch (configErr) {
-        console.warn('⚠️ Configuration API failed:', configErr);
-        lastError = configErr;
-      }
-      
-      // Fallback 1: Try Central v2 Sites API
-      try {
-        console.log('🔍 [2/3] Trying Central v2 Sites API (/central/v2/sites)...');
-        const v2SitesData = await configAPI.getSites();
-        console.log('✅ Central v2 API response:', v2SitesData);
-        
-        if (Array.isArray(v2SitesData)) {
-          sitesList = v2SitesData;
-        } else if (v2SitesData && typeof v2SitesData === 'object') {
-          sitesList = v2SitesData.sites || v2SitesData.items || v2SitesData.data || [];
-        }
-        
-        if (sitesList.length > 0) {
-          // Map v2 format to expected format
-          sitesList = sitesList.map(site => ({
-            scopeId: site.site_id || site.id || site.scopeId,
-            name: site.site_name || site.name || site.display_name,
-            siteName: site.site_name || site.name || site.display_name,
-            ...site
-          })).filter(site => site.scopeId);
-          
-          console.log(`✅ Loaded ${sitesList.length} sites from Central v2 API`);
-          setSites(sitesList);
-          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
-          setSelectedSites(siteIds);
-          setError(null);
-          setSitesLoaded(true);
-          return;
-        } else {
-          console.warn('⚠️ Central v2 API returned empty result');
-        }
-      } catch (v2Err) {
-        console.warn('⚠️ Central v2 API failed:', v2Err);
-        lastError = v2Err;
-      }
-      
-      // Fallback 2: Try Monitoring API (sites-health endpoint)
-      try {
-          console.log('🔍 [3/3] Trying Monitoring API (/network-monitoring/v1alpha1/sites-health)...');
-          const healthData = await monitoringAPIv2.getSitesHealth({ limit: 100, offset: 0 });
-        console.log('✅ Monitoring API response:', healthData);
-        
-        // Extract sites from health data
-        if (Array.isArray(healthData)) {
-          sitesList = healthData;
-        } else if (healthData && typeof healthData === 'object') {
-          const items = healthData.items || healthData.data || healthData.sites || [];
-          // Extract site info from health items
-          sitesList = items.map(item => ({
-            scopeId: item.scopeId || item.siteId || item.id,
-            name: item.scopeName || item.siteName || item.name || item.displayName,
-            siteName: item.scopeName || item.siteName || item.name || item.displayName,
-            ...item
-          })).filter(site => site.scopeId); // Filter out items without IDs
-        }
-        
-        if (sitesList.length > 0) {
-          console.log(`✅ Loaded ${sitesList.length} sites from Monitoring API fallback`);
-          setSites(sitesList);
-          const siteIds = sitesList.map(site => site.scopeId || site.id || site.siteId || site.site_id).filter(Boolean);
-          setSelectedSites(siteIds);
-          setError(null);
-          setSitesLoaded(true);
-          return;
-        } else {
-          console.warn('⚠️ Monitoring API returned empty result');
-        }
-      } catch (monitoringErr) {
-        console.error('❌ Monitoring API also failed:', monitoringErr);
-        lastError = monitoringErr;
-      }
-      
-      // All APIs failed
-      console.error('❌ All site APIs failed. Last error:', lastError);
-      console.error('❌ Setting empty sites list');
-      
-      // Extract error message from last error
-      let errorMessage = 'Failed to load sites from all available APIs';
-      if (lastError) {
-        if (lastError.response?.data) {
-          if (typeof lastError.response.data === 'string') {
-            errorMessage = lastError.response.data;
-          } else if (lastError.response.data.error) {
-            errorMessage = lastError.response.data.error;
-          } else if (lastError.response.data.message) {
-            errorMessage = lastError.response.data.message;
-          }
-        } else if (lastError.message) {
-          errorMessage = lastError.message;
-        }
-      }
-      
-      setSites([]);
-      setSelectedSites([]);
-      setError(errorMessage);
-      setSitesLoaded(true); // Mark as loaded even on error so loadData can run
-    } catch (err) {
-      console.error('❌ Error loading sites:', err);
-      console.error('❌ Error response:', err.response);
-      console.error('❌ Error response data:', err.response?.data);
-      console.error('❌ Error message:', err.message);
-      console.error('❌ Error stack:', err.stack);
-      
-      // Extract error message from various possible locations
-      let errorMessage = 'Failed to load sites';
-      if (err.response?.data) {
-        if (typeof err.response.data === 'string') {
-          errorMessage = err.response.data;
-        } else if (err.response.data.error) {
-          errorMessage = err.response.data.error;
-        } else if (err.response.data.message) {
-          errorMessage = err.response.data.message;
-        } else {
-          errorMessage = JSON.stringify(err.response.data);
-        }
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      console.error('❌ Final error message:', errorMessage);
-      setError(errorMessage);
-      setSites([]);
-      setSelectedSites([]);
-      setSitesLoaded(true); // Mark as loaded even on error so loadData can run
-    } finally {
-      setLoadingSites(false);
-    }
-  };
 
   const loadData = async () => {
     try {
@@ -249,8 +153,6 @@ function ClientsPage() {
         setLoading(false);
         return;
       }
-
-      console.log('Loading clients for sites:', selectedSites);
 
       // Fetch clients using monitoring API (same approach as SitesPage)
       // First try to get all clients without site_id
@@ -271,18 +173,14 @@ function ClientsPage() {
             useMonitoringAPI = false;
           }
         }
-        console.log('Monitoring API returned clients:', allClients.length, 'useMonitoringAPI:', useMonitoringAPI);
       } catch (err) {
-        console.warn('Failed to fetch clients from monitoring API, falling back to site-specific calls:', err);
         useMonitoringAPI = false;
       }
       
       // If monitoring API didn't return clients, fetch from selected sites
       if (!useMonitoringAPI && selectedSites.length > 0) {
-        console.log('Fetching clients from site-specific endpoints for', selectedSites.length, 'sites');
-        const clientPromises = selectedSites.map(siteId => 
-          getClients(siteId).catch((err) => {
-            console.warn(`Failed to fetch clients for site ${siteId}:`, err);
+        const clientPromises = selectedSites.map(siteId =>
+          getClients(siteId).catch(() => {
             return { items: [], total: 0, count: 0 };
           })
         );
@@ -310,8 +208,6 @@ function ClientsPage() {
               itemsArray = clientData.data;
             }
             
-            console.log(`Site ${siteId} (${siteName}): ${itemsArray.length} clients`, clientData);
-            
             itemsArray.forEach(client => {
               allClients.push({
                 ...client,
@@ -319,19 +215,14 @@ function ClientsPage() {
                 siteName: siteName,
               });
             });
-          } else {
-            console.error(`Failed to fetch clients for site ${selectedSites[index]}:`, result.reason);
           }
         });
       }
-
-      console.log('Total clients before filtering:', allClients.length);
 
       // Filter clients by selected sites if we got all clients from monitoring API
       // Only filter if not all sites are selected
       if (allClients.length > 0 && selectedSites.length > 0 && selectedSites.length < sites.length) {
         // Filter to only selected sites
-        const beforeFilter = allClients.length;
         allClients = allClients.filter(client => {
           const clientSiteId = client.siteId || client['site-id'] || client.site_id;
           const matches = selectedSites.some(siteId => {
@@ -341,7 +232,6 @@ function ClientsPage() {
           });
           return matches;
         });
-        console.log(`Filtered from ${beforeFilter} to ${allClients.length} clients for selected sites`);
       }
 
       // Add site names to clients if not already present
@@ -364,8 +254,6 @@ function ClientsPage() {
         return client;
       });
 
-      console.log('Final client count:', allClients.length);
-
       const [topData, trendsData] = await Promise.allSettled([
         selectedSites.length > 0 ? getTopClients(selectedSites[0]) : Promise.resolve({ items: [] }),
         selectedSites.length > 0 ? getClientTrends(selectedSites[0]) : Promise.resolve(null),
@@ -385,38 +273,6 @@ function ClientsPage() {
     }
   };
 
-  const formatBytes = (bytes) => {
-    if (!bytes) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-  };
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'connected':
-        return 'success';
-      case 'failed':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
-  const getExperienceColor = (experience) => {
-    switch (experience?.toLowerCase()) {
-      case 'good':
-        return 'success';
-      case 'fair':
-        return 'warning';
-      case 'poor':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
   // Calculate counts for all statuses
   const statusCounts = {
     connected: clients.filter((c) => c.status?.toLowerCase() === 'connected').length,
@@ -431,8 +287,8 @@ function ClientsPage() {
     : clients;
   
   const typeCounts = {
-    wireless: clientsForTypeCount.filter((c) => c.type?.toLowerCase() === 'wireless').length,
-    wired: clientsForTypeCount.filter((c) => c.type?.toLowerCase() === 'wired').length,
+    wireless: clientsForTypeCount.filter((c) => getClientConnectionKind(c) === 'wireless').length,
+    wired: clientsForTypeCount.filter((c) => getClientConnectionKind(c) === 'wired').length,
   };
 
   const filteredClients = clients.filter((client) => {
@@ -441,7 +297,10 @@ function ClientsPage() {
     const matchesSearch =
       !searchTerm ||
       client.name?.toLowerCase().includes(search) ||
+      client.hostname?.toLowerCase().includes(search) ||
       client.mac?.toLowerCase().includes(search) ||
+      client.macaddr?.toLowerCase().includes(search) ||
+      client.macAddress?.toLowerCase().includes(search) ||
       client.ipv4?.toLowerCase().includes(search) ||
       client.network?.toLowerCase().includes(search) ||
       client.connectedTo?.toLowerCase().includes(search) ||
@@ -453,7 +312,9 @@ function ClientsPage() {
       client.port_id?.toLowerCase().includes(search) ||
       client.interface?.toLowerCase().includes(search) ||
       client.portName?.toLowerCase().includes(search) ||
-      client.essid?.toLowerCase().includes(search) ||
+      client.essid?.toLowerCase?.().includes(search) ||
+      getEssidRaw(client).toLowerCase().includes(search) ||
+      getClientSsid(client).toLowerCase().includes(search) ||
       client.ssid?.toLowerCase().includes(search);
 
     // Status filter
@@ -461,10 +322,12 @@ function ClientsPage() {
       !selectedStatus ||
       client.status?.toLowerCase() === selectedStatus?.toLowerCase();
 
-    // Type filter
+    // Type filter (API: clientConnectionType; legacy: type)
+    const kind = getClientConnectionKind(client);
     const matchesType =
       selectedTypes.length === 0 ||
-      selectedTypes.some((type) => client.type?.toLowerCase() === type);
+      selectedTypes.includes(kind) ||
+      (kind === 'unknown' && selectedTypes.length > 0);
 
     return matchesSearch && matchesStatus && matchesType;
   });
@@ -481,12 +344,12 @@ function ClientsPage() {
         bValue = (b.name || b.mac || '').toLowerCase();
         break;
       case 'type':
-        aValue = (a.type || '').toLowerCase();
-        bValue = (b.type || '').toLowerCase();
+        aValue = getClientConnectionKind(a);
+        bValue = getClientConnectionKind(b);
         break;
       case 'mac':
-        aValue = (a.mac || '').toLowerCase();
-        bValue = (b.mac || '').toLowerCase();
+        aValue = (a.mac || a.macaddr || a.macAddress || '').toLowerCase();
+        bValue = (b.mac || b.macaddr || b.macAddress || '').toLowerCase();
         break;
       case 'ip':
         aValue = (a.ipv4 || '').toLowerCase();
@@ -513,8 +376,8 @@ function ClientsPage() {
         bValue = (b.siteName || '').toLowerCase();
         break;
       case 'ssid':
-        aValue = (a.essid || a.ssid || a.network || '').toLowerCase();
-        bValue = (b.essid || b.ssid || b.network || '').toLowerCase();
+        aValue = getClientSsid(a).toLowerCase();
+        bValue = getClientSsid(b).toLowerCase();
         break;
       default:
         return 0;
@@ -990,26 +853,29 @@ function ClientsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedClients.map((client, index) => {
+                sortedClients.map((client) => {
                 const status = client.status?.toLowerCase() || 'unknown';
                 const isConnected = status === 'connected';
                 const isFailed = status === 'failed';
                 const isConnecting = status === 'connecting';
                 const isDisconnected = status === 'disconnected';
                 const experience = client.experience || 'Good';
-                
-                // Get status indicator color
-                const getStatusColor = () => {
-                  if (isConnected) return '#4caf50'; // Green for connected
-                  if (isFailed) return '#f44336'; // Red for failed
-                  if (isConnecting || isDisconnected) return 'rgb(249, 192, 0)'; // Yellow for connecting/disconnected
-                  return '#9e9e9e'; // Gray for unknown
-                };
-                
-                const clientType = client.type?.toLowerCase();
-                
+
+                const statusColor = isConnected ? '#4caf50'
+                  : isFailed ? '#f44336'
+                  : (isConnecting || isDisconnected) ? 'rgb(249, 192, 0)'
+                  : '#9e9e9e';
+
+                const clientKind = getClientConnectionKind(client);
+                const clientType = clientKind;
+                const typeChipLabel =
+                  client.clientConnectionType ||
+                  client.connectionType ||
+                  client.type ||
+                  (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
+
                 return (
-                  <TableRow key={index} hover>
+                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {(isConnected || isFailed || isConnecting || isDisconnected) && (
@@ -1018,13 +884,13 @@ function ClientsPage() {
                               width: 8,
                               height: 8,
                               borderRadius: '50%',
-                              bgcolor: getStatusColor(),
+                              bgcolor: statusColor,
                             }}
                           />
                         )}
                         <Box>
                           <Typography variant="body2" fontWeight="medium">
-                            {client.name || client.mac || 'Unknown'}
+                            {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
                           </Typography>
                           {isConnected && (
                             <Typography variant="caption" color="textSecondary">
@@ -1052,7 +918,7 @@ function ClientsPage() {
                     <TableCell>
                       <Chip
                         size="small"
-                        label={client.type || 'Unknown'}
+                        label={typeChipLabel}
                         icon={clientType === 'wireless' ? <WifiIcon /> : <CableIcon />}
                         sx={{
                           ...(clientType === 'wireless' && {
@@ -1078,7 +944,7 @@ function ClientsPage() {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {client.mac || 'N/A'}
+                        {client.mac || client.macaddr || client.macAddress || 'N/A'}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -1128,15 +994,12 @@ function ClientsPage() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {clientType === 'wireless' ? (
-                        <Typography variant="body2">
-                          {client.essid || client.ssid || client.network || 'N/A'}
-                        </Typography>
-                      ) : (
-                        <Typography variant="body2" color="textSecondary">
-                          -
-                        </Typography>
-                      )}
+                      <Typography
+                        variant="body2"
+                        color={getClientSsid(client) ? 'text.primary' : 'text.secondary'}
+                      >
+                        {getClientSsid(client) || '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">

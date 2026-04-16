@@ -277,7 +277,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
   const location = useLocation();
   const theme = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system']);
+  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system', 'gl']);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
@@ -515,6 +515,22 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                     >
                       {group.title}
                     </Typography>
+                    {group.id === 'gl' && (
+                      <Box
+                        sx={{
+                          px: 0.6,
+                          py: 0.15,
+                          borderRadius: '4px',
+                          bgcolor: 'rgba(59,130,246,0.1)',
+                          border: '1px solid rgba(59,130,246,0.2)',
+                          mr: 0.75,
+                        }}
+                      >
+                        <Typography variant="caption" sx={{ fontSize: '0.5rem', fontWeight: 700, color: '#3B82F6', letterSpacing: '0.04em' }}>
+                          HPE
+                        </Typography>
+                      </Box>
+                    )}
                     <Box
                       sx={{
                         transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
@@ -559,7 +575,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
           }}
         >
           {/* System status indicator */}
-          {!collapsed && (
+          {!collapsed ? (
             <Box
               sx={{
                 display: 'flex',
@@ -568,8 +584,8 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 px: 1.25,
                 py: 0.75,
                 borderRadius: '8px',
-                bgcolor: 'rgba(34,197,94,0.07)',
-                border: '1px solid rgba(34,197,94,0.15)',
+                bgcolor: 'rgba(34,197,94,0.06)',
+                border: '1px solid rgba(34,197,94,0.12)',
                 mb: 1,
               }}
             >
@@ -579,24 +595,56 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                     position: 'absolute',
                     inset: -3,
                     borderRadius: '50%',
-                    backgroundColor: 'rgba(34,197,94,0.3)',
-                    animation: 'status-pulse 2.5s ease-out infinite',
+                    backgroundColor: 'rgba(34,197,94,0.25)',
+                    animation: 'status-pulse 3s ease-out infinite',
                     '@keyframes status-pulse': {
                       '0%': { transform: 'scale(0.7)', opacity: 1 },
                       '100%': { transform: 'scale(2.5)', opacity: 0 },
                     },
                   }}
                 />
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px #22C55E' }} />
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
               </Box>
               <Typography variant="caption" sx={{ color: '#22C55E', fontWeight: 600, fontSize: '0.72rem' }}>
                 Connected
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
               <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.65rem' }}>
-                Aruba Cloud
+                Aruba Central
               </Typography>
             </Box>
+          ) : (
+            <Tooltip title="Connected to Aruba Central" placement="right" arrow>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 0.75,
+                  mb: 1,
+                  borderRadius: '8px',
+                  bgcolor: 'rgba(34,197,94,0.06)',
+                  border: '1px solid rgba(34,197,94,0.12)',
+                }}
+              >
+                <Box sx={{ position: 'relative', width: 8, height: 8 }}>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      inset: -3,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(34,197,94,0.25)',
+                      animation: 'status-pulse 3s ease-out infinite',
+                      '@keyframes status-pulse': {
+                        '0%': { transform: 'scale(0.7)', opacity: 1 },
+                        '100%': { transform: 'scale(2.5)', opacity: 0 },
+                      },
+                    }}
+                  />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
+                </Box>
+              </Box>
+            </Tooltip>
           )}
 
           {/* Collapse/expand toggle */}

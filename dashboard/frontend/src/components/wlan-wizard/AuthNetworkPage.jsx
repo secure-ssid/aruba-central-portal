@@ -73,7 +73,6 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
     try {
       setLoadingGateways(true);
       const response = await monitoringAPIv2.getGatewaysMonitoring();
-      console.log('Gateway API response:', response);
 
       // Handle both response.items and response.gateways (same as DevicesPage)
       const gwItems = response.items || response.gateways || [];
@@ -88,7 +87,6 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
         macAddress: g.macAddress || g.mac || '',
       }));
 
-      console.log('Normalized gateways:', normalized);
       setGateways(normalized);
 
       // Auto-select first gateway if none selected
@@ -119,7 +117,6 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
       setGatewayVlans([]);
 
       const response = await monitoringAPIv2.getGatewayVlans(gatewaySerial);
-      console.log('Gateway VLANs API response:', response);
 
       // Extract VLAN IDs from response
       // Response format may vary - handle common structures
@@ -139,7 +136,6 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
         name: v.name || v.vlan_name || v['vlan-name'] || `VLAN ${v.vlan_id || v.id || v}`,
       })).filter(v => v.id != null);  // Filter out invalid VLANs
 
-      console.log('Parsed gateway VLANs:', vlans);
       setGatewayVlans(vlans);
 
       // If no VLAN selected yet and VLANs available, auto-select first one
@@ -509,7 +505,6 @@ const AuthNetworkPage = ({ data, onUpdate }) => {
               disabled={loadingGateways}
               onChange={(e) => {
                 const selectedGateway = gateways.find(gw => gw.serial === e.target.value);
-                console.log('Selected gateway:', selectedGateway);
                 onUpdate({
                   gatewaySerial: e.target.value,
                   gatewayName: selectedGateway?.name || '',

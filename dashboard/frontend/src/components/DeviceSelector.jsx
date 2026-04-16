@@ -4,7 +4,6 @@
  * Displays device name but uses serial number in API calls
  */
 
-import { useState, useEffect } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -16,12 +15,12 @@ import {
   Chip,
   Box,
 } from '@mui/material';
-import { deviceAPI, monitoringAPIv2 } from '../services/api';
+import useDeviceInventory from '../hooks/useDeviceInventory';
 
-function DeviceSelector({ 
-  value, 
-  onChange, 
-  required = false, 
+function DeviceSelector({
+  value,
+  onChange,
+  required = false,
   label = 'Device',
   helperText,
   disabled = false,
@@ -30,146 +29,7 @@ function DeviceSelector({
   deviceType = null, // 'AP', 'SWITCH', 'GATEWAY', or null for all
   sx = {},
 }) {
-  const [devices, setDevices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    loadDevices();
-  }, [deviceType]);
-
-  const loadDevices = async () => {
-    try {
-      setLoading(true);
-      setErrorMsg('');
-      console.log('🔍 DeviceSelector: Loading devices...', deviceType ? `(filter: ${deviceType})` : '');
-      
-      // Try multiple endpoints to get devices (more robust)
-      const [devicesData, switchesData, apsData, gatewaysData] = await Promise.allSettled([
-        deviceAPI.getAll(),
-        deviceAPI.getSwitches(),
-        deviceAPI.getAccessPoints(),
-        monitoringAPIv2.getGatewaysMonitoring(),
-      ]);
-      
-      let allDevices = [];
-      
-      // Process all devices
-      if (devicesData.status === 'fulfilled') {
-        const data = devicesData.value;
-        let devicesList = [];
-        if (Array.isArray(data)) {
-          devicesList = data;
-        } else if (data && typeof data === 'object') {
-          devicesList = data.items || data.data || data.devices || [];
-        }
-        allDevices = [...allDevices, ...devicesList];
-      } else {
-        console.warn('⚠️ DeviceSelector: Devices API failed:', devicesData.reason);
-      }
-      
-      // Process switches
-      if (switchesData.status === 'fulfilled') {
-        const data = switchesData.value;
-        let switchesList = [];
-        if (Array.isArray(data)) {
-          switchesList = data;
-        } else if (data && typeof data === 'object') {
-          switchesList = data.items || data.switches || data.data || [];
-        }
-        allDevices = [...allDevices, ...switchesList];
-      } else {
-        console.warn('⚠️ DeviceSelector: Switches API failed:', switchesData.reason);
-      }
-      
-      // Process APs
-      if (apsData.status === 'fulfilled') {
-        const data = apsData.value;
-        let apsList = [];
-        if (Array.isArray(data)) {
-          apsList = data;
-        } else if (data && typeof data === 'object') {
-          apsList = data.items || data.aps || data.data || [];
-        }
-        allDevices = [...allDevices, ...apsList];
-      } else {
-        console.warn('⚠️ DeviceSelector: APs API failed:', apsData.reason);
-      }
-      
-      // Process Gateways
-      if (gatewaysData.status === 'fulfilled') {
-        const data = gatewaysData.value;
-        let gwItems = [];
-        if (Array.isArray(data)) {
-          gwItems = data;
-        } else if (data && typeof data === 'object') {
-          gwItems = data.items || data.gateways || data.data || [];
-        }
-        // Normalize gateway data to common format
-        const normalized = gwItems.map((g) => ({
-          serial: g.serialNumber || g.serial || g.id,
-          serialNumber: g.serialNumber || g.serial,
-          name: g.deviceName || g.name || g.hostname || `Gateway ${g.serialNumber || g.serial || g.id}`,
-          deviceName: g.deviceName || g.name || g.hostname,
-          type: 'GATEWAY',
-          deviceType: 'GATEWAY',
-          model: g.model || g.platformModel || g.platform || '',
-          ...g
-        }));
-        allDevices = [...allDevices, ...normalized];
-      } else {
-        console.warn('⚠️ DeviceSelector: Gateways API failed:', gatewaysData.reason);
-      }
-      
-      // Remove duplicates by serial number
-      const deviceMap = new Map();
-      allDevices.forEach(device => {
-        const serial = device.serial || device.serialNumber || device.device_id || device.id;
-        if (serial && !deviceMap.has(serial)) {
-          deviceMap.set(serial, device);
-        }
-      });
-      
-      // Filter by device type if specified
-      let devicesList = Array.from(deviceMap.values());
-      if (deviceType) {
-        devicesList = devicesList.filter(device => {
-          const type = device.device_type || device.type || device.deviceType;
-          return type && type.toUpperCase() === deviceType.toUpperCase();
-        });
-      }
-      
-      // Normalize device data - ensure we have serial and name
-      devicesList = devicesList.map(device => {
-        // Get serial from various possible fields
-        const serial = device.serial || device.serialNumber || device.device_id || device.id;
-        return {
-          serial: serial,
-          serialNumber: device.serialNumber || device.serial || serial, // Keep both for compatibility
-          name: device.name || device.deviceName || device.device_name || device.display_name || device.hostname || `Device ${serial}`,
-          deviceName: device.deviceName || device.name || device.device_name || device.display_name,
-          type: device.device_type || device.type || device.deviceType || 'UNKNOWN',
-          deviceType: device.deviceType || device.device_type || device.type,
-          model: device.model || device.platform || device.platformModel || '',
-          ...device
-        };
-      }).filter(device => device.serial); // Only include devices with serial
-      
-      console.log(`✅ DeviceSelector: Loaded ${devicesList.length} devices${deviceType ? ` (filtered by ${deviceType})` : ''}`);
-      setDevices(devicesList);
-    } catch (err) {
-      console.error('❌ DeviceSelector: Error loading devices:', err);
-      console.error('❌ Error details:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status
-      });
-      setErrorMsg('Failed to load devices. Please check your API configuration.');
-      setDevices([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { devices, loading, error: errorMsg } = useDeviceInventory({ deviceType });
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;

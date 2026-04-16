@@ -20,10 +20,18 @@ import {
   Assessment as AssessmentIcon,
   TrendingUp as TrendingUpIcon,
   Speed as SpeedIcon,
+  BarChart as BarChartIcon,
 } from '@mui/icons-material';
 
 function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('1d');
+
+  const timeframeLabel = {
+    '1h': 'Last Hour',
+    '1d': 'Last 24 Hours',
+    '7d': 'Last 7 Days',
+    '30d': 'Last 30 Days',
+  };
 
   return (
     <Box>
@@ -49,18 +57,21 @@ function AnalyticsPage() {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TrendingUpIcon sx={{ mr: 1, color: '#FF6600' }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <TrendingUpIcon sx={{ color: '#FF6600', fontSize: 20 }} />
+                </Box>
                 <Typography variant="h6">Bandwidth Usage</Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary">
-                Aggregate bandwidth metrics for selected timeframe
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Aggregate bandwidth metrics for {timeframeLabel[timeframe] || 'selected timeframe'}
               </Typography>
-              <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                <Typography variant="caption" color="text.secondary">
-                  Data will be available when monitoring APIs are accessible
+              <Box sx={{ mt: 2, p: 3, bgcolor: 'rgba(255, 102, 0, 0.04)', borderRadius: 2, border: '1px dashed rgba(255, 102, 0, 0.2)', textAlign: 'center' }}>
+                <BarChartIcon sx={{ fontSize: 40, color: 'rgba(255, 102, 0, 0.25)', mb: 1 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Bandwidth data will populate when connected to Central monitoring endpoints
                 </Typography>
               </Box>
             </CardContent>
@@ -68,18 +79,21 @@ function AnalyticsPage() {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <AssessmentIcon sx={{ mr: 1, color: '#FF6600' }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(33, 150, 243, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <AssessmentIcon sx={{ color: '#2196f3', fontSize: 20 }} />
+                </Box>
                 <Typography variant="h6">Client Trends</Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary">
-                Connected client count over time
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Connected client count over {timeframeLabel[timeframe] || 'selected timeframe'}
               </Typography>
-              <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                <Typography variant="caption" color="text.secondary">
-                  Client trends data from monitoring API
+              <Box sx={{ mt: 2, p: 3, bgcolor: 'rgba(33, 150, 243, 0.04)', borderRadius: 2, border: '1px dashed rgba(33, 150, 243, 0.2)', textAlign: 'center' }}>
+                <AssessmentIcon sx={{ fontSize: 40, color: 'rgba(33, 150, 243, 0.25)', mb: 1 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Client trend data from the monitoring API will appear here
                 </Typography>
               </Box>
             </CardContent>
@@ -87,18 +101,21 @@ function AnalyticsPage() {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SpeedIcon sx={{ mr: 1, color: '#FF6600' }} />
+                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(76, 175, 80, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                  <SpeedIcon sx={{ color: '#4caf50', fontSize: 20 }} />
+                </Box>
                 <Typography variant="h6">AP Performance</Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary">
-                Access Point performance metrics
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Access Point performance metrics and health scores
               </Typography>
-              <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                <Typography variant="caption" color="text.secondary">
-                  Performance data for all APs
+              <Box sx={{ mt: 2, p: 3, bgcolor: 'rgba(76, 175, 80, 0.04)', borderRadius: 2, border: '1px dashed rgba(76, 175, 80, 0.2)', textAlign: 'center' }}>
+                <SpeedIcon sx={{ fontSize: 40, color: 'rgba(76, 175, 80, 0.25)', mb: 1 }} />
+                <Typography variant="body2" color="text.secondary">
+                  AP performance data will be displayed once monitoring is connected
                 </Typography>
               </Box>
             </CardContent>
@@ -106,7 +123,7 @@ function AnalyticsPage() {
         </Grid>
       </Grid>
 
-      <Card sx={{ mt: 3 }}>
+      <Card sx={{ mt: 3, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             About Analytics

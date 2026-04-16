@@ -3,7 +3,6 @@
  * Reusable dropdown for selecting sites when scope-id or site-id is required
  */
 
-import { useState, useEffect } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -13,117 +12,19 @@ import {
   Alert,
   Typography,
 } from '@mui/material';
-import { configAPI, sitesConfigAPI, monitoringAPIv2 } from '../services/api';
+import useSites from '../hooks/useSites';
 
-function SiteSelector({ 
-  value, 
-  onChange, 
-  required = false, 
+function SiteSelector({
+  value,
+  onChange,
+  required = false,
   label = 'Site',
   helperText,
   disabled = false,
   error = false,
   fullWidth = true,
 }) {
-  const [sites, setSites] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    loadSites();
-  }, []);
-
-  const loadSites = async () => {
-    try {
-      setLoading(true);
-      setErrorMsg('');
-      let sitesList = [];
-      
-      // Try Configuration API first (best choice - faster, returns site names/IDs)
-      try {
-        let sitesData;
-        try {
-          sitesData = await sitesConfigAPI.getSites({ limit: 100, offset: 0 });
-        } catch (firstErr) {
-          sitesData = await sitesConfigAPI.getSites({});
-        }
-        
-        // Handle different response formats
-        if (Array.isArray(sitesData)) {
-          sitesList = sitesData;
-        } else if (sitesData && typeof sitesData === 'object') {
-          sitesList = sitesData.items || sitesData.data || sitesData.sites || sitesData.results || [];
-        }
-        
-        if (sitesList.length > 0) {
-          // Normalize site data
-          sitesList = sitesList.map(site => ({
-            scopeId: site.scopeId || site.id || site.siteId || site.site_id,
-            name: site.scopeName || site.name || site.siteName || site.displayName || site.display_name,
-            ...site
-          })).filter(site => site.scopeId);
-          
-          setSites(sitesList);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('Configuration API failed, trying fallback:', err);
-      }
-      
-      // Fallback to configAPI.getSites()
-      try {
-        const sitesData = await configAPI.getSites();
-        if (Array.isArray(sitesData)) {
-          sitesList = sitesData;
-        } else if (sitesData && typeof sitesData === 'object') {
-          sitesList = sitesData.items || sitesData.data || sitesData.sites || [];
-        }
-        
-        if (sitesList.length > 0) {
-          sitesList = sitesList.map(site => ({
-            scopeId: site.scopeId || site.id || site.siteId || site.site_id,
-            name: site.scopeName || site.name || site.siteName || site.displayName || site.display_name,
-            ...site
-          })).filter(site => site.scopeId);
-          
-          setSites(sitesList);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('Config API failed, trying monitoring API:', err);
-      }
-      
-      // Final fallback to monitoring API
-      try {
-        const healthData = await monitoringAPIv2.getSitesHealth({});
-        const items = healthData.items || healthData.data || healthData.sites || [];
-        sitesList = items.map(item => ({
-          scopeId: item.scopeId || item.siteId || item.id,
-          name: item.scopeName || item.siteName || item.name || item.displayName,
-          ...item
-        })).filter(site => site.scopeId);
-        
-        if (sitesList.length > 0) {
-          setSites(sitesList);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('All site loading methods failed:', err);
-      }
-      
-      setSites([]);
-      setErrorMsg('Failed to load sites. Please ensure sites are configured.');
-    } catch (err) {
-      console.error('Error loading sites:', err);
-      setErrorMsg('Failed to load sites');
-      setSites([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { sites, loading, error: errorMsg } = useSites();
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;

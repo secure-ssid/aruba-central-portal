@@ -15,19 +15,26 @@ import {
   Alert,
   Chip,
   CircularProgress,
-  LinearProgress,
-  Tooltip,
-  Link,
   Skeleton,
+  LinearProgress,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import DevicesIcon from '@mui/icons-material/Devices';
 import RouterIcon from '@mui/icons-material/Router';
 import WifiIcon from '@mui/icons-material/Wifi';
 import PeopleIcon from '@mui/icons-material/People';
-import ApiIcon from '@mui/icons-material/Api';
-import SpeedIcon from '@mui/icons-material/Speed';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { useNetworkHealth, useDevices, useClients, useRateLimit } from '../hooks/useApiQueries';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SyncIcon from '@mui/icons-material/Sync';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import TuneIcon from '@mui/icons-material/TuneOutlined';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { useNetworkHealth, useDevices, useClients } from '../hooks/useApiQueries';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 // localStorage cache utils removed — React Query handles caching automatically
 
@@ -38,10 +45,11 @@ const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loa
   // Map theme color names to actual colors
   const colorMap = useMemo(() => ({
     'primary': '#FF6600',
-    'info': '#2196f3',
-    'success': '#4caf50',
-    'warning': '#FF6600',
-    'error': '#f44336',
+    'info': '#3B82F6',
+    'success': '#22C55E',
+    'warning': '#F59E0B',
+    'error': '#EF4444',
+    'purple': '#8B5CF6',
   }), []);
 
   const actualColor = colorMap[color] || '#FF6600';
@@ -50,52 +58,87 @@ const StatsCard = memo(function StatsCard({ title, value, icon: Icon, color, loa
     <Card
       sx={{
         height: '100%',
-        background: `linear-gradient(135deg, ${actualColor}15 0%, ${actualColor}05 100%)`,
-        border: `1px solid ${actualColor}30`,
+        background: `linear-gradient(135deg, ${actualColor}08 0%, transparent 100%)`,
+        border: '1px solid rgba(255,255,255,0.06)',
         cursor: onClick ? 'pointer' : 'default',
         '&:hover': onClick ? {
           transform: 'translateY(-2px)',
-          boxShadow: 3,
+          borderColor: `${actualColor}30`,
+          boxShadow: `0 8px 24px ${actualColor}12`,
         } : {},
-        transition: 'all 0.3s ease',
+        transition: 'all 0.2s ease',
       }}
       onClick={onClick}
     >
-      <CardContent>
+      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, mb: 1, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {title}
             </Typography>
             {loading ? (
-              <Skeleton variant="text" width={60} height={60} />
+              <Skeleton variant="text" width={60} height={48} />
             ) : (
-              <Typography variant="h3" sx={{ fontWeight: 700, color: actualColor }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: actualColor, fontSize: '2rem', lineHeight: 1 }}>
                 {value}
               </Typography>
             )}
             {subtitle && (
-              <Typography variant="caption" color="text.secondary" display="block">
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.75, fontSize: '0.7rem' }}>
                 {subtitle}
               </Typography>
             )}
           </Box>
           <Box
             sx={{
-              width: 56,
-              height: 56,
-              borderRadius: 2,
-              backgroundColor: `${actualColor}20`,
+              width: 44,
+              height: 44,
+              borderRadius: '12px',
+              backgroundColor: `${actualColor}10`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            {Icon && <Icon sx={{ fontSize: 32, color: actualColor }} />}
+            {Icon && <Icon sx={{ fontSize: 22, color: actualColor }} />}
           </Box>
         </Box>
       </CardContent>
     </Card>
+  );
+});
+
+/**
+ * Quick action link card
+ */
+const QuickLink = memo(function QuickLink({ title, description, icon: Icon, onClick }) {
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        p: 1.5,
+        borderRadius: '8px',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
+        '&:hover': {
+          bgcolor: 'rgba(255,255,255,0.04)',
+          '& .quick-arrow': { opacity: 1, transform: 'translateX(0)' },
+        },
+      }}
+    >
+      <Box sx={{ width: 36, height: 36, borderRadius: '8px', bgcolor: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {Icon && <Icon sx={{ fontSize: 18, color: '#94A3B8' }} />}
+      </Box>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem' }}>{title}</Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>{description}</Typography>
+      </Box>
+      <ArrowForwardIcon className="quick-arrow" sx={{ fontSize: 16, color: '#475569', opacity: 0, transform: 'translateX(-4px)', transition: 'all 0.15s ease' }} />
+    </Box>
   );
 });
 
@@ -106,14 +149,11 @@ function DashboardPage() {
   const healthQuery = useNetworkHealth({ refetchInterval: 60_000 });
   const devicesQuery = useDevices({ refetchInterval: 60_000 });
   const clientsQuery = useClients(undefined, { refetchInterval: 60_000 });
-  const rateLimitQuery = useRateLimit({ refetchInterval: 60_000 });
 
   const loading = healthQuery.isLoading && devicesQuery.isLoading;
   const refreshing = healthQuery.isFetching && !healthQuery.isLoading;
   const error = healthQuery.error?.message || devicesQuery.error?.message || '';
   const [errorDismissed, setErrorDismissed] = useState(false);
-
-  const rateLimit = rateLimitQuery.data ?? null;
 
   // Derive stats from query data
   const stats = useMemo(() => {
@@ -190,26 +230,39 @@ function DashboardPage() {
     clients: previousStats ? getTrendValue(stats.clients, previousStats.clients) : null,
   }), [stats, previousStats, getTrendValue]);
 
+  const handleRefresh = useCallback(() => {
+    healthQuery.refetch();
+    devicesQuery.refetch();
+    clientsQuery.refetch();
+  }, [healthQuery, devicesQuery, clientsQuery]);
+
   return (
     <Box>
       {/* Page Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Box sx={{ mb: 3.5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
             Network Dashboard
           </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Real-time overview of your Aruba Central network infrastructure
+          <Typography variant="body2" color="text.secondary">
+            Real-time overview of your Aruba Central infrastructure
           </Typography>
         </Box>
-        {refreshing && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CircularProgress size={20} />
-            <Typography variant="caption" color="text.secondary">
-              Refreshing...
-            </Typography>
-          </Box>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {refreshing && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <CircularProgress size={16} sx={{ color: '#475569' }} />
+              <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.7rem' }}>
+                Refreshing
+              </Typography>
+            </Box>
+          )}
+          <Tooltip title="Refresh all data">
+            <IconButton size="small" onClick={handleRefresh} sx={{ color: '#64748B', '&:hover': { color: '#94A3B8' } }}>
+              <RefreshIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       {/* Error Alert */}
@@ -220,56 +273,56 @@ function DashboardPage() {
       )}
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={2.5} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Total Devices"
             value={stats.totalDevices}
             icon={DevicesIcon}
             color="primary"
-            loading={false}
+            loading={loading}
             trend={trends.totalDevices}
             trendValue={trendValues.totalDevices}
-            subtitle="View all devices"
+            subtitle="Managed devices"
             onClick={() => navigate('/devices')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Switches"
             value={stats.switches}
             icon={RouterIcon}
             color="info"
-            loading={false}
+            loading={loading}
             trend={trends.switches}
             trendValue={trendValues.switches}
             subtitle="Network switches"
-            onClick={() => navigate('/devices')}
+            onClick={() => navigate('/devices?tab=switches')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
             title="Access Points"
             value={stats.accessPoints}
             icon={WifiIcon}
-            color="primary"
-            loading={false}
+            color="purple"
+            loading={loading}
             trend={trends.accessPoints}
             trendValue={trendValues.accessPoints}
             subtitle="Wireless APs"
-            onClick={() => navigate('/devices')}
+            onClick={() => navigate('/devices?tab=aps')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <StatsCard
-            title="Clients"
+            title="Connected Clients"
             value={stats.clients}
             icon={PeopleIcon}
             color="success"
-            loading={false}
+            loading={loading}
             trend={trends.clients}
             trendValue={trendValues.clients}
-            subtitle="Connected clients"
+            subtitle="Active sessions"
             onClick={() => navigate('/clients')}
           />
         </Grid>
@@ -277,179 +330,215 @@ function DashboardPage() {
 
       {/* Client Count Note */}
       {(stats.clients) === 0 && !loading && (
-        <Alert severity="info" sx={{ mb: 3 }}>
+        <Alert severity="info" sx={{ mb: 3, '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
           No clients are currently connected. Visit the <strong>Clients</strong> page to view detailed client information by site.
         </Alert>
       )}
 
-      {/* Device Type Breakdown */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Device Type Breakdown
-          </Typography>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'rgba(255, 102, 0, 0.1)', borderRadius: 1 }}>
-                <Typography variant="body2" color="text.secondary">Switches</Typography>
-                <Typography variant="h6" sx={{ color: '#FF6600' }}>{stats.switches}</Typography>
+      {/* Main content — 3 column layout */}
+      <Grid container spacing={2.5}>
+        {/* Device Distribution */}
+        <Grid item xs={12} md={5}>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem' }}>
+                  Device Distribution
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                  {stats.totalDevices} total
+                </Typography>
               </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'rgba(255, 102, 0, 0.1)', borderRadius: 1 }}>
-                <Typography variant="body2" color="text.secondary">Access Points</Typography>
-                <Typography variant="h6" sx={{ color: '#FF6600' }}>{stats.accessPoints}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'rgba(255, 102, 0, 0.1)', borderRadius: 1 }}>
-                <Typography variant="body2" color="text.secondary">Gateways</Typography>
-                <Typography variant="h6" sx={{ color: '#FF6600' }}>{stats.gateways}</Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* API Usage and System Status */}
-      <Grid container spacing={3}>
-        {/* API Rate Limit Widget */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ApiIcon />
-                  <Typography variant="h6">
-                    API Usage
-                  </Typography>
-                </Box>
-                <Tooltip title="Based on Aruba Central default limits: 5000 calls/day, 7 calls/second">
-                  <InfoOutlinedIcon fontSize="small" color="action" />
-                </Tooltip>
-              </Box>
-
-              {rateLimit ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {/* Daily Calls */}
+              {(() => {
+                const total = stats.switches + stats.accessPoints + stats.gateways || 1;
+                const items = [
+                  { label: 'Switches', value: stats.switches, color: '#3B82F6', icon: <RouterIcon sx={{ fontSize: 16 }} /> },
+                  { label: 'Access Points', value: stats.accessPoints, color: '#8B5CF6', icon: <WifiIcon sx={{ fontSize: 16 }} /> },
+                  { label: 'Gateways', value: stats.gateways, color: '#F59E0B', icon: <DevicesIcon sx={{ fontSize: 16 }} /> },
+                ];
+                const pieData = items.filter(i => i.value > 0).map(i => ({ name: i.label, value: i.value, color: i.color }));
+                return (
                   <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Daily API Calls
-                      </Typography>
-                      <Typography variant="body2" fontWeight={600}>
-                        {rateLimit.daily_calls} / {rateLimit.daily_limit}
-                      </Typography>
+                    {pieData.length > 0 && (
+                      <Box sx={{ height: 120, mb: 2 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={pieData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={32}
+                              outerRadius={52}
+                              paddingAngle={3}
+                              dataKey="value"
+                              isAnimationActive={false}
+                            >
+                              {pieData.map((entry) => (
+                                <Cell key={entry.name} fill={entry.color} opacity={0.85} />
+                              ))}
+                            </Pie>
+                            <RechartsTooltip
+                              contentStyle={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }}
+                              formatter={(value, name) => [value, name]}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    )}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                      {items.map((item) => (
+                        <Box key={item.label}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ color: item.color, display: 'flex', opacity: 0.85 }}>{item.icon}</Box>
+                              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{item.label}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                              <Typography variant="body2" sx={{ fontWeight: 600, color: item.color, fontSize: '0.85rem' }}>
+                                {item.value}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                                ({total > 0 ? Math.round((item.value / total) * 100) : 0}%)
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={total > 0 ? (item.value / total) * 100 : 0}
+                            sx={{
+                              height: 5,
+                              borderRadius: 3,
+                              bgcolor: 'rgba(255,255,255,0.04)',
+                              '& .MuiLinearProgress-bar': {
+                                borderRadius: 3,
+                                background: `linear-gradient(90deg, ${item.color}, ${item.color}88)`,
+                              },
+                            }}
+                          />
+                        </Box>
+                      ))}
                     </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(rateLimit.daily_percentage, 100)}
-                      color={rateLimit.daily_percentage > 80 ? 'error' : rateLimit.daily_percentage > 60 ? 'warning' : 'success'}
-                      sx={{ height: 8, borderRadius: 4 }}
-                    />
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                      {rateLimit.calls_remaining} calls remaining • Resets in {rateLimit.reset_in_hours}h {rateLimit.reset_in_minutes}m
-                    </Typography>
                   </Box>
-
-                  {/* Current Rate */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <SpeedIcon fontSize="small" color="action" />
-                      <Typography variant="body2" color="text.secondary">
-                        Current Rate
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={`${rateLimit.current_rate_per_second}/${rateLimit.per_second_limit} calls/sec`}
-                      size="small"
-                      color={rateLimit.current_rate_per_second >= rateLimit.per_second_limit ? 'error' : 'default'}
-                    />
-                  </Box>
-
-                  {/* Documentation Link */}
-                  <Link
-                    href="https://developer.arubanetworks.com/aruba-central/docs/api-getting-started#rate-limiting"
-                    target="_blank"
-                    rel="noopener"
-                    variant="caption"
-                    sx={{ display: 'block', textAlign: 'center' }}
-                  >
-                    View Rate Limiting Documentation
-                  </Link>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                  <CircularProgress size={24} />
-                </Box>
-              )}
+                );
+              })()}
             </CardContent>
           </Card>
         </Grid>
 
         {/* System Status */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem', mb: 2.5 }}>
                 System Status
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    API Connection
+
+              {/* Connection quality indicator */}
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 2.5,
+                p: 1.5,
+                borderRadius: '10px',
+                bgcolor: error ? 'rgba(239,68,68,0.06)' : 'rgba(34,197,94,0.06)',
+                border: error ? '1px solid rgba(239,68,68,0.12)' : '1px solid rgba(34,197,94,0.12)',
+              }}>
+                <Box sx={{ position: 'relative', display: 'flex' }}>
+                  <SignalCellularAltIcon sx={{ fontSize: 28, color: error ? '#EF4444' : '#22C55E' }} />
+                  {!error && (
+                    <Box sx={{
+                      position: 'absolute', top: -1, right: -1, width: 8, height: 8,
+                      borderRadius: '50%', bgcolor: '#22C55E',
+                      boxShadow: '0 0 6px rgba(34,197,94,0.5)',
+                      animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
+                    }} />
+                  )}
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem', color: error ? '#EF4444' : '#22C55E' }}>
+                    {error ? 'Connection Issue' : 'All Systems Operational'}
                   </Typography>
-                  <Chip label="Connected" size="small" color="success" />
+                  <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                    Aruba Central API
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Status details */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CheckCircleOutlineIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                      API Connection
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={error ? 'Error' : 'Connected'}
+                    size="small"
+                    color={error ? 'error' : 'success'}
+                    variant="outlined"
+                    sx={{ fontWeight: 500, fontSize: '0.65rem', height: 22 }}
+                  />
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Last Updated
-                  </Typography>
-                  <Typography variant="body2">
-                    {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AccessTimeIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                      Last Updated
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" sx={{ fontWeight: 500, fontFamily: 'monospace', fontSize: '0.75rem', color: 'text.secondary' }}>
+                    {lastUpdated ? lastUpdated.toLocaleTimeString() : '--:--:--'}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Auto-refresh
-                  </Typography>
-                  <Chip label="60s" size="small" variant="outlined" />
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Base URL
-                  </Typography>
-                  <Tooltip title="Click Settings to verify your regional cluster">
-                    <Chip label="Configured" size="small" variant="outlined" />
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <SyncIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                      Auto-refresh
+                    </Typography>
+                  </Box>
+                  <Chip label="60s" size="small" variant="outlined" sx={{ fontWeight: 500, fontSize: '0.65rem', height: 22, color: 'text.secondary', borderColor: 'rgba(255,255,255,0.1)' }} />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Quick Actions
+        {/* Quick Navigation */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: '100%', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem', mb: 1.5 }}>
+                Quick Access
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Navigate to different sections to manage your network:
-                </Typography>
-                <Typography variant="body2">
-                  • View and manage all network devices
-                </Typography>
-                <Typography variant="body2">
-                  • Configure network settings and templates
-                </Typography>
-                <Typography variant="body2">
-                  • Manage user access and permissions
-                </Typography>
-                <Typography variant="body2">
-                  • Explore API endpoints directly
-                </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                <QuickLink
+                  title="Alerts"
+                  description="View active alerts"
+                  icon={NotificationsIcon}
+                  onClick={() => navigate('/alerts')}
+                />
+                <QuickLink
+                  title="WLANs"
+                  description="Manage wireless networks"
+                  icon={WifiIcon}
+                  onClick={() => navigate('/wlans')}
+                />
+                <QuickLink
+                  title="Configuration"
+                  description="Network settings"
+                  icon={TuneIcon}
+                  onClick={() => navigate('/configuration')}
+                />
+                <QuickLink
+                  title="Settings"
+                  description="App preferences"
+                  icon={SettingsIcon}
+                  onClick={() => navigate('/settings')}
+                />
               </Box>
             </CardContent>
           </Card>

@@ -23,7 +23,6 @@ import {
   Pagination,
   Chip,
   Alert,
-  Divider,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -31,17 +30,10 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchIcon from '@mui/icons-material/Search';
 import ShieldIcon from '@mui/icons-material/Shield';
 import InfoIcon from '@mui/icons-material/Info';
+import PeopleIcon from '@mui/icons-material/People';
 import { greenlakeUserAPI } from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
-
-function StatusChip({ status }) {
-  const color =
-    status === 'ACTIVE' ? 'success' :
-    status === 'UNVERIFIED' ? 'warning' :
-    status === 'DISABLED' ? 'default' :
-    'info';
-  return <Chip size="small" color={color} label={status || 'UNKNOWN'} />;
-}
+import StatusChip from '../components/StatusChip';
 
 export default function GLUsersPage() {
   const [loading, setLoading] = useState(false);
@@ -127,11 +119,11 @@ export default function GLUsersPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            GreenLake Users
+          <Typography variant="h4" fontWeight={700}>
+            Users
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage users and view role assignments
+            GreenLake Platform user management and role assignments
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
@@ -244,9 +236,13 @@ export default function GLUsersPage() {
             ))}
             {users.length === 0 && !loading && (
               <TableRow>
-                <TableCell colSpan={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    No users found.
+                <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                  <PeopleIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                  <Typography variant="body2" color="text.secondary" display="block">
+                    No users found
+                  </Typography>
+                  <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                    Invite users to your GreenLake workspace
                   </Typography>
                 </TableCell>
               </TableRow>

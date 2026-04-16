@@ -27,7 +27,6 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  Settings as SettingsIcon,
   Visibility,
   VisibilityOff,
   SwapHoriz as SwapHorizIcon,
@@ -44,6 +43,8 @@ function SettingsPage() {
   const [success, setSuccess] = useState('');
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
   const [clusterInfo, setClusterInfo] = useState(null);
+  const [clusterError, setClusterError] = useState('');
+  const [workspaceError, setWorkspaceError] = useState('');
 
   // Form state
   const [clientId, setClientId] = useState('');
@@ -59,19 +60,23 @@ function SettingsPage() {
 
   const fetchWorkspaceInfo = async () => {
     try {
+      setWorkspaceError('');
       const info = await workspaceAPI.getInfo();
       setCurrentWorkspace(info);
     } catch (err) {
       console.error('Failed to fetch workspace info:', err);
+      setWorkspaceError('Unable to fetch workspace information. The backend may not be connected.');
     }
   };
 
   const fetchClusterInfo = async () => {
     try {
+      setClusterError('');
       const info = await clusterAPI.getInfo();
       setClusterInfo(info);
     } catch (err) {
       console.error('Failed to fetch cluster info:', err);
+      setClusterError('Unable to fetch cluster information. The backend may not be configured.');
     }
   };
 
@@ -150,8 +155,15 @@ function SettingsPage() {
                     </Typography>
                   </Box>
                 </Box>
+              ) : workspaceError ? (
+                <Alert severity="warning" sx={{ mt: 1 }}>
+                  {workspaceError}
+                </Alert>
               ) : (
-                <CircularProgress size={24} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+                  <Typography variant="body2" color="text.secondary">Loading workspace info...</Typography>
+                </Box>
               )}
             </CardContent>
           </Card>
@@ -349,9 +361,14 @@ function SettingsPage() {
                 </Link>
               </Box>
             </Box>
+          ) : clusterError ? (
+            <Alert severity="warning" sx={{ mt: 1 }}>
+              {clusterError}
+            </Alert>
           ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-              <CircularProgress size={24} />
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, gap: 1 }}>
+              <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+              <Typography variant="body2" color="text.secondary">Loading cluster information...</Typography>
             </Box>
           )}
         </CardContent>

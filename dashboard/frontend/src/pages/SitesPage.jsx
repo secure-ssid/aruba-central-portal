@@ -35,7 +35,6 @@ import {
   ListItem,
   ListItemText,
   Tooltip,
-  Popover,
 } from '@mui/material';
 import {
   LocationOn as LocationOnIcon,
@@ -214,31 +213,24 @@ function SitesPage() {
       try {
         // Fetch general sites health
         const healthParams = { limit: 100, offset: 0 };
-        console.log('🔍 Calling getSitesHealth with params:', healthParams);
         let healthResponse;
         try {
           healthResponse = await monitoringAPIv2.getSitesHealth(healthParams);
-          console.log('✅ getSitesHealth returned:', healthResponse);
           if (healthResponse) {
             const extracted = extractSitesHealthItems(healthResponse);
             healthData = Array.isArray(extracted) ? extracted : [];
             setSitesHealth(healthData);
-            console.log('📊 Sites health data:', healthData);
           }
         } catch (err) {
-          console.warn('⚠️ Failed to fetch sites health:', err);
           healthResponse = null;
         }
 
         // Fetch device health data using dedicated endpoint
-        console.log('🔍 Calling getSitesDeviceHealth for device health data');
         try {
           const deviceHealthResponse = await monitoringAPIv2.getSitesDeviceHealth({ limit: 100, offset: 0 });
-          console.log('✅ getSitesDeviceHealth returned:', deviceHealthResponse);
           if (deviceHealthResponse) {
             const extracted = extractSitesHealthItems(deviceHealthResponse);
             deviceHealthData = Array.isArray(extracted) ? extracted : [];
-            console.log('📊 Device health data:', deviceHealthData);
             
             // Merge device health into sites health data
             if (healthData.length > 0 && deviceHealthData.length > 0) {
@@ -265,15 +257,11 @@ function SitesPage() {
             }
           }
         } catch (err) {
-          console.warn('⚠️ Failed to fetch device health data:', err);
-          console.warn('⚠️ Error details:', err.response?.data || err.message);
+          // Device health endpoint not available; continue without it
         }
         
-        if (healthData.length === 0) {
-          console.warn('⚠️ No health data available');
-        }
+        // healthData may still be empty if no endpoints returned data
       } catch (healthErr) {
-        console.warn('Failed to fetch health data:', healthErr);
         setSitesHealth([]);
         healthData = [];
       }
@@ -328,31 +316,9 @@ function SitesPage() {
           deviceHealth: healthSite.deviceHealth || healthSite || null,
         }));
       }
-      console.log('Combined sites with device health:', combined.map(s => ({
-        name: s.scopeName || s.name,
-        id: s.scopeId || s.id,
-        deviceCount: s.devices?.count || s.deviceCount,
-        hasHealth: !!s.health,
-        hasDevices: !!s.devices,
-        hasDeviceTypes: !!s.deviceTypes,
-        devicesPath: s.devices ? 'exists' : 'missing',
-        healthDevicesPath: s.health?.devices ? 'exists' : 'missing',
-        deviceHealth: getDeviceHealthCounts(s),
-        deviceTypesCount: s.deviceTypes?.length || 0,
-        rawDevices: s.devices,
-        rawDeviceTypes: s.deviceTypes,
-        rawHealthDevices: s.health?.devices,
-        fullSite: s, // Full site object for debugging
-      })));
-      
-      // Calculate and log total device health counts across all sites
-      const totals = getTotalDeviceHealthCounts();
-      console.log('📊 Total device health counts across all sites:', totals);
-      console.log('📊 Sites contributing to totals:', combined.length);
-      
       setSites(combined);
     } catch (err) {
-      console.error('Sites API error:', err);
+      console.error('Failed to load sites data:', err.message || err);
       setError('Failed to load sites data. ' + (err.message || ''));
       setSites([]);
       setSitesConfig([]);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -30,11 +30,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Divider,
+  Skeleton,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -43,8 +40,12 @@ import SecurityIcon from '@mui/icons-material/Security';
 import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from '@mui/icons-material/Info';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import BlockIcon from '@mui/icons-material/Block';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import { useGLPermissions, useGLRolePermissions } from '../hooks/useApiQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Permission categories and definitions
 const PERMISSION_CATEGORIES = {
@@ -117,63 +118,47 @@ function PermissionChip({ permission, granted }) {
 }
 
 function GLPermissionsPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notConfigured, setNotConfigured] = useState(false);
+  const queryClient = useQueryClient();
+  const [mutationError, setMutationError] = useState('');
   const [success, setSuccess] = useState('');
-  const [permissions, setPermissions] = useState([]);
-  const [rolePermissions, setRolePermissions] = useState({});
   const [createRoleOpen, setCreateRoleOpen] = useState(false);
   const [newRole, setNewRole] = useState({
     name: '',
     description: '',
     permissions: [],
   });
+  const [createLoading, setCreateLoading] = useState(false);
 
-  const fetchPermissions = async () => {
-    if (notConfigured) return;
-    setLoading(true);
-    setError('');
-    try {
-      const resp = await apiClient.get('/greenlake/permissions');
-      setPermissions(resp.data?.permissions || resp.data || []);
+  const {
+    data: permissionsData,
+    error: permissionsQueryError,
+    isLoading: permissionsLoading,
+    refetch: refetchPermissions,
+  } = useGLPermissions();
 
-      // Fetch role-permission mappings
-      try {
-        const roleResp = await apiClient.get('/greenlake/role-permissions');
-        setRolePermissions(roleResp.data || {});
-      } catch (e) {
-        console.log('Could not fetch role permissions');
-      }
-    } catch (e) {
-      if (isGLNotConfiguredError(e)) {
-        setNotConfigured(true);
-      } else {
-        setError(e.response?.data?.error || 'Failed to load permissions');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: rolePermissions = {} } = useGLRolePermissions();
 
-  useEffect(() => {
-    fetchPermissions();
-  }, []);
+  const permissions = permissionsData?.permissions || permissionsData || [];
+  const notConfigured = permissionsQueryError ? isGLNotConfiguredError(permissionsQueryError) : false;
+  const error = mutationError || (permissionsQueryError && !notConfigured
+    ? (permissionsQueryError.response?.data?.error || 'Failed to load permissions')
+    : '');
+  const loading = permissionsLoading || createLoading;
 
   const handleCreateRole = async () => {
-    setLoading(true);
-    setError('');
+    setCreateLoading(true);
+    setMutationError('');
     setSuccess('');
     try {
       await apiClient.post('/greenlake/custom-roles', newRole);
       setSuccess('Custom role created successfully');
       setCreateRoleOpen(false);
       setNewRole({ name: '', description: '', permissions: [] });
-      await fetchPermissions();
+      queryClient.invalidateQueries({ queryKey: ['gl-permissions'] });
     } catch (e) {
-      setError(e.response?.data?.error || 'Failed to create role');
+      setMutationError(e.response?.data?.error || 'Failed to create role');
     } finally {
-      setLoading(false);
+      setCreateLoading(false);
     }
   };
 
@@ -194,11 +179,11 @@ function GLPermissionsPage() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>
-            GreenLake Permissions
+          <Typography variant="h4" fontWeight={700}>
+            Permissions
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            View and manage granular permissions for platform access
+            GreenLake granular permissions for platform access
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
@@ -211,7 +196,7 @@ function GLPermissionsPage() {
           </Button>
           <Tooltip title="Refresh">
             <span>
-              <IconButton onClick={fetchPermissions} disabled={loading}>
+              <IconButton onClick={() => refetchPermissions()} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </span>
@@ -230,7 +215,7 @@ function GLPermissionsPage() {
       </Alert>}
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setMutationError('')}>
           {error}
         </Alert>
       )}
@@ -242,7 +227,14 @@ function GLPermissionsPage() {
       )}
 
       {/* Permission Categories */}
-      {!notConfigured && <Stack spacing={2}>
+      {permissionsLoading && (
+        <Stack spacing={2} sx={{ mb: 2 }}>
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} variant="rectangular" height={56} sx={{ borderRadius: 1 }} />
+          ))}
+        </Stack>
+      )}
+      {!notConfigured && !permissionsLoading && <Stack spacing={2}>
         {Object.entries(PERMISSION_CATEGORIES).map(([categoryKey, category]) => (
           <Accordion key={categoryKey} defaultExpanded={categoryKey === 'workspace'}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -315,7 +307,7 @@ function GLPermissionsPage() {
       </Stack>}
 
       {/* Permission Summary */}
-      {!notConfigured && <Card sx={{ mt: 3 }}>
+      {!notConfigured && !permissionsLoading && <Card sx={{ mt: 3 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={700} gutterBottom>
             Permission Summary by Role
@@ -335,39 +327,39 @@ function GLPermissionsPage() {
               <TableBody>
                 <TableRow>
                   <TableCell>
-                    <Chip size="small" label="👑 Administrator" color="error" />
+                    <Chip size="small" label="Administrator" color="error" />
                   </TableCell>
                   <TableCell>
                     <strong>{allPermissions.length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>✅</TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>
-                    <Chip size="small" label="⚙️ Operator" color="warning" />
+                    <Chip size="small" label="Operator" color="warning" />
                   </TableCell>
                   <TableCell>
                     <strong>{allPermissions.filter(p => p.includes('view') || p.includes('update') || p.includes('assign') || p.includes('subscribe')).length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>⚠️ Limited</TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>❌</TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><WarningAmberIcon sx={{ color: '#F59E0B', fontSize: 18 }} /></TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>
-                    <Chip size="small" label="👁️ Observer" color="info" />
+                    <Chip size="small" label="Observer" color="info" />
                   </TableCell>
                   <TableCell>
                     <strong>{allPermissions.filter(p => p.includes('view')).length}</strong> / {allPermissions.length}
                   </TableCell>
-                  <TableCell>✅</TableCell>
-                  <TableCell>❌</TableCell>
-                  <TableCell>❌</TableCell>
-                  <TableCell>❌</TableCell>
+                  <TableCell><CheckCircleIcon sx={{ color: '#22C55E', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
+                  <TableCell><BlockIcon sx={{ color: '#EF4444', fontSize: 18 }} /></TableCell>
                 </TableRow>
               </TableBody>
             </Table>

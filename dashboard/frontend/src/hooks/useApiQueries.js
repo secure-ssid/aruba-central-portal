@@ -18,7 +18,12 @@ import {
   alertsAPI,
   tokenAPI,
   rateLimitAPI,
+  greenlakeUserAPI,
+  greenlakeTagsAPI,
+  greenlakeDeviceAPI,
+  greenlakeSubscriptionsAPI,
 } from '../services/api';
+import apiClient from '../services/api';
 
 // ── Inventory (stable data — 5 min stale) ─────────────────────────────────
 
@@ -118,12 +123,70 @@ export const useRateLimit = (options = {}) =>
     ...options,
   });
 
-// ── Service Capacity ───────────���──────────────────────────────────────────
+// ── Service Capacity ───────────────────────────────────────────────────────
 
 export const useServiceCapacity = (options = {}) =>
   useQuery({
     queryKey: ['service-capacity'],
     queryFn: () => servicesAPI.getCapacity(),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+// ── GreenLake / HPE Global Layer ──────────────────────────────────────────
+
+export const useGLPermissions = (options = {}) =>
+  useQuery({
+    queryKey: ['gl-permissions'],
+    queryFn: () => apiClient.get('/greenlake/permissions').then(r => r.data),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGLRolePermissions = (options = {}) =>
+  useQuery({
+    queryKey: ['gl-role-permissions'],
+    queryFn: () => apiClient.get('/greenlake/role-permissions').then(r => r.data),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGLUsers = ({ filter = null, limit = 100, offset = 0 } = {}, options = {}) =>
+  useQuery({
+    queryKey: ['gl-users', { filter, limit, offset }],
+    queryFn: () => greenlakeUserAPI.list({ filter, limit, offset }),
+    staleTime: 30_000,
+    ...options,
+  });
+
+export const useGLTags = (options = {}) =>
+  useQuery({
+    queryKey: ['gl-tags'],
+    queryFn: () => greenlakeTagsAPI.list().then(r => r?.items || r?.tags || r || []),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGLDevices = ({ page = 1, limit = 25 } = {}, options = {}) =>
+  useQuery({
+    queryKey: ['gl-devices', { page, limit }],
+    queryFn: () => greenlakeDeviceAPI.list({ offset: (page - 1) * limit, limit }),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGLSubscriptions = ({ page = 1, limit = 25 } = {}, options = {}) =>
+  useQuery({
+    queryKey: ['gl-subscriptions', { page, limit }],
+    queryFn: () => greenlakeSubscriptionsAPI.list({ offset: (page - 1) * limit, limit }),
+    staleTime: 5 * 60_000,
+    ...options,
+  });
+
+export const useGLLocations = ({ page = 1, limit = 25 } = {}, options = {}) =>
+  useQuery({
+    queryKey: ['gl-locations', { page, limit }],
+    queryFn: () => apiClient.get('/greenlake/locations', { params: { offset: (page - 1) * limit, limit } }).then(r => r.data),
     staleTime: 5 * 60_000,
     ...options,
   });

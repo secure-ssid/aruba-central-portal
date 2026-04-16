@@ -19,28 +19,39 @@ code {
     monospace;
 }
 
-/* Scrollbar styling */
+/* ─── Scrollbar — subtle track, themed thumb ─── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0E0E0E;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FF6600;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF9933;
+  background: rgba(255, 102, 0, 0.35);
 }
 
-/* Loading spinner */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+/* ─── Spinner ─── */
 .spinner {
-  border: 3px solid #171717;
+  border: 3px solid rgba(255, 255, 255, 0.06);
   border-top: 3px solid #FF6600;
   border-radius: 50%;
   width: 40px;
@@ -53,7 +64,7 @@ code {
   100% { transform: rotate(360deg); }
 }
 
-/* Fade in animation */
+/* ─── Fade in ─── */
 .fade-in {
   animation: fadeIn 0.3s ease-in;
 }
@@ -69,7 +80,7 @@ code {
   }
 }
 
-/* Pulse animation */
+/* ─── Pulse ─── */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -81,4 +92,133 @@ code {
 
 .pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ─── Slide-up entrance ─── */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.35s ease-out;
+}
+
+/* ─── Shimmer / skeleton loading ─── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.04) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* ─── Scale-in for cards / modals ─── */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* ─── Fade-in-up — staggerable entrance ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.3s ease-out both;
+}
+
+/* ─── Glow pulse — for active indicators ─── */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 4px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 12px currentColor;
+  }
+}
+
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ─── Slide-in-right — for drawers / panels ─── */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.25s ease-out;
+}
+
+/* ─── Skeleton loading bar animation ─── */
+@keyframes skeletonWave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ─── Focus ring for accessibility ─── */
+*:focus-visible {
+  outline: 2px solid rgba(255, 102, 0, 0.5);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring for mouse interactions */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─── Selection style ─── */
+::selection {
+  background: rgba(255, 102, 0, 0.3);
+  color: #F1F5F9;
+}
+
+/* ─── Smooth transitions for all links ─── */
+a {
+  transition: color 0.15s ease;
 }
