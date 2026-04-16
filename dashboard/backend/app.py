@@ -113,14 +113,34 @@ _global_rate_lock = threading.Lock()
 
 @app.before_request
 def global_rate_limit():
-    """Apply a default rate limit of 60 requests per minute per IP to all API endpoints."""
+    """Apply a default per-IP rate limit to API endpoints.
+
+    The limit is intentionally generous because a single dashboard page load
+    fans out into many parallel API calls (devices, clients, alerts, sites,
+    auth-status, setup-check, etc.). Stricter per-endpoint limits still apply
+    to sensitive routes such as /api/auth/login and /api/setup/configure.
+
+    Long-lived SSE stream endpoints are excluded so reconnects don't count
+    against the per-minute budget.
+    """
     if not request.path.startswith('/api/'):
         return None  # Skip non-API routes (static files, etc.)
+
+    # Exclude long-lived streaming endpoints from per-minute budgeting.
+    if '/stream/' in request.path or request.path.endswith('/stream'):
+        return None
+    if request.path.startswith('/api/alerts/stream'):
+        return None
 
     ip = request.remote_addr or "unknown"
     now = time.time()
     window_start = now - 60
-    max_requests = 60
+    # 300 req/min (~5/s) accommodates dashboard fan-out in dev and prod while
+    # still catching runaway clients. Tune via GLOBAL_RATE_LIMIT env var.
+    try:
+        max_requests = int(os.environ.get("GLOBAL_RATE_LIMIT", "300"))
+    except ValueError:
+        max_requests = 300
 
     with _global_rate_lock:
         timestamps = _global_rate_store[ip]
