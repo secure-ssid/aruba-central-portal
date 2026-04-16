@@ -54,6 +54,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import HubIcon from '@mui/icons-material/Hub';
 import BuildIcon from '@mui/icons-material/Build';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -93,6 +94,7 @@ const toolsItems = [
 
 const systemItems = [
   { text: 'Status',        icon: <MonitorHeartIcon />,   path: '/status' },
+  { text: 'Audit Log',     icon: <HistoryEduIcon />,     path: '/audit-log' },
   { text: 'Settings',      icon: <SettingsIcon />,       path: '/settings' },
 ];
 

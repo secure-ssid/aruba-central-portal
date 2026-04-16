@@ -28,6 +28,7 @@ import logging
 import requests
 from flask import Blueprint, request, jsonify, make_response
 
+from utils.central_api_client import CentralAPIError
 from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
 
 config_bp = Blueprint("config", __name__)
@@ -1127,12 +1128,14 @@ def get_sites():
             page_size=100,
         )
         return jsonify(response)
+    except CentralAPIError as e:
+        logger.error(f"Sites: HTTP {e.status_code} {e.error_code}: {e.message}", exc_info=True)
+        if e.status_code == 404:
+            return jsonify({"items": [], "count": 0, "total": 0})
+        return jsonify({"error": e.message}), e.status_code
     except Exception as e:
         logger.error(f"Sites: {e}", exc_info=True)
-        error_str = str(e)
-        if "404" in error_str or "Not Found" in error_str:
-            return jsonify({"items": [], "count": 0, "total": 0})
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @config_bp.route("/api/sites/<site_id>", methods=["GET"])
@@ -1176,12 +1179,14 @@ def get_groups():
             page_size=100,
         )
         return jsonify(response)
+    except CentralAPIError as e:
+        logger.error(f"Groups: HTTP {e.status_code} {e.error_code}: {e.message}", exc_info=True)
+        if e.status_code == 404:
+            return jsonify({"groups": [], "count": 0, "total": 0})
+        return jsonify({"error": e.message}), e.status_code
     except Exception as e:
         logger.error(f"Groups: {e}", exc_info=True)
-        error_str = str(e)
-        if "404" in error_str or "Not Found" in error_str:
-            return jsonify({"groups": [], "count": 0, "total": 0})
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @config_bp.route("/api/templates", methods=["GET"])
@@ -1286,12 +1291,14 @@ def get_scope_labels():
             page_size=100,
         )
         return jsonify(response)
+    except CentralAPIError as e:
+        logger.error(f"Labels: HTTP {e.status_code} {e.error_code}: {e.message}", exc_info=True)
+        if e.status_code == 404:
+            return jsonify({"labels": [], "count": 0, "total": 0})
+        return jsonify({"error": e.message}), e.status_code
     except Exception as e:
         logger.error(f"Labels: {e}", exc_info=True)
-        error_str = str(e)
-        if "404" in error_str or "Not Found" in error_str:
-            return jsonify({"labels": [], "count": 0, "total": 0})
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @config_bp.route("/api/scope/labels", methods=["POST"])
@@ -1324,13 +1331,14 @@ def get_label_associations():
 
         response = aruba_client.get(f"/central/v2/labels/{label_id}/associations")
         return jsonify(response)
-    except Exception as e:
-        error_str = str(e)
-        logger.error(f"Error fetching label associations: {error_str}")
-        # Return empty associations on 404
-        if "404" in error_str or "Not Found" in error_str:
+    except CentralAPIError as e:
+        logger.error(f"Error fetching label associations: HTTP {e.status_code} {e.error_code}: {e.message}")
+        if e.status_code == 404:
             return jsonify({"devices": [], "sites": [], "count": 0})
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
+        logger.error(f"Error fetching label associations: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @config_bp.route("/api/scope/geofences", methods=["GET"])
@@ -1366,13 +1374,14 @@ def get_site_hierarchy():
                 hierarchy["hierarchy"][site_id] = site
 
         return jsonify(hierarchy)
-    except Exception as e:
-        error_str = str(e)
-        logger.error(f"Error fetching site hierarchy: {error_str}")
-        # Return empty hierarchy on 404
-        if "404" in error_str or "Not Found" in error_str:
+    except CentralAPIError as e:
+        logger.error(f"Error fetching site hierarchy: HTTP {e.status_code} {e.error_code}: {e.message}")
+        if e.status_code == 404:
             return jsonify({"sites": [], "total": 0, "hierarchy": {}})
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
+        logger.error(f"Error fetching site hierarchy: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 # ============= Application Experience Endpoints =============
@@ -1418,17 +1427,13 @@ def get_traffic_analysis():
 
         response = aruba_client.get("/monitoring/v1/app_analytics", params=params)
         return jsonify(response)
-    except Exception as e:
-        # Gracefully handle 400/404 as empty series (broad match to be robust)
-        err_text = str(e)
-        if (
-            "404" in err_text
-            or "400" in err_text
-            or "Not Found" in err_text
-            or "Bad Request" in err_text
-        ):
-            logger.warning(f"Traffic analysis error treated as empty: {err_text[:200]}")
+    except CentralAPIError as e:
+        if e.status_code in (400, 404):
+            logger.warning(f"Traffic analysis error treated as empty: HTTP {e.status_code} {e.error_code}")
             return jsonify({"items": [], "count": 0})
+        logger.error(f"Error fetching traffic analysis: {e.message}")
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
         logger.error(f"Error fetching traffic analysis: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -1459,17 +1464,13 @@ def get_app_visibility():
         params = {"group": group} if group != "all" else {}
         response = aruba_client.get("/monitoring/v1/app_visibility", params=params)
         return jsonify(response)
-    except Exception as e:
-        # Gracefully handle 400/404 as empty (broad match to be robust)
-        err_text = str(e)
-        if (
-            "404" in err_text
-            or "400" in err_text
-            or "Not Found" in err_text
-            or "Bad Request" in err_text
-        ):
-            logger.warning(f"App visibility error treated as empty: {err_text[:200]}")
+    except CentralAPIError as e:
+        if e.status_code in (400, 404):
+            logger.warning(f"App visibility error treated as empty: HTTP {e.status_code} {e.error_code}")
             return jsonify({"items": [], "count": 0})
+        logger.error(f"Error fetching app visibility: {e.message}")
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
         logger.error(f"Error fetching app visibility: {e}")
         return jsonify({"error": str(e)}), 500
 
@@ -2000,168 +2001,6 @@ def get_cluster_info():
             "documentation": "https://developer.arubanetworks.com/aruba-central/docs/api-getting-started",
         }
     )
-
-
-# ============= Services Endpoints =============
-
-
-@config_bp.route("/api/services/health", methods=["GET"])
-@require_session
-def get_services_health():
-    """Get overall service health status."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        # Aggregate health from multiple sources
-        health_status = {"overall_status": "healthy", "services": [], "timestamp": time.time()}
-
-        # Fetch all three in parallel (all cached)
-        data = parallel_get(
-            [
-                ("/network-monitoring/v1/devices",),
-                ("/network-monitoring/v1/wlans",),
-                ("/central/v2/sites",),
-            ]
-        )
-
-        devices = data.get("/network-monitoring/v1/devices")
-        if devices is not None:
-            health_status["services"].append(
-                {
-                    "name": "Device Management",
-                    "status": "up",
-                    "details": f"{devices.get('count', 0)} devices monitored",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Device Management", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        wlans = data.get("/network-monitoring/v1/wlans")
-        if wlans is not None:
-            health_status["services"].append(
-                {
-                    "name": "Wireless Services",
-                    "status": "up",
-                    "details": f"{wlans.get('count', 0)} WLANs configured",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Wireless Services", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        sites = data.get("/central/v2/sites")
-        if sites is not None:
-            health_status["services"].append(
-                {
-                    "name": "Site Management",
-                    "status": "up",
-                    "details": f"{sites.get('total', 0)} sites configured",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Site Management", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        return jsonify(health_status)
-    except Exception as e:
-        logger.error(f"Error fetching services health: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@config_bp.route("/api/services/subscriptions", methods=["GET"])
-@require_session
-def get_service_subscriptions():
-    """Get service subscriptions and licenses."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        try:
-            response = aruba_client.get("/platform/licensing/v1/subscriptions")
-            return jsonify(response)
-        except Exception as serr:
-            if (
-                "404" in str(serr)
-                or "400" in str(serr)
-                or "Not Found" in str(serr)
-                or "Bad Request" in str(serr)
-            ):
-                logger.warning("Service subscriptions not available; returning empty list")
-                return jsonify({"subscriptions": [], "count": 0})
-            raise serr
-    except Exception as e:
-        logger.error(f"Error fetching service subscriptions: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@config_bp.route("/api/services/audit-logs", methods=["GET"])
-@require_session
-def get_service_audit_logs():
-    """Get service audit logs."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        limit = request.args.get("limit", 100)
-        offset = request.args.get("offset", 0)
-
-        params = {"limit": limit, "offset": offset}
-
-        try:
-            response = aruba_client.get("/platform/auditlogs/v1/logs", params=params)
-            return jsonify(response)
-        except Exception as aerr:
-            if (
-                "404" in str(aerr)
-                or "400" in str(aerr)
-                or "Not Found" in str(aerr)
-                or "Bad Request" in str(aerr)
-            ):
-                logger.warning("Audit logs not available; returning empty list")
-                return jsonify({"logs": [], "count": 0, "offset": int(offset)})
-            raise aerr
-    except Exception as e:
-        logger.error(f"Error fetching audit logs: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@config_bp.route("/api/services/capacity", methods=["GET"])
-@require_session
-def get_service_capacity():
-    """Get service capacity and usage metrics."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        # Get device counts and calculate capacity
-        devices = cached_get("/network-monitoring/v1/devices")
-
-        capacity = {
-            "devices": {
-                "total": devices.get("count", 0),
-                "limit": 10000,  # Default limit, adjust based on subscription
-                "percentage": 0,
-            },
-            "timestamp": time.time(),
-        }
-
-        if capacity["devices"]["limit"] > 0:
-            capacity["devices"]["percentage"] = (
-                capacity["devices"]["total"] / capacity["devices"]["limit"]
-            ) * 100
-
-        return jsonify(capacity)
-    except Exception as e:
-        logger.error(f"Error fetching service capacity: {e}")
-        return jsonify({"error": str(e)}), 500
 
 
 # ============= Site Health — Individual Site =============

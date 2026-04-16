@@ -33,8 +33,11 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TuneIcon from '@mui/icons-material/TuneOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { useNetworkHealth, useDevices, useClients } from '../hooks/useApiQueries';
+import { useNetworkHealth, useDevices, useClients, useTopAPsByBandwidth, useSitesHealthScores } from '../hooks/useApiQueries';
+import { formatBytes } from '../utils/formatUtils';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import CellTowerIcon from '@mui/icons-material/CellTower';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 // localStorage cache utils removed — React Query handles caching automatically
 
@@ -147,6 +150,270 @@ const QuickLink = memo(function QuickLink({ title, description, icon: Icon, onCl
       </Box>
       <ArrowForwardIcon className="quick-arrow" sx={{ fontSize: 16, color: 'var(--text-disabled)', opacity: 0, transform: 'translateX(-4px)', transition: 'all 0.15s ease' }} />
     </Box>
+  );
+});
+
+/**
+ * Top APs by Throughput widget — shows top 5 APs by wireless bandwidth usage.
+ */
+const TopAPsByThroughputWidget = memo(function TopAPsByThroughputWidget() {
+  const { data, isLoading, isError } = useTopAPsByBandwidth({ limit: 5 }, { refetchInterval: 60_000 });
+
+  const aps = useMemo(() => {
+    if (!data) return [];
+    const items = Array.isArray(data) ? data : data.items || data.aps || [];
+    return items.slice(0, 5);
+  }, [data]);
+
+  return (
+    <Card sx={{ height: '100%', border: '1px solid var(--border-subtle)' }}>
+      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CellTowerIcon sx={{ fontSize: 18, color: 'var(--color-primary)' }} />
+            <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem' }}>
+              Top APs by Throughput
+            </Typography>
+          </Box>
+          <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+            Wireless
+          </Typography>
+        </Box>
+
+        {isLoading ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {[...Array(5)].map((_, i) => (
+              <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton variant="text" width="60%" height={20} />
+                  <Skeleton variant="text" width="40%" height={16} />
+                </Box>
+                <Skeleton variant="text" width={70} height={20} />
+              </Box>
+            ))}
+          </Box>
+        ) : isError || aps.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 3 }}>
+            <CellTowerIcon sx={{ fontSize: 32, color: 'var(--text-disabled)', mb: 1 }} />
+            <Typography variant="body2" color="text.disabled" sx={{ fontSize: '0.8rem' }}>
+              No AP throughput data available
+            </Typography>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {aps.map((ap, index) => {
+              const name = ap.name || ap.ap_name || ap.hostname || ap.serial || 'Unknown AP';
+              const site = ap.site || ap.site_name || ap.siteName || '—';
+              const throughput = ap.total_bytes || ap.bytes || ap.tx_bytes || ap.usage_bytes || ap.wireless_bytes || 0;
+              return (
+                <Box
+                  key={ap.serial || ap.macaddr || index}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    py: 1.25,
+                    borderBottom: index < aps.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                  }}
+                >
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {name}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                      {site}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--color-primary)', fontFamily: 'monospace', whiteSpace: 'nowrap', ml: 1.5 }}>
+                    {formatBytes(throughput)}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+});
+
+/**
+ * Circular health gauge component.
+ */
+const HealthGauge = memo(function HealthGauge({ score, label, size = 72 }) {
+  const getColor = (s) => {
+    if (s >= 80) return 'var(--color-success)';
+    if (s >= 50) return 'var(--color-warning)';
+    return 'var(--color-error)';
+  };
+  const color = getColor(score);
+  const radius = (size - 8) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+      <Box sx={{ position: 'relative', width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth={5}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={5}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+          />
+        </svg>
+        <Box sx={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Typography variant="body2" sx={{ fontWeight: 700, fontSize: size > 90 ? '1.25rem' : '0.9rem', color }}>
+            {score}
+          </Typography>
+        </Box>
+      </Box>
+      {label && (
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', textAlign: 'center', fontWeight: 500 }}>
+          {label}
+        </Typography>
+      )}
+    </Box>
+  );
+});
+
+/**
+ * Network Health Scores widget — shows overall and per-category health.
+ */
+const NetworkHealthWidget = memo(function NetworkHealthWidget() {
+  const { data, isLoading, isError } = useSitesHealthScores({}, { refetchInterval: 60_000 });
+
+  const healthScores = useMemo(() => {
+    if (!data) return null;
+    const items = Array.isArray(data) ? data : data.items || data.sites || [];
+    if (items.length === 0) return null;
+
+    // Compute average health across all sites, plus per-category if available
+    let totalHealth = 0;
+    let apHealth = 0;
+    let switchHealth = 0;
+    let wanHealth = 0;
+    let apCount = 0;
+    let switchCount = 0;
+    let wanCount = 0;
+    let siteCount = 0;
+
+    items.forEach((site) => {
+      const h = site.health ?? site.healthScore ?? site.score ?? null;
+      if (h !== null) {
+        totalHealth += Number(h);
+        siteCount++;
+      }
+      // Per-category breakdown (Aruba Central may provide these)
+      const apH = site.ap_health ?? site.apHealth ?? site.wireless_health ?? null;
+      if (apH !== null) { apHealth += Number(apH); apCount++; }
+      const swH = site.switch_health ?? site.switchHealth ?? null;
+      if (swH !== null) { switchHealth += Number(swH); switchCount++; }
+      const wH = site.wan_health ?? site.wanHealth ?? site.gateway_health ?? site.gatewayHealth ?? null;
+      if (wH !== null) { wanHealth += Number(wH); wanCount++; }
+    });
+
+    const overall = siteCount > 0 ? Math.round(totalHealth / siteCount) : 0;
+    const categories = [];
+    if (apCount > 0) categories.push({ label: 'AP Health', score: Math.round(apHealth / apCount) });
+    if (switchCount > 0) categories.push({ label: 'Switch Health', score: Math.round(switchHealth / switchCount) });
+    if (wanCount > 0) categories.push({ label: 'WAN Health', score: Math.round(wanHealth / wanCount) });
+
+    return { overall, categories, siteCount };
+  }, [data]);
+
+  const getStatusText = (score) => {
+    if (score >= 80) return 'Good';
+    if (score >= 50) return 'Fair';
+    return 'Poor';
+  };
+
+  const getStatusColor = (score) => {
+    if (score >= 80) return 'var(--color-success)';
+    if (score >= 50) return 'var(--color-warning)';
+    return 'var(--color-error)';
+  };
+
+  return (
+    <Card sx={{ height: '100%', border: '1px solid var(--border-subtle)' }}>
+      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FavoriteIcon sx={{ fontSize: 18, color: 'var(--color-success)' }} />
+            <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', fontSize: '0.7rem' }}>
+              Network Health
+            </Typography>
+          </Box>
+          {healthScores && (
+            <Chip
+              label={getStatusText(healthScores.overall)}
+              size="small"
+              sx={{
+                fontWeight: 600,
+                fontSize: '0.6rem',
+                height: 20,
+                color: getStatusColor(healthScores.overall),
+                borderColor: getStatusColor(healthScores.overall),
+                bgcolor: 'transparent',
+              }}
+              variant="outlined"
+            />
+          )}
+        </Box>
+
+        {isLoading ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 2 }}>
+            <Skeleton variant="circular" width={100} height={100} />
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <Skeleton variant="circular" width={56} height={56} />
+              <Skeleton variant="circular" width={56} height={56} />
+              <Skeleton variant="circular" width={56} height={56} />
+            </Box>
+          </Box>
+        ) : isError || !healthScores ? (
+          <Box sx={{ textAlign: 'center', py: 3 }}>
+            <FavoriteIcon sx={{ fontSize: 32, color: 'var(--text-disabled)', mb: 1 }} />
+            <Typography variant="body2" color="text.disabled" sx={{ fontSize: '0.8rem' }}>
+              No health data available
+            </Typography>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            {/* Main gauge */}
+            <HealthGauge score={healthScores.overall} label="Overall" size={100} />
+            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+              Across {healthScores.siteCount} site{healthScores.siteCount !== 1 ? 's' : ''}
+            </Typography>
+
+            {/* Category breakdown */}
+            {healthScores.categories.length > 0 && (
+              <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', justifyContent: 'center' }}>
+                {healthScores.categories.map((cat) => (
+                  <HealthGauge key={cat.label} score={cat.score} label={cat.label} size={60} />
+                ))}
+              </Box>
+            )}
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 });
 
@@ -551,6 +818,16 @@ function DashboardPage() {
               </Box>
             </CardContent>
           </Card>
+        </Grid>
+
+        {/* Top APs by Throughput */}
+        <Grid item xs={12} md={6}>
+          <TopAPsByThroughputWidget />
+        </Grid>
+
+        {/* Network Health Scores */}
+        <Grid item xs={12} md={6}>
+          <NetworkHealthWidget />
         </Grid>
       </Grid>
     </Box>

@@ -89,6 +89,26 @@ export const useSitesDeviceHealth = (params = {}, options = {}) =>
 
 // ── Clients ───���───────────────────────────────────────────────────────────
 
+// ── Top APs by Bandwidth ─────────────────────────────────────────────────
+
+export const useTopAPsByBandwidth = (params = {}, options = {}) =>
+  useQuery({
+    queryKey: ['top-aps-bandwidth', params],
+    queryFn: () => monitoringAPIv2.getTopAPsByBandwidth(params),
+    staleTime: 60_000,
+    ...options,
+  });
+
+// ── Sites Health Scores ──────────────────────────────────────────────────
+
+export const useSitesHealthScores = (params = {}, options = {}) =>
+  useQuery({
+    queryKey: ['sites-health-scores', params],
+    queryFn: () => monitoringAPIv2.getSitesHealth(params),
+    staleTime: 60_000,
+    ...options,
+  });
+
 export const useClients = (siteId, options = {}) =>
   useQuery({
     queryKey: ['clients', siteId ?? 'all'],

@@ -281,6 +281,7 @@ def parallel_get(calls):
 
 def api_proxy(endpoint_builder, method="GET", error_msg="API", fallback_data=None):
     """API proxy decorator — mirrors the one in app.py."""
+    from utils.central_api_client import CentralAPIError
 
     def decorator(f):
         @wraps(f)
@@ -314,6 +315,31 @@ def api_proxy(endpoint_builder, method="GET", error_msg="API", fallback_data=Non
 
                 response = getattr(aruba_client, method.lower())(endpoint, **api_kwargs)
                 return jsonify(response)
+            except CentralAPIError as e:
+                logger.error(f"{error_msg}: HTTP {e.status_code} {e.error_code}: {e.message}", exc_info=True)
+
+                if e.status_code == 404:
+                    if method == "GET":
+                        if fallback_data is not None:
+                            return jsonify(fallback_data)
+                        return jsonify({"data": [], "count": 0, "total": 0})
+                    return jsonify({"error": f"Resource not found: {error_msg}"}), 404
+                elif e.status_code == 403:
+                    return jsonify({"error": f"Access forbidden: {error_msg}"}), 403
+                elif e.status_code == 401:
+                    return jsonify({"error": "Authentication required"}), 401
+                elif e.status_code == 400:
+                    return jsonify({"error": f"Bad Request: {e.message}"}), 400
+
+                return (
+                    jsonify(
+                        {
+                            "error": "An API error occurred. Check server logs for details.",
+                            "status_code": e.status_code,
+                        }
+                    ),
+                    e.status_code,
+                )
             except Exception as e:
                 error_str = str(e)
                 logger.error(f"{error_msg}: {error_str}", exc_info=True)

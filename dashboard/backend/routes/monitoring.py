@@ -12,6 +12,7 @@ from flask import Blueprint, request, jsonify
 import logging
 import time
 import requests
+from utils.central_api_client import CentralAPIError
 from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get, rate_limit
 
 monitoring_bp = Blueprint("monitoring", __name__)
@@ -106,20 +107,18 @@ def api_explorer():
                 return jsonify({"error": f"Unsupported method: {method}"}), 400
 
             return jsonify({"success": True, "data": response})
+        except CentralAPIError as api_err:
+            # Return structured error details to help with debugging
+            return (
+                jsonify(
+                    {"success": False, "error": api_err.message, "error_code": api_err.error_code, "endpoint": endpoint, "method": method}
+                ),
+                api_err.status_code,
+            )
         except Exception as api_err:
             # Return error details to help with debugging
             error_msg = str(api_err)
             status_code = 500
-
-            if "404" in error_msg or "Not Found" in error_msg:
-                status_code = 404
-                error_msg = f"Endpoint not found: {endpoint}"
-            elif "403" in error_msg or "Forbidden" in error_msg:
-                status_code = 403
-                error_msg = f"Access forbidden: {endpoint}"
-            elif "401" in error_msg or "Unauthorized" in error_msg:
-                status_code = 401
-                error_msg = "Authentication failed"
 
             return (
                 jsonify(
@@ -216,13 +215,8 @@ def get_service_subscriptions():
         try:
             response = aruba_client.get("/platform/licensing/v1/subscriptions")
             return jsonify(response)
-        except Exception as serr:
-            if (
-                "404" in str(serr)
-                or "400" in str(serr)
-                or "Not Found" in str(serr)
-                or "Bad Request" in str(serr)
-            ):
+        except CentralAPIError as serr:
+            if serr.status_code in (400, 404):
                 logger.warning("Service subscriptions not available; returning empty list")
                 return jsonify({"subscriptions": [], "count": 0})
             raise serr
@@ -247,13 +241,8 @@ def get_service_audit_logs():
         try:
             response = aruba_client.get("/platform/auditlogs/v1/logs", params=params)
             return jsonify(response)
-        except Exception as aerr:
-            if (
-                "404" in str(aerr)
-                or "400" in str(aerr)
-                or "Not Found" in str(aerr)
-                or "Bad Request" in str(aerr)
-            ):
+        except CentralAPIError as aerr:
+            if aerr.status_code in (400, 404):
                 logger.warning("Audit logs not available; returning empty list")
                 return jsonify({"logs": [], "count": 0, "offset": int(offset)})
             raise aerr
@@ -454,6 +443,31 @@ def _get_utilization_trend(
                 response["unit"] = unit
 
         return jsonify(response)
+    except CentralAPIError as e:
+        logger.error(f"Error fetching {metric} for {device_type} {serial}: HTTP {e.status_code} {e.error_code}: {e.message}")
+
+        error_response = {
+            "error": f"Failed to fetch {metric.replace('_', ' ')}",
+            "message": e.message,
+            "endpoint": endpoint_path,
+            "base_url": config["aruba_central"]["base_url"] if config else "Not configured",
+        }
+
+        if e.status_code == 404:
+            error_response["suggestion"] = (
+                f"Verify the serial number and that the {device_type} exists in your Central account"
+            )
+            return jsonify(error_response), 404
+        elif e.status_code == 401:
+            error_response["suggestion"] = (
+                "Authentication failed. Please check your credentials and token."
+            )
+            return jsonify(error_response), 401
+        elif e.status_code == 403:
+            error_response["suggestion"] = "Access forbidden. Check API permissions."
+            return jsonify(error_response), 403
+
+        return jsonify(error_response), e.status_code
     except Exception as e:
         error_str = str(e)
         logger.error(f"Error fetching {metric} for {device_type} {serial}: {error_str}")
@@ -464,20 +478,6 @@ def _get_utilization_trend(
             "endpoint": endpoint_path,
             "base_url": config["aruba_central"]["base_url"] if config else "Not configured",
         }
-
-        if "404" in error_str or "Not Found" in error_str:
-            error_response["suggestion"] = (
-                f"Verify the serial number and that the {device_type} exists in your Central account"
-            )
-            return jsonify(error_response), 404
-        elif "401" in error_str or "Unauthorized" in error_str:
-            error_response["suggestion"] = (
-                "Authentication failed. Please check your credentials and token."
-            )
-            return jsonify(error_response), 401
-        elif "403" in error_str or "Forbidden" in error_str:
-            error_response["suggestion"] = "Access forbidden. Check API permissions."
-            return jsonify(error_response), 403
 
         return jsonify(error_response), 500
 
@@ -530,11 +530,9 @@ def get_ap_temperature(serial):
             f"/network-monitoring/v1/aps/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
-    except Exception as e:
-        error_str = str(e)
-        logger.error(f"Error fetching temperature for AP {serial}: {error_str}")
-        # Return helpful error message if endpoint doesn't exist
-        if "404" in error_str or "Not Found" in error_str:
+    except CentralAPIError as e:
+        logger.error(f"Error fetching temperature for AP {serial}: HTTP {e.status_code} {e.error_code}: {e.message}")
+        if e.status_code == 404:
             return (
                 jsonify(
                     {
@@ -545,7 +543,10 @@ def get_ap_temperature(serial):
                 ),
                 404,
             )
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
+        logger.error(f"Error fetching temperature for AP {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @monitoring_bp.route("/api/monitoring/aps/<serial>/throughput", methods=["GET"])
@@ -794,11 +795,9 @@ def get_switch_temperature(serial):
             f"/network-monitoring/v1/switches/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
-    except Exception as e:
-        error_str = str(e)
-        logger.error(f"Error fetching temperature for switch {serial}: {error_str}")
-        # Return helpful error message if endpoint doesn't exist
-        if "404" in error_str or "Not Found" in error_str:
+    except CentralAPIError as e:
+        logger.error(f"Error fetching temperature for switch {serial}: HTTP {e.status_code} {e.error_code}: {e.message}")
+        if e.status_code == 404:
             return (
                 jsonify(
                     {
@@ -809,7 +808,10 @@ def get_switch_temperature(serial):
                 ),
                 404,
             )
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
+        logger.error(f"Error fetching temperature for switch {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @monitoring_bp.route("/api/monitoring/switches/<serial>/ports", methods=["GET"])
@@ -902,11 +904,9 @@ def get_gateway_temperature(serial):
             f"/network-monitoring/v1/gateways/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
-    except Exception as e:
-        error_str = str(e)
-        logger.error(f"Error fetching temperature for gateway {serial}: {error_str}")
-        # Return helpful error message if endpoint doesn't exist
-        if "404" in error_str or "Not Found" in error_str:
+    except CentralAPIError as e:
+        logger.error(f"Error fetching temperature for gateway {serial}: HTTP {e.status_code} {e.error_code}: {e.message}")
+        if e.status_code == 404:
             return (
                 jsonify(
                     {
@@ -917,7 +917,10 @@ def get_gateway_temperature(serial):
                 ),
                 404,
             )
-        return jsonify({"error": error_str}), 500
+        return jsonify({"error": e.message}), e.status_code
+    except Exception as e:
+        logger.error(f"Error fetching temperature for gateway {serial}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @monitoring_bp.route("/api/monitoring/gateways/<serial>/vlans", methods=["GET"])

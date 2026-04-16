@@ -269,7 +269,23 @@ class CentralAPIClient:
         logger.debug(f"PUT {url}")
 
         response = self._request_with_retry("PUT", url, json=data, params=params)
-        response.raise_for_status()
+
+        if response.status_code >= 400:
+            error_code = ""
+            description = response.text[:500] if response.text else f"HTTP {response.status_code}"
+            try:
+                err_json = response.json()
+                if isinstance(err_json, dict):
+                    error_code = err_json.get("error_code", err_json.get("errorCode", ""))
+                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+            except (ValueError, TypeError):
+                pass
+            raise CentralAPIError(
+                status_code=response.status_code,
+                error_code=error_code,
+                message=description,
+                response=response,
+            )
 
         if not response.text or response.text.strip() == "":
             return {}
@@ -299,7 +315,23 @@ class CentralAPIClient:
         logger.debug(f"PATCH {url}")
 
         response = self._request_with_retry("PATCH", url, json=data, params=params)
-        response.raise_for_status()
+
+        if response.status_code >= 400:
+            error_code = ""
+            description = response.text[:500] if response.text else f"HTTP {response.status_code}"
+            try:
+                err_json = response.json()
+                if isinstance(err_json, dict):
+                    error_code = err_json.get("error_code", err_json.get("errorCode", ""))
+                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+            except (ValueError, TypeError):
+                pass
+            raise CentralAPIError(
+                status_code=response.status_code,
+                error_code=error_code,
+                message=description,
+                response=response,
+            )
 
         if not response.text or response.text.strip() == "":
             return {}
@@ -327,7 +359,23 @@ class CentralAPIClient:
         logger.debug(f"DELETE {url}")
 
         response = self._request_with_retry("DELETE", url, params=params)
-        response.raise_for_status()
+
+        if response.status_code >= 400:
+            error_code = ""
+            description = response.text[:500] if response.text else f"HTTP {response.status_code}"
+            try:
+                err_json = response.json()
+                if isinstance(err_json, dict):
+                    error_code = err_json.get("error_code", err_json.get("errorCode", ""))
+                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+            except (ValueError, TypeError):
+                pass
+            raise CentralAPIError(
+                status_code=response.status_code,
+                error_code=error_code,
+                message=description,
+                response=response,
+            )
 
         # DELETE often returns 204 No Content
         if not response.text or response.text.strip() == "":
