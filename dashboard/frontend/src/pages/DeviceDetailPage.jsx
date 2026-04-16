@@ -31,6 +31,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  IconButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DevicesIcon from '@mui/icons-material/Devices';
@@ -42,11 +43,569 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeviceImageUpload from './device-detail/DeviceImageUpload';
 import LanIcon from '@mui/icons-material/Lan';
-import { deviceAPI, monitoringAPIv2 } from '../services/api';
+import NetworkCheckIcon from '@mui/icons-material/NetworkCheck';
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import HttpIcon from '@mui/icons-material/Http';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import CableIcon from '@mui/icons-material/Cable';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import BuildIcon from '@mui/icons-material/Build';
+import RouteIcon from '@mui/icons-material/Route';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import { deviceAPI, monitoringAPIv2, troubleshootAPI } from '../services/api';
 import apiClient from '../services/api';
 import Tooltip from '@mui/material/Tooltip';
 import { formatUptimeMs } from '../utils/formatUtils';
 
+// ── Device type helpers ───────────────────────────────────────────────────────
+const isAPDevice = (d) => {
+  const t = (d?.deviceType || d?.type || d?.device_type || '').toUpperCase();
+  return t === 'AP' || t === 'ACCESS_POINT' || t === 'IAP';
+};
+const isSwitchDevice = (d) => {
+  const t = (d?.deviceType || d?.type || d?.device_type || '').toUpperCase();
+  return t === 'SWITCH' || t === 'ARUBASWITCH' || t === 'CX';
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Device Tools Panel
+// ──────────────────────────────────────────────────────────────────────────────
+
+// ── Structured result renderers ──────────────────────────────────────────────
+
+function StatBadge({ label, value, color }) {
+  return (
+    <Box sx={{ textAlign: 'center', minWidth: 0 }}>
+      <Typography sx={{ fontSize: '0.65rem', color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.25 }}>{label}</Typography>
+      <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: color || 'text.primary', fontFamily: 'monospace' }}>{value}</Typography>
+    </Box>
+  );
+}
+
+function PingResultView({ result }) {
+  const out = result.output || {};
+  const failed = result.status !== 'COMPLETED' || result.failReason;
+  const loss = parseFloat(out.packetLossPercent || 0);
+  const lossColor = loss === 0 ? '#22C55E' : loss < 50 ? '#F59E0B' : '#EF4444';
+  const replies = out.replies || [];
+
+  return (
+    <Box>
+      {/* Status + Destination */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <Chip
+          size="small"
+          label={result.status || 'DONE'}
+          sx={{
+            height: 20, fontSize: '0.65rem', fontWeight: 700,
+            bgcolor: failed ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)',
+            color: failed ? '#EF4444' : '#22C55E',
+          }}
+        />
+        <Typography sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+          → {out.resolvedIp || out.destination || ''}
+        </Typography>
+      </Box>
+
+      {/* Stats row */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0.5, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 1, p: 1, mb: 1.5 }}>
+        <StatBadge label="Sent" value={out.transmittedPacketsCount || '—'} />
+        <StatBadge label="Recv" value={out.receivedPacketsCount || '—'} />
+        <StatBadge label="Loss" value={`${out.packetLossPercent || 0}%`} color={lossColor} />
+        <StatBadge label="Avg" value={out.averageRoundTripTimeMilliseconds ? `${parseFloat(out.averageRoundTripTimeMilliseconds).toFixed(1)}ms` : '—'} />
+      </Box>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0.5, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 1, p: 1, mb: 1.5 }}>
+        <StatBadge label="Min" value={out.minimumRoundTripTimeMilliseconds ? `${parseFloat(out.minimumRoundTripTimeMilliseconds).toFixed(1)}ms` : '—'} color="#3B82F6" />
+        <StatBadge label="Max" value={out.maximumRoundTripTimeMilliseconds ? `${parseFloat(out.maximumRoundTripTimeMilliseconds).toFixed(1)}ms` : '—'} color="#F59E0B" />
+        <StatBadge label="Stddev" value={out.standardDeviationRoundTripTimeMilliseconds ? `${parseFloat(out.standardDeviationRoundTripTimeMilliseconds).toFixed(2)}ms` : '—'} />
+      </Box>
+
+      {/* Replies table */}
+      {replies.length > 0 && (
+        <Box sx={{ borderRadius: 1, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '28px 1fr 48px 56px', px: 1, py: 0.5, bgcolor: 'rgba(255,255,255,0.04)' }}>
+            {['#', 'Address', 'TTL', 'Time'].map((h) => (
+              <Typography key={h} sx={{ fontSize: '0.62rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase' }}>{h}</Typography>
+            ))}
+          </Box>
+          {replies.map((r, i) => (
+            <Box key={i} sx={{ display: 'grid', gridTemplateColumns: '28px 1fr 48px 56px', px: 1, py: 0.4, borderTop: '1px solid rgba(255,255,255,0.04)', '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
+              <Typography sx={{ fontSize: '0.7rem', color: 'text.disabled', fontFamily: 'monospace' }}>{r.sentPacketIcmpSequenceNumber}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#CBD5E1' }}>{r.sentPacketAddress}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: 'text.secondary' }}>{r.sentPacketTimeToLive}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#FF6600' }}>{r.sentPacketTimeMilliseconds}ms</Typography>
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      {result.failReason && (
+        <Alert severity="error" sx={{ mt: 1, fontSize: '0.72rem' }}>{result.failReason}</Alert>
+      )}
+    </Box>
+  );
+}
+
+function TracerouteResultView({ result }) {
+  const out = result.output || {};
+  const hops = out.hops || out.tracerouteEntries || [];
+  const failed = result.status !== 'COMPLETED' || result.failReason;
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <Chip size="small" label={result.status || 'DONE'}
+          sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700,
+            bgcolor: failed ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)',
+            color: failed ? '#EF4444' : '#22C55E' }} />
+        {out.destination && (
+          <Typography sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+            → {out.destination}
+          </Typography>
+        )}
+      </Box>
+      {hops.length > 0 ? (
+        <Box sx={{ borderRadius: 1, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '28px 1fr 60px', px: 1, py: 0.5, bgcolor: 'rgba(255,255,255,0.04)' }}>
+            {['Hop', 'Address', 'RTT'].map((h) => (
+              <Typography key={h} sx={{ fontSize: '0.62rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase' }}>{h}</Typography>
+            ))}
+          </Box>
+          {hops.map((h, i) => (
+            <Box key={i} sx={{ display: 'grid', gridTemplateColumns: '28px 1fr 60px', px: 1, py: 0.4, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <Typography sx={{ fontSize: '0.7rem', color: 'text.disabled', fontFamily: 'monospace' }}>{h.hop || h.ttl || i + 1}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#CBD5E1' }}>{h.address || h.ip || h.host || '*'}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#FF6600' }}>
+                {h.rtt || h.roundTripTimeMilliseconds ? `${h.rtt || h.roundTripTimeMilliseconds}ms` : '*'}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        <PreText text={typeof out === 'string' ? out : JSON.stringify(out, null, 2)} />
+      )}
+      {result.failReason && <Alert severity="error" sx={{ mt: 1, fontSize: '0.72rem' }}>{result.failReason}</Alert>}
+    </Box>
+  );
+}
+
+function CableTestResultView({ result }) {
+  const out = result.output || {};
+  const failed = result.status !== 'COMPLETED' || result.failReason;
+  const pairs = Object.entries(out).filter(([k]) => !['port', 'interface'].includes(k));
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <Chip size="small" label={result.status || 'DONE'}
+          sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700,
+            bgcolor: failed ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)',
+            color: failed ? '#EF4444' : '#22C55E' }} />
+        {(out.port || out.interface) && (
+          <Typography sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+            Port {out.port || out.interface}
+          </Typography>
+        )}
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
+        {pairs.map(([k, v]) => (
+          <Box key={k} sx={{ display: 'flex', justifyContent: 'space-between', px: 1, py: 0.4, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 0.5 }}>
+            <Typography sx={{ fontSize: '0.7rem', color: 'text.secondary', textTransform: 'capitalize' }}>{k.replace(/([A-Z])/g, ' $1')}</Typography>
+            <Typography sx={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#CBD5E1' }}>{String(v)}</Typography>
+          </Box>
+        ))}
+      </Box>
+      {result.failReason && <Alert severity="error" sx={{ mt: 1, fontSize: '0.72rem' }}>{result.failReason}</Alert>}
+    </Box>
+  );
+}
+
+function StatusOnlyView({ result }) {
+  const failed = result.status && result.status !== 'COMPLETED';
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Chip size="small" label={result.status || 'OK'}
+        sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700,
+          bgcolor: failed ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)',
+          color: failed ? '#EF4444' : '#22C55E' }} />
+      {result.failReason && (
+        <Typography sx={{ fontSize: '0.72rem', color: '#EF4444' }}>{result.failReason}</Typography>
+      )}
+    </Box>
+  );
+}
+
+function PreText({ text, copyText }) {
+  const [copied, setCopied] = useState(false);
+  const raw = copyText || text;
+  return (
+    <Box sx={{ position: 'relative' }}>
+      <Tooltip title={copied ? 'Copied!' : 'Copy'}>
+        <IconButton size="small"
+          onClick={() => { navigator.clipboard.writeText(raw); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+          sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1, color: '#64748B' }}>
+          <ContentCopyIcon sx={{ fontSize: 13 }} />
+        </IconButton>
+      </Tooltip>
+      <Box sx={{ p: 1.5, pr: 4, bgcolor: '#0A0E1A', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 1.5, maxHeight: 240, overflowY: 'auto' }}>
+        <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#CBD5E1', whiteSpace: 'pre-wrap', wordBreak: 'break-word', m: 0 }}>
+          {text}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+function SmartResultRenderer({ result }) {
+  if (!result) return null;
+
+  // CX ping: output.averageRoundTripTimeMilliseconds
+  if (result?.output?.averageRoundTripTimeMilliseconds !== undefined) {
+    return <PingResultView result={result} />;
+  }
+
+  // CX traceroute: output.hops or output.tracerouteEntries
+  if (result?.output?.hops || result?.output?.tracerouteEntries) {
+    return <TracerouteResultView result={result} />;
+  }
+
+  // Cable test: output object with pair/fault fields (no RTT or packets)
+  if (result?.status && result?.output && typeof result.output === 'object' &&
+      !result.output.averageRoundTripTimeMilliseconds && !result.output.hops) {
+    const keys = Object.keys(result.output);
+    if (keys.length > 0) return <CableTestResultView result={result} />;
+  }
+
+  // Text output (show command, AOS results, rawOutput)
+  const textOut = result?.rawOutput || (typeof result?.output === 'string' ? result.output : null)
+    || (typeof result?.result === 'string' ? result.result : null)
+    || (typeof result?.output === 'string' ? result.output : null);
+  if (textOut) {
+    return <PreText text={textOut} copyText={textOut} />;
+  }
+
+  // Status-only (bounce, reboot, locate) — has status but no meaningful output
+  if (result?.status && (!result.output || Object.keys(result.output || {}).length === 0)) {
+    return <StatusOnlyView result={result} />;
+  }
+
+  // Plain string
+  if (typeof result === 'string') {
+    return <PreText text={result} />;
+  }
+
+  // Fallback: pretty JSON
+  return <PreText text={JSON.stringify(result, null, 2)} copyText={JSON.stringify(result, null, 2)} />;
+}
+
+function ToolResultPanel({ result, loading, error }) {
+  if (!loading && !result && !error) return null;
+  return (
+    <Box sx={{ mt: 1.5 }}>
+      <Divider sx={{ mb: 1.5 }} />
+      {loading && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <CircularProgress size={16} sx={{ color: '#FF6600' }} />
+          <Typography variant="caption" color="text.secondary">Running…</Typography>
+        </Box>
+      )}
+      {error && !loading && <Alert severity="error" sx={{ fontSize: '0.78rem' }}>{error}</Alert>}
+      {result && !loading && <SmartResultRenderer result={result} />}
+    </Box>
+  );
+}
+
+function ToolCard({ icon, label, description, inputLabel, inputPlaceholder, onRun, confirmMsg, noInput }) {
+  const [inputVal, setInputVal] = useState('');
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const run = async () => {
+    setRunning(true); setResult(null); setError(null);
+    try {
+      const res = await onRun(inputVal);
+      setResult(res);
+    } catch (e) {
+      setError(e?.response?.data?.error || e.message || 'Failed');
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const handleClick = () => { if (confirmMsg) setConfirmOpen(true); else run(); };
+
+  return (
+    <>
+      <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+            <Box sx={{ width: 36, height: 36, borderRadius: '9px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {icon}
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>{label}</Typography>
+              {description && <Typography variant="caption" color="text.secondary">{description}</Typography>}
+            </Box>
+          </Box>
+          {!noInput && (
+            <TextField
+              size="small"
+              label={inputLabel}
+              placeholder={inputPlaceholder}
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !running && handleClick()}
+              fullWidth
+              sx={{ mb: 1.5 }}
+            />
+          )}
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleClick}
+            disabled={running || (!noInput && !inputVal.trim())}
+            sx={{ mt: 'auto', bgcolor: '#FF6600', '&:hover': { bgcolor: '#E55500' } }}
+          >
+            {running ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : 'Run'}
+          </Button>
+          <ToolResultPanel result={result} loading={running} error={error} />
+        </CardContent>
+      </Card>
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Confirm</DialogTitle>
+        <DialogContent><DialogContentText>{confirmMsg}</DialogContentText></DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={() => { setConfirmOpen(false); run(); }} variant="contained" color="error">Confirm</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
+function DiagnosticsTab({ device, resolvedSerial }) {
+  const isAP = isAPDevice(device);
+  const isSwitch = isSwitchDevice(device);
+
+  const apTools = [
+    {
+      key: 'ping',
+      icon: <NetworkCheckIcon sx={{ fontSize: 18, color: '#FF6600' }} />,
+      label: 'Ping',
+      description: 'Test connectivity to a host',
+      inputLabel: 'Target',
+      inputPlaceholder: '8.8.8.8',
+      onRun: (target) => troubleshootAPI.pingAP(resolvedSerial, target),
+    },
+    {
+      key: 'traceroute',
+      icon: <RouteIcon sx={{ fontSize: 18, color: '#FF6600' }} />,
+      label: 'Traceroute',
+      description: 'Trace route to a host',
+      inputLabel: 'Target',
+      inputPlaceholder: '8.8.8.8',
+      onRun: (target) => troubleshootAPI.tracerouteAP(resolvedSerial, target),
+    },
+    {
+      key: 'locate',
+      icon: <LocationSearchingIcon sx={{ fontSize: 18, color: '#3B82F6' }} />,
+      label: 'Locate AP',
+      description: 'Flash LED to locate device',
+      noInput: true,
+      onRun: () => troubleshootAPI.locateAP(resolvedSerial),
+    },
+    {
+      key: 'http',
+      icon: <HttpIcon sx={{ fontSize: 18, color: '#10B981' }} />,
+      label: 'HTTP Test',
+      description: 'Test HTTP connectivity',
+      inputLabel: 'URL',
+      inputPlaceholder: 'https://example.com',
+      onRun: (url) => troubleshootAPI.httpTestAP(resolvedSerial, url),
+    },
+    {
+      key: 'disconnect',
+      icon: <PersonRemoveIcon sx={{ fontSize: 18, color: '#F59E0B' }} />,
+      label: 'Disconnect Client',
+      description: 'Disconnect a wireless client',
+      inputLabel: 'Client MAC',
+      inputPlaceholder: 'AA:BB:CC:DD:EE:FF',
+      onRun: (mac) => troubleshootAPI.disconnectUser(resolvedSerial, mac),
+    },
+    {
+      key: 'client',
+      icon: <PersonRemoveIcon sx={{ fontSize: 18, color: '#64748B' }} />,
+      label: 'Client Session',
+      description: 'Look up a client by MAC',
+      inputLabel: 'Client MAC',
+      inputPlaceholder: 'AA:BB:CC:DD:EE:FF',
+      onRun: (mac) => troubleshootAPI.getClientSession(mac),
+    },
+    {
+      key: 'reboot',
+      icon: <PowerSettingsNewIcon sx={{ fontSize: 18, color: '#EF4444' }} />,
+      label: 'Reboot AP',
+      description: 'Restart the access point',
+      noInput: true,
+      confirmMsg: `Reboot ${device?.deviceName || resolvedSerial}? This will briefly disconnect all clients.`,
+      onRun: () => troubleshootAPI.rebootAP(resolvedSerial),
+    },
+    {
+      key: 'export',
+      icon: <TerminalIcon sx={{ fontSize: 18, color: '#64748B' }} />,
+      label: 'Export Config',
+      description: 'Download running configuration',
+      noInput: true,
+      onRun: async () => {
+        const blob = await troubleshootAPI.exportConfig(resolvedSerial);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `${resolvedSerial}_config.txt`; a.click();
+        window.URL.revokeObjectURL(url);
+        return { status: 'COMPLETED', message: 'Config downloaded' };
+      },
+    },
+  ];
+
+  const switchTools = [
+    {
+      key: 'ping',
+      icon: <NetworkCheckIcon sx={{ fontSize: 18, color: '#FF6600' }} />,
+      label: 'Ping',
+      description: 'Test connectivity to a host',
+      inputLabel: 'Target',
+      inputPlaceholder: '8.8.8.8',
+      onRun: (target) => troubleshootAPI.ping(resolvedSerial, target),
+    },
+    {
+      key: 'traceroute',
+      icon: <RouteIcon sx={{ fontSize: 18, color: '#FF6600' }} />,
+      label: 'Traceroute',
+      description: 'Trace route to a host',
+      inputLabel: 'Target',
+      inputPlaceholder: '8.8.8.8',
+      onRun: (target) => troubleshootAPI.traceroute(resolvedSerial, target),
+    },
+    {
+      key: 'http',
+      icon: <HttpIcon sx={{ fontSize: 18, color: '#10B981' }} />,
+      label: 'HTTP Test',
+      description: 'Test HTTP reachability',
+      inputLabel: 'URL',
+      inputPlaceholder: 'https://example.com',
+      onRun: (url) => troubleshootAPI.cxHttpTest(resolvedSerial, url),
+    },
+    {
+      key: 'portbounce',
+      icon: <LanIcon sx={{ fontSize: 18, color: '#3B82F6' }} />,
+      label: 'Port Bounce',
+      description: 'Reset a switch port',
+      inputLabel: 'Port',
+      inputPlaceholder: '1/1/1',
+      onRun: (port) => troubleshootAPI.portBounce(resolvedSerial, port),
+    },
+    {
+      key: 'poebounce',
+      icon: <CableIcon sx={{ fontSize: 18, color: '#10B981' }} />,
+      label: 'PoE Bounce',
+      description: 'Reset PoE on a port',
+      inputLabel: 'Port',
+      inputPlaceholder: '1/1/1',
+      onRun: (port) => troubleshootAPI.poeBounce(resolvedSerial, port),
+    },
+    {
+      key: 'cabletest',
+      icon: <BuildIcon sx={{ fontSize: 18, color: '#F59E0B' }} />,
+      label: 'Cable Test',
+      description: 'TDR cable diagnostics',
+      inputLabel: 'Port',
+      inputPlaceholder: '1/1/1',
+      onRun: (port) => troubleshootAPI.cableTest(resolvedSerial, port),
+    },
+    {
+      key: 'show',
+      icon: <TerminalIcon sx={{ fontSize: 18, color: '#8B5CF6' }} />,
+      label: 'Show Command',
+      description: 'Run a show command',
+      inputLabel: 'Command',
+      inputPlaceholder: 'show version',
+      onRun: (cmd) => troubleshootAPI.showCXCommand(resolvedSerial, cmd),
+    },
+    {
+      key: 'locate',
+      icon: <LocationSearchingIcon sx={{ fontSize: 18, color: '#3B82F6' }} />,
+      label: 'Locate Switch',
+      description: 'Flash LED to locate device',
+      noInput: true,
+      onRun: () => troubleshootAPI.cxLocate(resolvedSerial),
+    },
+    {
+      key: 'client',
+      icon: <PersonRemoveIcon sx={{ fontSize: 18, color: '#64748B' }} />,
+      label: 'Client Session',
+      description: 'Look up a client by MAC',
+      inputLabel: 'Client MAC',
+      inputPlaceholder: 'AA:BB:CC:DD:EE:FF',
+      onRun: (mac) => troubleshootAPI.getClientSession(mac),
+    },
+    {
+      key: 'export',
+      icon: <TerminalIcon sx={{ fontSize: 18, color: '#64748B' }} />,
+      label: 'Export Config',
+      description: 'Download running configuration',
+      noInput: true,
+      onRun: async () => {
+        const blob = await troubleshootAPI.exportConfig(resolvedSerial);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `${resolvedSerial}_config.txt`; a.click();
+        window.URL.revokeObjectURL(url);
+        return { status: 'COMPLETED', message: 'Config downloaded' };
+      },
+    },
+    {
+      key: 'reboot',
+      icon: <PowerSettingsNewIcon sx={{ fontSize: 18, color: '#EF4444' }} />,
+      label: 'Reboot Switch',
+      description: 'Restart the switch',
+      noInput: true,
+      confirmMsg: `Reboot ${device?.deviceName || resolvedSerial}? This will drop all connected devices.`,
+      onRun: () => troubleshootAPI.rebootSwitch(resolvedSerial),
+    },
+  ];
+
+  const tools = isAP ? apTools : isSwitch ? switchTools : [];
+
+  if (!tools.length) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Typography color="text.secondary">No diagnostics available for this device type.</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        {isAP
+          ? 'Run live diagnostics and operations directly on this access point.'
+          : 'Run live diagnostics and operations directly on this switch.'}
+      </Typography>
+      <Grid container spacing={2.5}>
+        {tools.map((tool) => (
+          <Grid item xs={12} sm={6} md={4} key={tool.key}>
+            <ToolCard {...tool} />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 // Wired Interfaces View Component
 function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
   const [ports, setPorts] = useState(null);
@@ -61,7 +620,7 @@ function WiredInterfacesView({ deviceSerial, siteId, partNumber }) {
     deviceAPI.getAll()
       .then((data) => {
         // Handle both array and object with items property
-        const devices = Array.isArray(data) ? data : (data?.items || []);
+        const devices = Array.isArray(data) ? data : (data?.result || data?.items || []);
         
         if (devices && devices.length > 0) {
           const map = {};
@@ -1305,7 +1864,7 @@ function DeviceImageDisplay({ partNumber, deviceSerial, deviceType, siteId, onRe
     deviceAPI.getAll()
       .then((data) => {
         // Handle both array and object with items property
-        const devices = Array.isArray(data) ? data : (data?.items || []);
+        const devices = Array.isArray(data) ? data : (data?.result || data?.items || []);
         
         if (devices && devices.length > 0) {
           const map = {};
@@ -1375,7 +1934,7 @@ function DeviceImageDisplay({ partNumber, deviceSerial, deviceType, siteId, onRe
 
   // Fetch port data for switches
   useEffect(() => {
-    if (deviceSerial && (deviceType === 'SWITCH' || deviceType === 'switch') && siteId) {
+    if (deviceSerial && isSwitchDevice({ deviceType }) && siteId) {
       setLoadingPorts(true);
       deviceAPI.getSwitchInterfaces(deviceSerial, siteId)
         .then((data) => {
@@ -1499,7 +2058,7 @@ function DeviceDetailPage() {
     deviceAPI.getAll()
       .then((data) => {
         // Handle both array and object with items property
-        const devices = Array.isArray(data) ? data : (data?.items || []);
+        const devices = Array.isArray(data) ? data : (data?.result || data?.items || []);
         
         if (devices && devices.length > 0) {
           const map = {};
@@ -1563,7 +2122,7 @@ function DeviceDetailPage() {
       setDevice(data);
 
       // Fetch switch-specific details if device is a switch
-      if (data?.deviceType === 'SWITCH' || data?.type === 'switch') {
+      if (isSwitchDevice(data)) {
         const switchData = await deviceAPI.getSwitchDetails(resolvedSerial, data?.siteId);
         if (switchData) {
           setSwitchDetails(switchData);
@@ -1572,7 +2131,7 @@ function DeviceDetailPage() {
       }
 
       // Fetch power consumption for APs and Switches
-      if (data?.deviceType === 'AP' || data?.type === 'ap' || data?.type === 'ACCESS_POINT') {
+      if (isAPDevice(data)) {
         try {
           await fetchPowerConsumption(resolvedSerial, 'AP');
         } catch (powerErr) {
@@ -1582,7 +2141,7 @@ function DeviceDetailPage() {
             console.warn('Could not fetch power consumption:', powerErr);
           }
         }
-      } else if (data?.deviceType === 'SWITCH' || data?.type === 'switch') {
+      } else if (isSwitchDevice(data)) {
         try {
           await fetchPowerConsumption(resolvedSerial, 'SWITCH');
         } catch (powerErr) {
@@ -1667,26 +2226,22 @@ function DeviceDetailPage() {
   const handleActionConfirm = async () => {
     setActionLoading(true);
     try {
-      // Implement actual API calls based on action
       switch (actionDialog.action) {
-        case 'reboot':
-          // TODO: await deviceAPI.reboot(resolvedSerial);
+        case 'reboot': {
+          if (isAPDevice(device)) {
+            await troubleshootAPI.rebootAP(resolvedSerial);
+          } else {
+            await troubleshootAPI.rebootSwitch(resolvedSerial);
+          }
           break;
+        }
         case 'sync':
-          // TODO: await deviceAPI.syncConfig(resolvedSerial);
-          break;
         case 'firmware':
-          // TODO: await deviceAPI.updateFirmware(resolvedSerial);
-          break;
         case 'diagnostics':
-          // TODO: await deviceAPI.runDiagnostics(resolvedSerial);
-          break;
         default:
           break;
       }
       setActionDialog({ open: false, action: '', title: '' });
-      // Optionally refresh device details
-      // await fetchDeviceDetails();
     } catch (err) {
       setError(err.message || 'Action failed');
     } finally {
@@ -1808,7 +2363,41 @@ function DeviceDetailPage() {
         </Alert>
       )}
 
-      <Grid container spacing={3}>
+      {/* Tab Navigation */}
+      {resolvedSerial && device && (
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={tabValue}
+            onChange={(_, v) => setTabValue(v)}
+            sx={{
+              '& .MuiTab-root': { fontWeight: 600, fontSize: '0.85rem', textTransform: 'none', minHeight: 44 },
+              '& .Mui-selected': { color: '#FF6600' },
+              '& .MuiTabs-indicator': { bgcolor: '#FF6600' },
+            }}
+          >
+            <Tab label="Overview" />
+            <Tab
+              label={
+                isAPDevice(device)
+                  ? 'AP Diagnostics'
+                  : isSwitchDevice(device)
+                  ? 'Switch Diagnostics'
+                  : 'Diagnostics'
+              }
+              icon={<BuildIcon sx={{ fontSize: 16 }} />}
+              iconPosition="start"
+            />
+          </Tabs>
+        </Box>
+      )}
+
+      {/* Diagnostics Tab */}
+      {tabValue === 1 && resolvedSerial && device && (
+        <DiagnosticsTab device={device} resolvedSerial={resolvedSerial} />
+      )}
+
+      {/* Overview Tab */}
+      {(tabValue === 0 || !resolvedSerial || !device) && <Grid container spacing={3}>
         {/* Device Information */}
         <Grid item xs={12} md={8}>
           <Card>
@@ -2013,7 +2602,7 @@ function DeviceDetailPage() {
                 </Grid>
 
                 {/* Wired Interfaces - Switch Port Visualization - Collapsible */}
-                {device?.deviceType === 'SWITCH' && (
+                {isSwitchDevice(device) && (
                   <Grid item xs={12}>
                     <Accordion defaultExpanded>
                       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -2073,7 +2662,7 @@ function DeviceDetailPage() {
           </Card>
 
           {/* Device Image with Port Overlay - Hidden but kept for port overlay functionality */}
-          {device?.partNumber && device?.deviceType === 'SWITCH' && (
+          {device?.partNumber && isSwitchDevice(device) && (
             <Box sx={{ display: 'none' }}>
               <DeviceImageDisplay 
                 partNumber={device.partNumber}
@@ -2420,7 +3009,7 @@ function DeviceDetailPage() {
             </AccordionDetails>
           </Accordion>
         </Grid>
-      </Grid>
+      </Grid>}
 
       {/* Action Confirmation Dialog */}
       <Dialog

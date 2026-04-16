@@ -83,7 +83,7 @@ function DevicesPage() {
 
       // Process devices
       if (devicesData.status === 'fulfilled') {
-        const deviceList = devicesData.value.devices || devicesData.value.items || [];
+        const deviceList = devicesData.value.result || devicesData.value.devices || devicesData.value.items || [];
         setDevices(deviceList);
       }
 

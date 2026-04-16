@@ -33,6 +33,7 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { getClients, getClientTrends, getTopClients } from '../services/api';
 import useSites from '../hooks/useSites';
 
@@ -101,6 +102,7 @@ function getClientConnectionKind(client) {
 }
 
 function ClientsPage() {
+  const navigate = useNavigate();
   const [clients, setClients] = useState([]);
   const [topClients, setTopClients] = useState([]);
   const [trends, setTrends] = useState(null);
@@ -874,8 +876,18 @@ function ClientsPage() {
                   client.type ||
                   (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
 
+                const clientMac = client.macAddress || client.mac || client.macaddr || '';
+                const handleRowClick = () => {
+                  if (clientMac) navigate(`/clients/${encodeURIComponent(clientMac)}`);
+                };
+
                 return (
-                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
+                  <TableRow
+                    key={client.id || client.mac || client.macaddr || client.macAddress}
+                    hover
+                    onClick={handleRowClick}
+                    sx={{ cursor: clientMac ? 'pointer' : 'default' }}
+                  >
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {(isConnected || isFailed || isConnecting || isDisconnected) && (
@@ -889,7 +901,14 @@ function ClientsPage() {
                           />
                         )}
                         <Box>
-                          <Typography variant="body2" fontWeight="medium">
+                          <Typography
+                            variant="body2"
+                            fontWeight="medium"
+                            sx={{
+                              color: clientMac ? 'primary.main' : 'text.primary',
+                              '&:hover': clientMac ? { textDecoration: 'underline' } : {},
+                            }}
+                          >
                             {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
                           </Typography>
                           {isConnected && (

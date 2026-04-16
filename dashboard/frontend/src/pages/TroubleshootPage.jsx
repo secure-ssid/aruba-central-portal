@@ -290,7 +290,7 @@ function TroubleshootPage() {
     setResult(null);
 
     try {
-      const response = await troubleshootAPI.cxPoeBounce(cxSerial, cxPoePort);
+      const response = await troubleshootAPI.poeBounce(cxSerial, cxPoePort);
       setResult({ type: 'cxPoeBounce', data: response });
       setSuccess('PoE bounce initiated successfully');
       setTimeout(() => setSuccess(''), 3000);
@@ -312,7 +312,7 @@ function TroubleshootPage() {
     setResult(null);
 
     try {
-      const response = await troubleshootAPI.cxPortBounce(cxSerial, cxPortBouncePort);
+      const response = await troubleshootAPI.portBounce(cxSerial, cxPortBouncePort);
       setResult({ type: 'cxPortBounce', data: response });
       setSuccess('Port bounce initiated successfully');
       setTimeout(() => setSuccess(''), 3000);
@@ -334,7 +334,7 @@ function TroubleshootPage() {
     setResult(null);
 
     try {
-      const response = await troubleshootAPI.cxCableTest(cxSerial, cxCableTestPort);
+      const response = await troubleshootAPI.cableTest(cxSerial, cxCableTestPort);
       setResult({ type: 'cxCableTest', data: response });
     } catch (err) {
       setError(getErrorMessage(err, 'CX Cable test failed'));

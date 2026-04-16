@@ -33,6 +33,7 @@ import {
   Info as InfoIcon,
   Public as PublicIcon,
   Check as CheckIcon,
+  Cloud as CloudIcon,
 } from '@mui/icons-material';
 import { workspaceAPI, clusterAPI } from '../services/api';
 import { DEFAULT_API_BASE_URL } from '../config/apiEndpoints';
@@ -53,9 +54,20 @@ function SettingsPage() {
   const [baseUrl, setBaseUrl] = useState(DEFAULT_API_BASE_URL);
   const [showSecret, setShowSecret] = useState(false);
 
+  // GreenLake credentials state
+  const [glClientId, setGlClientId] = useState('');
+  const [glClientSecret, setGlClientSecret] = useState('');
+  const [glApiBase, setGlApiBase] = useState('https://global.api.greenlake.hpe.com');
+  const [showGlSecret, setShowGlSecret] = useState(false);
+  const [glLoading, setGlLoading] = useState(false);
+  const [glError, setGlError] = useState('');
+  const [glSuccess, setGlSuccess] = useState('');
+  const [glConfigured, setGlConfigured] = useState(null);
+
   useEffect(() => {
     fetchWorkspaceInfo();
     fetchClusterInfo();
+    fetchGLStatus();
   }, []);
 
   const fetchWorkspaceInfo = async () => {
@@ -77,6 +89,39 @@ function SettingsPage() {
     } catch (err) {
       console.error('Failed to fetch cluster info:', err);
       setClusterError('Unable to fetch cluster information. The backend may not be configured.');
+    }
+  };
+
+  const fetchGLStatus = async () => {
+    try {
+      const status = await workspaceAPI.getGLStatus();
+      setGlConfigured(status.configured);
+      if (status.api_base) setGlApiBase(status.api_base);
+    } catch (err) {
+      console.error('Failed to fetch GL status:', err);
+    }
+  };
+
+  const handleSaveGLCredentials = async () => {
+    if (!glClientId || !glClientSecret) {
+      setGlError('Client ID and Client Secret are required');
+      return;
+    }
+
+    setGlLoading(true);
+    setGlError('');
+    setGlSuccess('');
+
+    try {
+      const response = await workspaceAPI.saveGLCredentials(glClientId, glClientSecret, glApiBase);
+      setGlSuccess(response.message || 'GreenLake credentials saved successfully');
+      setGlConfigured(true);
+      setGlClientId('');
+      setGlClientSecret('');
+    } catch (err) {
+      setGlError(err.message || 'Failed to save GreenLake credentials');
+    } finally {
+      setGlLoading(false);
     }
   };
 
@@ -258,6 +303,96 @@ function SettingsPage() {
           </Card>
         </Grid>
       </Grid>
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* GreenLake API Credentials */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <CloudIcon sx={{ mr: 1, color: '#FF6600' }} />
+              <Typography variant="h6">GreenLake API Credentials</Typography>
+            </Box>
+            {glConfigured !== null && (
+              <Chip
+                icon={glConfigured ? <CheckIcon /> : undefined}
+                label={glConfigured ? 'Configured' : 'Not Configured'}
+                size="small"
+                color={glConfigured ? 'success' : 'default'}
+              />
+            )}
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            HPE GreenLake API credentials for GreenLake Lifecycle Platform (GLP) device and subscription management.
+            These are separate from Aruba Central credentials.
+          </Typography>
+
+          {glError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {glError}
+            </Alert>
+          )}
+
+          {glSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {glSuccess}
+            </Alert>
+          )}
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="GL Client ID"
+                value={glClientId}
+                onChange={(e) => setGlClientId(e.target.value)}
+                placeholder="Enter GreenLake client ID"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="GL Client Secret"
+                type={showGlSecret ? 'text' : 'password'}
+                value={glClientSecret}
+                onChange={(e) => setGlClientSecret(e.target.value)}
+                placeholder="Enter GreenLake client secret"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowGlSecret(!showGlSecret)} edge="end">
+                        {showGlSecret ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="GL API Base URL"
+                value={glApiBase}
+                onChange={(e) => setGlApiBase(e.target.value)}
+                placeholder="https://global.api.greenlake.hpe.com"
+                helperText="Leave as default unless your HPE account uses a regional endpoint"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                onClick={handleSaveGLCredentials}
+                disabled={glLoading}
+                startIcon={glLoading ? <CircularProgress size={20} /> : <CloudIcon />}
+              >
+                {glLoading ? 'Saving...' : 'Save GreenLake Credentials'}
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       <Divider sx={{ my: 4 }} />
 

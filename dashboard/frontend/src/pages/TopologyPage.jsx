@@ -396,7 +396,7 @@ export default function TopologyPage() {
       ]);
 
       if (devicesResult.status === 'fulfilled') {
-        const list = devicesResult.value.devices || devicesResult.value.items || [];
+        const list = devicesResult.value.result || devicesResult.value.devices || devicesResult.value.items || [];
         setDevices(list);
       } else {
         console.warn('Failed to fetch devices:', devicesResult.reason);

@@ -40,6 +40,7 @@ import WifiIcon from '@mui/icons-material/Wifi';
 import RouterIcon from '@mui/icons-material/Router';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { healthAPI, tokenAPI, deviceAPI, alertsAPI } from '../services/api';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -273,6 +274,7 @@ export default function StatusPage() {
   const [tokenLoading, setTokenLoading] = useState(!cached?.tokenInfo);
   const [devicesLoading, setDevicesLoading] = useState(!cached?.devices);
   const [alertsLoading, setAlertsLoading] = useState(!cached?.alerts);
+  const [acknowledging, setAcknowledging] = useState(new Set());
 
   const [healthError, setHealthError] = useState('');
   const [tokenError, setTokenError] = useState('');
@@ -337,12 +339,32 @@ export default function StatusPage() {
     setAlertsLoading(true);
     setAlertsError('');
     try {
-      const data = await alertsAPI.getAll(null, 10);
+      const data = await alertsAPI.getAll(null, 1);
       setAlerts(data);
     } catch (err) {
       setAlertsError(err.message || 'Failed to fetch alerts');
     } finally {
       setAlertsLoading(false);
+    }
+  }, []);
+
+  const handleAcknowledge = useCallback(async (alertId) => {
+    setAcknowledging((prev) => new Set(prev).add(alertId));
+    try {
+      await alertsAPI.acknowledge(alertId);
+      setAlerts((prev) => {
+        const items = prev?.items || prev?.alerts || (Array.isArray(prev) ? prev : []);
+        const updated = items.map((a) =>
+          (a.id || a.alert_id) === alertId ? { ...a, status: 'Acknowledged', acknowledged: true } : a
+        );
+        if (prev?.items) return { ...prev, items: updated };
+        if (prev?.alerts) return { ...prev, alerts: updated };
+        return updated;
+      });
+    } catch (_err) {
+      // Silently fail
+    } finally {
+      setAcknowledging((prev) => { const n = new Set(prev); n.delete(alertId); return n; });
     }
   }, []);
 
@@ -378,7 +400,7 @@ export default function StatusPage() {
   // ── Derived: device aggregates ────────────────────────────────────────
 
   const deviceSummary = useMemo(() => {
-    const items = devices?.items || devices?.devices || (Array.isArray(devices) ? devices : []);
+    const items = devices?.result || devices?.items || devices?.devices || (Array.isArray(devices) ? devices : []);
     const total = items.length;
 
     const byType = { AP: [], SWITCH: [], GATEWAY: [] };
@@ -410,8 +432,7 @@ export default function StatusPage() {
   // ── Derived: alerts list ──────────────────────────────────────────────
 
   const alertsList = useMemo(() => {
-    const raw = alerts?.items || alerts?.alerts || (Array.isArray(alerts) ? alerts : []);
-    return raw.slice(0, 10);
+    return alerts?.items || alerts?.alerts || (Array.isArray(alerts) ? alerts : []);
   }, [alerts]);
 
   // ── Derived: health details ───────────────────────────────────────────
@@ -631,10 +652,19 @@ export default function StatusPage() {
         </Alert>
       )}
 
-      {/* ─── Section 3: Recent Alerts ─────────────────────────────────── */}
-      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-        Recent Alerts
-      </Typography>
+      {/* ─── Section 3: Alerts ───────────────────────────────────────── */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Alerts
+        </Typography>
+        {alertsList.length > 0 && (
+          <Typography variant="caption" color="text.secondary">
+            {alertsList.filter((a) => !a.acknowledged && (a.status || '').toLowerCase() !== 'acknowledged').length} active
+            {' · '}
+            {alertsList.filter((a) => a.acknowledged || (a.status || '').toLowerCase() === 'acknowledged').length} closed
+          </Typography>
+        )}
+      </Box>
       <Card sx={{ mb: 4 }}>
         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
           {alertsLoading ? (
@@ -664,7 +694,7 @@ export default function StatusPage() {
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <CheckCircleIcon sx={{ fontSize: 48, color: GREEN, mb: 1 }} />
               <Typography variant="body1" color="text.secondary">
-                No recent alerts
+                No alerts
               </Typography>
             </Box>
           ) : (
@@ -674,29 +704,40 @@ export default function StatusPage() {
                   <TableRow>
                     <TableCell sx={{ fontWeight: 600, width: 40 }}>Sev</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Message</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: 180 }}>Timestamp</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: 140 }}>Timestamp</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: 100 }}>Status</TableCell>
+                    <TableCell sx={{ width: 56 }} />
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {alertsList.map((alert, idx) => {
+                    const alertId = alert.id || alert.alert_id;
+                    const isAcknowledged = alert.acknowledged || (alert.status || '').toLowerCase() === 'acknowledged';
                     const sev = getSeverity(alert);
                     const SevIcon = sev.icon;
-                    const msg =
-                      alert.description || alert.message || alert.alert_text || alert.details || alert.name || 'Alert';
+                    const msg = alert.description || alert.message || alert.alert_text || alert.details || alert.name || 'Alert';
                     const ts = alert.timestamp || alert.created_at || alert.time || alert.raised_at;
                     const tsDisplay = ts
                       ? new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts).toLocaleString()
                       : '-';
+                    const busy = acknowledging.has(alertId);
 
                     return (
-                      <TableRow key={alert.id || idx} sx={{ '&:last-child td': { borderBottom: 0 } }}>
+                      <TableRow
+                        key={alertId || idx}
+                        sx={{
+                          '&:last-child td': { borderBottom: 0 },
+                          opacity: isAcknowledged ? 0.55 : 1,
+                          transition: 'opacity 0.2s',
+                        }}
+                      >
                         <TableCell>
                           <Tooltip title={sev.label}>
                             <SevIcon sx={{ color: sev.color, fontSize: 20 }} />
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" sx={{ maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <Typography variant="body2" sx={{ maxWidth: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {msg}
                           </Typography>
                         </TableCell>
@@ -704,6 +745,34 @@ export default function StatusPage() {
                           <Typography variant="caption" color="text.secondary">
                             {tsDisplay}
                           </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={isAcknowledged ? 'Closed' : 'Active'}
+                            size="small"
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: '0.7rem',
+                              bgcolor: isAcknowledged ? 'rgba(100,116,139,0.12)' : 'rgba(239,68,68,0.1)',
+                              color: isAcknowledged ? '#64748B' : '#EF4444',
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {!isAcknowledged && (
+                            <Tooltip title="Mark as closed">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleAcknowledge(alertId)}
+                                disabled={busy || !alertId}
+                                sx={{ color: '#64748B', '&:hover': { color: '#22C55E' } }}
+                              >
+                                {busy
+                                  ? <CircularProgress size={16} />
+                                  : <DoneAllIcon sx={{ fontSize: 18 }} />}
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </TableCell>
                       </TableRow>
                     );

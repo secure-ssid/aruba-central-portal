@@ -250,8 +250,73 @@ export const configAPI = {
     return response.data;
   },
 
+  createGroup: async (data) => {
+    const response = await apiClient.post('/groups', data);
+    return response.data;
+  },
+
+  deleteGroup: async (groupName) => {
+    const response = await apiClient.delete(`/groups/${encodeURIComponent(groupName)}`);
+    return response.data;
+  },
+
   getTemplates: async () => {
     const response = await apiClient.get('/templates');
+    return response.data;
+  },
+
+  getWlans: async (params = {}) => {
+    const response = await apiClient.get('/config/wlan', { params });
+    return response.data;
+  },
+
+  getWlan: async (ssidName) => {
+    const response = await apiClient.get(`/config/wlan/${encodeURIComponent(ssidName)}`);
+    return response.data;
+  },
+
+  getRoles: async (params = {}) => {
+    const response = await apiClient.get('/config/roles', { params });
+    return response.data;
+  },
+
+  getAcls: async (params = {}) => {
+    const response = await apiClient.get('/config/acls', { params });
+    return response.data;
+  },
+
+  getAuthServers: async (params = {}) => {
+    const response = await apiClient.get('/config/auth-servers', { params });
+    return response.data;
+  },
+
+  getMonitoringSites: async (params = {}) => {
+    const response = await apiClient.get('/monitoring/sites', { params });
+    return response.data;
+  },
+
+  listWebhooks: async (params = {}) => {
+    const response = await apiClient.get('/config/webhooks', { params });
+    return response.data;
+  },
+
+  createWebhook: async (data) => {
+    const response = await apiClient.post('/config/webhooks', data);
+    return response.data;
+  },
+
+  updateWebhook: async (webhookId, data) => {
+    const response = await apiClient.put(`/config/webhooks/${webhookId}`, data);
+    return response.data;
+  },
+
+  deleteWebhook: async (webhookId) => {
+    const response = await apiClient.delete(`/config/webhooks/${webhookId}`);
+    return response.data;
+  },
+
+  rotateWebhookKey: async (webhookId) => {
+    const response = await apiClient.post(`/config/webhooks/${webhookId}/rotate-key`);
     return response.data;
   },
 };
@@ -387,6 +452,31 @@ export const nacAPI = {
 
   getOnboardingRules: async () => {
     const response = await apiClient.get('/nac/onboarding-rules');
+    return response.data;
+  },
+
+  getClientDetails: async (mac) => {
+    const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}`);
+    return response.data;
+  },
+
+  getClientMobilityTrail: async (mac, params = {}) => {
+    const response = await apiClient.get(`/clients/${encodeURIComponent(mac)}/mobility-trail`, { params });
+    return response.data;
+  },
+
+  getMacRegistrations: async (params = {}) => {
+    const response = await apiClient.get('/nac/mac-registrations', { params });
+    return response.data;
+  },
+
+  addMacRegistration: async (data) => {
+    const response = await apiClient.post('/nac/mac-registrations', data);
+    return response.data;
+  },
+
+  deleteMacRegistration: async (id) => {
+    const response = await apiClient.delete(`/nac/mac-registrations/${id}`);
     return response.data;
   },
 };
@@ -545,6 +635,78 @@ export const troubleshootAPI = {
     });
     return response.data;
   },
+
+  pingAP: async (serial, target) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/ping`, { target });
+    return response.data;
+  },
+
+  tracerouteAP: async (serial, target) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/traceroute`, { target });
+    return response.data;
+  },
+
+  rebootAP: async (serial) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/reboot`);
+    return response.data;
+  },
+
+  rebootSwitch: async (serial) => {
+    const response = await apiClient.post('/troubleshoot/cx/reboot', { serial });
+    return response.data;
+  },
+
+  locateAP: async (serial) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/locate`);
+    return response.data;
+  },
+
+  httpTestAP: async (serial, url) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/http-test`, { url });
+    return response.data;
+  },
+
+  disconnectUser: async (serial, macAddress) => {
+    const response = await apiClient.post(`/troubleshoot/aps/${serial}/disconnect-user`, {
+      mac_address: macAddress,
+    });
+    return response.data;
+  },
+
+  portBounce: async (serial, port) => {
+    const response = await apiClient.post('/troubleshoot/cx/port-bounce', { serial, port });
+    return response.data;
+  },
+
+  poeBounce: async (serial, port) => {
+    const response = await apiClient.post('/troubleshoot/cx/poe-bounce', { serial, port });
+    return response.data;
+  },
+
+  cableTest: async (serial, port) => {
+    const response = await apiClient.post('/troubleshoot/cx/cable-test', { serial, port });
+    return response.data;
+  },
+
+  showCXCommand: async (serial, command) => {
+    const response = await apiClient.post('/troubleshoot/cx/show-command', { serial, command });
+    return response.data;
+  },
+
+  cxHttpTest: async (serial, url) => {
+    const response = await apiClient.post('/troubleshoot/cx/http-test', { serial, url });
+    return response.data;
+  },
+
+  cxLocate: async (serial) => {
+    const response = await apiClient.post('/troubleshoot/cx/locate', { serial });
+    return response.data;
+  },
+
+  exportConfig: async (serial) => {
+    const response = await apiClient.get('/config/export', { params: { serial }, responseType: 'blob' });
+    return response.data;
+  },
 };
 
 /**
@@ -619,6 +781,36 @@ export const firmwareAPI = {
 
   scheduleUpgrade: async (upgradeData) => {
     const response = await apiClient.post('/firmware/upgrade', upgradeData);
+    return response.data;
+  },
+};
+
+/**
+ * Webhook Management API
+ */
+export const webhookAPI = {
+  list: async () => {
+    const response = await apiClient.get('/config/webhooks');
+    return response.data;
+  },
+
+  create: async (data) => {
+    const response = await apiClient.post('/config/webhooks', data);
+    return response.data;
+  },
+
+  update: async (id, data) => {
+    const response = await apiClient.put(`/config/webhooks/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await apiClient.delete(`/config/webhooks/${id}`);
+    return response.data;
+  },
+
+  rotateKey: async (id) => {
+    const response = await apiClient.post(`/config/webhooks/${id}/rotate-key`);
     return response.data;
   },
 };
@@ -749,6 +941,20 @@ export const workspaceAPI = {
 
   getInfo: async () => {
     const response = await apiClient.get('/workspace/info');
+    return response.data;
+  },
+
+  saveGLCredentials: async (glClientId, glClientSecret, glApiBase) => {
+    const response = await apiClient.post('/workspace/greenlake', {
+      gl_client_id: glClientId,
+      gl_client_secret: glClientSecret,
+      gl_api_base: glApiBase,
+    });
+    return response.data;
+  },
+
+  getGLStatus: async () => {
+    const response = await apiClient.get('/workspace/greenlake/status');
     return response.data;
   },
 };

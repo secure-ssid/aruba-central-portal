@@ -126,167 +126,6 @@ def api_explorer():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-# ============= Services Endpoints =============
-
-
-@monitoring_bp.route("/api/services/health", methods=["GET"])
-@require_session
-def get_services_health():
-    """Get overall service health status."""
-    try:
-        # Fetch all three in parallel (all cached)
-        data = parallel_get(
-            [
-                ("/network-monitoring/v1/devices",),
-                ("/network-monitoring/v1/wlans",),
-                ("/central/v2/sites",),
-            ]
-        )
-
-        health_status = {"overall_status": "healthy", "services": [], "timestamp": time.time()}
-
-        # Device service
-        devices = data.get("/network-monitoring/v1/devices")
-        if devices is not None:
-            health_status["services"].append(
-                {
-                    "name": "Device Management",
-                    "status": "up",
-                    "details": f"{devices.get('count', 0)} devices monitored",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Device Management", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        # Wireless service
-        wlans = data.get("/network-monitoring/v1/wlans")
-        if wlans is not None:
-            health_status["services"].append(
-                {
-                    "name": "Wireless Services",
-                    "status": "up",
-                    "details": f"{wlans.get('count', 0)} WLANs configured",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Wireless Services", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        # Site service
-        sites = data.get("/central/v2/sites")
-        if sites is not None:
-            health_status["services"].append(
-                {
-                    "name": "Site Management",
-                    "status": "up",
-                    "details": f"{sites.get('total', 0)} sites configured",
-                }
-            )
-        else:
-            health_status["services"].append(
-                {"name": "Site Management", "status": "error", "details": "Unavailable"}
-            )
-            health_status["overall_status"] = "degraded"
-
-        return jsonify(health_status)
-    except Exception as e:
-        logger.error(f"Error fetching services health: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@monitoring_bp.route("/api/services/subscriptions", methods=["GET"])
-@require_session
-def get_service_subscriptions():
-    """Get service subscriptions and licenses."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        try:
-            response = aruba_client.get("/platform/licensing/v1/subscriptions")
-            return jsonify(response)
-        except Exception as serr:
-            if (
-                "404" in str(serr)
-                or "400" in str(serr)
-                or "Not Found" in str(serr)
-                or "Bad Request" in str(serr)
-            ):
-                logger.warning("Service subscriptions not available; returning empty list")
-                return jsonify({"subscriptions": [], "count": 0})
-            raise serr
-    except Exception as e:
-        logger.error(f"Error fetching service subscriptions: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@monitoring_bp.route("/api/services/audit-logs", methods=["GET"])
-@require_session
-def get_service_audit_logs():
-    """Get service audit logs."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        limit = request.args.get("limit", 100)
-        offset = request.args.get("offset", 0)
-
-        params = {"limit": limit, "offset": offset}
-
-        try:
-            response = aruba_client.get("/platform/auditlogs/v1/logs", params=params)
-            return jsonify(response)
-        except Exception as aerr:
-            if (
-                "404" in str(aerr)
-                or "400" in str(aerr)
-                or "Not Found" in str(aerr)
-                or "Bad Request" in str(aerr)
-            ):
-                logger.warning("Audit logs not available; returning empty list")
-                return jsonify({"logs": [], "count": 0, "offset": int(offset)})
-            raise aerr
-    except Exception as e:
-        logger.error(f"Error fetching audit logs: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@monitoring_bp.route("/api/services/capacity", methods=["GET"])
-@require_session
-def get_service_capacity():
-    """Get service capacity and usage metrics."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        # Get device counts and calculate capacity
-        devices = aruba_client.get("/network-monitoring/v1/devices")
-
-        capacity = {
-            "devices": {
-                "total": devices.get("count", 0),
-                "limit": 10000,  # Default limit, adjust based on subscription
-                "percentage": 0,
-            },
-            "timestamp": time.time(),
-        }
-
-        if capacity["devices"]["limit"] > 0:
-            capacity["devices"]["percentage"] = (
-                capacity["devices"]["total"] / capacity["devices"]["limit"]
-            ) * 100
-
-        return jsonify(capacity)
-    except Exception as e:
-        logger.error(f"Error fetching service capacity: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
 # ============= Advanced Monitoring Endpoints =============
 
 
@@ -1438,6 +1277,23 @@ def get_gw_wan_interfaces(serial):
     except Exception as e:
         logger.error(f"Error fetching WAN interfaces for gateway {serial}: {e}")
         return jsonify({"error": "Failed to fetch WAN interfaces"}), 500
+
+
+@monitoring_bp.route("/api/monitoring/sites", methods=["GET"])
+@require_session
+def get_monitoring_sites():
+    """Get sites from network-monitoring API."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        params = request.args.to_dict()
+        params.setdefault("limit", "100")
+        response = aruba_client.get("/network-monitoring/v1/sites", params=params)
+        return jsonify(response or {"result": []})
+    except Exception as e:
+        logger.error(f"Error fetching monitoring sites: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @monitoring_bp.route("/api/monitoring/gateways/<serial>/wan-tunnels", methods=["GET"])

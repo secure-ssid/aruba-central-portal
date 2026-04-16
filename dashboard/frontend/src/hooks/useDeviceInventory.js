@@ -19,7 +19,7 @@ function extractList(data, ...keys) {
     for (const key of keys) {
       if (Array.isArray(data[key])) return data[key];
     }
-    return data.items || data.data || [];
+    return data.result || data.items || data.data || [];
   }
   return [];
 }
