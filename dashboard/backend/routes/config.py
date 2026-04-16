@@ -1768,12 +1768,16 @@ def export_configuration():
         if not response:
             return jsonify({"error": "Could not retrieve configuration from device"}), 404
 
-        # Return as downloadable file
+        # Extract config text — handle plain-text wrapped as {"text": "..."} by the client
         config_text = (
             response.get("config")
             or response.get("configuration")
+            or response.get("text")
             or json.dumps(response, indent=2)
         )
+
+        if not isinstance(config_text, str):
+            config_text = json.dumps(config_text, indent=2)
 
         resp = make_response(config_text)
         resp.headers["Content-Type"] = "text/plain"

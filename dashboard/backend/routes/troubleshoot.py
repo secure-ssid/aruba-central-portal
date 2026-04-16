@@ -157,6 +157,22 @@ def _poll_aoss_operation(device_serial, tool_path, post_data, status_path_templa
     }, 504
 
 
+def _is_device_unavailable_error(err):
+    """Return True if the error represents an offline/busy/not-found device.
+
+    CentralAPIError stores the status code in .status_code; str(err) is the
+    API description text (may not contain the status code digits), so we check
+    both the attribute and the string representation.
+    """
+    sc = getattr(err, 'status_code', None)
+    if sc in (400, 404, 409):
+        return True
+    return any(
+        x in str(err)
+        for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')
+    )
+
+
 # ============= Wireless/WLAN Endpoints =============
 
 @troubleshoot_bp.route('/api/wlans', methods=['GET'])
@@ -332,7 +348,7 @@ def troubleshoot_ping():
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -366,7 +382,7 @@ def troubleshoot_traceroute():
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -400,33 +416,9 @@ def troubleshoot_cx_poe_bounce():
             )
             return jsonify(result), status_code
         except Exception as terr:
-            # Properly handle HTTP errors from requests library
-            if isinstance(terr, requests.HTTPError):
-                http_status = terr.response.status_code if hasattr(terr, 'response') and terr.response else None
-                error_text = terr.response.text if hasattr(terr, 'response') and terr.response else str(terr)
-
-                logger.error(
-                    f"POE bounce API error: HTTP {http_status} - {error_text[:500] if error_text else 'Unknown error'}"
-                )
-
-                if http_status in (400, 404):
-                    error_msg = error_text if error_text and len(error_text) < 200 else "POE bounce operation is not available for this device or port"
-                    return jsonify({
-                        "status": "unavailable", "result": None,
-                        "error": error_msg, "status_code": http_status
-                    }), http_status
-                else:
-                    return jsonify({
-                        "status": "error",
-                        "error": error_text[:200] if error_text else str(terr),
-                        "status_code": http_status
-                    }), http_status if http_status else 500
-            elif '400' in str(terr) or '404' in str(terr):
-                logger.warning(f"POE bounce error (string check): {terr}")
-                return jsonify({
-                    "status": "unavailable", "result": None,
-                    "error": "POE bounce operation is not available. This may indicate the device or port does not support this operation."
-                }), 404
+            if _is_device_unavailable_error(terr):
+                logger.warning(f"POE bounce unavailable for {device_serial}: {terr}")
+                return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
         logger.error(f"POE bounce troubleshooting error: {e}", exc_info=True)
@@ -517,53 +509,24 @@ def troubleshoot_cx_port_bounce():
             return jsonify(result), sc
 
         except Exception as terr:
-            if isinstance(terr, requests.HTTPError):
-                http_status = terr.response.status_code if hasattr(terr, 'response') and terr.response else None
-                error_text = terr.response.text if hasattr(terr, 'response') and terr.response else str(terr)
-
-                # If CX endpoint fails with 404, try AOS-S switch endpoint
-                if http_status == 404:
-                    logger.info(f"CX port bounce endpoint not available for {device_serial}, trying AOS-S endpoint")
-                    try:
-                        aoss_result, aoss_sc = _poll_aoss_operation(
-                            device_serial,
-                            f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce',
-                            {"port": port},
-                            f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce/{{test_id}}',
-                            "Port bounce",
-                            max_wait=30, poll_interval=1,
-                        )
-                        return jsonify(aoss_result), aoss_sc
-                    except Exception as aos_err:
-                        logger.error(f"AOS-S port bounce also failed: {aos_err}")
-                        return jsonify({
-                            "status": "unavailable", "result": None,
-                            "error": "Port bounce operation is not available for this device. Neither CX nor AOS-S endpoints are supported.",
-                            "cx_error": error_text[:100] if error_text else str(terr),
-                            "aos_error": str(aos_err)[:100]
-                        }), 404
-
-                logger.error(
-                    f"Port bounce API error: HTTP {http_status} - {error_text[:500] if error_text else 'Unknown error'}"
-                )
-                if http_status == 400:
-                    error_msg = error_text if error_text and len(error_text) < 200 else "Port bounce operation is not available for this device or port"
-                    return jsonify({
-                        "status": "unavailable", "result": None,
-                        "error": error_msg, "status_code": http_status
-                    }), http_status
-                else:
-                    return jsonify({
-                        "status": "error",
-                        "error": error_text[:200] if error_text else str(terr),
-                        "status_code": http_status
-                    }), http_status if http_status else 500
-            elif '400' in str(terr) or '404' in str(terr):
-                logger.warning(f"Port bounce error (string check): {terr}")
-                return jsonify({
-                    "status": "unavailable", "result": None,
-                    "error": "Port bounce operation is not available. This may indicate the device or port does not support this operation."
-                }), 404
+            # On 404, the CX endpoint doesn't exist for this device — try AOS-S fallback
+            if getattr(terr, 'status_code', None) == 404:
+                logger.info(f"CX port bounce not available for {device_serial}, trying AOS-S endpoint")
+                try:
+                    aoss_result, aoss_sc = _poll_aoss_operation(
+                        device_serial,
+                        f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce',
+                        {"port": port},
+                        f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce/{{test_id}}',
+                        "Port bounce",
+                        max_wait=30, poll_interval=1,
+                    )
+                    return jsonify(aoss_result), aoss_sc
+                except Exception as aos_err:
+                    logger.error(f"AOS-S port bounce also failed: {aos_err}")
+            if _is_device_unavailable_error(terr):
+                logger.warning(f"Port bounce unavailable for {device_serial}: {terr}")
+                return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
         logger.error(f"Port bounce troubleshooting error: {e}", exc_info=True)
@@ -647,7 +610,7 @@ def troubleshoot_cx_cable_test():
             }), 504
 
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -732,7 +695,7 @@ def troubleshoot_cx_http_test():
             }), 504
 
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -818,7 +781,7 @@ def troubleshoot_cx_aaa_test():
             }), 504
 
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -868,7 +831,7 @@ def troubleshoot_cx_list_show_commands():
 
             return jsonify(response)
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -953,7 +916,7 @@ def troubleshoot_cx_run_show_command():
             }), 504
 
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -987,7 +950,7 @@ def troubleshoot_cx_locate():
             )
             return jsonify(response)
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1020,7 +983,7 @@ def troubleshoot_cx_reboot():
             )
             return jsonify(response)
         except Exception as terr:
-            if '400' in str(terr) or '404' in str(terr):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1054,7 +1017,7 @@ def troubleshoot_ap_ping(serial):
             return jsonify(result), status_code
         except Exception as terr:
             err_str = str(terr)
-            if any(x in err_str for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None, "detail": err_str[:200]})
             raise terr
     except Exception as e:
@@ -1083,7 +1046,7 @@ def troubleshoot_ap_traceroute(serial):
             return jsonify(result), status_code
         except Exception as terr:
             err_str = str(terr)
-            if any(x in err_str for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None, "detail": err_str[:200]})
             raise terr
     except Exception as e:
@@ -1176,7 +1139,7 @@ def troubleshoot_ap_speedtest(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1206,7 +1169,7 @@ def troubleshoot_ap_nslookup(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
@@ -1236,7 +1199,7 @@ def troubleshoot_ap_http_test(serial):
             )
             return jsonify(result), status_code
         except Exception as terr:
-            if any(x in str(terr) for x in ('400', '404', '409', 'Not Found', 'Bad Request', 'offline', 'Offline', 'CONFLICT')):
+            if _is_device_unavailable_error(terr):
                 return jsonify({"status": "unavailable", "result": None})
             raise terr
     except Exception as e:
