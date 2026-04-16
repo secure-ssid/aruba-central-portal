@@ -35,15 +35,6 @@ import {
   NotificationsActive as AlertsIcon,
   NetworkCheck as NetworkIcon,
 } from '@mui/icons-material';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import apiClient from '../services/api';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -119,11 +110,11 @@ function RadialSummary({ client }) {
   const expColor = getExperienceColor(experience);
 
   const segments = [
-    { label: 'Site', icon: <SiteIcon sx={{ fontSize: 16 }} />, value: client?.siteName || '—' },
-    { label: 'Network', icon: <NetworkIcon sx={{ fontSize: 16 }} />, color: expColor, dot: true },
-    { label: 'Applications', icon: <AppsIcon sx={{ fontSize: 16 }} />, value: client?.trafficClass || '9' },
-    { label: 'Security', icon: <SecurityIcon sx={{ fontSize: 16 }} />, value: client?.role || '—' },
-    { label: 'Alerts', icon: <AlertsIcon sx={{ fontSize: 16 }} />, value: '0' },
+    { label: 'Site',         icon: <SiteIcon    sx={{ fontSize: 16 }} />, value: client?.siteName || '—' },
+    { label: 'Network',      icon: <NetworkIcon sx={{ fontSize: 16 }} />, color: expColor, dot: true },
+    { label: 'Applications', icon: <AppsIcon    sx={{ fontSize: 16 }} />, value: client?.trafficClass != null ? String(client.trafficClass) : '—' },
+    { label: 'Security',     icon: <SecurityIcon sx={{ fontSize: 16 }} />, value: client?.role || client?.securityType || '—' },
+    { label: 'Alerts',       icon: <AlertsIcon  sx={{ fontSize: 16 }} />, value: client?.alertCount != null ? String(client.alertCount) : '—' },
   ];
 
   return (
@@ -190,68 +181,126 @@ function RadialSummary({ client }) {
   );
 }
 
-// ── Health timeline ───────────────────────────────────────────────────────────
+// ── Connection Info (replaces fake sparkline) ─────────────────────────────────
 
-function HealthTimeline({ client }) {
-  // Generate synthetic health points from the client's current experience/snr
-  // since Central doesn't expose per-client health history in the detail endpoint
-  const status = client?.status || '';
-  const isConnected = status.toUpperCase() === 'CONNECTED';
-  const experience = client?.experience || 'Good';
-  const expColor = getExperienceColor(experience);
+function formatDuration(seconds) {
+  if (seconds < 60)    return `${seconds}s`;
+  if (seconds < 3600)  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  return `${Math.floor(seconds / 86400)}d ${Math.floor((seconds % 86400) / 3600)}h`;
+}
 
-  // Build mock sparkline points from current SNR if available
-  const snr = client?.snr ?? client?.signalStrength ?? 35;
-  const now = Date.now();
-  const points = Array.from({ length: 19 }, (_, i) => ({
-    t: new Date(now - (18 - i) * 10 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    v: isConnected ? Math.max(0, Math.min(100, snr + (Math.sin(i * 0.6) * 5 + Math.random() * 4 - 2))) : 0,
-  }));
+function ConnectionInfo({ client }) {
+  const status = client?.status || 'Unknown';
+  const statusColor = getStatusColor(status);
+  const experience = client?.experience;
+  const expColor = getExperienceColor(experience || '');
 
-  const TOOLTIP_STYLE = {
-    background: '#111827',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 8,
-    fontSize: 12,
-  };
+  let connectedAt = '—';
+  let duration = '—';
+  const raw = client?.connectedSince;
+  if (raw) {
+    const ts = typeof raw === 'number' ? (raw > 1e10 ? raw : raw * 1000) : new Date(raw).getTime();
+    if (!isNaN(ts)) {
+      connectedAt = new Date(ts).toLocaleString();
+      duration = formatDuration(Math.max(0, Math.floor((Date.now() - ts) / 1000)));
+    }
+  }
+
+  const rows = [
+    { label: 'Status',           value: status,                                        color: statusColor },
+    { label: 'Experience',       value: experience || '—',                             color: experience ? expColor : undefined },
+    { label: 'Connected Since',  value: connectedAt },
+    { label: 'Session Duration', value: duration },
+    { label: 'Signal (SNR)',     value: getSignal(client) },
+    { label: 'IP Address',       value: getIp(client), mono: true },
+    { label: 'Failure Stage',    value: client?.failureStage || client?.failure_stage || null },
+    { label: 'Auth Type',        value: client?.authType || client?.auth_type || null },
+  ].filter(r => r.value && r.value !== '—' && r.value !== null);
+
+  return (
+    <Card sx={{ height: '100%' }}>
+      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>Connection</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.875 }}>
+          {rows.map(r => (
+            <Box key={r.label} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.25 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem' }}>{r.label}</Typography>
+              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFamily: r.mono ? 'monospace' : 'inherit', color: r.color || 'text.primary' }}>
+                {r.value}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Mobility Trail (roaming history) ──────────────────────────────────────────
+
+function MobilityTrail({ mac, isWireless }) {
+  const [trail, setTrail] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isWireless || !mac) return;
+    setLoading(true);
+    apiClient.get(`/clients/${encodeURIComponent(mac)}/mobility-trail`)
+      .then(res => {
+        const items = res.data?.items || res.data?.trail || (Array.isArray(res.data) ? res.data : []);
+        setTrail(items);
+      })
+      .catch(() => setTrail([]))
+      .finally(() => setLoading(false));
+  }, [mac, isWireless]);
+
+  if (!isWireless) return null;
+  if (loading) return (
+    <Card>
+      <CardContent sx={{ p: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+        <CircularProgress size={20} sx={{ color: '#FF6600' }} />
+      </CardContent>
+    </Card>
+  );
+  if (!trail || trail.length === 0) return null;
 
   return (
     <Card>
       <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Health</Typography>
-            <Typography variant="caption" color="text.secondary">Last 3 Hrs</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: expColor }} />
-            <Typography variant="caption" sx={{ color: expColor, fontWeight: 600 }}>
-              {isConnected ? `Connected, ${experience} Performance` : status || 'Unknown'}
-            </Typography>
-          </Box>
-        </Box>
-
-        <ResponsiveContainer width="100%" height={70}>
-          <AreaChart data={points} margin={{ top: 4, right: 4, left: -30, bottom: 0 }}>
-            <defs>
-              <linearGradient id="healthGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={expColor} stopOpacity={0.25} />
-                <stop offset="95%" stopColor={expColor} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-            <XAxis dataKey="t" tick={{ fill: '#64748B', fontSize: 9 }} interval={4} />
-            <YAxis domain={[0, 100]} hide />
-            <RechartsTooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [`${Math.round(v)}`, 'Health']} />
-            <Area type="monotone" dataKey="v" stroke={expColor} strokeWidth={2} fill="url(#healthGrad)" dot={false} isAnimationActive={false} />
-          </AreaChart>
-        </ResponsiveContainer>
-
-        {client?.connectedSince && (
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-            Connected Since {new Date(client.connectedSince * 1000 || client.connectedSince).toLocaleString()}
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          Roaming History
+          <Typography component="span" variant="caption" color="text.disabled" sx={{ ml: 1 }}>
+            {trail.length} hop{trail.length !== 1 ? 's' : ''}
           </Typography>
-        )}
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {trail.map((hop, i) => {
+            const apName = hop.apName || hop.ap_name || hop.associatedDevice || hop.connectedTo || '—';
+            const ts = hop.timestamp;
+            let timeStr = '';
+            if (ts) {
+              const t = typeof ts === 'number' && ts < 1e10 ? ts * 1000 : ts;
+              timeStr = new Date(t).toLocaleString();
+            }
+            return (
+              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.875, borderBottom: i < trail.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Typography variant="caption" sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#3B82F6' }}>{i + 1}</Typography>
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.78rem', display: 'block' }} noWrap>{apName}</Typography>
+                  {timeStr && <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.66rem' }}>{timeStr}</Typography>}
+                </Box>
+                {hop.duration != null && (
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', fontFamily: 'monospace', flexShrink: 0 }}>
+                    {hop.duration}s
+                  </Typography>
+                )}
+              </Box>
+            );
+          })}
+        </Box>
       </CardContent>
     </Card>
   );
@@ -692,34 +741,45 @@ function ClientDetailPage() {
         <Grid item xs={12} md={9}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 
-            {/* Health + Properties row */}
+            {/* Connection + Properties row */}
             <Grid container spacing={2.5}>
-              <Grid item xs={12} md={7}>
-                <HealthTimeline client={client} />
-              </Grid>
               <Grid item xs={12} md={5}>
+                <ConnectionInfo client={client} />
+              </Grid>
+              <Grid item xs={12} md={7}>
                 <PropertiesPanel client={client} />
               </Grid>
             </Grid>
 
-            {/* Performance + Connectivity row */}
+            {/* Connectivity path */}
+            <ConnectivityPath client={client} />
+
+            {/* Performance + Classification row */}
             <Grid container spacing={2.5}>
               <Grid item xs={12} md={5}>
                 <ConnectivityPerformance client={client} />
               </Grid>
               <Grid item xs={12} md={7}>
-                <ConnectivityPath client={client} />
+                <ClassificationPanel client={client} />
               </Grid>
             </Grid>
 
-            {/* Classification + Network Details row */}
+            {/* Network Details + Mobility Trail row */}
             <Grid container spacing={2.5}>
-              <Grid item xs={12} md={6}>
-                <ClassificationPanel client={client} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <NetworkDetails client={client} />
-              </Grid>
+              {isWireless ? (
+                <>
+                  <Grid item xs={12} md={5}>
+                    <NetworkDetails client={client} />
+                  </Grid>
+                  <Grid item xs={12} md={7}>
+                    <MobilityTrail mac={getMac(client)} isWireless={isWireless} />
+                  </Grid>
+                </>
+              ) : (
+                <Grid item xs={12}>
+                  <NetworkDetails client={client} />
+                </Grid>
+              )}
             </Grid>
 
           </Box>

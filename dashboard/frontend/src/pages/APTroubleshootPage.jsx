@@ -414,7 +414,7 @@ export default function APTroubleshootPage() {
   const fetchAPList = async () => {
     try {
       setApListLoading(true);
-      const res = await monitoringAPIv2.getAPsMonitoring({ limit: 500 });
+      const res = await monitoringAPIv2.getAPsMonitoring();
       const aps = res.result || res.aps || res.items || res.data || [];
       setApList(aps);
     } catch (err) {

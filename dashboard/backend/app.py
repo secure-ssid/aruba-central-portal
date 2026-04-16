@@ -107,9 +107,11 @@ def set_cache_headers(response):
 
     return response
 
-# ── Global per-IP rate limit for API endpoints (60 req/min) ─────────────────
+# ── Global per-IP rate limit for API endpoints ───────────────────────────────
 _global_rate_store = defaultdict(list)
 _global_rate_lock = threading.Lock()
+_global_rate_last_cleanup = time.time()
+_RATE_STORE_CLEANUP_INTERVAL = 300  # evict stale IPs every 5 minutes
 
 @app.before_request
 def global_rate_limit():
@@ -143,6 +145,16 @@ def global_rate_limit():
         max_requests = 300
 
     with _global_rate_lock:
+        global _global_rate_last_cleanup
+
+        # Periodically evict IPs whose last request is outside the window
+        # to prevent the store growing unbounded on long-running instances.
+        if now - _global_rate_last_cleanup > _RATE_STORE_CLEANUP_INTERVAL:
+            stale = [k for k, v in _global_rate_store.items() if not v or v[-1] <= window_start]
+            for k in stale:
+                del _global_rate_store[k]
+            _global_rate_last_cleanup = now
+
         timestamps = _global_rate_store[ip]
         _global_rate_store[ip] = [t for t in timestamps if t > window_start]
         if len(_global_rate_store[ip]) >= max_requests:
@@ -169,6 +181,7 @@ api_call_tracker = {
     'second_window': [],  # Track calls in current second
     'all_calls': []  # Track all calls for analytics
 }
+_api_call_tracker_lock = threading.Lock()
 
 # Initialize Aruba Client
 aruba_client = None
@@ -303,34 +316,36 @@ threading.Thread(target=_auth_retry_loop, daemon=True, name="auth-retry").start(
 
 
 def track_api_call():
-    """Track API call for rate limiting."""
-    global api_call_tracker
+    """Track API call for rate limiting. Thread-safe."""
     current_time = time.time()
+    path = request.path
+    method = request.method
 
-    # Reset daily counter if needed
-    if current_time > api_call_tracker['daily_reset_time']:
-        api_call_tracker['daily_calls'] = 0
-        api_call_tracker['daily_reset_time'] = current_time + 86400
-        api_call_tracker['all_calls'] = []
+    with _api_call_tracker_lock:
+        # Reset daily counter if needed
+        if current_time > api_call_tracker['daily_reset_time']:
+            api_call_tracker['daily_calls'] = 0
+            api_call_tracker['daily_reset_time'] = current_time + 86400
+            api_call_tracker['all_calls'] = []
 
-    # Track call
-    api_call_tracker['daily_calls'] += 1
-    api_call_tracker['all_calls'].append({
-        'timestamp': current_time,
-        'endpoint': request.path,
-        'method': request.method
-    })
+        # Track call
+        api_call_tracker['daily_calls'] += 1
+        api_call_tracker['all_calls'].append({
+            'timestamp': current_time,
+            'endpoint': path,
+            'method': method,
+        })
 
-    # Keep only last 1000 calls for analytics
-    if len(api_call_tracker['all_calls']) > 1000:
-        api_call_tracker['all_calls'] = api_call_tracker['all_calls'][-1000:]
+        # Keep only last 1000 calls for analytics
+        if len(api_call_tracker['all_calls']) > 1000:
+            api_call_tracker['all_calls'] = api_call_tracker['all_calls'][-1000:]
 
-    # Track calls in current second (for rate per second tracking)
-    api_call_tracker['second_window'] = [
-        t for t in api_call_tracker['second_window']
-        if t > current_time - 1
-    ]
-    api_call_tracker['second_window'].append(current_time)
+        # Track calls in current second (for rate per second tracking)
+        api_call_tracker['second_window'] = [
+            t for t in api_call_tracker['second_window']
+            if t > current_time - 1
+        ]
+        api_call_tracker['second_window'].append(current_time)
 
 
 SESSION_STORE_FILE = Path(os.environ.get('TOKEN_CACHE_DIR', '/app/data')) / 'sessions.json'

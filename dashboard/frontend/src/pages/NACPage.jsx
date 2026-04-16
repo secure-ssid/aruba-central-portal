@@ -64,7 +64,7 @@ function NACPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await nacAPI.getMacRegistrations({ limit: 500 });
+      const data = await nacAPI.getMacRegistrations({ limit: 100 });
       setRegistrations(data?.items || data?.registrations || []);
     } catch (err) {
       setError(err?.response?.data?.error || err.message || 'Failed to load MAC registrations');

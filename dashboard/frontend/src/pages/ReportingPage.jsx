@@ -619,7 +619,7 @@ function ReportingPage() {
 
     try {
       const [devices, wlans, sites, alerts] = await Promise.all([
-        monitoringAPIv2.getDevicesMonitoring({ limit: 1000 }).catch((e) => {
+        monitoringAPIv2.getDevicesMonitoring().catch((e) => {
           failedAPIs.push('Devices');
           console.error('Devices API failed:', e);
           return { items: [] };

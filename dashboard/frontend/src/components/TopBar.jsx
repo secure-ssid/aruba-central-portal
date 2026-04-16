@@ -6,7 +6,6 @@ import { useState, lazy, Suspense } from 'react';
 import {
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
   Box,
   Menu,
@@ -103,9 +102,7 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
           <MenuIcon />
         </IconButton>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          {/* Page title can be set dynamically */}
-        </Typography>
+        <Box sx={{ flexGrow: 1 }} />
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* Token Status Indicator */}

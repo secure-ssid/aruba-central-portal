@@ -52,7 +52,7 @@ import {
   Add as AddIcon,
   VpnKey as VpnKeyIcon,
 } from '@mui/icons-material';
-import { configAPI, bulkConfigAPI, nacAPI } from '../services/api';
+import { configAPI, bulkConfigAPI, nacAPI, webhookAPI } from '../services/api';
 import { getErrorMessage } from '../utils/errorUtils';
 
 function ConfigurationPage() {
@@ -148,8 +148,8 @@ function ConfigurationPage() {
         configAPI.getRoles(),
         configAPI.getAcls(),
         configAPI.getAuthServers(),
-        nacAPI.getMacRegistrations({ limit: 500 }),
-        configAPI.listWebhooks(),
+        nacAPI.getMacRegistrations({ limit: 100 }),
+        webhookAPI.list(),
       ]);
 
       if (sitesData.status === 'fulfilled') {
@@ -273,11 +273,11 @@ function ConfigurationPage() {
         .split(',')
         .map((u) => u.trim())
         .filter(Boolean);
-      await configAPI.createWebhook({ name: webhookForm.name.trim(), urls });
+      await webhookAPI.create({ name: webhookForm.name.trim(), urls });
       setWebhooksSnack('Webhook created');
       setCreateWebhookDialog(false);
       setWebhookForm({ name: '', urls: '' });
-      const data = await configAPI.listWebhooks();
+      const data = await webhookAPI.list();
       setWebhooks(Array.isArray(data) ? data : (data?.items || data?.webhooks || []));
     } catch (err) {
       setWebhooksError(err?.response?.data?.error || err.message || 'Failed to create webhook');
@@ -292,10 +292,10 @@ function ConfigurationPage() {
     setDeletingWebhook(true);
     try {
       const id = deleteWebhookDialog.webhook.id || deleteWebhookDialog.webhook.webhook_id;
-      await configAPI.deleteWebhook(id);
+      await webhookAPI.delete(id);
       setWebhooksSnack('Webhook deleted');
       setDeleteWebhookDialog({ open: false, webhook: null });
-      const data = await configAPI.listWebhooks();
+      const data = await webhookAPI.list();
       setWebhooks(Array.isArray(data) ? data : (data?.items || data?.webhooks || []));
     } catch (err) {
       setWebhooksError(err?.response?.data?.error || err.message || 'Failed to delete webhook');
@@ -308,7 +308,7 @@ function ConfigurationPage() {
   const handleRotateWebhookKey = async (webhook) => {
     const id = webhook.id || webhook.webhook_id;
     try {
-      await configAPI.rotateWebhookKey(id);
+      await webhookAPI.rotateKey(id);
       setWebhooksSnack('Webhook key rotated');
     } catch (err) {
       setWebhooksError(err?.response?.data?.error || err.message || 'Failed to rotate key');

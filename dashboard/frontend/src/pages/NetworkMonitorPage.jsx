@@ -46,7 +46,8 @@ import StatsCard from '../components/StatsCard';
 
 function NetworkMonitorPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [tabValue, setTabValue] = useState(0);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -66,18 +67,22 @@ function NetworkMonitorPage() {
   const [swarmDetailsLoading, setSwarmDetailsLoading] = useState({});
 
   useEffect(() => {
-    fetchMonitoringData();
+    fetchMonitoringData(false);
 
-    // Auto-refresh every 30 seconds
+    // Auto-refresh every 30 seconds — passes isAutoRefresh=true to avoid full loading flash
     if (autoRefresh) {
-      const interval = setInterval(fetchMonitoringData, 30000);
+      const interval = setInterval(() => fetchMonitoringData(true), 30000);
       return () => clearInterval(interval);
     }
   }, [autoRefresh]);
 
-  const fetchMonitoringData = async () => {
+  const fetchMonitoringData = async (isAutoRefresh = false) => {
     try {
-      setLoading(true);
+      if (isAutoRefresh) {
+        setRefreshing(true);
+      } else {
+        setInitialLoading(true);
+      }
       setError('');
 
       const results = await Promise.allSettled([
@@ -125,7 +130,8 @@ function NetworkMonitorPage() {
     } catch (err) {
       setError(err.message || 'Failed to load monitoring data');
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -828,8 +834,8 @@ function NetworkMonitorPage() {
           <Button
             variant="outlined"
             startIcon={<RefreshIcon />}
-            onClick={fetchMonitoringData}
-            disabled={loading}
+            onClick={() => fetchMonitoringData(false)}
+            disabled={initialLoading}
           >
             Refresh
           </Button>
@@ -843,8 +849,8 @@ function NetworkMonitorPage() {
         </Alert>
       )}
 
-      {/* Loading State - only show full spinner on first load */}
-      {loading && sitesHealth.length === 0 && apsMonitoring.length === 0 && switchesMonitoring.length === 0 && (
+      {/* Loading State - full spinner only on first load */}
+      {initialLoading && sitesHealth.length === 0 && apsMonitoring.length === 0 && switchesMonitoring.length === 0 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }}>
           <CircularProgress sx={{ color: 'var(--color-primary)' }} />
           <Typography variant="body2" color="text.secondary">
@@ -853,13 +859,13 @@ function NetworkMonitorPage() {
         </Box>
       )}
 
-      {/* Subtle refresh indicator when data already exists */}
-      {loading && (sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0) && (
+      {/* Subtle progress bar on background refresh — no full re-render */}
+      {refreshing && (
         <LinearProgress sx={{ mb: 2, '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-primary)' } }} />
       )}
 
       {/* Stats Overview */}
-      {(sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0 || !loading) && (
+      {(sitesHealth.length > 0 || apsMonitoring.length > 0 || switchesMonitoring.length > 0 || !initialLoading) && (
         <>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>

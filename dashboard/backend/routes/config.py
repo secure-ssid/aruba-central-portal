@@ -711,17 +711,18 @@ def get_clients():
         site_id = request.args.get("site_id", request.args.get("site-id"))
         connection_type = request.args.get("connection_type")
         ssid = request.args.get("ssid")
-        limit = int(request.args.get("limit", 500))
+        # Central API caps page size at 100; caller can set a max total via ?limit=
+        max_total = int(request.args.get("limit", 2000))
+        page_size = 100
 
-        # Build params — use v1 API (matches MCP pipeline which is proven to work)
-        params = {"limit": min(limit, 1000)}
+        base_params = {"limit": page_size}
         if site_id:
-            params["site-id"] = site_id
+            base_params["site-id"] = site_id
         if connection_type:
-            params["filter"] = f"clientConnectionType eq '{connection_type}'"
+            base_params["filter"] = f"clientConnectionType eq '{connection_type}'"
         if ssid:
-            f = params.get("filter", "")
-            params["filter"] = (f + " and " if f else "") + f"wlanName eq '{ssid}'"
+            f = base_params.get("filter", "")
+            base_params["filter"] = (f + " and " if f else "") + f"wlanName eq '{ssid}'"
 
         # Try v1 first (what MCP uses and what works)
         endpoints_to_try = [
@@ -733,16 +734,15 @@ def get_clients():
         all_clients = []
         for endpoint, extractor in endpoints_to_try:
             try:
-                response = aruba_client.get(endpoint, params=params)
+                response = aruba_client.get(endpoint, params=base_params)
                 clients = extractor(response)
                 total = response.get("total", response.get("count", len(clients)))
                 logger.info(f"Clients fetched from {endpoint}: {len(clients)} (total={total})")
-                all_clients = clients
+                all_clients = list(clients)
 
-                # Auto-paginate if Central indicates more results exist
-                page_limit = params.get("limit", 500)
-                while len(all_clients) < total and len(all_clients) < limit:
-                    next_params = {**params, "offset": len(all_clients), "limit": page_limit}
+                # Auto-paginate 100 at a time until we have everything (or hit max_total)
+                while len(all_clients) < total and len(all_clients) < max_total:
+                    next_params = {**base_params, "offset": len(all_clients)}
                     next_resp = aruba_client.get(endpoint, params=next_params)
                     next_page = extractor(next_resp)
                     if not next_page:
@@ -1325,8 +1325,9 @@ def get_mac_registrations():
     aruba_client = _app.aruba_client
     try:
         params = {}
-        if request.args.get("limit"):
-            params["limit"] = request.args.get("limit")
+        raw_limit = request.args.get("limit")
+        if raw_limit:
+            params["limit"] = min(int(raw_limit), 100)
         if request.args.get("offset"):
             params["offset"] = request.args.get("offset")
         response = aruba_client.get("/network-config/v1alpha1/nac/mac-registration", params=params)

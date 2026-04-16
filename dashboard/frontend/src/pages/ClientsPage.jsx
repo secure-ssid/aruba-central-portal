@@ -1037,7 +1037,7 @@ function ClientsPage() {
           handleSort={handleSort}
           getClientConnectionKind={getClientConnectionKind}
           getClientSsid={getClientSsid}
-          onClientRowClick={(mac) => mac && navigate(`/clients/${encodeURIComponent(mac)}`)}
+          onClientRowClick={(mac) => mac && navigate(`/clients/${mac}`)}
         />
       </Paper>
     </Box>

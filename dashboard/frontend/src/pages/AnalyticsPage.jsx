@@ -149,7 +149,7 @@ function AnalyticsPage() {
     (async () => {
       setLoading(true);
       const [devRes, alertRes, siteRes] = await Promise.allSettled([
-        monitoringAPIv2.getDevicesMonitoring({ limit: 1000 }),
+        monitoringAPIv2.getDevicesMonitoring(),
         alertsAPI.getAll(null, 1),
         configAPI.getSites(),
       ]);

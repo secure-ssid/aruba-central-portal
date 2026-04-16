@@ -786,6 +786,47 @@ def greenlake_modify_devices():
         return jsonify({"error": str(e)}), 500
 
 
+@greenlake_bp.route("/api/greenlake/devices/bulk", methods=["POST"])
+@require_session
+def greenlake_bulk_import_devices():
+    """Bulk import devices from parsed CSV data."""
+    try:
+        client = _get_greenlake_client()
+        if not client:
+            return jsonify({"error": "GreenLake RBAC not configured"}), 400
+        devices = request.get_json() or []
+        if not isinstance(devices, list):
+            return jsonify({"error": "Expected an array of device objects"}), 400
+
+        results = {"success": 0, "failed": 0, "errors": []}
+        for device in devices:
+            try:
+                # Map frontend camelCase fields to GreenLake API snake_case
+                payload = {"serial_number": device.get("serialNumber", "")}
+                if device.get("macAddress"):
+                    payload["mac_address"] = device["macAddress"]
+                if device.get("locationName"):
+                    payload["location_name"] = device["locationName"]
+                if device.get("contactId"):
+                    payload["contact_id"] = device["contactId"]
+                if device.get("tags"):
+                    payload["tags"] = device["tags"]
+                client.post("/devices/v1/devices", data=payload)
+                results["success"] += 1
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append({
+                    "serial": device.get("serialNumber", "unknown"),
+                    "error": str(e),
+                })
+
+        status_code = 200 if results["success"] > 0 else 400
+        return jsonify(results), status_code
+    except Exception as e:
+        logger.error(f"GreenLake bulk import error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @greenlake_bp.route("/api/greenlake/tags", methods=["GET"])
 @require_session
 def greenlake_list_tags():

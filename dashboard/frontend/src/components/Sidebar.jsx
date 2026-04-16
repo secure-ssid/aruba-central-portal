@@ -50,7 +50,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import ShieldIcon from '@mui/icons-material/Shield';
 import HubIcon from '@mui/icons-material/Hub';
-import BuildIcon from '@mui/icons-material/Build';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
@@ -71,7 +70,6 @@ const monitoringItems = [
   { text: 'Devices',         icon: <DevicesIcon />,        path: '/devices' },
   { text: 'Clients',         icon: <GroupsIcon />,         path: '/clients' },
   { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },
-  { text: 'Gateway WAN',     icon: <HubIcon />,            path: '/gateway-wan' },
   { text: 'Topology',        icon: <AccountTreeIcon />,    path: '/topology' },
   { text: 'Alerts',          icon: <NotificationsIcon />,  path: '/alerts', badge: true },
 ];
@@ -86,10 +84,8 @@ const managementItems = [
 
 const toolsItems = [
   { text: 'Troubleshoot',  icon: <BugReportIcon />,      path: '/troubleshoot' },
-  { text: 'AP Toolkit',    icon: <BuildIcon />,          path: '/ap-troubleshoot' },
-  { text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
-  { text: 'Analytics',     icon: <AssessmentIcon />,     path: '/analytics' },
-  { text: 'Reporting',     icon: <DescriptionIcon />,    path: '/reporting' },
+{ text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
+{ text: 'Reporting',     icon: <DescriptionIcon />,    path: '/reporting' },
   { text: 'Scheduled Reports', icon: <ScheduleIcon />,   path: '/scheduled-reports' },
 ];
 
@@ -166,7 +162,8 @@ function CategoryLabel({ title, collapsed }) {
 }
 
 function navItemIsActive(location, item) {
-  return location.pathname === item.path;
+  if (item.path === '/') return location.pathname === '/';
+  return location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 }
 
 // ─── Single nav item ─────────────────────────────────────────────────────────
@@ -285,7 +282,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
   const location = useLocation();
   const theme = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'gl']);
+  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system', 'gl']);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {

@@ -54,6 +54,45 @@ import { troubleshootAPI, deviceAPI, showCommandsAPI } from '../services/api';
 import DeviceSelector from '../components/DeviceSelector';
 import { getErrorMessage } from '../utils/errorUtils';
 
+function ToolCard({ icon, title, description, children, accentColor = '#FF6600', cardId, expandedCard, toggleCard }) {
+  return (
+    <Card sx={{ height: '100%', transition: 'border-color 0.2s', '&:hover': { borderColor: `${accentColor}40` } }}>
+      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+          <Box sx={{
+            width: 36, height: 36, borderRadius: '8px',
+            background: `${accentColor}18`,
+            border: `1px solid ${accentColor}30`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            {icon}
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+              {title}
+            </Typography>
+            {description && (
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                {description}
+              </Typography>
+            )}
+          </Box>
+          {cardId && toggleCard && (
+            <IconButton size="small" onClick={() => toggleCard(cardId)} sx={{ mt: -0.5, mr: -0.5 }}>
+              {expandedCard === cardId ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          )}
+        </Box>
+        {cardId ? (
+          <Collapse in={expandedCard === cardId}>
+            {children}
+          </Collapse>
+        ) : children}
+      </CardContent>
+    </Card>
+  );
+}
+
 function TroubleshootPage() {
   const [searchParams] = useSearchParams();
   const deviceFromUrl = searchParams.get('device');
@@ -1251,222 +1290,105 @@ function TroubleshootPage() {
         {/* Left Column - Troubleshooting Tools */}
         <Grid item xs={12} md={8}>
           <Grid container spacing={2}>
-            {/* Ping Test Card */}
+            {/* Ping Test */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <NetworkCheckIcon color="primary" />
-                      <Typography variant="h6">Ping Test</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('ping')}>
-                      {expandedCard === 'ping' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Test network connectivity by running ping from a device
-                  </Typography>
-                  <Collapse in={expandedCard === 'ping'}>
-                    <Box>
-                      <DeviceSelector
-                        value={deviceSerial}
-                        onChange={setDeviceSerial}
-                        required={true}
-                        label="Device"
-                        helperText="Select a device"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Target IP or Hostname"
-                        value={pingTarget}
-                        onChange={(e) => setPingTarget(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., 8.8.8.8 or google.com"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handlePingTest}
-                        disabled={loading.ping}
-                        startIcon={loading.ping ? <CircularProgress size={20} /> : <NetworkCheckIcon />}
-                      >
-                        {loading.ping ? 'Running...' : 'Run Ping Test'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<NetworkCheckIcon sx={{ fontSize: 18, color: '#FF6600' }} />}
+                title="Ping Test"
+                description="Test network connectivity by running ping from a device"
+                accentColor="#FF6600"
+                cardId="ping"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={deviceSerial} onChange={setDeviceSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Target IP or Hostname" value={pingTarget} onChange={(e) => setPingTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
+                  <Button variant="contained" fullWidth onClick={handlePingTest} disabled={loading.ping} startIcon={loading.ping ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
+                    {loading.ping ? 'Running...' : 'Run Ping Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* Client Session Card */}
+            {/* Client Session */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PhonelinkRingIcon color="primary" />
-                      <Typography variant="h6">Client Session</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('client')}>
-                      {expandedCard === 'client' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    View detailed session information for a connected client
-                  </Typography>
-                  <Collapse in={expandedCard === 'client'}>
-                    <Box>
-                      <TextField
-                        fullWidth
-                        label="Client MAC Address"
-                        value={clientMac}
-                        onChange={(e) => setClientMac(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., aa:bb:cc:dd:ee:ff"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleGetClientSession}
-                        disabled={loading.client}
-                        startIcon={loading.client ? <CircularProgress size={20} /> : <PhonelinkRingIcon />}
-                      >
-                        {loading.client ? 'Fetching...' : 'Get Client Session'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<PhonelinkRingIcon sx={{ fontSize: 18, color: '#0099CC' }} />}
+                title="Client Session"
+                description="View detailed session information for a connected client"
+                accentColor="#0099CC"
+                cardId="client"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <TextField fullWidth label="Client MAC Address" value={clientMac} onChange={(e) => setClientMac(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., aa:bb:cc:dd:ee:ff" />
+                  <Button variant="contained" fullWidth onClick={handleGetClientSession} disabled={loading.client} startIcon={loading.client ? <CircularProgress size={20} /> : <PhonelinkRingIcon />}>
+                    {loading.client ? 'Fetching...' : 'Get Client Session'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* AP Diagnostics Card */}
+            {/* AP Diagnostics */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <BugReportIcon color="primary" />
-                      <Typography variant="h6">AP Diagnostics</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('ap')}>
-                      {expandedCard === 'ap' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Get detailed diagnostic information for an Access Point
-                  </Typography>
-                  <Collapse in={expandedCard === 'ap'}>
-                    <Box>
-                      <DeviceSelector
-                        value={apSerial}
-                        onChange={setApSerial}
-                        required={true}
-                        label="Access Point"
-                        deviceType="AP"
-                        helperText="Select an access point"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleGetAPDiagnostics}
-                        disabled={loading.ap}
-                        startIcon={loading.ap ? <CircularProgress size={20} /> : <BugReportIcon />}
-                      >
-                        {loading.ap ? 'Fetching...' : 'Get AP Diagnostics'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<BugReportIcon sx={{ fontSize: 18, color: '#7B61FF' }} />}
+                title="AP Diagnostics"
+                description="Get detailed diagnostic information for an Access Point"
+                accentColor="#7B61FF"
+                cardId="ap"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={apSerial} onChange={setApSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleGetAPDiagnostics} disabled={loading.ap} startIcon={loading.ap ? <CircularProgress size={20} /> : <BugReportIcon />}>
+                    {loading.ap ? 'Fetching...' : 'Get AP Diagnostics'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* Tech Support Card */}
+            {/* Tech Support */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <BugReportIcon color="primary" />
-                      <Typography variant="h6">Tech Support</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('techSupport')}>
-                      {expandedCard === 'techSupport' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Get technical support information from a device
-                  </Typography>
-                  <Collapse in={expandedCard === 'techSupport'}>
-                    <Box>
-                      <DeviceSelector
-                        value={showCmdSerial}
-                        onChange={setShowCmdSerial}
-                        required={true}
-                        label="Device"
-                        helperText="Select a device"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleShowTechSupport}
-                        disabled={loading.techSupport || !showCmdSerial}
-                        startIcon={loading.techSupport ? <CircularProgress size={20} /> : <BugReportIcon />}
-                      >
-                        {loading.techSupport ? 'Loading...' : 'Get Tech Support'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<BugReportIcon sx={{ fontSize: 18, color: '#9C27B0' }} />}
+                title="Tech Support"
+                description="Get technical support information from a device"
+                accentColor="#9C27B0"
+                cardId="techSupport"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleShowTechSupport} disabled={loading.techSupport || !showCmdSerial} startIcon={loading.techSupport ? <CircularProgress size={20} /> : <BugReportIcon />}>
+                    {loading.techSupport ? 'Loading...' : 'Get Tech Support'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* Export Configuration Card */}
+            {/* Export Configuration */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <DownloadIcon color="primary" />
-                      <Typography variant="h6">Export Configuration</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('export')}>
-                      {expandedCard === 'export' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Export device configuration to a file
-                  </Typography>
-                  <Collapse in={expandedCard === 'export'}>
-                    <Box>
-                      <DeviceSelector
-                        value={showCmdSerial}
-                        onChange={setShowCmdSerial}
-                        required={true}
-                        label="Device"
-                        helperText="Select a device"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleExportConfig}
-                        disabled={loading.export || !showCmdSerial}
-                        startIcon={loading.export ? <CircularProgress size={20} /> : <DownloadIcon />}
-                      >
-                        {loading.export ? 'Exporting...' : 'Export Configuration'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<DownloadIcon sx={{ fontSize: 18, color: '#2E7D32' }} />}
+                title="Export Configuration"
+                description="Export device configuration to a file"
+                accentColor="#2E7D32"
+                cardId="export"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleExportConfig} disabled={loading.export || !showCmdSerial} startIcon={loading.export ? <CircularProgress size={20} /> : <DownloadIcon />}>
+                    {loading.export ? 'Exporting...' : 'Export Configuration'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
             {/* CX Switch Troubleshooting Section */}
@@ -1476,489 +1398,205 @@ function TroubleshootPage() {
               </Divider>
             </Grid>
 
-            {/* CX Traceroute Card */}
+            {/* CX Traceroute */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <RouteIcon color="primary" />
-                      <Typography variant="h6">CX Traceroute</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxTraceroute')}>
-                      {expandedCard === 'cxTraceroute' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Trace the network path to a destination from a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxTraceroute'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Target IP or Hostname"
-                        value={cxTracerouteTarget}
-                        onChange={(e) => setCxTracerouteTarget(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., 8.8.8.8 or google.com"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxTraceroute}
-                        disabled={loading.cxTraceroute}
-                        startIcon={loading.cxTraceroute ? <CircularProgress size={20} /> : <RouteIcon />}
-                      >
-                        {loading.cxTraceroute ? 'Running...' : 'Run Traceroute'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<RouteIcon sx={{ fontSize: 18, color: '#FF9800' }} />}
+                title="CX Traceroute"
+                description="Trace the network path to a destination from a CX switch"
+                accentColor="#FF9800"
+                cardId="cxTraceroute"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Target IP or Hostname" value={cxTracerouteTarget} onChange={(e) => setCxTracerouteTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
+                  <Button variant="contained" fullWidth onClick={handleCxTraceroute} disabled={loading.cxTraceroute} startIcon={loading.cxTraceroute ? <CircularProgress size={20} /> : <RouteIcon />}>
+                    {loading.cxTraceroute ? 'Running...' : 'Run Traceroute'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX PoE Bounce Card */}
+            {/* CX PoE Bounce */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PowerIcon color="primary" />
-                      <Typography variant="h6">CX PoE Bounce</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxPoeBounce')}>
-                      {expandedCard === 'cxPoeBounce' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Bounce PoE power on a port of a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxPoeBounce'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Port"
-                        value={cxPoePort}
-                        onChange={(e) => setCxPoePort(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., 1/1"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxPoeBounce}
-                        disabled={loading.cxPoeBounce}
-                        startIcon={loading.cxPoeBounce ? <CircularProgress size={20} /> : <PowerIcon />}
-                      >
-                        {loading.cxPoeBounce ? 'Running...' : 'Bounce PoE'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<PowerIcon sx={{ fontSize: 18, color: '#E65100' }} />}
+                title="CX PoE Bounce"
+                description="Bounce PoE power on a port of a CX switch"
+                accentColor="#E65100"
+                cardId="cxPoeBounce"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Port" value={cxPoePort} onChange={(e) => setCxPoePort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
+                  <Button variant="contained" fullWidth onClick={handleCxPoeBounce} disabled={loading.cxPoeBounce} startIcon={loading.cxPoeBounce ? <CircularProgress size={20} /> : <PowerIcon />}>
+                    {loading.cxPoeBounce ? 'Running...' : 'Bounce PoE'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX Port Bounce Card */}
+            {/* CX Port Bounce */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <RouterIcon color="primary" />
-                      <Typography variant="h6">CX Port Bounce</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxPortBounce')}>
-                      {expandedCard === 'cxPortBounce' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Bounce a port on a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxPortBounce'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Port"
-                        value={cxPortBouncePort}
-                        onChange={(e) => setCxPortBouncePort(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., 1/1"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxPortBounce}
-                        disabled={loading.cxPortBounce}
-                        startIcon={loading.cxPortBounce ? <CircularProgress size={20} /> : <RouterIcon />}
-                      >
-                        {loading.cxPortBounce ? 'Running...' : 'Bounce Port'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<RouterIcon sx={{ fontSize: 18, color: '#546E7A' }} />}
+                title="CX Port Bounce"
+                description="Bounce a port on a CX switch"
+                accentColor="#546E7A"
+                cardId="cxPortBounce"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Port" value={cxPortBouncePort} onChange={(e) => setCxPortBouncePort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
+                  <Button variant="contained" fullWidth onClick={handleCxPortBounce} disabled={loading.cxPortBounce} startIcon={loading.cxPortBounce ? <CircularProgress size={20} /> : <RouterIcon />}>
+                    {loading.cxPortBounce ? 'Running...' : 'Bounce Port'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX Cable Test Card */}
+            {/* CX Cable Test */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CableIcon color="primary" />
-                      <Typography variant="h6">CX Cable Test</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxCableTest')}>
-                      {expandedCard === 'cxCableTest' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Test cable connectivity on a port of a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxCableTest'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Port"
-                        value={cxCableTestPort}
-                        onChange={(e) => setCxCableTestPort(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., 1/1"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxCableTest}
-                        disabled={loading.cxCableTest}
-                        startIcon={loading.cxCableTest ? <CircularProgress size={20} /> : <CableIcon />}
-                      >
-                        {loading.cxCableTest ? 'Running...' : 'Run Cable Test'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<CableIcon sx={{ fontSize: 18, color: '#00695C' }} />}
+                title="CX Cable Test"
+                description="Test cable connectivity on a port of a CX switch"
+                accentColor="#00695C"
+                cardId="cxCableTest"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Port" value={cxCableTestPort} onChange={(e) => setCxCableTestPort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
+                  <Button variant="contained" fullWidth onClick={handleCxCableTest} disabled={loading.cxCableTest} startIcon={loading.cxCableTest ? <CircularProgress size={20} /> : <CableIcon />}>
+                    {loading.cxCableTest ? 'Running...' : 'Run Cable Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX HTTP Test Card */}
+            {/* CX HTTP Test */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <HttpIcon color="primary" />
-                      <Typography variant="h6">CX HTTP Test</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxHttpTest')}>
-                      {expandedCard === 'cxHttpTest' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Test HTTP connectivity from a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxHttpTest'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="URL"
-                        value={cxHttpUrl}
-                        onChange={(e) => setCxHttpUrl(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., http://example.com"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxHttpTest}
-                        disabled={loading.cxHttpTest}
-                        startIcon={loading.cxHttpTest ? <CircularProgress size={20} /> : <HttpIcon />}
-                      >
-                        {loading.cxHttpTest ? 'Running...' : 'Run HTTP Test'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<HttpIcon sx={{ fontSize: 18, color: '#1565C0' }} />}
+                title="CX HTTP Test"
+                description="Test HTTP connectivity from a CX switch"
+                accentColor="#1565C0"
+                cardId="cxHttpTest"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="URL" value={cxHttpUrl} onChange={(e) => setCxHttpUrl(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., http://example.com" />
+                  <Button variant="contained" fullWidth onClick={handleCxHttpTest} disabled={loading.cxHttpTest} startIcon={loading.cxHttpTest ? <CircularProgress size={20} /> : <HttpIcon />}>
+                    {loading.cxHttpTest ? 'Running...' : 'Run HTTP Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX AAA Test Card */}
+            {/* CX AAA Test */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <SecurityIcon color="primary" />
-                      <Typography variant="h6">CX AAA Test</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxAaaTest')}>
-                      {expandedCard === 'cxAaaTest' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Test AAA authentication from a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxAaaTest'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Username"
-                        value={cxAaaUsername}
-                        onChange={(e) => setCxAaaUsername(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="Enter username"
-                      />
-                      <TextField
-                        fullWidth
-                        type="password"
-                        label="Password"
-                        value={cxAaaPassword}
-                        onChange={(e) => setCxAaaPassword(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="Enter password"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxAaaTest}
-                        disabled={loading.cxAaaTest}
-                        startIcon={loading.cxAaaTest ? <CircularProgress size={20} /> : <SecurityIcon />}
-                      >
-                        {loading.cxAaaTest ? 'Running...' : 'Run AAA Test'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<SecurityIcon sx={{ fontSize: 18, color: '#B71C1C' }} />}
+                title="CX AAA Test"
+                description="Test AAA authentication from a CX switch"
+                accentColor="#B71C1C"
+                cardId="cxAaaTest"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Username" value={cxAaaUsername} onChange={(e) => setCxAaaUsername(e.target.value)} sx={{ mb: 1 }} placeholder="Enter username" />
+                  <TextField fullWidth type="password" label="Password" value={cxAaaPassword} onChange={(e) => setCxAaaPassword(e.target.value)} sx={{ mb: 1 }} placeholder="Enter password" />
+                  <Button variant="contained" fullWidth onClick={handleCxAaaTest} disabled={loading.cxAaaTest} startIcon={loading.cxAaaTest ? <CircularProgress size={20} /> : <SecurityIcon />}>
+                    {loading.cxAaaTest ? 'Running...' : 'Run AAA Test'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX Show Commands Card */}
+            {/* CX Show Commands */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CodeIcon color="primary" />
-                      <Typography variant="h6">CX Show Commands</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxShowCommands')}>
-                      {expandedCard === 'cxShowCommands' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
+              <ToolCard
+                icon={<CodeIcon sx={{ fontSize: 18, color: '#2E7D32' }} />}
+                title="CX Show Commands"
+                description="List or run show commands on a CX switch"
+                accentColor="#2E7D32"
+                cardId="cxShowCommands"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                    <Button variant="outlined" fullWidth onClick={handleCxListShowCommands} disabled={loading.cxListShowCommands} startIcon={loading.cxListShowCommands ? <CircularProgress size={20} /> : <CodeIcon />}>
+                      {loading.cxListShowCommands ? 'Loading...' : 'List Commands'}
+                    </Button>
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    List or run show commands on a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxShowCommands'}>
-                    <Box>
-                      <Divider sx={{ mb: 1 }} />
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                        <Button
-                          variant="outlined"
-                          fullWidth
-                          onClick={handleCxListShowCommands}
-                          disabled={loading.cxListShowCommands}
-                          startIcon={loading.cxListShowCommands ? <CircularProgress size={20} /> : <CodeIcon />}
-                        >
-                          {loading.cxListShowCommands ? 'Loading...' : 'List Commands'}
-                        </Button>
-                      </Box>
-                      <TextField
-                        fullWidth
-                        label="Show Command"
-                        value={cxShowCommand}
-                        onChange={(e) => setCxShowCommand(e.target.value)}
-                        sx={{ mb: 1 }}
-                        placeholder="e.g., show version"
-                      />
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCxRunShowCommand}
-                        disabled={loading.cxRunShowCommand}
-                        startIcon={loading.cxRunShowCommand ? <CircularProgress size={20} /> : <CodeIcon />}
-                      >
-                        {loading.cxRunShowCommand ? 'Running...' : 'Run Command'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+                  <TextField fullWidth label="Show Command" value={cxShowCommand} onChange={(e) => setCxShowCommand(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., show version" />
+                  <Button variant="contained" fullWidth onClick={handleCxRunShowCommand} disabled={loading.cxRunShowCommand} startIcon={loading.cxRunShowCommand ? <CircularProgress size={20} /> : <CodeIcon />}>
+                    {loading.cxRunShowCommand ? 'Running...' : 'Run Command'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX Locate Card */}
+            {/* CX Locate */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LocationIcon color="primary" />
-                      <Typography variant="h6">CX Locate</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxLocate')}>
-                      {expandedCard === 'cxLocate' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
+              <ToolCard
+                icon={<LocationIcon sx={{ fontSize: 18, color: '#F57F17' }} />}
+                title="CX Locate"
+                description="Flash LEDs to locate a CX switch"
+                accentColor="#F57F17"
+                cardId="cxLocate"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button variant={cxLocateEnable ? 'contained' : 'outlined'} fullWidth onClick={() => { setCxLocateEnable(true); handleCxLocate(true); }} disabled={loading.cxLocate} startIcon={loading.cxLocate ? <CircularProgress size={20} /> : <LocationIcon />}>
+                      {loading.cxLocate ? 'Enabling...' : 'Enable Locate'}
+                    </Button>
+                    <Button variant={!cxLocateEnable ? 'contained' : 'outlined'} fullWidth onClick={() => { setCxLocateEnable(false); handleCxLocate(false); }} disabled={loading.cxLocate} startIcon={loading.cxLocate ? <CircularProgress size={20} /> : <LocationIcon />}>
+                      {loading.cxLocate ? 'Disabling...' : 'Disable Locate'}
+                    </Button>
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Flash LEDs to locate a CX switch
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxLocate'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                        <Button
-                          variant={cxLocateEnable ? 'contained' : 'outlined'}
-                          fullWidth
-                          onClick={() => {
-                            setCxLocateEnable(true);
-                            handleCxLocate(true);
-                          }}
-                          disabled={loading.cxLocate}
-                          startIcon={loading.cxLocate ? <CircularProgress size={20} /> : <LocationIcon />}
-                        >
-                          {loading.cxLocate ? 'Enabling...' : 'Enable Locate'}
-                        </Button>
-                        <Button
-                          variant={!cxLocateEnable ? 'contained' : 'outlined'}
-                          fullWidth
-                          onClick={() => {
-                            setCxLocateEnable(false);
-                            handleCxLocate(false);
-                          }}
-                          disabled={loading.cxLocate}
-                          startIcon={loading.cxLocate ? <CircularProgress size={20} /> : <LocationIcon />}
-                        >
-                          {loading.cxLocate ? 'Disabling...' : 'Disable Locate'}
-                        </Button>
-                      </Box>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+                </Box>
+              </ToolCard>
             </Grid>
 
-            {/* CX Reboot Card */}
+            {/* CX Reboot */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <RestartIcon color="error" />
-                      <Typography variant="h6">CX Reboot</Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => toggleCard('cxReboot')}>
-                      {expandedCard === 'cxReboot' ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Reboot a CX switch (use with caution)
-                  </Typography>
-                  <Collapse in={expandedCard === 'cxReboot'}>
-                    <Box>
-                      <DeviceSelector
-                        value={cxSerial}
-                        onChange={setCxSerial}
-                        required={true}
-                        label="CX Switch"
-                        deviceType="Switch"
-                        helperText="Select a CX switch"
-                        disabled={devicesLoading}
-                        sx={{ mb: 1 }}
-                      />
-                      <Alert severity="warning" sx={{ mb: 1 }}>
-                        Warning: This will reboot the switch and cause a network interruption.
-                      </Alert>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        fullWidth
-                        onClick={handleCxReboot}
-                        disabled={loading.cxReboot}
-                        startIcon={loading.cxReboot ? <CircularProgress size={20} /> : <RestartIcon />}
-                      >
-                        {loading.cxReboot ? 'Rebooting...' : 'Reboot Switch'}
-                      </Button>
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
+              <ToolCard
+                icon={<RestartIcon sx={{ fontSize: 18, color: '#C62828' }} />}
+                title="CX Reboot"
+                description="Reboot a CX switch (use with caution)"
+                accentColor="#C62828"
+                cardId="cxReboot"
+                expandedCard={expandedCard}
+                toggleCard={toggleCard}
+              >
+                <Box>
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <Alert severity="warning" sx={{ mb: 1 }}>
+                    Warning: This will reboot the switch and cause a network interruption.
+                  </Alert>
+                  <Button variant="contained" color="error" fullWidth onClick={handleCxReboot} disabled={loading.cxReboot} startIcon={loading.cxReboot ? <CircularProgress size={20} /> : <RestartIcon />}>
+                    {loading.cxReboot ? 'Rebooting...' : 'Reboot Switch'}
+                  </Button>
+                </Box>
+              </ToolCard>
             </Grid>
           </Grid>
         </Grid>

@@ -40,12 +40,10 @@ def get_network_health():
         devices = data.get("/network-monitoring/v1/devices")
         if devices:
             health_data["total_devices"] = devices.get("count", 0)
-            if "items" in devices:
-                health_data["switches"] = sum(
-                    1 for d in devices["items"] if d.get("deviceType") == "SWITCH"
-                )
-            else:
-                health_data["switches"] = 0
+            device_list = devices.get("items") or devices.get("result") or devices.get("devices") or []
+            health_data["switches"] = sum(
+                1 for d in device_list if d.get("deviceType") == "SWITCH"
+            )
         else:
             health_data["total_devices"] = 0
             health_data["switches"] = 0
@@ -635,6 +633,10 @@ def get_wlans_monitoring():
         params = {}
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
+        if request.args.get("limit"):
+            params["limit"] = request.args.get("limit")
+        if request.args.get("offset"):
+            params["offset"] = request.args.get("offset")
 
         response = cached_get_paginated(
             "/network-monitoring/v1/wlans",

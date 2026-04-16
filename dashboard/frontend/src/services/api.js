@@ -295,30 +295,6 @@ export const configAPI = {
     return response.data;
   },
 
-  listWebhooks: async (params = {}) => {
-    const response = await apiClient.get('/config/webhooks', { params });
-    return response.data;
-  },
-
-  createWebhook: async (data) => {
-    const response = await apiClient.post('/config/webhooks', data);
-    return response.data;
-  },
-
-  updateWebhook: async (webhookId, data) => {
-    const response = await apiClient.put(`/config/webhooks/${webhookId}`, data);
-    return response.data;
-  },
-
-  deleteWebhook: async (webhookId) => {
-    const response = await apiClient.delete(`/config/webhooks/${webhookId}`);
-    return response.data;
-  },
-
-  rotateWebhookKey: async (webhookId) => {
-    const response = await apiClient.post(`/config/webhooks/${webhookId}/rotate-key`);
-    return response.data;
-  },
 };
 
 /**
@@ -1036,17 +1012,17 @@ export const monitoringAPIv2 = {
   },
 
   getAPPower: async (serial, params = {}) => {
-    // Mark as optional - don't throw on 404
-    const response = await apiClient.get(`/monitoring/aps/${serial}/power`, {
-      params,
-      validateStatus: (status) => status < 500, // Don't throw on 4xx, only 5xx
-    });
-    if (response.status >= 400) {
-      const error = new Error(`AP power request failed with status ${response.status}`);
-      error.response = { status: response.status, data: response.data };
-      throw error;
+    try {
+      const response = await apiClient.get(`/monitoring/aps/${serial}/power`, {
+        params,
+        validateStatus: (status) => status < 500,
+      });
+      if (response.status >= 400) return null;
+      return response.data;
+    } catch (error) {
+      if (error.response?.status >= 500) throw error;
+      return null;
     }
-    return response.data;
   },
 
   getAPThroughput: async (serial, params = {}) => {

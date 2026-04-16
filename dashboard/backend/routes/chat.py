@@ -631,10 +631,10 @@ def _handle_ap_status(text, _session_id):
     try:
         # Try New Central v1 first, fall back to v1alpha1
         try:
-            r = cached_get("/network-monitoring/v1/aps", params={"limit": 500})
+            r = cached_get("/network-monitoring/v1/aps", params={"limit": 100})
             items = r.get("aps", r.get("items", []))
         except Exception:
-            r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 500})
+            r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 100})
             items = r.get("items", [])
 
         if site_name:
@@ -1402,7 +1402,7 @@ def _handle_find_client(text, _session_id):
         return ("Please provide a MAC or IP address, e.g. *'find client 192.168.1.50'*", None, 200)
 
     try:
-        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 500})
+        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
         clients = r.get("clients", r.get("items", []))
         found = []
         for c in clients:
@@ -1520,7 +1520,7 @@ def _handle_client_count(_text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 500})
+        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
         clients = r.get("clients", r.get("items", []))
 
         total = len(clients)
