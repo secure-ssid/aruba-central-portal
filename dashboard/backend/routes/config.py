@@ -140,7 +140,7 @@ def get_vlan_config(vlan_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-config/v1alpha1/layer2-vlan/{vlan_id}")
+        response = aruba_client.get(f"/network-config/v1/layer2-vlan/{vlan_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching VLAN {vlan_id}: {e}")
@@ -157,7 +157,7 @@ def create_vlan_config(vlan_id):
     try:
         vlan_data = request.get_json()
         response = aruba_client.post(
-            f"/network-config/v1alpha1/layer2-vlan/{vlan_id}", data=vlan_data
+            f"/network-config/v1/layer2-vlan/{vlan_id}", data=vlan_data
         )
         return jsonify(response)
     except Exception as e:
@@ -352,14 +352,14 @@ def scope_maps():
     try:
         if request.method == "GET":
             params = request.args.to_dict()
-            response = aruba_client.get("/network-config/v1alpha1/scope-maps", params=params)
+            response = aruba_client.get("/network-config/v1/scope-maps", params=params)
             return jsonify(response)
         else:  # POST
             # Create scope map with JSON body containing scope-map array
             # Expected format: {"scope-map": [{"scope-id": ..., "persona": ..., "resource": ...}]}
             scope_map_data = request.get_json()
             logger.info(f"Creating scope maps with data: {scope_map_data}")
-            response = aruba_client.post("/network-config/v1alpha1/scope-maps", data=scope_map_data)
+            response = aruba_client.post("/network-config/v1/scope-maps", data=scope_map_data)
             return jsonify(response)
     except Exception as e:
         logger.error(f"Error with scope maps: {e}")
@@ -409,7 +409,7 @@ def get_mpsk_registrations():
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get("/network-config/v1alpha1/nac/mpsk-registration", params=params)
+        response = aruba_client.get("/network-config/v1alpha1/cnac-named-mpsk-reg", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching MPSK registrations: {e}")
@@ -426,7 +426,7 @@ def create_mpsk_registration():
     try:
         mpsk_data = request.get_json()
         response = aruba_client.post(
-            "/network-config/v1alpha1/nac/mpsk-registration", data=mpsk_data
+            "/network-config/v1alpha1/cnac-named-mpsk-reg", data=mpsk_data
         )
         return jsonify(response)
     except Exception as e:
@@ -559,7 +559,7 @@ def get_acls():
         group = request.args.get("group")
         if group:
             params["group"] = group
-        response = aruba_client.get("/network-config/v1alpha1/role-acl", params=params)
+        response = aruba_client.get("/network-config/v1alpha1/role-acls", params=params)
         return jsonify(response if response else {"items": [], "count": 0})
     except Exception as e:
         sc = getattr(e, 'status_code', None)
@@ -1359,7 +1359,7 @@ def get_mac_registrations():
             params["limit"] = min(int(raw_limit), 100)
         if request.args.get("offset"):
             params["offset"] = request.args.get("offset")
-        response = aruba_client.get("/network-config/v1alpha1/nac/mac-registration", params=params)
+        response = aruba_client.get("/network-config/v1alpha1/cnac-mac-reg", params=params)
         return jsonify(response)
     except Exception as e:
         sc = getattr(e, 'status_code', None)
@@ -1382,7 +1382,7 @@ def create_mac_registration():
         data = request.get_json()
         if not data or not data.get("macAddress"):
             return jsonify({"error": "macAddress is required"}), 400
-        response = aruba_client.post("/network-config/v1alpha1/nac/mac-registration", data=data)
+        response = aruba_client.post("/network-config/v1alpha1/cnac-mac-reg", data=data)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating MAC registration: {e}")
@@ -1397,7 +1397,7 @@ def delete_mac_registration(mac_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.delete(f"/network-config/v1alpha1/nac/mac-registration/{mac_id}")
+        response = aruba_client.delete(f"/network-config/v1alpha1/cnac-mac-reg/{mac_id}")
         return jsonify(response or {"success": True})
     except Exception as e:
         logger.error(f"Error deleting MAC registration {mac_id}: {e}")
@@ -1958,13 +1958,27 @@ def list_webhooks():
             params["limit"] = request.args.get("limit")
         if request.args.get("offset"):
             params["offset"] = request.args.get("offset")
-        response = aruba_client.get("/central/v2/webhooks", params=params)
+        # Try new network-services path first (confirmed working via MCP), fall back to legacy
+        response = None
+        for endpoint in ["/network-services/v1/webhooks", "/central/v2/webhooks"]:
+            try:
+                response = aruba_client.get(endpoint, params=params)
+                logger.info(f"Webhooks fetched from {endpoint}")
+                break
+            except Exception as inner_e:
+                sc = getattr(inner_e, 'status_code', None)
+                if sc == 404 or "404" in str(inner_e) or "Not Found" in str(inner_e):
+                    logger.warning(f"Webhooks endpoint {endpoint} returned 404, trying next")
+                    continue
+                raise inner_e
+        if response is None:
+            return jsonify({"webhooks": [], "items": [], "count": 0, "total": 0})
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error listing webhooks: {e}")
         err = str(e)
         if "404" in err or "Not Found" in err:
-            return jsonify({"webhooks": [], "count": 0, "total": 0})
+            return jsonify({"webhooks": [], "items": [], "count": 0, "total": 0})
         return jsonify({"error": err}), 500
 
 
