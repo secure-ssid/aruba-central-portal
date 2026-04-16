@@ -196,7 +196,8 @@ function APInfoCard({ ap, loading }) {
 
 // ─── Tool Card ────────────────────────────────────────────────────────────────
 
-function ToolCard({ icon, title, description, children, accentColor = 'var(--color-primary)' }) {
+// NOTE: hex values required for accentColor because it is used with opacity suffixes (e.g. `${accentColor}30`)
+function ToolCard({ icon, title, description, children, accentColor = '#FF6600' }) {
   return (
     <Card
       sx={{
@@ -716,7 +717,7 @@ export default function APTroubleshootPage() {
             icon={<PowerIcon sx={{ color: 'var(--color-error)', fontSize: 18 }} />}
             title="Reboot AP"
             description="Remotely reboot the access point"
-            accentColor="var(--color-error)"
+            accentColor="#EF4444"
           >
             <Button
               variant="outlined"
@@ -746,7 +747,7 @@ export default function APTroubleshootPage() {
             icon={<NetworkCheckIcon sx={{ color: 'var(--color-success)', fontSize: 18 }} />}
             title="Ping Test"
             description="Send ICMP pings from this AP to a target"
-            accentColor="var(--color-success)"
+            accentColor="#22C55E"
           >
             <TextField
               label="Target host or IP"
@@ -782,7 +783,7 @@ export default function APTroubleshootPage() {
             icon={<RouteIcon sx={{ color: 'var(--color-secondary)', fontSize: 18 }} />}
             title="Traceroute"
             description="Trace the network path to a destination"
-            accentColor="var(--color-secondary)"
+            accentColor="#3B82F6"
           >
             <TextField
               label="Target host or IP"
@@ -819,7 +820,7 @@ export default function APTroubleshootPage() {
             icon={<SpeedIcon sx={{ color: 'var(--color-warning)', fontSize: 18 }} />}
             title="Speed Test"
             description="Measure AP download and upload throughput"
-            accentColor="var(--color-warning)"
+            accentColor="#F59E0B"
           >
             <Button
               variant="contained"
