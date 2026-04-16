@@ -864,9 +864,14 @@ def get_client_health_summary():
 def get_client_by_mac(mac):
     """Get detailed information for a specific client by MAC address.
 
-    Tries the legacy monitoring API first (returns fingerprinting fields:
-    device_type, os_type, manufacturer, os, labels) then falls back to the
-    new network-monitoring v1 API and merges results.
+    Tries multiple API endpoints (following the same pattern as the MCP
+    get_client_details tool) and merges all results.  Legacy /monitoring/v1
+    returns fingerprinting fields (device_type, os_type, manufacturer, os,
+    labels); the new network-monitoring v1/v1alpha1 endpoints return
+    connectivity and performance fields.  The session endpoint adds real-time
+    performance data (SNR, throughput, retry rate, etc.).
+
+    Priority (highest wins): legacy > new-API detail > session
     """
     import app as _app
 
@@ -874,24 +879,44 @@ def get_client_by_mac(mac):
     try:
         legacy_data = {}
         new_data = {}
+        session_data = {}
 
-        # Legacy API has device fingerprinting: device_type, os_type, manufacturer, os, labels
+        # Normalise MAC for endpoints that want no separators
+        mac_no_sep = mac.lower().replace(":", "").replace("-", "")
+
+        # Legacy API — device fingerprinting: device_type, os_type, manufacturer, os, labels
         try:
             legacy_data = aruba_client.get(f"/monitoring/v1/clients/{mac}") or {}
         except Exception as le:
             logger.debug(f"Legacy client endpoint failed for {mac}: {le}")
 
-        # New API has connectivity fields
-        try:
-            new_data = aruba_client.get(f"/network-monitoring/v1/clients/{mac}") or {}
-        except Exception as ne:
-            logger.debug(f"New client endpoint failed for {mac}: {ne}")
+        # New API — try the same endpoint variants the MCP tool uses so we get
+        # whatever the platform actually supports.
+        for endpoint in [
+            f"/network-monitoring/v1/clients/{mac}",
+            f"/network-monitoring/v1/clients/details?macAddress={mac}",
+            f"/network-monitoring/v1alpha1/clients/{mac_no_sep}",
+        ]:
+            try:
+                data = aruba_client.get(endpoint) or {}
+                if data and not data.get("error"):
+                    new_data = data
+                    logger.debug(f"Client detail fetched from {endpoint}")
+                    break
+            except Exception as ne:
+                logger.debug(f"New client endpoint {endpoint} failed for {mac}: {ne}")
 
-        if not legacy_data and not new_data:
+        # Session endpoint — real-time performance metrics (SNR, throughput, etc.)
+        try:
+            session_data = aruba_client.get(f"/network-monitoring/v1/clients/{mac}/session") or {}
+        except Exception as se:
+            logger.debug(f"Session endpoint failed for {mac}: {se}")
+
+        if not legacy_data and not new_data and not session_data:
             return jsonify({"error": "Client not found"}), 404
 
-        # Merge: new API fields as base, overlay legacy fingerprinting fields on top
-        merged = {**new_data, **legacy_data}
+        # Merge priority: legacy fingerprinting > new-API detail > session (base)
+        merged = {**session_data, **new_data, **legacy_data}
         return jsonify(merged)
     except Exception as e:
         logger.error(f"Error fetching client {mac}: {e}")

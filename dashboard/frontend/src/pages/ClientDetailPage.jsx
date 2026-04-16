@@ -67,13 +67,13 @@ function getSsid(client) {
 }
 
 function getSignal(client) {
-  const v = client?.snr ?? client?.signalStrength ?? client?.signal ?? null;
+  const v = client?.snr ?? client?.signalStrength ?? client?.rssi ?? client?.signal_db ?? client?.signal ?? null;
   return v != null ? `${v} dB` : '—';
 }
 
 function getThroughputDisplay(client) {
-  const tx = client?.txThroughput ?? client?.throughput ?? null;
-  const rx = client?.rxThroughput ?? null;
+  const tx = client?.txThroughput ?? client?.txBytes ?? client?.throughput ?? client?.tx_throughput ?? null;
+  const rx = client?.rxThroughput ?? client?.rxBytes ?? client?.rx_throughput ?? null;
   if (tx == null && rx == null) return { tx: '—', rx: '—' };
   const fmt = (v) => {
     if (v == null) return '—';
@@ -248,7 +248,9 @@ function MobilityTrail({ mac, isWireless }) {
     setLoading(true);
     apiClient.get(`/clients/${encodeURIComponent(mac)}/mobility-trail`)
       .then(res => {
-        const items = res.data?.items || res.data?.trail || (Array.isArray(res.data) ? res.data : []);
+        const d = res.data;
+        const items = d?.items || d?.trail || d?.mobility_trail || d?.mobilityTrail
+                   || (Array.isArray(d) ? d : []);
         setTrail(items);
       })
       .catch(() => setTrail([]))
@@ -276,8 +278,9 @@ function MobilityTrail({ mac, isWireless }) {
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {trail.map((hop, i) => {
-            const apName = hop.apName || hop.ap_name || hop.associatedDevice || hop.connectedTo || '—';
-            const ts = hop.timestamp;
+            const apName = hop.apName || hop.ap_name || hop.associatedDevice || hop.connectedTo
+                        || hop.accessPointName || hop.deviceName || hop.serial || '—';
+            const ts = hop.timestamp || hop.ts || hop.time || hop.connectedAt || hop.lastSeen;
             let timeStr = '';
             if (ts) {
               const t = typeof ts === 'number' && ts < 1e10 ? ts * 1000 : ts;
@@ -360,8 +363,8 @@ function PropertiesPanel({ client }) {
 
 function ConnectivityPerformance({ client }) {
   const { tx, rx } = getThroughputDisplay(client);
-  const retryRate = client?.retryRate ?? client?.retry_rate;
-  const speed = client?.speed ?? client?.linkSpeed;
+  const retryRate = client?.retryRate ?? client?.retry_rate ?? client?.retryPct ?? client?.txRetryRate ?? client?.txRetries;
+  const speed = client?.speed ?? client?.linkSpeed ?? client?.link_speed ?? client?.maxSpeed;
 
   const metrics = [
     {
@@ -539,15 +542,26 @@ function ClassificationPanel({ client }) {
   //   manufacturer→ Vendor    (e.g. "Android")
   //   os          → Model/OS  (e.g. "Android")
   //   labels      → Tags      (e.g. ["IoT"])
-  // New API camelCase variants are listed as fallbacks.
+  // New API (network-monitoring v1 / v1alpha1) fields used as fallbacks:
+  //   clientConnectionType → Category  (e.g. "Wireless", "Wired")
+  //   authentication       → Function  (e.g. "Captive Portal")
+  //   keyManagement        → Function  (e.g. "WPA2_PSK")
+  //   capabilities         → Model/OS  (e.g. "802.11gn")
+  const _safeStr = (v) => (v && !String(v).includes('/') ? String(v) : null);
   const fields = [
     {
       label: 'Category',
-      value: client?.device_type || client?.deviceType || client?.deviceCategory || client?.category || '—',
+      value: client?.device_type || client?.deviceType || client?.deviceCategory || client?.category
+          || _safeStr(client?.clientConnectionType)
+          || _safeStr(client?.type)
+          || '—',
     },
     {
       label: 'Function',
-      value: client?.os_type || client?.osType || client?.deviceFamily || client?.function || '—',
+      value: client?.os_type || client?.osType || client?.deviceFamily || client?.function
+          || client?.authentication
+          || client?.keyManagement
+          || '—',
     },
     {
       label: 'Vendor',
@@ -555,7 +569,9 @@ function ClassificationPanel({ client }) {
     },
     {
       label: 'Model/OS',
-      value: client?.os || client?.operatingSystem || client?.osVersion || '—',
+      value: client?.os || client?.operatingSystem || client?.osVersion
+          || client?.capabilities
+          || '—',
     },
   ];
 
