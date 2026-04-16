@@ -3,7 +3,7 @@ import {
   Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, TableContainer, Paper, Pagination, Button, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, InputAdornment, Checkbox,
-  FormGroup, FormControlLabel,
+  FormGroup, FormControlLabel, Skeleton,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,6 +12,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DevicesIcon from '@mui/icons-material/Devices';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import StatusChip from '../components/StatusChip';
 import { useGLDevices } from '../hooks/useApiQueries';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -199,6 +200,17 @@ function GLDevicesPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {loading && [...Array(5)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell padding="checkbox"><Skeleton variant="rectangular" width={18} height={18} /></TableCell>
+                      {visibleCols.model  && <TableCell><Skeleton /></TableCell>}
+                      {visibleCols.serial && <TableCell><Skeleton /></TableCell>}
+                      {visibleCols.id     && <TableCell><Skeleton /></TableCell>}
+                      {visibleCols.status && <TableCell><Skeleton width={60} /></TableCell>}
+                      {visibleCols.apps   && <TableCell><Skeleton /></TableCell>}
+                      <TableCell><Skeleton width={36} /></TableCell>
+                    </TableRow>
+                  ))}
                   {devices.length === 0 && !loading && (
                     <TableRow>
                       <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
@@ -228,7 +240,7 @@ function GLDevicesPage() {
                       {visibleCols.model  && <TableCell>{d.model || '-'}</TableCell>}
                       {visibleCols.serial && <TableCell>{d.serialNumber || d.serial || '-'}</TableCell>}
                       {visibleCols.id     && <TableCell>{d.id || d.deviceId}</TableCell>}
-                      {visibleCols.status && <TableCell>{d.status || '-'}</TableCell>}
+                      {visibleCols.status && <TableCell>{d.status ? <StatusChip status={d.status} /> : '-'}</TableCell>}
                       {visibleCols.apps   && <TableCell>{Array.isArray(d.assignedApps) ? d.assignedApps.join(', ') : '-'}</TableCell>}
                       <TableCell>
                         <Button

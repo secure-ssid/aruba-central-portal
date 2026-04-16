@@ -3,7 +3,7 @@ import {
   Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, TableContainer, Paper, Pagination, Button, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, InputAdornment, Checkbox,
-  FormGroup, FormControlLabel,
+  FormGroup, FormControlLabel, Skeleton,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
@@ -211,6 +211,17 @@ function GLLocationsPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {loading && [...Array(5)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell padding="checkbox"><Skeleton variant="rectangular" width={18} height={18} /></TableCell>
+                      {visibleCols.name    && <TableCell><Skeleton /></TableCell>}
+                      {visibleCols.city    && <TableCell><Skeleton width={80} /></TableCell>}
+                      {visibleCols.country && <TableCell><Skeleton width={50} /></TableCell>}
+                      {visibleCols.id      && <TableCell><Skeleton /></TableCell>}
+                      {visibleCols.address && <TableCell><Skeleton /></TableCell>}
+                      <TableCell><Skeleton width={36} /></TableCell>
+                    </TableRow>
+                  ))}
                   {locations.length === 0 && !loading && (
                     <TableRow>
                       <TableCell colSpan={7} align="center" sx={{ py: 6 }}>

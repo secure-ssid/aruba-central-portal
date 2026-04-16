@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, TableContainer, Paper, Button, TextField, InputAdornment, IconButton,
-  Dialog, DialogTitle, DialogContent, DialogActions, Stack, Tooltip
+  Dialog, DialogTitle, DialogContent, DialogActions, Stack, Tooltip, Skeleton,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
 import { useGLTags } from '../hooks/useApiQueries';
@@ -263,11 +264,24 @@ function GLTagsPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {tags.length === 0 ? (
+                  {queryLoading && [...Array(4)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton width={80} /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell align="right"><Skeleton width={56} /></TableCell>
+                    </TableRow>
+                  ))}
+                  {!queryLoading && tags.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} align="center">
-                        <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                          No tags found. Create your first tag to get started.
+                      <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                        <LocalOfferIcon sx={{ fontSize: 40, color: 'rgba(255,255,255,0.08)', mb: 1.5 }} />
+                        <Typography variant="body2" color="text.secondary" display="block">
+                          No tags found
+                        </Typography>
+                        <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.5 }}>
+                          Create your first tag to organize GreenLake resources
                         </Typography>
                       </TableCell>
                     </TableRow>

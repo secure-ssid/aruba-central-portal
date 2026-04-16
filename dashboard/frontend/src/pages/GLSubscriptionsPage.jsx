@@ -2,13 +2,14 @@ import { useMemo, useState } from 'react';
 import {
   Box, Card, CardContent, Typography, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, TableContainer, Paper, Pagination, Button, TextField, InputAdornment,
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  Dialog, DialogTitle, DialogContent, DialogActions, Skeleton,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import SearchIcon from '@mui/icons-material/Search';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import apiClient from '../services/api';
 import GreenLakeNotConfigured, { isGLNotConfiguredError } from '../components/GreenLakeNotConfigured';
+import StatusChip from '../components/StatusChip';
 import { useGLSubscriptions } from '../hooks/useApiQueries';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -163,6 +164,15 @@ function GLSubscriptionsPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {loading && [...Array(5)].map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton width={70} /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                      <TableCell><Skeleton /></TableCell>
+                    </TableRow>
+                  ))}
                   {subs.length === 0 && !loading && (
                     <TableRow>
                       <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
@@ -179,7 +189,7 @@ function GLSubscriptionsPage() {
                   {subs.map((s) => (
                     <TableRow key={s.id}>
                       <TableCell>{s.type || s.subscriptionType || '-'}</TableCell>
-                      <TableCell>{s.status || '-'}</TableCell>
+                      <TableCell>{s.status ? <StatusChip status={s.status} /> : '-'}</TableCell>
                       <TableCell>{s.startDate || '-'}</TableCell>
                       <TableCell>{s.endDate || '-'}</TableCell>
                       <TableCell>{s.id}</TableCell>
