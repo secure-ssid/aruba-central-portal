@@ -116,58 +116,63 @@ const queryClient = new QueryClient({
   },
 });
 
+// Brand + theme tokens as real color strings — MUI's createTheme() parses these
+// for contrast/luminance; CSS variables are not supported there. Values mirror
+// `src/styles/index.css` (:root and [data-theme="light"]).
+const PALETTE_BRAND = {
+  primary: {
+    main: '#FF6600',
+    light: '#FF8C42',
+    dark: '#CC4E00',
+    contrastText: '#FFFFFF',
+  },
+  secondary: {
+    main: '#3B82F6',
+    light: '#60A5FA',
+    dark: '#1D4ED8',
+    contrastText: '#FFFFFF',
+  },
+  error: {
+    main: '#EF4444',
+    light: '#F87171',
+    dark: '#B91C1C',
+  },
+  warning: {
+    main: '#F59E0B',
+    light: '#FCD34D',
+    dark: '#B45309',
+  },
+  info: {
+    main: '#3B82F6',
+    light: '#60A5FA',
+    dark: '#1D4ED8',
+  },
+  success: {
+    main: '#22C55E',
+    light: '#4ADE80',
+    dark: '#15803D',
+  },
+};
+
 // Theme configuration — builds either dark or light MUI theme.
-// CSS custom properties in index.css handle the actual color values via
-// [data-theme="light"] overrides, so MUI just needs the correct `mode`.
+// Component `styleOverrides` below still use CSS variables so live theme toggles
+// on <html> stay in sync with index.css.
 function buildTheme(mode) {
+  const isLight = mode === 'light';
   return createTheme({
   palette: {
     mode,
-    primary: {
-      main: 'var(--color-primary)',
-      light: 'var(--color-primary-light)',
-      dark: 'var(--color-primary-dark)',
-      contrastText: '#FFFFFF',
-    },
-    secondary: {
-      main: 'var(--color-secondary)',
-      light: 'var(--color-secondary-light)',
-      dark: '#1D4ED8',
-      contrastText: '#FFFFFF',
-    },
-    background: {
-      default: 'var(--bg-default)',
-      paper: 'var(--bg-paper)',
-    },
+    ...PALETTE_BRAND,
+    background: isLight
+      ? { default: '#F8FAFC', paper: '#FFFFFF' }
+      : { default: '#0A0E1A', paper: '#111827' },
     surface: {
-      main: 'var(--bg-surface)',
+      main: isLight ? '#F1F5F9' : '#1C2333',
     },
-    error: {
-      main: 'var(--color-error)',
-      light: 'var(--color-error-light)',
-      dark: '#B91C1C',
-    },
-    warning: {
-      main: 'var(--color-warning)',
-      light: 'var(--color-warning-light)',
-      dark: '#B45309',
-    },
-    info: {
-      main: 'var(--color-info)',
-      light: 'var(--color-secondary-light)',
-      dark: '#1D4ED8',
-    },
-    success: {
-      main: 'var(--color-success)',
-      light: 'var(--color-success-light)',
-      dark: '#15803D',
-    },
-    divider: 'var(--border-divider)',
-    text: {
-      primary: 'var(--text-primary)',
-      secondary: 'var(--text-secondary)',
-      disabled: 'var(--text-disabled)',
-    },
+    divider: isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.07)',
+    text: isLight
+      ? { primary: '#0F172A', secondary: '#475569', disabled: '#94A3B8' }
+      : { primary: '#F1F5F9', secondary: '#94A3B8', disabled: '#475569' },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -496,7 +501,7 @@ function AppInner() {
 
   return (
     <QueryClientProvider client={queryClient}>
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Toaster
         position="bottom-right"
