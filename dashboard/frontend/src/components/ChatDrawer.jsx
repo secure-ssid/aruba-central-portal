@@ -84,30 +84,30 @@ const SUGGESTION_CHIPS = [
   'Help',
 ];
 
-// Intent badge colors — maps intent name prefix to a MUI color string
+// Intent badge colors — maps intent name prefix to a theme-aligned color
 const INTENT_COLORS = {
-  ap_status:          '#1976d2',
-  site_health:        '#388e3c',
-  site_list:          '#388e3c',
-  client_count:       '#7b1fa2',
-  clients_by_ssid:    '#7b1fa2',
-  client_by_mac:      '#7b1fa2',
-  find_client:        '#7b1fa2',
-  disconnect_client:  '#c62828',
-  alert_summary:      '#e65100',
-  firmware_status:    '#0288d1',
-  wlan_list:          '#00796b',
-  top_clients:        '#5d4037',
-  top_bandwidth:      '#5d4037',
-  device_inventory:   '#37474f',
-  device_status:      '#37474f',
-  switch_port_errors: '#6a1b9a',
-  bounce_ap:          '#c62828',
-  bounce_port:        '#c62828',
-  ack_alert:          '#e65100',
-  ping_test:          '#0277bd',
-  traceroute:         '#0277bd',
-  help:               '#546e7a',
+  ap_status:          '#3B82F6',
+  site_health:        '#22C55E',
+  site_list:          '#22C55E',
+  client_count:       '#8B5CF6',
+  clients_by_ssid:    '#8B5CF6',
+  client_by_mac:      '#8B5CF6',
+  find_client:        '#8B5CF6',
+  disconnect_client:  '#EF4444',
+  alert_summary:      '#F59E0B',
+  firmware_status:    '#3B82F6',
+  wlan_list:          '#06B6D4',
+  top_clients:        '#78716C',
+  top_bandwidth:      '#78716C',
+  device_inventory:   '#64748B',
+  device_status:      '#64748B',
+  switch_port_errors: '#A855F7',
+  bounce_ap:          '#EF4444',
+  bounce_port:        '#EF4444',
+  ack_alert:          '#F59E0B',
+  ping_test:          '#0EA5E9',
+  traceroute:         '#0EA5E9',
+  help:               '#64748B',
 };
 
 // ─── Animated "Thinking" dots ─────────────────────────────────────────────────
@@ -225,7 +225,7 @@ function MessageBubble({ msg }) {
     );
   }
 
-  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || '#546e7a') : null;
+  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || '#64748B') : null;
 
   return (
     <Box
@@ -611,7 +611,7 @@ function ChatDrawer({ pageContext = '' }) {
         }}
       >
         <Box sx={{
-          width: 32, height: 32, borderRadius: '9px',
+          width: 32, height: 32, borderRadius: '8px',
           bgcolor: 'rgba(255,102,0,0.15)',
           border: '1.5px solid rgba(255,102,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -629,7 +629,7 @@ function ChatDrawer({ pageContext = '' }) {
                 label={llmStatus.model_ready ? (llmStatus.model || 'AI') : 'Loading…'}
                 size="small"
                 sx={{
-                  height: 15, fontSize: '0.58rem', fontWeight: 700,
+                  height: 15, fontSize: '0.6rem', fontWeight: 700,
                   bgcolor: llmStatus.model_ready ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
                   color:   llmStatus.model_ready ? '#22C55E' : '#F59E0B',
                   border:  `1px solid ${llmStatus.model_ready ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,

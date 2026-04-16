@@ -60,7 +60,7 @@ function AnalyticsPage() {
           <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(255, 102, 0, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
                   <TrendingUpIcon sx={{ color: '#FF6600', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Bandwidth Usage</Typography>
@@ -82,7 +82,7 @@ function AnalyticsPage() {
           <Card sx={{ height: '100%', border: '1px solid rgba(255, 102, 0, 0.15)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ width: 36, height: 36, borderRadius: '9px', background: 'rgba(33, 150, 243, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '8px', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.5 }}>
                   <AssessmentIcon sx={{ color: '#3B82F6', fontSize: 20 }} />
                 </Box>
                 <Typography variant="h6">Client Trends</Typography>

@@ -48,7 +48,7 @@ const ACCENT = '#FF6600';
 const GREEN = '#22C55E';
 const RED = '#EF4444';
 const ORANGE = '#F59E0B';
-const YELLOW = '#fdd835';
+const YELLOW = '#FCD34D';
 const BLUE = '#3B82F6';
 
 const REFRESH_INTERVAL = 60000; // 60 seconds
@@ -610,7 +610,7 @@ export default function StatusPage() {
             total={deviceSummary.gateways.total}
             up={deviceSummary.gateways.up}
             down={deviceSummary.gateways.down}
-            color="#00bcd4"
+            color="#06B6D4"
             loading={devicesLoading}
           />
         </Grid>

@@ -211,7 +211,7 @@ function ToolCard({ icon, title, description, children, accentColor = '#FF6600' 
             sx={{
               width: 36,
               height: 36,
-              borderRadius: '9px',
+              borderRadius: '8px',
               background: `${accentColor}18`,
               border: `1px solid ${accentColor}30`,
               display: 'flex',
@@ -226,7 +226,7 @@ function ToolCard({ icon, title, description, children, accentColor = '#FF6600' 
             <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#F1F5F9', lineHeight: 1.2 }}>
               {title}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.72rem' }}>
+            <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.75rem' }}>
               {description}
             </Typography>
           </Box>
@@ -256,7 +256,7 @@ function RadioStatsDisplay({ data }) {
         <TableHead>
           <TableRow>
             {['Radio', 'Band', 'Channel', 'Tx Power', 'Noise', 'Clients', 'Util%'].map((h) => (
-              <TableCell key={h} sx={{ color: '#64748B', fontSize: '0.68rem', py: 0.75 }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#64748B', fontSize: '0.7rem', py: 0.75 }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -294,7 +294,7 @@ function SpeedTestDisplay({ data }) {
           <Typography variant="h6" sx={{ color: '#22C55E', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof dl === 'number' ? dl.toFixed(1) : dl}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.7rem' }}>
             Download Mbps
           </Typography>
         </Box>
@@ -304,7 +304,7 @@ function SpeedTestDisplay({ data }) {
           <Typography variant="h6" sx={{ color: '#3B82F6', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof ul === 'number' ? ul.toFixed(1) : ul}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.7rem' }}>
             Upload Mbps
           </Typography>
         </Box>
@@ -314,7 +314,7 @@ function SpeedTestDisplay({ data }) {
           <Typography variant="h6" sx={{ color: '#F59E0B', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof latency === 'number' ? latency.toFixed(0) : latency}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.7rem' }}>
             Latency ms
           </Typography>
         </Box>
@@ -339,7 +339,7 @@ function HTTPTestDisplay({ data }) {
           <Typography variant="h6" sx={{ color: isOk ? '#22C55E' : '#EF4444', fontWeight: 700, fontFamily: 'monospace' }}>
             {status}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.7rem' }}>
             Status Code
           </Typography>
         </Box>
@@ -349,7 +349,7 @@ function HTTPTestDisplay({ data }) {
           <Typography variant="h6" sx={{ color: '#F59E0B', fontWeight: 700, fontFamily: 'monospace' }}>
             {typeof latency === 'number' ? latency.toFixed(0) : latency}
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem' }}>
+          <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.7rem' }}>
             Latency ms
           </Typography>
         </Box>
@@ -592,7 +592,7 @@ export default function APTroubleshootPage() {
       {/* AP Selection */}
       <Card sx={{ mb: 3 }}>
         <CardContent sx={{ p: 2.5 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#94A3B8', mb: 2, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#94A3B8', mb: 2, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Select Access Point
           </Typography>
           <Grid container spacing={2} alignItems="center">
@@ -901,7 +901,7 @@ export default function APTroubleshootPage() {
               onChange={(e) => setHttpUrl(e.target.value)}
               size="small"
               fullWidth
-              sx={{ mb: 1.5, '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: '0.82rem' } }}
+              sx={{ mb: 1.5, '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: '0.85rem' } }}
               placeholder="https://www.google.com"
               onKeyDown={(e) => e.key === 'Enter' && handleHTTPTest()}
             />
@@ -996,7 +996,7 @@ export default function APTroubleshootPage() {
               <RadioStatsDisplay data={tools.radiostats.result} />
             )}
             {tools.radiostats.error && !tools.radiostats.loading && (
-              <Alert severity="error" sx={{ mt: 1.5, fontSize: '0.78rem' }}>{tools.radiostats.error}</Alert>
+              <Alert severity="error" sx={{ mt: 1.5, fontSize: '0.75rem' }}>{tools.radiostats.error}</Alert>
             )}
           </ToolCard>
         </Grid>

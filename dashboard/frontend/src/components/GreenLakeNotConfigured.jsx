@@ -61,7 +61,7 @@ export default function GreenLakeNotConfigured() {
           borderColor: 'rgba(245,158,11,0.3)',
           color: '#F59E0B',
           fontWeight: 600,
-          fontSize: '0.78rem',
+          fontSize: '0.75rem',
           '&:hover': {
             borderColor: 'rgba(245,158,11,0.5)',
             bgcolor: 'rgba(245,158,11,0.06)',

@@ -149,10 +149,10 @@ function WANStatusTab({ serial }) {
               <TableCell sx={{ fontWeight: 500, color: '#F1F5F9' }}>
                 {iface.name || iface.interface_name || `Interface ${idx + 1}`}
               </TableCell>
-              <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+              <TableCell sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>
                 {iface.type || iface.wan_type || '—'}
               </TableCell>
-              <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+              <TableCell sx={{ color: '#94A3B8', fontSize: '0.85rem', fontFamily: 'monospace' }}>
                 {iface.ip_address || iface.ip || '—'}
               </TableCell>
               <TableCell>
@@ -238,16 +238,16 @@ function VPNTunnelsTab({ serial }) {
             const txPct = ((tunnel.tx_bytes || 0) / maxBytes) * 100;
             return (
               <TableRow key={idx} hover sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
-                <TableCell sx={{ fontWeight: 500, color: '#F1F5F9', fontSize: '0.82rem' }}>
+                <TableCell sx={{ fontWeight: 500, color: '#F1F5F9', fontSize: '0.85rem' }}>
                   {tunnel.name || tunnel.tunnel_name || `Tunnel ${idx + 1}`}
                 </TableCell>
-                <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                <TableCell sx={{ color: '#94A3B8', fontSize: '0.85rem', fontFamily: 'monospace' }}>
                   {tunnel.peer_ip || tunnel.peer || tunnel.remote_ip || '—'}
                 </TableCell>
                 <TableCell>
                   <StatusChip status={tunnel.status || tunnel.state} />
                 </TableCell>
-                <TableCell sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+                <TableCell sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>
                   {formatUptime(tunnel.uptime)}
                 </TableCell>
                 <TableCell>
@@ -429,7 +429,7 @@ function TroubleshootDialog({ open, onClose, serial, type }) {
                 border: '1px solid rgba(255,255,255,0.07)',
                 borderRadius: 1.5,
                 fontFamily: 'monospace',
-                fontSize: '0.78rem',
+                fontSize: '0.75rem',
                 color: '#94A3B8',
                 overflowX: 'auto',
                 whiteSpace: 'pre-wrap',
@@ -490,19 +490,19 @@ function GatewayRow({ gateway, onAction }) {
         <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.8rem', fontFamily: 'monospace' }}>
           {serial}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>
           {model}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>
           {site}
         </TableCell>
         <TableCell onClick={() => setExpanded((v) => !v)}>
           <StatusChip status={status} />
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>
           {formatUptime(typeof uptime === 'number' ? uptime : null)}
         </TableCell>
-        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+        <TableCell onClick={() => setExpanded((v) => !v)} sx={{ color: '#94A3B8', fontSize: '0.85rem', fontFamily: 'monospace' }}>
           {wanIp}
         </TableCell>
 

@@ -159,7 +159,7 @@ function LoginPage({ onLogin }) {
             }}
           >
             <SecurityIcon sx={{ fontSize: 18, color: '#64748B', flexShrink: 0 }} />
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem', lineHeight: 1.5 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
               Authenticated via server-side OAuth2 credentials. No password required.
             </Typography>
           </Box>
@@ -199,7 +199,7 @@ function LoginPage({ onLogin }) {
             sx={{
               mt: 1.5,
               py: 1,
-              fontSize: '0.82rem',
+              fontSize: '0.85rem',
               fontWeight: 500,
               color: 'text.secondary',
               '&:hover': {
@@ -213,7 +213,7 @@ function LoginPage({ onLogin }) {
 
           {/* Footer — minimal */}
           <Box sx={{ mt: 4, pt: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-            <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ fontSize: '0.68rem', mb: 1.5 }}>
+            <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ fontSize: '0.7rem', mb: 1.5 }}>
               Version 2.0.0
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
@@ -222,7 +222,7 @@ function LoginPage({ onLogin }) {
                 target="_blank"
                 rel="noopener"
                 variant="caption"
-                sx={{ color: 'text.disabled', fontSize: '0.68rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
+                sx={{ color: 'text.disabled', fontSize: '0.7rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
               >
                 API Docs
               </Link>
@@ -231,7 +231,7 @@ function LoginPage({ onLogin }) {
                 target="_blank"
                 rel="noopener"
                 variant="caption"
-                sx={{ color: 'text.disabled', fontSize: '0.68rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
+                sx={{ color: 'text.disabled', fontSize: '0.7rem', '&:hover': { color: 'primary.main' }, transition: 'color 0.15s' }}
               >
                 Token Management
               </Link>

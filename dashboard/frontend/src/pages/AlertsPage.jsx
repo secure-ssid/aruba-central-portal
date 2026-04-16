@@ -327,22 +327,22 @@ function AlertsPage() {
                                   label={alert.severity || 'N/A'}
                                   color={getSeverityColor(alert.severity)}
                                   variant="outlined"
-                                  sx={{ fontWeight: 600, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                                  sx={{ fontWeight: 600, fontSize: '0.7rem', height: 22, textTransform: 'capitalize' }}
                                 />
                               </Box>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
                                 {alert.description || 'N/A'}
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.85rem', fontFamily: 'monospace' }}>
                                 {alert.device || 'N/A'}
                               </Typography>
                             </TableCell>
                             <TableCell>
-                              <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'text.secondary' }}>
                                 {alert.timestamp
                                   ? new Date(alert.timestamp * 1000).toLocaleString()
                                   : 'N/A'}
@@ -354,7 +354,7 @@ function AlertsPage() {
                                 label={alert.acknowledged ? 'Acknowledged' : 'Active'}
                                 color={alert.acknowledged ? 'default' : 'warning'}
                                 variant={alert.acknowledged ? 'outlined' : 'filled'}
-                                sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22 }}
+                                sx={{ fontWeight: 500, fontSize: '0.7rem', height: 22 }}
                               />
                             </TableCell>
                           </TableRow>
@@ -418,21 +418,21 @@ function AlertsPage() {
                               size="small"
                               label={event.type || 'Event'}
                               variant="outlined"
-                              sx={{ fontWeight: 500, fontSize: '0.68rem', height: 22, textTransform: 'capitalize' }}
+                              sx={{ fontWeight: 500, fontSize: '0.7rem', height: 22, textTransform: 'capitalize' }}
                             />
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
                               {event.description || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.85rem', fontFamily: 'monospace' }}>
                               {event.device || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'text.secondary' }}>
                               {event.timestamp
                                 ? new Date(event.timestamp * 1000).toLocaleString()
                                 : 'N/A'}

@@ -226,7 +226,7 @@ function NavItem({ item, collapsed, isActive, isFavorite, onToggleFavorite, aler
               '& .MuiTypography-root': {
                 fontWeight: isActive ? 600 : 400,
                 color: isActive ? '#F1F5F9' : '#94A3B8',
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 letterSpacing: '0.01em',
               },
             }}
@@ -384,7 +384,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               <Typography
                 sx={{
                   fontWeight: 500,
-                  fontSize: '0.72rem',
+                  fontSize: '0.75rem',
                   color: '#475569',
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
@@ -436,7 +436,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               </ListItemIcon>
               <ListItemText
                 primary="Search…"
-                sx={{ '& .MuiTypography-root': { color: '#475569', fontSize: '0.82rem' } }}
+                sx={{ '& .MuiTypography-root': { color: '#475569', fontSize: '0.85rem' } }}
               />
               <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
                 ⌘K
@@ -536,7 +536,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                           mr: 0.75,
                         }}
                       >
-                        <Typography variant="caption" sx={{ fontSize: '0.5rem', fontWeight: 700, color: '#3B82F6', letterSpacing: '0.04em' }}>
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#3B82F6', letterSpacing: '0.04em' }}>
                           HPE
                         </Typography>
                       </Box>
@@ -615,7 +615,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                 />
                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22C55E', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
               </Box>
-              <Typography variant="caption" sx={{ color: '#22C55E', fontWeight: 600, fontSize: '0.72rem' }}>
+              <Typography variant="caption" sx={{ color: '#22C55E', fontWeight: 600, fontSize: '0.75rem' }}>
                 Connected
               </Typography>
               <Box sx={{ flexGrow: 1 }} />

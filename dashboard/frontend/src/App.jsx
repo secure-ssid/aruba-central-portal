@@ -247,12 +247,14 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
 
   return (
     <Box sx={{ display: 'flex' }}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <Sidebar
         open={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         onSearchOpen={() => setSearchOpen(true)}
       />
       <Box
+        id="main-content"
         component="main"
         sx={{
           flexGrow: 1,

@@ -629,7 +629,7 @@ function ClientsPage() {
               </InputAdornment>
             ),
           }}
-          sx={{ flexGrow: 1, minWidth: 300 }}
+          sx={{ flexGrow: 1, minWidth: { xs: 0, sm: 300 } }}
         />
         <Typography variant="body2" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
           {filteredClients.length} items

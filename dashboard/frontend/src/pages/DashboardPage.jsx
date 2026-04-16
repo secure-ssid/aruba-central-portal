@@ -398,7 +398,7 @@ function DashboardPage() {
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Box sx={{ color: item.color, display: 'flex', opacity: 0.85 }}>{item.icon}</Box>
-                              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{item.label}</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem' }}>{item.label}</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
                               <Typography variant="body2" sx={{ fontWeight: 600, color: item.color, fontSize: '0.85rem' }}>
