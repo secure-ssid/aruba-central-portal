@@ -305,17 +305,23 @@ function AlertsPage() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
-                              {alert.description || alert.message || 'N/A'}
+                              {alert.description || alert.message || alert.alert_type || alert.title || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
-                              {alert.device_name || alert.device || 'N/A'}
+                              {alert.device_name || alert.deviceName || alert.hostname || alert.name || alert.device || alert.device_id || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {alert.timestamp ? new Date(alert.timestamp * 1000).toLocaleString() : 'N/A'}
+                              {(() => {
+                                const ts = alert.timestamp || alert.created_at || alert.ts;
+                                if (!ts) return 'N/A';
+                                // created_at may be milliseconds or seconds
+                                const ms = ts > 1e10 ? ts : ts * 1000;
+                                return new Date(ms).toLocaleString();
+                              })()}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -372,17 +378,22 @@ function AlertsPage() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
-                              {event.description || event.message || 'N/A'}
+                              {event.description || event.message || event.event_type || event.title || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
-                              {event.device_name || event.device || 'N/A'}
+                              {event.device_name || event.deviceName || event.hostname || event.name || event.device || event.device_id || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {event.timestamp ? new Date(event.timestamp * 1000).toLocaleString() : 'N/A'}
+                              {(() => {
+                                const ts = event.timestamp || event.created_at || event.ts;
+                                if (!ts) return 'N/A';
+                                const ms = ts > 1e10 ? ts : ts * 1000;
+                                return new Date(ms).toLocaleString();
+                              })()}
                             </Typography>
                           </TableCell>
                         </TableRow>

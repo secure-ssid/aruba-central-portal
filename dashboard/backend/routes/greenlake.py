@@ -132,6 +132,42 @@ def _kpi_with_stale(cache_key: str, fetch_fn):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+def _normalize_alert(a: dict) -> dict:
+    """Map Aruba Central alert fields to consistent names for the frontend."""
+    # Description: alert_type is the primary field in network-notifications API
+    description = (
+        a.get("description")
+        or a.get("alert_type")
+        or a.get("message")
+        or a.get("title")
+    )
+    # Device: use only explicit device identifier fields, never generic 'name'
+    device = (
+        a.get("device_id")
+        or a.get("device_serial")
+        or a.get("serial")
+        or a.get("device_name")
+    )
+    # Timestamp: ts may be ms or s; created_at is ISO or epoch; raise_time is epoch s
+    raw_ts = a.get("ts") or a.get("created_at") or a.get("raise_time") or a.get("creation_time")
+    if raw_ts:
+        try:
+            ts_num = float(raw_ts)
+            # Normalise to seconds for the frontend (which does * 1000)
+            timestamp = int(ts_num / 1000) if ts_num > 1e10 else int(ts_num)
+        except (TypeError, ValueError):
+            timestamp = None
+    else:
+        timestamp = None
+
+    return {
+        **a,
+        "description": description,
+        "device": device,
+        "timestamp": timestamp,
+    }
+
+
 @greenlake_bp.route("/api/alerts", methods=["GET"])
 @require_session
 def get_alerts():
@@ -140,7 +176,6 @@ def get_alerts():
 
     aruba_client = _app.aruba_client
     try:
-        # Get query parameters for filtering
         severity = request.args.get("severity")
         limit = request.args.get("limit", 100)
 
@@ -153,7 +188,9 @@ def get_alerts():
         for ep in ["/network-notifications/v1/alerts", "/network-notifications/v1alpha1/alerts"]:
             try:
                 response = aruba_client.get(ep, params=params)
-                return jsonify(response)
+                raw_alerts = response.get("alerts", response.get("items", []))
+                normalized = [_normalize_alert(a) for a in raw_alerts]
+                return jsonify({**response, "alerts": normalized})
             except Exception as ep_err:
                 last_err = ep_err
                 if "401" in str(ep_err) or "403" in str(ep_err):
@@ -166,7 +203,6 @@ def get_alerts():
             raise last_err
     except Exception as e:
         logger.error(f"Error fetching alerts: {e}")
-        # Return empty data instead of 500 error
         return jsonify({"alerts": [], "count": 0, "total": 0, "error": "Alerts API not available"})
 
 
@@ -198,6 +234,41 @@ def acknowledge_alert(alert_id):
     except Exception as e:
         logger.error(f"Error acknowledging alert {alert_id}: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@greenlake_bp.route("/api/events", methods=["GET"])
+@require_session
+def get_events():
+    """Get network events."""
+    import app as _app
+
+    aruba_client = _app.aruba_client
+    try:
+        event_type = request.args.get("type")
+        limit = request.args.get("limit", 100)
+
+        params = {"limit": limit}
+        if event_type:
+            params["type"] = event_type
+
+        last_err = None
+        for ep in ["/network-monitoring/v1/events", "/network-notifications/v1/events"]:
+            try:
+                response = aruba_client.get(ep, params=params)
+                return jsonify(response)
+            except Exception as ep_err:
+                last_err = ep_err
+                if "401" in str(ep_err) or "403" in str(ep_err):
+                    raise ep_err
+                continue
+        if last_err and ("404" in str(last_err) or "Not Found" in str(last_err)):
+            logger.warning(f"Events endpoint not available: {last_err}")
+            return jsonify({"events": [], "count": 0, "total": 0})
+        if last_err:
+            raise last_err
+    except Exception as e:
+        logger.error(f"Error fetching events: {e}")
+        return jsonify({"events": [], "count": 0, "total": 0, "error": "Events API not available"})
 
 
 # ─────────────────────────────────────────────────────────────────────────────
