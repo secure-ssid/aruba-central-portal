@@ -22,6 +22,7 @@ import {
   Grid,
   Tabs,
   Tab,
+  TablePagination,
 } from '@mui/material';
 import {
   Warning as WarningIcon,
@@ -39,34 +40,50 @@ function AlertsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [alerts, setAlerts] = useState([]);
+  const [alertsTotal, setAlertsTotal] = useState(0);
+  const [alertsPage, setAlertsPage] = useState(1);
+  const [rawKeys, setRawKeys] = useState(null);
   const [events, setEvents] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    fetchData();
+    fetchAlerts(alertsPage);
+  }, [alertsPage]);
+
+  useEffect(() => {
+    fetchEvents();
   }, []);
 
-  const fetchData = async () => {
+  const fetchAlerts = async (page) => {
     try {
       setLoading(true);
       setError('');
-      const [alertsData, eventsData] = await Promise.allSettled([
-        alertsAPI.getAll(),
-        alertsAPI.getEvents(),
-      ]);
-
-      if (alertsData.status === 'fulfilled') {
-        setAlerts(alertsData.value.alerts || alertsData.value.items || []);
-      }
-
-      if (eventsData.status === 'fulfilled') {
-        setEvents(eventsData.value.events || eventsData.value.items || []);
+      const data = await alertsAPI.getAll(undefined, page);
+      setAlerts(data.alerts || []);
+      setAlertsTotal(data.total || 0);
+      // Debug: capture field keys from the first alert
+      if (data.alerts?.length > 0 && data.alerts[0]._raw_keys) {
+        setRawKeys(data.alerts[0]._raw_keys);
       }
     } catch (err) {
-      setError(getErrorMessage(err, 'Failed to load alerts and events'));
+      setError(getErrorMessage(err, 'Failed to load alerts'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const data = await alertsAPI.getEvents();
+      setEvents(data.events || data.items || []);
+    } catch {
+      // Events endpoint may not be available; fail silently
+    }
+  };
+
+  const fetchData = () => {
+    fetchAlerts(alertsPage);
+    fetchEvents();
   };
 
   const getSeverityIcon = (severity) => {
@@ -160,7 +177,7 @@ function AlertsPage() {
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.75 }}>
                     Total Alerts
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>{alerts.length}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6600' }}>{alertsTotal || alerts.length}</Typography>
                 </Box>
                 <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: 'rgba(255,102,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <WarningIcon sx={{ fontSize: 20, color: '#FF6600' }} />
@@ -270,6 +287,7 @@ function AlertsPage() {
 
           <Box sx={{ p: 0 }}>
             {tabValue === 0 && (
+              <>
               <TableContainer>
                 <Table size="small">
                   <TableHead>
@@ -305,23 +323,17 @@ function AlertsPage() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
-                              {alert.description || alert.message || alert.alert_type || alert.title || 'N/A'}
+                              {alert.description || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
-                              {alert.device_name || alert.deviceName || alert.hostname || alert.name || alert.device || alert.device_id || 'N/A'}
+                              {alert.device || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {(() => {
-                                const ts = alert.timestamp || alert.created_at || alert.ts;
-                                if (!ts) return 'N/A';
-                                // created_at may be milliseconds or seconds
-                                const ms = ts > 1e10 ? ts : ts * 1000;
-                                return new Date(ms).toLocaleString();
-                              })()}
+                              {alert.timestamp ? new Date(alert.timestamp * 1000).toLocaleString() : 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -351,7 +363,25 @@ function AlertsPage() {
                   </TableBody>
                 </Table>
               </TableContainer>
-            )}
+              {alertsTotal > 10 && (
+                <TablePagination
+                  component="div"
+                  count={alertsTotal}
+                  page={alertsPage - 1}
+                  onPageChange={(_, newPage) => setAlertsPage(newPage + 1)}
+                  rowsPerPage={10}
+                  rowsPerPageOptions={[10]}
+                  sx={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                />
+              )}
+              {rawKeys && (
+                <Box sx={{ p: 1.5, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: 'rgba(255,255,0,0.04)' }}>
+                  <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.disabled' }}>
+                    DEBUG – raw API keys: {rawKeys.join(', ')}
+                  </Typography>
+                </Box>
+              )}
+            </> )}
 
             {tabValue === 1 && (
               <TableContainer>
@@ -378,22 +408,17 @@ function AlertsPage() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>
-                              {event.description || event.message || event.event_type || event.title || 'N/A'}
+                              {event.description || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.82rem', fontFamily: 'monospace' }}>
-                              {event.device_name || event.deviceName || event.hostname || event.name || event.device || event.device_id || 'N/A'}
+                              {event.device || 'N/A'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontSize: '0.78rem', fontFamily: 'monospace', color: 'text.secondary' }}>
-                              {(() => {
-                                const ts = event.timestamp || event.created_at || event.ts;
-                                if (!ts) return 'N/A';
-                                const ms = ts > 1e10 ? ts : ts * 1000;
-                                return new Date(ms).toLocaleString();
-                              })()}
+                              {event.timestamp ? new Date(event.timestamp * 1000).toLocaleString() : 'N/A'}
                             </Typography>
                           </TableCell>
                         </TableRow>

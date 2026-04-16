@@ -36,6 +36,70 @@ import {
 import { getClients, getClientTrends, getTopClients } from '../services/api';
 import useSites from '../hooks/useSites';
 
+/** `essid` is often a string, sometimes `{ name, ssid, ... }` from Central. */
+function getEssidRaw(client) {
+  if (!client || typeof client !== 'object') return '';
+  const e = client.essid;
+  if (typeof e === 'string' && e.trim()) return e.trim();
+  if (e && typeof e === 'object') {
+    const n = e.name ?? e.ssid ?? e.essid;
+    if (n != null && String(n).trim()) return String(n).trim();
+  }
+  return '';
+}
+
+/**
+ * Best-effort SSID / WLAN name for display and search.
+ * Central commonly uses wlanName; legacy UI used ssid / string essid.
+ */
+function getClientSsid(client) {
+  if (!client || typeof client !== 'object') return '';
+  const fromFields = [
+    client.ssid,
+    client.wlanName,
+    client.wlan_name,
+    client.wlanProfileName,
+    client.wlan_profile_name,
+    client.userWlan,
+    client.connected_ssid,
+    client.associated_ssid,
+    getEssidRaw(client),
+    client.network,
+  ];
+  for (const v of fromFields) {
+    if (v != null && String(v).trim()) return String(v).trim();
+  }
+  return '';
+}
+
+/**
+ * Aruba Central uses clientConnectionType (e.g. WIRELESS / WIRED); older UI code used `type`.
+ * WIRELESS must be detected before WIRED because "WIRELESS".includes("WIRED") is true.
+ */
+function getClientConnectionKind(client) {
+  if (!client || typeof client !== 'object') return 'unknown';
+  const raw =
+    client.clientConnectionType ||
+    client.connectionType ||
+    client.connection_type ||
+    client.network_type ||
+    client.networkType ||
+    client.type ||
+    '';
+  const u = String(raw).toUpperCase().replace(/\s+/g, '_');
+  if (!u) {
+    if (client.ssid || client.wlanName || client.wlan_name || getEssidRaw(client)) return 'wireless';
+    return 'unknown';
+  }
+  if (u.includes('WIRELESS') || u.includes('WLAN') || u.includes('WIFI') || u.includes('802')) {
+    return 'wireless';
+  }
+  if (u.includes('WIRED') || u.includes('ETHERNET') || u === 'ETH') {
+    return 'wired';
+  }
+  return 'unknown';
+}
+
 function ClientsPage() {
   const [clients, setClients] = useState([]);
   const [topClients, setTopClients] = useState([]);
@@ -223,8 +287,8 @@ function ClientsPage() {
     : clients;
   
   const typeCounts = {
-    wireless: clientsForTypeCount.filter((c) => c.type?.toLowerCase() === 'wireless').length,
-    wired: clientsForTypeCount.filter((c) => c.type?.toLowerCase() === 'wired').length,
+    wireless: clientsForTypeCount.filter((c) => getClientConnectionKind(c) === 'wireless').length,
+    wired: clientsForTypeCount.filter((c) => getClientConnectionKind(c) === 'wired').length,
   };
 
   const filteredClients = clients.filter((client) => {
@@ -233,7 +297,10 @@ function ClientsPage() {
     const matchesSearch =
       !searchTerm ||
       client.name?.toLowerCase().includes(search) ||
+      client.hostname?.toLowerCase().includes(search) ||
       client.mac?.toLowerCase().includes(search) ||
+      client.macaddr?.toLowerCase().includes(search) ||
+      client.macAddress?.toLowerCase().includes(search) ||
       client.ipv4?.toLowerCase().includes(search) ||
       client.network?.toLowerCase().includes(search) ||
       client.connectedTo?.toLowerCase().includes(search) ||
@@ -245,7 +312,9 @@ function ClientsPage() {
       client.port_id?.toLowerCase().includes(search) ||
       client.interface?.toLowerCase().includes(search) ||
       client.portName?.toLowerCase().includes(search) ||
-      client.essid?.toLowerCase().includes(search) ||
+      client.essid?.toLowerCase?.().includes(search) ||
+      getEssidRaw(client).toLowerCase().includes(search) ||
+      getClientSsid(client).toLowerCase().includes(search) ||
       client.ssid?.toLowerCase().includes(search);
 
     // Status filter
@@ -253,10 +322,12 @@ function ClientsPage() {
       !selectedStatus ||
       client.status?.toLowerCase() === selectedStatus?.toLowerCase();
 
-    // Type filter
+    // Type filter (API: clientConnectionType; legacy: type)
+    const kind = getClientConnectionKind(client);
     const matchesType =
       selectedTypes.length === 0 ||
-      selectedTypes.some((type) => client.type?.toLowerCase() === type);
+      selectedTypes.includes(kind) ||
+      (kind === 'unknown' && selectedTypes.length > 0);
 
     return matchesSearch && matchesStatus && matchesType;
   });
@@ -273,12 +344,12 @@ function ClientsPage() {
         bValue = (b.name || b.mac || '').toLowerCase();
         break;
       case 'type':
-        aValue = (a.type || '').toLowerCase();
-        bValue = (b.type || '').toLowerCase();
+        aValue = getClientConnectionKind(a);
+        bValue = getClientConnectionKind(b);
         break;
       case 'mac':
-        aValue = (a.mac || '').toLowerCase();
-        bValue = (b.mac || '').toLowerCase();
+        aValue = (a.mac || a.macaddr || a.macAddress || '').toLowerCase();
+        bValue = (b.mac || b.macaddr || b.macAddress || '').toLowerCase();
         break;
       case 'ip':
         aValue = (a.ipv4 || '').toLowerCase();
@@ -305,8 +376,8 @@ function ClientsPage() {
         bValue = (b.siteName || '').toLowerCase();
         break;
       case 'ssid':
-        aValue = (a.essid || a.ssid || a.network || '').toLowerCase();
-        bValue = (b.essid || b.ssid || b.network || '').toLowerCase();
+        aValue = getClientSsid(a).toLowerCase();
+        bValue = getClientSsid(b).toLowerCase();
         break;
       default:
         return 0;
@@ -795,10 +866,16 @@ function ClientsPage() {
                   : (isConnecting || isDisconnected) ? 'rgb(249, 192, 0)'
                   : '#9e9e9e';
 
-                const clientType = client.type?.toLowerCase();
+                const clientKind = getClientConnectionKind(client);
+                const clientType = clientKind;
+                const typeChipLabel =
+                  client.clientConnectionType ||
+                  client.connectionType ||
+                  client.type ||
+                  (clientKind === 'wireless' ? 'Wireless' : clientKind === 'wired' ? 'Wired' : 'Unknown');
 
                 return (
-                  <TableRow key={client.id || client.mac || client.macaddr} hover>
+                  <TableRow key={client.id || client.mac || client.macaddr || client.macAddress} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {(isConnected || isFailed || isConnecting || isDisconnected) && (
@@ -813,7 +890,7 @@ function ClientsPage() {
                         )}
                         <Box>
                           <Typography variant="body2" fontWeight="medium">
-                            {client.name || client.mac || 'Unknown'}
+                            {client.name || client.hostname || client.macaddr || client.mac || client.macAddress || 'Unknown'}
                           </Typography>
                           {isConnected && (
                             <Typography variant="caption" color="textSecondary">
@@ -841,7 +918,7 @@ function ClientsPage() {
                     <TableCell>
                       <Chip
                         size="small"
-                        label={client.type || 'Unknown'}
+                        label={typeChipLabel}
                         icon={clientType === 'wireless' ? <WifiIcon /> : <CableIcon />}
                         sx={{
                           ...(clientType === 'wireless' && {
@@ -867,7 +944,7 @@ function ClientsPage() {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {client.mac || 'N/A'}
+                        {client.mac || client.macaddr || client.macAddress || 'N/A'}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -917,15 +994,12 @@ function ClientsPage() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {clientType === 'wireless' ? (
-                        <Typography variant="body2">
-                          {client.essid || client.ssid || client.network || 'N/A'}
-                        </Typography>
-                      ) : (
-                        <Typography variant="body2" color="textSecondary">
-                          -
-                        </Typography>
-                      )}
+                      <Typography
+                        variant="body2"
+                        color={getClientSsid(client) ? 'text.primary' : 'text.secondary'}
+                      >
+                        {getClientSsid(client) || '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
