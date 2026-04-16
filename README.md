@@ -12,6 +12,37 @@
 
 ---
 
+## Screenshots
+
+### Network Dashboard
+![Network Dashboard](docs/screenshots/dashboard.png)
+
+### Devices
+![Devices](docs/screenshots/devices.png)
+
+### Clients
+![Clients](docs/screenshots/clients.png)
+
+### Client Detail
+![Client Detail](docs/screenshots/client-detail.png)
+
+### Network Monitor
+![Network Monitor](docs/screenshots/network-monitor.png)
+
+### Troubleshooting Tools
+![Troubleshoot](docs/screenshots/troubleshoot.png)
+
+### Configuration
+![Configuration](docs/screenshots/configuration.png)
+
+### Status
+![Status](docs/screenshots/status.png)
+
+### GreenLake Devices
+![GreenLake](docs/screenshots/greenlake.png)
+
+---
+
 ## Quick Start
 
 ### Docker (Recommended)
