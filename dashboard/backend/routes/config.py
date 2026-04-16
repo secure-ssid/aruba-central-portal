@@ -23,13 +23,12 @@ Covers:
   - /api/tenant/client-health
 """
 
-import time
 import logging
 import requests
 from flask import Blueprint, request, jsonify, make_response
 
 from utils.central_api_client import CentralAPIError
-from .helpers import require_session, api_proxy, cached_get, cached_get_paginated, parallel_get
+from .helpers import require_session, api_proxy, cached_get, cached_get_paginated
 
 config_bp = Blueprint("config", __name__)
 logger = logging.getLogger(__name__)
