@@ -297,7 +297,7 @@ function DashboardPage() {
             trend={trends.switches}
             trendValue={trendValues.switches}
             subtitle="Network switches"
-            onClick={() => navigate('/devices')}
+            onClick={() => navigate('/devices?tab=switches')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -310,7 +310,7 @@ function DashboardPage() {
             trend={trends.accessPoints}
             trendValue={trendValues.accessPoints}
             subtitle="Wireless APs"
-            onClick={() => navigate('/devices')}
+            onClick={() => navigate('/devices?tab=aps')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>

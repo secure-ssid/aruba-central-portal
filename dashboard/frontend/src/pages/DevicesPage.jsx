@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -31,8 +31,29 @@ import {
   generateFilename,
 } from '../utils/exportUtils';
 
+/** URL ?tab= values, index-aligned with MUI Tabs (0–3). */
+const DEVICE_TAB_KEYS = ['all', 'switches', 'aps', 'gateways'];
+
+function deviceTabIndexFromSearch(tabParam) {
+  if (tabParam == null || tabParam === '') return 0;
+  const idx = DEVICE_TAB_KEYS.indexOf(String(tabParam).toLowerCase());
+  return idx >= 0 ? idx : 0;
+}
+
 function DevicesPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabValue = deviceTabIndexFromSearch(searchParams.get('tab'));
+
+  const handleDeviceTabChange = (_e, newValue) => {
+    const key = DEVICE_TAB_KEYS[newValue];
+    if (newValue === 0) {
+      setSearchParams({}, { replace: true });
+    } else {
+      setSearchParams({ tab: key }, { replace: true });
+    }
+  };
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [devices, setDevices] = useState([]);
@@ -40,7 +61,6 @@ function DevicesPage() {
   const [accessPoints, setAccessPoints] = useState([]);
   const [gateways, setGateways] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [tabValue, setTabValue] = useState(0);
   const [sortBy, setSortBy] = useState('name');
   const [statusFilter, setStatusFilter] = useState(null);
 
@@ -334,7 +354,7 @@ function DevicesPage() {
       {/* Device Tabs */}
       <Card>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+          <Tabs value={tabValue} onChange={handleDeviceTabChange}>
             <Tab label={`All Devices (${devices.length})`} />
             <Tab label={`Switches (${switches.length})`} />
             <Tab label={`Access Points (${accessPoints.length})`} />
