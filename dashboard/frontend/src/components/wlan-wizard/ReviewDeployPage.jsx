@@ -390,7 +390,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Typography variant="h6" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <WifiIcon />
         Review & Deploy
       </Typography>
@@ -402,7 +402,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
       {!deploying && deploymentSteps.length === 0 && (
         <>
           <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <WifiIcon fontSize="small" />
               WLAN Identity
             </Typography>
@@ -417,7 +417,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <SecurityIcon fontSize="small" />
               Security
             </Typography>
@@ -430,7 +430,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <NetworkIcon fontSize="small" />
               Network
             </Typography>
@@ -451,7 +451,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <RouterIcon fontSize="small" />
               Deployment
             </Typography>
@@ -479,6 +479,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
 
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button
+              type="button"
               variant="contained"
               size="large"
               onClick={handleDeploy}
@@ -492,7 +493,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
 
       {/* Deployment Progress */}
       {(deploying || deploymentSteps.length > 0) && (
-        <Box>
+        <Box aria-live="polite" role="status">
           <Typography variant="subtitle1" gutterBottom>
             {deploying ? 'Deploying WLAN...' : deploymentError ? 'Deployment Failed' : 'Deployment Complete!'}
           </Typography>
@@ -509,6 +510,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
               </Alert>
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
                 <Button
+                  type="button"
                   variant="outlined"
                   onClick={() => {
                     setDeploymentError(null);
@@ -518,6 +520,7 @@ const ReviewDeployPage = ({ data, onSuccess }) => {
                   Try Again
                 </Button>
                 <Button
+                  type="button"
                   variant="contained"
                   onClick={onSuccess}
                 >

@@ -152,7 +152,7 @@ const SiteIdentityPage = ({ data, onUpdate }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Typography variant="h6" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <WifiIcon />
         Site & Identity
       </Typography>
@@ -162,7 +162,7 @@ const SiteIdentityPage = ({ data, onUpdate }) => {
 
       {/* Scope Selection */}
       <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography variant="subtitle2" component="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LocationIcon fontSize="small" />
           Deployment Scope
         </Typography>
@@ -193,8 +193,8 @@ const SiteIdentityPage = ({ data, onUpdate }) => {
         {data.scopeType === 'site' && (
           <Box sx={{ mt: 2 }}>
             {loadingSites ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <CircularProgress size={20} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }} role="status" aria-live="polite">
+                <CircularProgress size={20} aria-label="Loading sites" />
                 <Typography variant="body2" color="text.secondary">
                   Loading sites...
                 </Typography>
@@ -252,7 +252,7 @@ const SiteIdentityPage = ({ data, onUpdate }) => {
 
       {/* WLAN Identity */}
       <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom>
+        <Typography variant="subtitle2" component="h3" gutterBottom>
           WLAN Configuration
         </Typography>
 

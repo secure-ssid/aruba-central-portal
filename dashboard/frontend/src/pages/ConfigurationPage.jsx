@@ -834,6 +834,10 @@ function ConfigurationPage() {
                         '&:hover': { bgcolor: 'action.hover' },
                       }}
                       onClick={() => handleItemClick(label, 'label')}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleItemClick(label, 'label'); } }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View label ${label.label_name || 'Unnamed Label'}`}
                     >
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -1165,6 +1169,10 @@ function ConfigurationPage() {
                         '&:hover': { bgcolor: 'action.hover' },
                       }}
                       onClick={() => handleItemClick(role, 'nac_role')}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleItemClick(role, 'nac_role'); } }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View role ${role.role_name || 'Unnamed Role'}`}
                     >
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -1458,6 +1466,10 @@ function ConfigurationPage() {
                         '&:hover': { bgcolor: 'action.hover' },
                       }}
                       onClick={() => handleItemClick(rule, 'onboarding_rule')}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleItemClick(rule, 'onboarding_rule'); } }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View rule ${rule.rule_name || 'Unnamed Rule'}`}
                     >
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -1993,7 +2005,7 @@ function ConfigurationPage() {
       {/* Page Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
             Configuration Management
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -2012,7 +2024,7 @@ function ConfigurationPage() {
             label="Advanced Options"
           />
           <Tooltip title="Refresh Data">
-            <IconButton onClick={fetchConfigData} color="primary">
+            <IconButton onClick={fetchConfigData} color="primary" aria-label="Refresh data">
               <RefreshIcon />
             </IconButton>
           </Tooltip>
@@ -2052,8 +2064,8 @@ function ConfigurationPage() {
 
         <CardContent>
           {loading ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }}>
-              <CircularProgress sx={{ color: '#FF6600' }} />
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 6, gap: 2 }} role="status" aria-live="polite">
+              <CircularProgress sx={{ color: '#FF6600' }} aria-label="Loading configuration data" />
               <Typography variant="body2" color="text.secondary">
                 Loading configuration data from Aruba Central...
               </Typography>

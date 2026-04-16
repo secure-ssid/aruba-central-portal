@@ -12,7 +12,7 @@ from flask import Blueprint, request, jsonify
 import logging
 import time
 import requests
-from .helpers import require_session, api_proxy, cached_get, parallel_get
+from .helpers import require_session, api_proxy, cached_get, parallel_get, rate_limit
 
 monitoring_bp = Blueprint("monitoring", __name__)
 logger = logging.getLogger(__name__)
@@ -62,6 +62,7 @@ def get_network_health():
 
 
 @monitoring_bp.route("/api/explore", methods=["POST"])
+@rate_limit(max_requests=20, window_seconds=60)
 @require_session
 def api_explorer():
     """

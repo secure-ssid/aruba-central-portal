@@ -348,6 +348,7 @@ function CSVExportDialog({ open, onClose, wlans }) {
             fullWidth
             size="small"
             placeholder="Search fields..."
+            aria-label="Search export fields"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
@@ -360,10 +361,10 @@ function CSVExportDialog({ open, onClose, wlans }) {
           />
         </Box>
         <Box sx={{ mb: 1, display: 'flex', gap: 1 }}>
-          <Button size="small" startIcon={<SelectAllIcon />} onClick={handleSelectAll}>
+          <Button type="button" size="small" startIcon={<SelectAllIcon />} onClick={handleSelectAll}>
             Select All
           </Button>
-          <Button size="small" startIcon={<DeselectIcon />} onClick={handleDeselectAll}>
+          <Button type="button" size="small" startIcon={<DeselectIcon />} onClick={handleDeselectAll}>
             Deselect All
           </Button>
         </Box>
@@ -402,8 +403,9 @@ function CSVExportDialog({ open, onClose, wlans }) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button type="button" onClick={onClose}>Cancel</Button>
         <Button
+          type="button"
           variant="contained"
           onClick={handleExport}
           disabled={selectedFields.size === 0}
@@ -458,8 +460,8 @@ function WLANsPage() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px" role="status" aria-live="polite">
+        <CircularProgress aria-label="Loading WLANs" />
       </Box>
     );
   }

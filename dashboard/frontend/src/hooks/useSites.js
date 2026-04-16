@@ -70,7 +70,7 @@ export default function useSites() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (signal) => {
     setLoading(true);
     setError(null);
 
@@ -84,6 +84,7 @@ export default function useSites() {
       } catch (_paramErr) {
         sitesData = await sitesConfigAPI.getSites({});
       }
+      if (signal?.aborted) return;
 
       let list = extractArray(sitesData)
         .map(normalizeSite)
@@ -96,12 +97,14 @@ export default function useSites() {
       }
       lastError = new Error('Configuration API returned empty result');
     } catch (err) {
+      if (signal?.aborted) return;
       lastError = err;
     }
 
     // --- 2. configAPI (Central v2 Sites) --------------------------------------
     try {
       const v2Data = await configAPI.getSites();
+      if (signal?.aborted) return;
 
       let list = extractArray(v2Data).map((raw) =>
         normalizeSite({
@@ -118,12 +121,14 @@ export default function useSites() {
         return;
       }
     } catch (err) {
+      if (signal?.aborted) return;
       lastError = err;
     }
 
     // --- 3. monitoringAPIv2.getSitesHealth (Monitoring API) --------------------
     try {
       const healthData = await monitoringAPIv2.getSitesHealth({ limit: 100, offset: 0 });
+      if (signal?.aborted) return;
       const items = extractArray(healthData);
 
       let list = items.map((item) =>
@@ -141,6 +146,7 @@ export default function useSites() {
         return;
       }
     } catch (err) {
+      if (signal?.aborted) return;
       lastError = err;
     }
 
@@ -151,7 +157,9 @@ export default function useSites() {
   }, []);
 
   useEffect(() => {
-    load();
+    const controller = new AbortController();
+    load(controller.signal);
+    return () => controller.abort();
   }, [load]);
 
   return { sites, loading, error, reload: load };

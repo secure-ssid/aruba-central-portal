@@ -9,7 +9,7 @@ import time
 import secrets
 import logging
 
-from .helpers import require_session
+from .helpers import require_session, rate_limit
 
 auth_bp = Blueprint('auth', __name__)
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 # ============= Authentication Endpoints =============
 
 @auth_bp.route('/api/auth/login', methods=['POST'])
+@rate_limit(max_requests=10, window_seconds=60)
 def login():
     """Authenticate and create session with Aruba Central."""
     import app as _app
@@ -133,6 +134,7 @@ def check_setup():
 
 
 @auth_bp.route('/api/setup/configure', methods=['POST'])
+@rate_limit(max_requests=10, window_seconds=60)
 def configure_credentials():
     """Configure Aruba Central credentials via UI."""
     import app as _app

@@ -117,8 +117,8 @@ const CreateVLANDialog = ({ open, onClose, onSuccess, suggestedVlanId }) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth aria-labelledby="create-vlan-dialog-title">
+      <DialogTitle id="create-vlan-dialog-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <NetworkIcon />
         Create VLAN
       </DialogTitle>
@@ -172,14 +172,15 @@ const CreateVLANDialog = ({ open, onClose, onSuccess, suggestedVlanId }) => {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose} disabled={creating}>
+        <Button type="button" onClick={handleClose} disabled={creating}>
           Cancel
         </Button>
         <Button
+          type="button"
           onClick={handleCreate}
           variant="contained"
           disabled={creating || !vlanId || !vlanName || !!errors.vlanId || !!errors.vlanName}
-          startIcon={creating && <CircularProgress size={16} />}
+          startIcon={creating && <CircularProgress size={16} aria-hidden="true" />}
         >
           {creating ? 'Creating...' : 'Create VLAN'}
         </Button>

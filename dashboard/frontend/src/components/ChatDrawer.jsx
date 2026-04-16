@@ -69,10 +69,10 @@ const PANEL_WIDTH_OPEN = 400;
 const PANEL_WIDTH_WIDE = 560;
 const TOPBAR_HEIGHT    = 64; // px — matches TopBar height
 
-const ORANGE      = '#FF6600';
-const PAPER_BG    = '#111827';
-const SURFACE_BG  = '#0D1117';
-const BORDER_CLR  = 'rgba(255,255,255,0.08)';
+const ORANGE      = 'var(--color-primary)';
+const PAPER_BG    = 'var(--bg-paper)';
+const SURFACE_BG  = 'var(--bg-surface-dark)';
+const BORDER_CLR  = 'var(--border-default)';
 
 // Quick-action suggestion chips shown when input is empty
 const SUGGESTION_CHIPS = [
@@ -86,28 +86,28 @@ const SUGGESTION_CHIPS = [
 
 // Intent badge colors — maps intent name prefix to a theme-aligned color
 const INTENT_COLORS = {
-  ap_status:          '#3B82F6',
-  site_health:        '#22C55E',
-  site_list:          '#22C55E',
-  client_count:       '#8B5CF6',
-  clients_by_ssid:    '#8B5CF6',
-  client_by_mac:      '#8B5CF6',
-  find_client:        '#8B5CF6',
-  disconnect_client:  '#EF4444',
-  alert_summary:      '#F59E0B',
-  firmware_status:    '#3B82F6',
+  ap_status:          'var(--color-secondary)',
+  site_health:        'var(--color-success)',
+  site_list:          'var(--color-success)',
+  client_count:       'var(--color-purple)',
+  clients_by_ssid:    'var(--color-purple)',
+  client_by_mac:      'var(--color-purple)',
+  find_client:        'var(--color-purple)',
+  disconnect_client:  'var(--color-error)',
+  alert_summary:      'var(--color-warning)',
+  firmware_status:    'var(--color-secondary)',
   wlan_list:          '#06B6D4',
   top_clients:        '#78716C',
   top_bandwidth:      '#78716C',
-  device_inventory:   '#64748B',
-  device_status:      '#64748B',
+  device_inventory:   'var(--text-muted)',
+  device_status:      'var(--text-muted)',
   switch_port_errors: '#A855F7',
-  bounce_ap:          '#EF4444',
-  bounce_port:        '#EF4444',
-  ack_alert:          '#F59E0B',
+  bounce_ap:          'var(--color-error)',
+  bounce_port:        'var(--color-error)',
+  ack_alert:          'var(--color-warning)',
   ping_test:          '#0EA5E9',
   traceroute:         '#0EA5E9',
-  help:               '#64748B',
+  help:               'var(--text-muted)',
 };
 
 // ─── Animated "Thinking" dots ─────────────────────────────────────────────────
@@ -225,7 +225,7 @@ function MessageBubble({ msg }) {
     );
   }
 
-  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || '#64748B') : null;
+  const intentColor = msg.intent ? (INTENT_COLORS[msg.intent] || 'var(--text-muted)') : null;
 
   return (
     <Box
@@ -342,20 +342,35 @@ function ChatDrawer({ pageContext = '' }) {
   const [unreadReply, setUnreadReply] = useState(0);
   const [llmStatus,   setLlmStatus]   = useState({ available: false, model: null, model_ready: false });
 
-  const messagesEndRef = useRef(null);
-  const inputRef       = useRef(null);
+  const messagesEndRef  = useRef(null);
+  const inputRef        = useRef(null);
+  const sendControllerRef = useRef(null);
 
   // ── Fetch LLM status on mount ────────────────────────────────────────────
   useEffect(() => {
+    const controller = new AbortController();
     const checkLLM = async () => {
       try {
-        const res = await fetch(`${API_BASE}/chat/llm-status`);
+        const res = await fetch(`${API_BASE}/chat/llm-status`, {
+          signal: controller.signal,
+        });
         if (res.ok) setLlmStatus(await res.json());
-      } catch { /* Ollama not up yet */ }
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        /* Ollama not up yet */
+      }
     };
     checkLLM();
     const interval = setInterval(checkLLM, 30_000);
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, []);
+
+  // ── Abort pending send on unmount ────────────────────────────────────────
+  useEffect(() => {
+    return () => sendControllerRef.current?.abort();
   }, []);
 
   // ── Width calculation (right-side panel) ────────────────────────────────
@@ -421,6 +436,11 @@ function ChatDrawer({ pageContext = '' }) {
     setTimeout(() => inputRef.current?.focus(), 0);
 
     try {
+      // Abort any previous in-flight send request
+      sendControllerRef.current?.abort();
+      const controller = new AbortController();
+      sendControllerRef.current = controller;
+
       const sessionId = localStorage.getItem(SESSION_KEY);
       const headers   = { 'Content-Type': 'application/json' };
       if (sessionId) headers['X-Session-ID'] = sessionId;
@@ -435,6 +455,7 @@ function ChatDrawer({ pageContext = '' }) {
         method:  'POST',
         headers,
         body:    JSON.stringify({ message: text, context: pageContext, history }),
+        signal:  controller.signal,
       });
 
       if (!res.ok) {
@@ -466,6 +487,7 @@ function ChatDrawer({ pageContext = '' }) {
         });
       }
     } catch (err) {
+      if (err.name === 'AbortError') return;
       const errMsg = {
         id:      generateId(),
         role:    'system',
@@ -546,7 +568,7 @@ function ChatDrawer({ pageContext = '' }) {
             height:    56,
             borderRadius: '50%',
             border:    'none',
-            background: `linear-gradient(135deg, ${ORANGE} 0%, #FF8C42 100%)`,
+            background: `linear-gradient(135deg, ${ORANGE} 0%, var(--color-primary-light) 100%)`,
             boxShadow: '0 4px 20px rgba(255,102,0,0.55), 0 0 0 0 rgba(255,102,0,0.4)',
             display:   'flex',
             alignItems: 'center',
@@ -566,7 +588,7 @@ function ChatDrawer({ pageContext = '' }) {
             <Box sx={{
               position: 'absolute', top: -3, right: -3,
               width: 20, height: 20, borderRadius: '50%',
-              bgcolor: '#EF4444', border: '2px solid #0A0E1A',
+              bgcolor: 'var(--color-error)', border: '2px solid var(--bg-default)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
@@ -621,7 +643,7 @@ function ChatDrawer({ pageContext = '' }) {
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.85rem', color: '#F1F5F9' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
               Network Assistant
             </Typography>
             {llmStatus.available && (
@@ -631,14 +653,14 @@ function ChatDrawer({ pageContext = '' }) {
                 sx={{
                   height: 15, fontSize: '0.6rem', fontWeight: 700,
                   bgcolor: llmStatus.model_ready ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-                  color:   llmStatus.model_ready ? '#22C55E' : '#F59E0B',
+                  color:   llmStatus.model_ready ? 'var(--color-success)' : 'var(--color-warning)',
                   border:  `1px solid ${llmStatus.model_ready ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
                   borderRadius: '4px', '& .MuiChip-label': { px: 0.6 },
                 }}
               />
             )}
           </Box>
-          <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.65rem' }}>
+          <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
             {llmStatus.available && llmStatus.model_ready ? `AI · ${llmStatus.model}` : 'Aruba Central API'}
           </Typography>
         </Box>
@@ -828,7 +850,7 @@ function ChatDrawer({ pageContext = '' }) {
                     flexShrink: 0,
                     '&:hover': {
                       bgcolor: inputValue.trim() && !isLoading
-                        ? '#E55A00'
+                        ? 'var(--color-primary-hover)'
                         : 'rgba(255,255,255,0.10)',
                     },
                     '&.Mui-disabled': {

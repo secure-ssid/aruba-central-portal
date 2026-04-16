@@ -8,12 +8,92 @@ The globals (aruba_client, etc.) are read from the app module at request time.
 import json
 import time
 import logging
+import threading
 import requests
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import wraps
 from flask import request, jsonify, current_app
 
 logger = logging.getLogger(__name__)
+
+
+# ── Simple In-Memory Rate Limiter ──────────────────────────────────────────
+# Tracks request timestamps per IP in a sliding window. Thread-safe.
+
+_rate_limit_store: dict = defaultdict(list)
+_rate_limit_lock = threading.Lock()
+
+
+def _cleanup_rate_limit_store():
+    """Periodically remove stale entries older than 2 minutes."""
+    cutoff = time.time() - 120
+    with _rate_limit_lock:
+        stale_keys = [
+            key for key, timestamps in _rate_limit_store.items()
+            if not timestamps or timestamps[-1] < cutoff
+        ]
+        for key in stale_keys:
+            del _rate_limit_store[key]
+
+
+def rate_limit(max_requests=60, window_seconds=60):
+    """Decorator that applies a per-IP sliding-window rate limit.
+
+    Returns HTTP 429 when the limit is exceeded.
+
+    Usage::
+
+        @app.route('/api/login', methods=['POST'])
+        @rate_limit(max_requests=10, window_seconds=60)
+        def login():
+            ...
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            ip = request.remote_addr or "unknown"
+            now = time.time()
+            window_start = now - window_seconds
+            bucket_key = f"{ip}:{f.__name__}"
+
+            with _rate_limit_lock:
+                # Prune timestamps outside the window
+                timestamps = _rate_limit_store[bucket_key]
+                _rate_limit_store[bucket_key] = [
+                    t for t in timestamps if t > window_start
+                ]
+                if len(_rate_limit_store[bucket_key]) >= max_requests:
+                    retry_after = int(
+                        _rate_limit_store[bucket_key][0] + window_seconds - now
+                    ) + 1
+                    resp = jsonify({
+                        "error": "Rate limit exceeded. Please try again later.",
+                        "retry_after": retry_after,
+                    })
+                    resp.status_code = 429
+                    resp.headers["Retry-After"] = str(retry_after)
+                    return resp
+                _rate_limit_store[bucket_key].append(now)
+
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# Periodic cleanup thread to prevent unbounded memory growth
+def _rate_limit_cleanup_loop():
+    while True:
+        time.sleep(120)
+        try:
+            _cleanup_rate_limit_store()
+        except Exception:
+            pass
+
+
+threading.Thread(
+    target=_rate_limit_cleanup_loop, daemon=True, name="rate-limit-cleanup"
+).start()
 
 
 def _get_globals():

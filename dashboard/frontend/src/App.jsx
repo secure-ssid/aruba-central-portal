@@ -65,7 +65,7 @@ const WirelessPage                = lazy(() => import('./pages/configuration/Wir
 
 const LazyFallback = () => (
   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }} role="status" aria-label="Loading page">
-    <CircularProgress size={28} sx={{ color: '#FF6600' }} />
+    <CircularProgress size={28} sx={{ color: 'var(--color-primary)' }} />
   </Box>
 );
 
@@ -103,49 +103,49 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#FF6600',
-      light: '#FF8C42',
-      dark: '#CC4E00',
+      main: 'var(--color-primary)',
+      light: 'var(--color-primary-light)',
+      dark: 'var(--color-primary-dark)',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#3B82F6',
-      light: '#60A5FA',
+      main: 'var(--color-secondary)',
+      light: 'var(--color-secondary-light)',
       dark: '#1D4ED8',
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#0A0E1A',
-      paper: '#111827',
+      default: 'var(--bg-default)',
+      paper: 'var(--bg-paper)',
     },
     surface: {
-      main: '#1C2333',
+      main: 'var(--bg-surface)',
     },
     error: {
-      main: '#EF4444',
-      light: '#F87171',
+      main: 'var(--color-error)',
+      light: 'var(--color-error-light)',
       dark: '#B91C1C',
     },
     warning: {
-      main: '#F59E0B',
-      light: '#FCD34D',
+      main: 'var(--color-warning)',
+      light: 'var(--color-warning-light)',
       dark: '#B45309',
     },
     info: {
-      main: '#3B82F6',
-      light: '#60A5FA',
+      main: 'var(--color-info)',
+      light: 'var(--color-secondary-light)',
       dark: '#1D4ED8',
     },
     success: {
-      main: '#22C55E',
-      light: '#4ADE80',
+      main: 'var(--color-success)',
+      light: 'var(--color-success-light)',
       dark: '#15803D',
     },
-    divider: 'rgba(255,255,255,0.07)',
+    divider: 'var(--border-divider)',
     text: {
-      primary: '#F1F5F9',
-      secondary: '#94A3B8',
-      disabled: '#475569',
+      primary: 'var(--text-primary)',
+      secondary: 'var(--text-secondary)',
+      disabled: 'var(--text-disabled)',
     },
   },
   typography: {
@@ -165,9 +165,9 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#111827',
-          border: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+          backgroundColor: 'var(--bg-paper)',
+          border: `1px solid var(--border-subtle)`,
+          boxShadow: 'var(--shadow-card)',
           borderRadius: 10,
         },
       },
@@ -176,7 +176,7 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#111827',
+          backgroundColor: 'var(--bg-paper)',
         },
       },
     },
@@ -188,11 +188,11 @@ const darkTheme = createTheme({
           borderRadius: 8,
         },
         containedPrimary: {
-          background: 'linear-gradient(135deg, #FF6600 0%, #FF8C42 100%)',
-          boxShadow: '0 4px 14px rgba(255,102,0,0.35)',
+          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
+          boxShadow: 'var(--shadow-glow)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #E55A00 0%, #FF6600 100%)',
-            boxShadow: '0 6px 20px rgba(255,102,0,0.5)',
+            background: 'linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%)',
+            boxShadow: 'var(--shadow-glow-hover)',
           },
         },
       },
@@ -200,7 +200,7 @@ const darkTheme = createTheme({
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: 'rgba(255,255,255,0.07)',
+          borderColor: 'var(--border-divider)',
         },
       },
     },
@@ -214,22 +214,22 @@ const darkTheme = createTheme({
     MuiTableCell: {
       styleOverrides: {
         root: {
-          borderColor: 'rgba(255,255,255,0.06)',
+          borderColor: 'var(--border-subtle)',
         },
         head: {
-          backgroundColor: '#1C2333',
+          backgroundColor: 'var(--bg-surface)',
           fontWeight: 600,
           fontSize: '0.75rem',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: '#94A3B8',
+          color: 'var(--text-secondary)',
         },
       },
     },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: '#1C2333',
+          backgroundColor: 'var(--bg-surface)',
           border: '1px solid rgba(255,255,255,0.1)',
           fontSize: '0.75rem',
         },
@@ -440,9 +440,9 @@ function App() {
       <Toaster
         position="bottom-right"
         toastOptions={{
-          style: { background: '#111827', color: '#F1F5F9', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' },
-          success: { iconTheme: { primary: '#22C55E', secondary: '#fff' } },
-          error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
+          style: { background: 'var(--bg-paper)', color: 'var(--text-primary)', border: '1px solid var(--border-default)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' },
+          success: { iconTheme: { primary: 'var(--color-success)', secondary: '#fff' } },
+          error: { iconTheme: { primary: 'var(--color-error)', secondary: '#fff' } },
         }}
       />
       <Router>

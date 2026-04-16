@@ -83,7 +83,7 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
       elevation={0}
       sx={{
         backgroundColor: 'background.paper',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        borderBottom: '1px solid var(--border-default)',
       }}
     >
       <Toolbar>

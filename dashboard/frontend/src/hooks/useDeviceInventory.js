@@ -29,7 +29,7 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (signal) => {
     try {
       setLoading(true);
       setError(null);
@@ -41,6 +41,7 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
           deviceAPI.getAccessPoints(),
           monitoringAPIv2.getGatewaysMonitoring(),
         ]);
+      if (signal?.aborted) return;
 
       let allDevices = [];
 
@@ -141,7 +142,9 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
   }, [deviceType]);
 
   useEffect(() => {
-    load();
+    const controller = new AbortController();
+    load(controller.signal);
+    return () => controller.abort();
   }, [load]);
 
   return { devices, loading, error, reload: load };
