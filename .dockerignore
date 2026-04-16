@@ -98,6 +98,9 @@ Thumbs.db
 *.swn
 .iml
 
+# MyPy cache
+.mypy_cache/
+
 # Documentation (optional - can be included if needed)
 # *.md
 # !README.md

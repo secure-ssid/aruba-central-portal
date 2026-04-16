@@ -3,7 +3,8 @@
  * View and search platform audit logs with pagination, sorting, and filtering
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import {
   Box,
   Card,
@@ -111,6 +112,10 @@ function AuditLogPage() {
   const [orderBy, setOrderBy] = useState('timestamp');
   const [order, setOrder] = useState('desc');
   const [searchText, setSearchText] = useState('');
+  const debouncedSearch = useDebouncedValue(searchText, 250);
+
+  // Reset to first page when debounced search changes
+  useEffect(() => { setPage(0); }, [debouncedSearch]);
   const [actionFilter, setActionFilter] = useState('');
 
   // Fetch audit logs — fetch a larger batch and handle client-side pagination/sorting
@@ -152,8 +157,8 @@ function AuditLogPage() {
       logs = logs.filter((l) => l.action === actionFilter);
     }
 
-    if (searchText.trim()) {
-      const lower = searchText.toLowerCase();
+    if (debouncedSearch.trim()) {
+      const lower = debouncedSearch.toLowerCase();
       logs = logs.filter((l) =>
         (l.user || '').toLowerCase().includes(lower) ||
         (l.action || '').toLowerCase().includes(lower) ||
@@ -164,7 +169,7 @@ function AuditLogPage() {
     }
 
     return logs;
-  }, [allLogs, actionFilter, searchText]);
+  }, [allLogs, actionFilter, debouncedSearch]);
 
   // Sort
   const sortedLogs = useMemo(() => {
@@ -300,7 +305,7 @@ function AuditLogPage() {
               placeholder="Search logs..."
               aria-label="Search audit logs"
               value={searchText}
-              onChange={(e) => { setSearchText(e.target.value); setPage(0); }}
+              onChange={(e) => setSearchText(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

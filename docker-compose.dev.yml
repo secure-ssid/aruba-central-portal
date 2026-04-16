@@ -1,0 +1,63 @@
+# Development override — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Mounts source code into the container and enables hot-reload for both
+# Flask (backend) and Vite (frontend).  No images are pushed anywhere;
+# everything is built and run locally.
+
+services:
+  aruba-central-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - LOG_LEVEL=DEBUG
+    volumes:
+      # Mount backend source for live-reload (gunicorn --reload)
+      - ./dashboard/backend:/app/dashboard/backend:ro
+      - ./utils:/app/utils:ro
+      - ./scripts:/app/scripts:ro
+      # Persist token cache
+      - token-cache:/app/data
+      # Persist .env for Setup Wizard
+      - ./.env:/app/.env:rw
+      # Output directory
+      - ./output:/app/output
+    # Override entrypoint to use gunicorn with auto-reload
+    entrypoint: []
+    command:
+      [
+        "gunicorn",
+        "--bind", "0.0.0.0:1344",
+        "--workers", "1",
+        "--timeout", "120",
+        "--reload",
+        "--access-logfile", "-",
+        "--error-logfile", "-",
+        "--chdir", "/app/dashboard/backend",
+        "app:app",
+      ]
+
+  # Vite dev server for frontend hot-module-replacement
+  frontend-dev:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./dashboard/frontend:/app
+      # Use a named volume for node_modules so the host dir is not overwritten
+      - frontend-node-modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    networks:
+      - aruba-network
+    depends_on:
+      - aruba-central-portal
+
+volumes:
+  token-cache:
+  frontend-node-modules:

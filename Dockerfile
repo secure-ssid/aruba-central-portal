@@ -44,6 +44,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Create non-root user for security
+RUN groupadd --gid 1000 appuser && \
+    useradd --uid 1000 --gid appuser --shell /bin/bash --create-home appuser
+
 # Copy virtual environment from backend builder
 COPY --from=backend-builder /opt/venv /opt/venv
 
@@ -63,12 +67,13 @@ COPY --from=frontend-builder /app/frontend/build /app/dashboard/frontend/build
 # Copy entrypoint script with executable permissions
 COPY --chmod=755 docker-entrypoint.sh /docker-entrypoint.sh
 
-# Fix permissions for all directories and files
+# Fix permissions for all directories and files, then set ownership to appuser
 RUN find /app -type d -exec chmod 755 {} \; && \
     find /app -type f -exec chmod 644 {} \; && \
     find /app -type f -name "*.sh" -exec chmod 755 {} \; && \
     find /app -type f -name "*.py" -exec chmod 755 {} \; && \
-    mkdir -p /app/data && chmod 700 /app/data
+    mkdir -p /app/data && chmod 700 /app/data && \
+    chown -R appuser:appuser /app /opt/venv
 
 # Expose port
 EXPOSE 1344
@@ -76,6 +81,9 @@ EXPOSE 1344
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:1344/api/health', timeout=5)"
+
+# Switch to non-root user
+USER appuser
 
 # Set working directory and run entrypoint
 WORKDIR /app

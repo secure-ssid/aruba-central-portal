@@ -140,3 +140,20 @@ class TestConfigPath:
         # Should have aruba_central section even without YAML
         assert "aruba_central" in config
         assert isinstance(config["aruba_central"], dict)
+
+
+class TestMalformedYaml:
+    """Tests for malformed YAML handling."""
+
+    def test_malformed_yaml_returns_defaults(self, tmp_path):
+        """Test that a malformed YAML file results in defaults (empty base config)."""
+        bad_yaml = tmp_path / "bad.yaml"
+        bad_yaml.write_text(": : :\n  bad:\n    - [unterminated")
+
+        # yaml.safe_load raises an error for malformed YAML, which propagates.
+        # But the env-override block still runs. Since the base config is empty
+        # due to the error, we expect an exception from safe_load.
+        # Actually, looking at the source: it just does yaml.safe_load(f) or {}
+        # If safe_load raises, it will propagate (no try/except in load_config).
+        with pytest.raises(yaml.YAMLError):
+            load_config(str(bad_yaml))

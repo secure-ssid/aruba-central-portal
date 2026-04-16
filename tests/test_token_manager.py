@@ -291,3 +291,40 @@ class TestTokenManagerRefreshErrors:
 
         with pytest.raises(Exception, match="Connection timeout|Token refresh failed"):
             manager.get_access_token()
+
+
+class TestTokenManagerCacheEdgeCases:
+    """Tests for token cache edge cases."""
+
+    def test_load_cached_token_malformed_json(self, tmp_path):
+        """Test that malformed JSON in cache file is handled gracefully."""
+        cache_file = tmp_path / ".token_cache.json"
+        cache_file.write_text("{this is not valid json!!!")
+
+        manager = TokenManager(
+            client_id=TEST_CLIENT_ID,
+            client_secret=TEST_CLIENT_SECRET,
+            cache_file=str(cache_file),
+        )
+
+        # Should silently handle the error and leave token as None
+        assert manager.access_token is None
+        assert manager.token_expires_at is None
+
+    def test_cache_directory_creation_failure(self, tmp_path, monkeypatch):
+        """Test fallback when TOKEN_CACHE_DIR cannot be created."""
+        # Point TOKEN_CACHE_DIR to a path under a file (impossible to mkdir)
+        blocker = tmp_path / "blocker"
+        blocker.write_text("I am a file, not a directory")
+        impossible_dir = str(blocker / "subdir")
+
+        monkeypatch.setenv("TOKEN_CACHE_DIR", impossible_dir)
+
+        manager = TokenManager(
+            client_id=TEST_CLIENT_ID,
+            client_secret=TEST_CLIENT_SECRET,
+            cache_file=".token_cache.json",
+        )
+
+        # Should fall back to current working directory cache path
+        assert manager.cache_file == Path(".token_cache.json")

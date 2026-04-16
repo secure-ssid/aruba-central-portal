@@ -3,12 +3,13 @@
  * Handles routing, authentication, and layout
  */
 
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { ThemeContextProvider, useThemeMode } from './contexts/ThemeContext';
 
 // Pages that must be eager (shown before auth layout)
 import SetupWizard from './pages/SetupWizard';
@@ -115,10 +116,13 @@ const queryClient = new QueryClient({
   },
 });
 
-// Theme configuration - Aruba Orange on deep navy-black
-const darkTheme = createTheme({
+// Theme configuration — builds either dark or light MUI theme.
+// CSS custom properties in index.css handle the actual color values via
+// [data-theme="light"] overrides, so MUI just needs the correct `mode`.
+function buildTheme(mode) {
+  return createTheme({
   palette: {
-    mode: 'dark',
+    mode,
     primary: {
       main: 'var(--color-primary)',
       light: 'var(--color-primary-light)',
@@ -247,13 +251,14 @@ const darkTheme = createTheme({
       styleOverrides: {
         tooltip: {
           backgroundColor: 'var(--bg-surface)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: `1px solid ${mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
           fontSize: '0.75rem',
         },
       },
     },
   },
 });
+}
 
 /**
  * Inner authenticated layout — must live inside <Router> so useLocation works.
@@ -386,7 +391,10 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
   );
 }
 
-function App() {
+function AppInner() {
+  const { mode } = useThemeMode();
+  const theme = useMemo(() => buildTheme(mode), [mode]);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
@@ -470,7 +478,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box
           display="flex"
@@ -523,6 +531,14 @@ function App() {
       </Router>
     </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+function App() {
+  return (
+    <ThemeContextProvider>
+      <AppInner />
+    </ThemeContextProvider>
   );
 }
 

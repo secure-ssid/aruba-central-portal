@@ -22,8 +22,11 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { tokenAPI } from '../services/api';
 import { useTokenInfo } from '../hooks/useApiQueries';
+import { useThemeMode } from '../contexts/ThemeContext';
 import SearchIcon from '@mui/icons-material/Search';
 
 // Lazy-load NotificationCenter — it pulls in alert queries and MUI Menu internals
@@ -32,6 +35,7 @@ const NotificationCenter = lazy(() => import('./NotificationCenter'));
 function TopBar({ onLogout, onMenuClick, onSearchClick }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const { mode, toggleTheme } = useThemeMode();
 
   // React Query handles polling every 60 s and caching
   const tokenQuery = useTokenInfo({ refetchInterval: 60_000 });
@@ -129,6 +133,12 @@ function TopBar({ onLogout, onMenuClick, onSearchClick }) {
               ) : (
                 <RefreshIcon />
               )}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+            <IconButton color="inherit" onClick={toggleTheme} aria-label="Toggle theme" size="small">
+              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
           </Tooltip>
 
