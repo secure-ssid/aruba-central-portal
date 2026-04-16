@@ -21,6 +21,84 @@ from .helpers import require_session, cached_get
 chat_bp = Blueprint("chat", __name__)
 logger = logging.getLogger(__name__)
 
+# Shown when a field is missing in chat tables / summaries (matches portal em dash usage)
+_CHAT_MISSING = "—"
+
+
+def _first_present_str(d: dict, *keys: str) -> str:
+    """First non-empty string among dict keys, or empty string."""
+    for k in keys:
+        if k not in d:
+            continue
+        v = d.get(k)
+        if v is None:
+            continue
+        s = str(v).strip()
+        if s:
+            return s
+    return ""
+
+
+def _cell(val: str) -> str:
+    """Table cell: use em dash when value is blank."""
+    return val if val else _CHAT_MISSING
+
+
+def _device_display_name(d: dict) -> str:
+    """Resolve human-readable device name from typical Central / monitoring payloads."""
+    return _first_present_str(
+        d,
+        "name",
+        "hostname",
+        "deviceName",
+        "device_name",
+        "ap_name",
+        "switch_name",
+        "deviceHostname",
+        "label",
+    )
+
+
+def _device_serial(d: dict) -> str:
+    return _first_present_str(d, "serialNumber", "serial", "device_serial")
+
+
+def _site_display_name(s: dict) -> str:
+    return _first_present_str(
+        s,
+        "scopeName",
+        "site_name",
+        "siteName",
+        "site",
+        "name",
+    )
+
+
+def _client_display_name(c: dict) -> str:
+    n = _first_present_str(
+        c,
+        "name",
+        "hostname",
+        "client_name",
+        "clientName",
+        "description",
+    )
+    if n:
+        return n
+    return _first_present_str(c, "macaddr", "mac", "macAddress")
+
+
+def _wlan_ssid(w: dict) -> str:
+    essid = w.get("essid")
+    if isinstance(essid, dict):
+        v = _first_present_str(essid, "name", "ssid")
+        if v:
+            return v
+    elif isinstance(essid, str) and essid.strip():
+        return essid.strip()
+    return _first_present_str(w, "ssid")
+
+
 # ---------------------------------------------------------------------------
 # Chat-specific rate limiter for destructive actions (bounce / reboot / ack)
 # ---------------------------------------------------------------------------
@@ -581,12 +659,12 @@ def _handle_ap_status(text, _session_id):
 
         table = [
             {
-                "Name": a.get("name", a.get("hostname", "?")),
-                "Serial": a.get("serial", a.get("serialNumber", "?")),
-                "Status": a.get("status", "?"),
-                "Site": a.get("siteName", a.get("site", "?")),
-                "IP": a.get("ip_address", a.get("ipv4", "?")),
-                "Model": a.get("model", "?"),
+                "Name": _cell(_device_display_name(a)),
+                "Serial": _cell(_device_serial(a)),
+                "Status": _cell(_first_present_str(a, "status")),
+                "Site": _cell(_first_present_str(a, "siteName", "site")),
+                "IP": _cell(_first_present_str(a, "ip_address", "ipv4", "ip")),
+                "Model": _cell(_first_present_str(a, "model", "platformModel")),
             }
             for a in display_items[:25]
         ]
@@ -605,7 +683,7 @@ def _handle_ap_status(text, _session_id):
                     a for a in items if str(a.get("status", "")).upper().strip() not in up_statuses
                 ]
                 names = ", ".join(
-                    f"{a.get('name', a.get('hostname', '?'))} ({a.get('serial', a.get('serialNumber', '?'))})"
+                    f"{_cell(_device_display_name(a))} ({_cell(_device_serial(a))})"
                     for a in down_aps[:5]
                 )
                 reply += f"\nDown: {names}"
@@ -652,8 +730,9 @@ def _handle_site_health(text, _session_id):
             worst = sorted(sites, key=lambda s: s.get("health", s.get("healthScore", 100)))[:5]
             lines = ["**Site health** (worst first):"]
             for s in worst:
-                score = s.get("health", s.get("healthScore", s.get("score", "?")))
-                name = s.get("site", s.get("siteName", s.get("name", "?")))
+                raw_score = s.get("health", s.get("healthScore", s.get("score")))
+                score = raw_score if raw_score is not None and str(raw_score).strip() != "" else _CHAT_MISSING
+                name = _cell(_site_display_name(s))
                 lines.append(f"- {name}: {score}")
             return "\n".join(lines), sites, 200
 
@@ -674,7 +753,7 @@ def _handle_site_health(text, _session_id):
 
         normalized = [
             {
-                "name": s.get("siteName", s.get("name", "?")),
+                "name": _cell(_site_display_name(s)),
                 "health": _safe_int(s.get("health", s.get("healthScore", s.get("score", 0)))),
                 "devices": _safe_int(s.get("deviceCount", s.get("total_device_count", 0))),
                 "clients": _safe_int(s.get("clientCount", s.get("total_client_count", 0))),
@@ -740,10 +819,10 @@ def _handle_clients_by_ssid(text, _session_id):
         total = len(matched)
         sample = [
             {
-                "mac": c.get("macaddr", c.get("mac", "?")),
-                "hostname": c.get("name", c.get("hostname", "?")),
-                "ip": c.get("ip_address", c.get("ipAddress", "?")),
-                "signal": c.get("signal_db", c.get("rssi", "?")),
+                "mac": _cell(_first_present_str(c, "macaddr", "mac", "macAddress")),
+                "hostname": _cell(_client_display_name(c)),
+                "ip": _cell(_first_present_str(c, "ip_address", "ipAddress", "ipv4", "ip")),
+                "signal": _cell(_first_present_str(c, "signal_db", "rssi", "signal")),
             }
             for c in matched[:10]
         ]
@@ -774,11 +853,19 @@ def _handle_client_by_mac(text, _session_id):
 
     try:
         r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}")
-        name = r.get("name", r.get("hostname", mac))
-        ip = r.get("ip_address", r.get("ipAddress", "?"))
-        ssid = r.get("ssid", r.get("essid", "?"))
-        site = r.get("site", r.get("siteName", "?"))
-        ap = r.get("associated_device", r.get("apSerial", "?"))
+        name = _first_present_str(r, "name", "hostname", "client_name", "clientName") or mac
+        ip = _cell(_first_present_str(r, "ip_address", "ipAddress", "ipv4", "ip"))
+        ssid = _cell(_first_present_str(r, "ssid", "essid", "wlanName", "network"))
+        site = _cell(_first_present_str(r, "site", "siteName", "scopeName"))
+        ap = _cell(
+            _first_present_str(
+                r,
+                "associated_device",
+                "associated_device_name",
+                "apSerial",
+                "ap_serial",
+            )
+        )
 
         reply = (
             f"Client **{name}** ({mac}):\n"
@@ -815,7 +902,7 @@ def _handle_switch_port_errors(text, _session_id):
         results = []
         for sw in switches[:10]:
             serial = sw.get("serial", sw.get("serialNumber", ""))
-            name = sw.get("name", sw.get("hostname", serial))
+            name = _device_display_name(sw) or serial
             if not serial:
                 continue
             try:
@@ -828,7 +915,7 @@ def _handle_switch_port_errors(text, _session_id):
                     {
                         "serial": serial,
                         "name": name,
-                        "site": sw.get("siteName", sw.get("site", "?")),
+                        "site": _cell(_first_present_str(sw, "siteName", "site")),
                         "total_errors": total_errors,
                         "iface_count": len(ifaces),
                     }
@@ -991,8 +1078,9 @@ def _handle_alert_summary(text, _session_id):
 
         lines = [f"**Recent alerts** ({len(alerts)} shown):"]
         for a in alerts[:10]:
-            sev = a.get("severity", "?").upper()
-            desc = a.get("description", a.get("alert_type", "?"))
+            sev_raw = a.get("severity")
+            sev = str(sev_raw).upper() if sev_raw is not None and str(sev_raw).strip() else _CHAT_MISSING
+            desc = _cell(_first_present_str(a, "description", "alert_type", "message", "title"))
             atime = a.get("created_at", a.get("ts", ""))
             aid = a.get("id", a.get("alert_id", ""))
             lines.append(f"- [{sev}] {desc} (id: {aid})")
@@ -1049,9 +1137,9 @@ def _handle_wlan_list(text, _session_id):
 
         lines = [f"**{len(wlans)} WLAN(s)** configured:"]
         for w in wlans[:20]:
-            ssid = w.get("ssid", w.get("essid", {}).get("name", "?"))
+            ssid = _cell(_wlan_ssid(w))
             enabled = w.get("enable", True)
-            band = w.get("rf-band", "?")
+            band = _cell(_first_present_str(w, "rf-band", "rf_band", "band"))
             status_str = "enabled" if enabled else "disabled"
             lines.append(f"- **{ssid}** ({band}, {status_str})")
         if len(wlans) > 20:
@@ -1079,9 +1167,9 @@ def _handle_top_clients(text, _session_id):
 
         lines = [f"**Top {min(len(clients), 10)} clients by bandwidth**:"]
         for c in clients[:10]:
-            name = c.get("name", c.get("hostname", c.get("macaddr", "?")))
+            name = _cell(_client_display_name(c))
             usage = c.get("usage", c.get("total_bytes", 0))
-            ssid = c.get("ssid", "?")
+            ssid = _cell(_first_present_str(c, "ssid", "essid", "wlanName", "network"))
             usage_mb = round(usage / 1_000_000, 2) if isinstance(usage, (int, float)) else usage
             lines.append(f"- **{name}** on {ssid}: {usage_mb} MB")
 
@@ -1264,12 +1352,12 @@ def _handle_device_status(text, _session_id):
         total = len(items)
         table = [
             {
-                "Name": d.get("deviceName", d.get("name", "?")),
-                "Type": d.get("deviceType", d.get("device_type", "?")),
-                "Status": d.get("status", "?"),
-                "IP": d.get("ipv4", d.get("ip_address", "?")),
-                "Serial": d.get("serialNumber", d.get("serial", "?")),
-                "Site": d.get("siteName", d.get("site", "?")),
+                "Name": _cell(_device_display_name(d)),
+                "Type": _cell(_first_present_str(d, "deviceType", "device_type")),
+                "Status": _cell(_first_present_str(d, "status")),
+                "IP": _cell(_first_present_str(d, "ipv4", "ip_address", "ip")),
+                "Serial": _cell(_device_serial(d)),
+                "Site": _cell(_first_present_str(d, "siteName", "site")),
             }
             for d in items[:25]
         ]
@@ -1322,16 +1410,21 @@ def _handle_find_client(text, _session_id):
         c = found[0]
         logger.debug(f"find_client raw fields: {list(c.keys())}")
         details = {
-            "MAC": c.get("macaddr") or c.get("mac") or c.get("macAddress") or "?",
-            "Hostname": c.get("name") or c.get("hostname") or c.get("client_name") or "?",
-            "IP": c.get("ip_address") or c.get("ipv4") or c.get("ip") or "?",
-            "Status": c.get("status") or c.get("connection_status") or "?",
-            "Type": c.get("clientConnectionType") or c.get("client_type") or c.get("type") or "?",
-            "SSID": c.get("ssid") or c.get("wlanName") or c.get("network") or "?",
-            "AP": c.get("associated_device")
-            or c.get("ap_serial")
-            or c.get("associated_device_name")
-            or "?",
+            "MAC": _cell(_first_present_str(c, "macaddr", "mac", "macAddress")),
+            "Hostname": _cell(_client_display_name(c)),
+            "IP": _cell(_first_present_str(c, "ip_address", "ipv4", "ip")),
+            "Status": _cell(_first_present_str(c, "status", "connection_status")),
+            "Type": _cell(_first_present_str(c, "clientConnectionType", "client_type", "type")),
+            "SSID": _cell(_first_present_str(c, "ssid", "wlanName", "network", "essid")),
+            "AP": _cell(
+                _first_present_str(
+                    c,
+                    "associated_device",
+                    "associated_device_name",
+                    "ap_serial",
+                    "apSerial",
+                )
+            ),
         }
         reply = f"Client found: **{details['Hostname']}** ({details['MAC']}) — {details['Status']}"
         return reply, [details], 200
@@ -1469,9 +1562,9 @@ def _handle_site_list(_text, _session_id):
         total = len(sites)
         table = [
             {
-                "Name": s.get("site_name", s.get("name", "?")),
+                "Name": _cell(_site_display_name(s)),
                 "Devices": s.get("associated_device_count", s.get("deviceCount", 0)),
-                "ID": s.get("site_id", s.get("id", "?")),
+                "ID": _cell(_first_present_str(s, "site_id", "id", "scopeId")),
             }
             for s in sites[:30]
         ]
@@ -1507,8 +1600,8 @@ def _handle_top_bandwidth(_text, _session_id):
             if clients:
                 table = [
                     {
-                        "Client": c.get("name", c.get("hostname", c.get("macaddr", "?"))),
-                        "SSID": c.get("ssid", "?"),
+                        "Client": _cell(_client_display_name(c)),
+                        "SSID": _cell(_first_present_str(c, "ssid", "essid", "wlanName")),
                         "Usage MB": round(c.get("usage", c.get("total_bytes", 0)) / 1_000_000, 2),
                     }
                     for c in clients[:5]
@@ -1521,8 +1614,8 @@ def _handle_top_bandwidth(_text, _session_id):
 
         table = [
             {
-                "AP": a.get("name", a.get("hostname", "?")),
-                "Site": a.get("siteName", a.get("site", "?")),
+                "AP": _cell(_device_display_name(a)),
+                "Site": _cell(_first_present_str(a, "siteName", "site")),
                 "Tx MB": round(a.get("tx_bytes", a.get("txBytes", 0)) / 1_000_000, 2),
                 "Rx MB": round(a.get("rx_bytes", a.get("rxBytes", 0)) / 1_000_000, 2),
             }
