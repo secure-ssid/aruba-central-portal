@@ -49,6 +49,8 @@ import RouterIcon           from '@mui/icons-material/Router';
 import KeyboardIcon         from '@mui/icons-material/Keyboard';
 import DeleteOutlineIcon    from '@mui/icons-material/DeleteOutline';
 import toast                from 'react-hot-toast';
+import ReactMarkdown        from 'react-markdown';
+import remarkGfm            from 'remark-gfm';
 
 // ─── Polyfill for crypto.randomUUID (not available over HTTP) ────────────────
 
@@ -290,21 +292,70 @@ function MessageBubble({ msg }) {
 
         <Box
           sx={{
-            px:              1.5,
-            py:              1,
-            borderRadius:    isUser
-              ? '16px 16px 4px 16px'
-              : '4px 16px 16px 16px',
-            bgcolor:         isUser ? ORANGE : PAPER_BG,
-            border:          isUser ? 'none' : `1px solid ${BORDER_CLR}`,
-            color:           isUser ? '#fff' : 'text.primary',
-            wordBreak:       'break-word',
-            whiteSpace:      'pre-wrap',
-            fontSize:        '0.85rem',
-            lineHeight:      1.5,
+            px:           1.5,
+            py:           1,
+            borderRadius: isUser ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
+            bgcolor:      isUser ? ORANGE : PAPER_BG,
+            border:       isUser ? 'none' : `1px solid ${BORDER_CLR}`,
+            color:        isUser ? '#fff' : 'text.primary',
+            wordBreak:    'break-word',
+            fontSize:     '0.85rem',
+            lineHeight:   1.5,
+            // Markdown element styles
+            '& p':        { m: 0, mb: 0.75, '&:last-child': { mb: 0 } },
+            '& ul, & ol': { mt: 0.25, mb: 0.75, pl: 2.5 },
+            '& li':       { mb: 0.25 },
+            '& strong':   { fontWeight: 700 },
+            '& em':       { fontStyle: 'italic' },
+            '& code':     {
+              fontFamily: 'monospace',
+              fontSize:   '0.8rem',
+              bgcolor:    isUser ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.07)',
+              px:         0.5,
+              py:         0.1,
+              borderRadius: 0.5,
+            },
+            '& pre': {
+              bgcolor:     isUser ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.35)',
+              p:           1,
+              borderRadius: 1,
+              overflowX:   'auto',
+              fontSize:    '0.78rem',
+              fontFamily:  'monospace',
+              '& code':    { bgcolor: 'transparent', p: 0 },
+            },
+            '& table': {
+              borderCollapse: 'collapse',
+              width:          '100%',
+              fontSize:       '0.78rem',
+              mt:             0.5,
+              mb:             0.75,
+            },
+            '& th, & td': {
+              border:  `1px solid ${BORDER_CLR}`,
+              px:      0.75,
+              py:      0.4,
+              textAlign: 'left',
+            },
+            '& th': { fontWeight: 700, bgcolor: 'rgba(255,255,255,0.05)' },
+            '& hr': { border: 'none', borderTop: `1px solid ${BORDER_CLR}`, my: 1 },
+            '& h1, & h2, & h3': { mt: 0.5, mb: 0.5, fontWeight: 700 },
+            '& a': { color: 'inherit', textDecoration: 'underline' },
+            '& blockquote': {
+              borderLeft: `3px solid ${BORDER_CLR}`,
+              pl: 1,
+              ml: 0,
+              opacity: 0.8,
+            },
           }}
         >
-          {msg.content}
+          {isUser ? (
+            msg.content
+          ) : (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {msg.content}
+            </ReactMarkdown>
+          )}
         </Box>
 
         {/* Structured data table (assistant only) */}
