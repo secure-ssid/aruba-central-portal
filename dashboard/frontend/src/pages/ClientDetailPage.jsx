@@ -536,47 +536,51 @@ function ConnectivityPath({ client }) {
 // ── Classification ────────────────────────────────────────────────────────────
 
 function ClassificationPanel({ client }) {
-  // Legacy Aruba Central monitoring API returns fingerprinting fields:
-  //   device_type → Category  (e.g. "Computing Systems")
-  //   os_type     → Function  (e.g. "Operating System")
-  //   manufacturer→ Vendor    (e.g. "Android")
-  //   os          → Model/OS  (e.g. "Android")
-  //   labels      → Tags      (e.g. ["IoT"])
-  // New API (network-monitoring v1 / v1alpha1) fields used as fallbacks:
-  //   clientConnectionType → Category  (e.g. "Wireless", "Wired")
-  //   authentication       → Function  (e.g. "Captive Portal")
-  //   keyManagement        → Function  (e.g. "WPA2_PSK")
-  //   capabilities         → Model/OS  (e.g. "802.11gn")
+  // New API (network-monitoring v1) returns camelCase fingerprinting fields:
+  //   clientCategory        → Category  (e.g. "Computing Systems", "Gaming & Casino")
+  //   clientFunction        → Function  (e.g. "Mobile Phone", "Gaming Platform")
+  //   clientVendor          → Vendor    (e.g. "Apple", "Nintendo")
+  //   clientManufacturer    → Manufacturer OUI (e.g. "Nintendo Co.,Ltd")
+  //   clientOperatingSystem → Model/OS  (e.g. "Apple iPhone 13 Pro")
+  //   clientTags            → Tags — comma-separated string (e.g. "Console,ml-IoT")
+  // Legacy API (/monitoring/v1) fallbacks:
+  //   device_type, os_type, manufacturer, os, labels[]
   const _safeStr = (v) => (v && !String(v).includes('/') ? String(v) : null);
   const fields = [
     {
       label: 'Category',
-      value: client?.device_type || client?.deviceType || client?.deviceCategory || client?.category
+      value: client?.clientCategory
+          || client?.device_type || client?.deviceType || client?.deviceCategory || client?.category
           || _safeStr(client?.clientConnectionType)
-          || _safeStr(client?.type)
           || '—',
     },
     {
       label: 'Function',
-      value: client?.os_type || client?.osType || client?.deviceFamily || client?.function
-          || client?.authentication
-          || client?.keyManagement
+      value: client?.clientFunction
+          || client?.os_type || client?.osType || client?.deviceFamily || client?.function
           || '—',
     },
     {
       label: 'Vendor',
-      value: client?.manufacturer || client?.vendor || '—',
+      value: client?.clientVendor || client?.clientManufacturer
+          || client?.manufacturer || client?.vendor || '—',
     },
     {
       label: 'Model/OS',
-      value: client?.os || client?.operatingSystem || client?.osVersion
+      value: client?.clientOperatingSystem
+          || client?.os || client?.operatingSystem || client?.osVersion
           || client?.capabilities
           || '—',
     },
   ];
 
-  // Tags from legacy `labels` array or new `tags` array
-  const chips = (client?.labels || client?.tags || []).filter(Boolean);
+  // Tags: new API returns `clientTags` as a comma-separated string; legacy uses `labels` array
+  const rawTags = client?.clientTags;
+  const chips = (
+    rawTags
+      ? String(rawTags).split(',').map((t) => t.trim()).filter(Boolean)
+      : (client?.labels || client?.tags || []).filter(Boolean)
+  );
 
   return (
     <Card>
