@@ -15,6 +15,28 @@ from .token_manager import TokenManager
 logger = logging.getLogger(__name__)
 
 
+class CentralAPIError(Exception):
+    """Structured error from Aruba Central API.
+
+    Captures the HTTP status code, the Central-specific ``error_code``
+    (e.g. ``DEVNOTFOUND``, ``RATE_LIMIT_EXCEEDED``, ``INVALID_TOKEN``),
+    a human-readable message, and the raw ``requests.Response`` object.
+    """
+
+    def __init__(
+        self,
+        status_code: int,
+        error_code: str = "",
+        message: str = "",
+        response: requests.Response | None = None,
+    ):
+        self.status_code = status_code
+        self.error_code = error_code
+        self.message = message
+        self.response = response
+        super().__init__(self.message or f"HTTP {status_code}: {error_code}")
+
+
 class CentralAPIClient:
     """Client for interacting with Aruba Central API using Bearer tokens."""
 
@@ -140,8 +162,22 @@ class CentralAPIClient:
 
         if response.status_code >= 400:
             logger.error(f"API Error {response.status_code}: {response.text[:500]}")
-
-        response.raise_for_status()
+            # Parse structured error from Central JSON response
+            error_code = ""
+            description = response.text[:500] if response.text else f"HTTP {response.status_code}"
+            try:
+                err_json = response.json()
+                if isinstance(err_json, dict):
+                    error_code = err_json.get("error_code", err_json.get("errorCode", ""))
+                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+            except (ValueError, TypeError):
+                pass
+            raise CentralAPIError(
+                status_code=response.status_code,
+                error_code=error_code,
+                message=description,
+                response=response,
+            )
 
         # Handle empty responses
         if not response.text or response.text.strip() == "":
@@ -186,7 +222,23 @@ class CentralAPIClient:
         logger.debug(f"POST {url}")
 
         response = self._request_with_retry("POST", url, json=data, params=params)
-        response.raise_for_status()
+
+        if response.status_code >= 400:
+            error_code = ""
+            description = response.text[:500] if response.text else f"HTTP {response.status_code}"
+            try:
+                err_json = response.json()
+                if isinstance(err_json, dict):
+                    error_code = err_json.get("error_code", err_json.get("errorCode", ""))
+                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+            except (ValueError, TypeError):
+                pass
+            raise CentralAPIError(
+                status_code=response.status_code,
+                error_code=error_code,
+                message=description,
+                response=response,
+            )
 
         # Handle empty responses (e.g., 204 No Content)
         if not response.text or response.text.strip() == "":
