@@ -197,6 +197,11 @@ export const deviceAPI = {
     return response.data;
   },
 
+  getDeviceEvents: async (serial, params = {}) => {
+    const response = await apiClient.get(`/devices/${serial}/events`, { params });
+    return response.data;
+  },
+
   getSwitchInterfaces: async (serial, siteId) => {
     try {
       const params = siteId ? { 'site-id': siteId } : {};
@@ -944,13 +949,6 @@ export const servicesAPI = {
     return response.data;
   },
 
-  getAuditLogs: async (limit = 100, offset = 0) => {
-    const response = await apiClient.get('/services/audit-logs', {
-      params: { limit, offset },
-    });
-    return response.data;
-  },
-
   getCapacity: async () => {
     const response = await apiClient.get('/services/capacity');
     return response.data;
@@ -1429,6 +1427,24 @@ export const greenlakeSubscriptionsAPI = {
 export const greenlakeWorkspacesAPI = {
   list: async () => {
     const response = await apiClient.get('/greenlake/workspaces');
+    return response.data;
+  },
+};
+
+/**
+ * LLM / AI Assistant config API
+ */
+export const llmAPI = {
+  status: async () => {
+    const response = await apiClient.get('/chat/llm-status');
+    return response.data;
+  },
+  getConfig: async () => {
+    const response = await apiClient.get('/chat/llm-config');
+    return response.data;
+  },
+  saveConfig: async (payload) => {
+    const response = await apiClient.post('/chat/llm-config', payload);
     return response.data;
   },
 };
