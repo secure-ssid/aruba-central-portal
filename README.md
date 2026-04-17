@@ -1,12 +1,32 @@
 # Aruba Central Portal
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
+[![Flask](https://img.shields.io/badge/flask-backend-black.svg)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-2496ed.svg)](DOCKER.md)
 
 Web dashboard and Python automation toolkit for HPE Aruba Central.
 
 - **Dashboard** — Flask + React SPA for devices, clients, monitoring, WLAN configuration, troubleshooting, and HPE GreenLake RBAC.
 - **Scripts** — reusable Python utilities for discovery, WLAN operations, user management, MSP workflows, and monitoring.
 - **Docker-first** — one command to run the portal anywhere Docker runs.
+
+---
+
+## Screenshots
+
+| Dashboard | Devices | Clients |
+|-----------|---------|---------|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Devices](docs/screenshots/devices.png) | ![Clients](docs/screenshots/clients.png) |
+
+| Client Detail | Network Monitor | Troubleshooting |
+|---------------|-----------------|-----------------|
+| ![Client Detail](docs/screenshots/client-detail.png) | ![Network Monitor](docs/screenshots/network-monitor.png) | ![Troubleshoot](docs/screenshots/troubleshoot.png) |
+
+| Configuration | Status | GreenLake |
+|---------------|--------|-----------|
+| ![Configuration](docs/screenshots/configuration.png) | ![Status](docs/screenshots/status.png) | ![GreenLake](docs/screenshots/greenlake.png) |
 
 ---
 

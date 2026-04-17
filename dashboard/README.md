@@ -2,11 +2,21 @@
 
 Full-stack web UI for HPE Aruba Central: Flask backend proxies the Aruba API, React SPA renders the UI.
 
-![Python](https://img.shields.io/badge/python-3.10+-green)
-![Node](https://img.shields.io/badge/node-18+-green)
-![License](https://img.shields.io/badge/license-MIT-blue)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![Node](https://img.shields.io/badge/node-18+-339933.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
+[![Flask](https://img.shields.io/badge/flask-backend-black.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](../LICENSE)
 
 This directory contains the dashboard application. The repo's top-level [README](../README.md) covers the whole project (dashboard + scripts + utils).
+
+---
+
+## Preview
+
+| Dashboard | Devices | GreenLake |
+|-----------|---------|-----------|
+| ![Dashboard](../docs/screenshots/dashboard.png) | ![Devices](../docs/screenshots/devices.png) | ![GreenLake](../docs/screenshots/greenlake.png) |
 
 ---
 
