@@ -1,153 +1,146 @@
-# Development Setup Guide
+# Windows / PowerShell Development Setup
 
-This guide will help you set up a local development environment for the Aruba Central Portal.
+Linux and macOS users: see [SETUP.md](SETUP.md). The general dev workflow is the same — this guide only covers Windows-specific steps.
+
+---
 
 ## Prerequisites
 
-1. **Python 3.10+** (✅ Already installed: Python 3.10.11)
-2. **Node.js 18+** (⚠️ Not installed - see below)
-3. **npm** (comes with Node.js)
+- **Python 3.10+** — [python.org](https://www.python.org/downloads/)
+- **Node.js 18+ LTS** — [nodejs.org](https://nodejs.org/)
+- **Git for Windows** — [git-scm.com](https://git-scm.com/download/win)
+- PowerShell 5.1 or 7+
 
-## Setup Steps
+Verify:
 
-### 1. Python Backend (✅ Already Set Up)
-
-The Python virtual environment has been created and dependencies installed.
-
-**To start the backend:**
 ```powershell
-.\start-backend.ps1
+python --version
+node --version
+npm --version
 ```
 
-Or manually:
+If `node` isn't recognized after install, see [troubleshooting/FIX_NODEJS_PATH.md](troubleshooting/FIX_NODEJS_PATH.md).
+
+---
+
+## Clone and Install
+
 ```powershell
+git clone https://github.com/secure-ssid/aruba-central-portal.git
+cd aruba-central-portal
+
+python -m venv venv
 .\venv\Scripts\Activate.ps1
-cd dashboard\backend
-$env:FLASK_ENV="development"
-$env:FLASK_APP="app.py"
-python -m flask run --host=0.0.0.0 --port=1344 --debug
-```
 
-The backend API will be available at: **http://localhost:5000** (frontend proxies to it)
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
-### 2. Node.js Frontend (⚠️ Needs Setup)
-
-**Install Node.js:**
-1. Download from: https://nodejs.org/ (LTS version recommended)
-2. Install with default options
-3. Restart your terminal/PowerShell
-
-**After installing Node.js, set up the frontend:**
-```powershell
 cd dashboard\frontend
 npm install
+cd ..\..
 ```
 
-**To start the frontend:**
+> If `Activate.ps1` is blocked, allow signed scripts for this session:
+> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+
+---
+
+## Run
+
+Helper scripts live under `scripts/ops/windows/`:
+
 ```powershell
-.\start-frontend.ps1
+.\scripts\ops\windows\start-dev.ps1          # backend + frontend in two windows
+.\scripts\ops\windows\start-backend.ps1      # backend only
+.\scripts\ops\windows\start-frontend.ps1     # frontend only
 ```
 
-Or manually:
+Or run the services manually:
+
 ```powershell
-cd dashboard\frontend
+# Terminal 1 — backend
+.\venv\Scripts\Activate.ps1
+python .\dashboard\backend\app.py
+
+# Terminal 2 — frontend
+cd .\dashboard\frontend
 npm run dev
 ```
 
-The frontend will be available at: **http://localhost:1344**
+Open `http://localhost:1344`. The Vite dev server proxies `/api/*` to Flask, so both show up on the same URL.
 
-### 3. Start Both Services
+---
 
-**Option 1: Use the convenience script (opens separate windows):**
+## Configure Credentials
+
+Complete the in-app **Setup Wizard** at `http://localhost:1344`. It writes the required values to `.env` in the repo root:
+
+```
+ARUBA_BASE_URL
+ARUBA_CLIENT_ID
+ARUBA_CLIENT_SECRET
+ARUBA_CUSTOMER_ID
+```
+
+Optional variables (GreenLake RBAC, logging, etc.) are listed in [ENV_VARIABLES.md](ENV_VARIABLES.md).
+
+---
+
+## Tests and Quality
+
 ```powershell
-.\start-dev.ps1
+.\venv\Scripts\Activate.ps1
+pytest                        # full suite
+pytest --cov=utils            # with coverage
+python -m ruff check utils tests scripts
+python -m black utils tests scripts
+python -m mypy utils --ignore-missing-imports
 ```
 
-**Option 2: Run in separate terminals:**
-- Terminal 1: `.\start-backend.ps1` (runs on port 5000)
-- Terminal 2: `.\start-frontend.ps1` (runs on port 1344, proxies /api to backend)
+Or use the repo `Makefile` via WSL / Git Bash:
 
-## Development Workflow
-
-1. **Backend changes**: The Flask server will auto-reload when you save Python files
-2. **Frontend changes**: Vite will hot-reload React components automatically
-3. **API calls**: Frontend at `localhost:1344` proxies `/api/*` requests to backend at `localhost:5000`
-
-## Configuration
-
-The `.env` file in the project root contains your Aruba Central API credentials. You can configure these through the web interface at `http://localhost:1344` (Setup Wizard) or edit the file directly.
-
-**Required environment variables:**
-- `ARUBA_BASE_URL` - Aruba Central API base URL
-- `ARUBA_CLIENT_ID` - Your API client ID
-- `ARUBA_CLIENT_SECRET` - Your API client secret
-- `ARUBA_CUSTOMER_ID` - Your customer ID
-
-## Project Structure
-
-```
-aruba-central-portal/
-├── dashboard/
-│   ├── backend/          # Flask API server
-│   │   └── app.py        # Main Flask application
-│   └── frontend/         # React frontend
-│       ├── src/          # React source code
-│       └── package.json  # Node.js dependencies
-├── venv/                 # Python virtual environment
-├── .env                  # Environment variables (API credentials)
-├── start-backend.ps1     # Backend startup script
-├── start-frontend.ps1    # Frontend startup script
-└── start-dev.ps1        # Start both services
+```bash
+make test
+make all
 ```
 
-## Troubleshooting
+---
 
-### Backend Issues
+## Common Issues
 
-**Port 1344 already in use:**
+**Port 1344 already in use**
+
 ```powershell
-# Find what's using the port
 netstat -ano | findstr :1344
-# Kill the process (replace PID with actual process ID)
 taskkill /PID <PID> /F
 ```
 
-**Module not found errors:**
+See [troubleshooting/FIX_PORT_1344.md](troubleshooting/FIX_PORT_1344.md) for more.
+
+**Node.js not found after install** — [troubleshooting/FIX_NODEJS_PATH.md](troubleshooting/FIX_NODEJS_PATH.md).
+
+**Module not found**
+
 ```powershell
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pip install -r dashboard\backend\requirements.txt
+pip install -r requirements-dev.txt
 ```
 
-### Frontend Issues
+**`npm install` fails**
 
-**Node.js not found:**
-- Install Node.js from https://nodejs.org/
-- Restart your terminal after installation
-
-**npm install fails:**
 ```powershell
-cd dashboard\frontend
+cd .\dashboard\frontend
+Remove-Item -Recurse -Force node_modules, package-lock.json
 npm cache clean --force
 npm install
 ```
 
-**Port 1344 already in use:**
-- Check what's using the port: `netstat -ano | findstr :1344`
-- Kill the process if needed: `taskkill /PID <PID> /F`
-- Or change the port in `dashboard/frontend/vite.config.js`
+---
 
-## Next Steps
+## Related
 
-1. Install Node.js if you haven't already
-2. Run `.\start-dev.ps1` to start both services
-3. Open `http://localhost:1344` in your browser
-4. Use the Setup Wizard to configure your Aruba Central API credentials
-5. Start coding! 🚀
-
-## Port Configuration
-
-- **Frontend**: http://localhost:1344 (Vite dev server)
-- **Backend API**: http://localhost:5000 (Flask API, proxied by frontend)
-- **Docker Production**: http://localhost:1344 (backend serves built frontend)
-
+- [SETUP.md](SETUP.md) — Linux/macOS equivalent
+- [../DOCKER.md](../DOCKER.md) — Docker workflow
+- [ENV_VARIABLES.md](ENV_VARIABLES.md) — variable reference
+- [CONFIGURATION.md](CONFIGURATION.md) — authentication flows and token cache

@@ -440,7 +440,7 @@ access_token = token_manager.get_access_token()
 
 ### Token Caching
 
-Tokens are cached to `.token_cache.json` to avoid rate limits:
+Tokens are cached to `.token_cache_central.json` to avoid rate limits:
 
 ```json
 {

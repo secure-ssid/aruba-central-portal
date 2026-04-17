@@ -1,293 +1,116 @@
-# HPE GreenLake Role Architecture
+# Roles and Permissions
 
-## Overview
+Aruba Central uses a **two-tier role system** when fronted by HPE GreenLake:
 
-The Aruba Central Portal integrates with a **two-tier role system** that combines HPE GreenLake platform roles with Aruba Central service roles. Understanding this architecture is critical for proper user access management.
+- **Tier 1 — Platform roles** control GreenLake infrastructure (workspaces, users, devices, subscriptions).
+- **Tier 2 — Service roles** control what a user can do *inside* Aruba Central (networks, APs, switches, sites).
 
----
-
-## Two-Tier Role System
+A user needs a role in both tiers to fully use the portal.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    HPE GREENLAKE PLATFORM                   │
-│                                                             │
-│  ┌───────────────────────────────────────────────────────┐ │
-│  │ TIER 1: Platform Roles (Infrastructure Access)        │ │
-│  │                                                       │ │
-│  │  Controls: Workspaces, Users, Devices, Subscriptions │ │
-│  │  Roles:    Administrator, Operator, Observer          │ │
-│  │  Managed:  HPE GreenLake IAM & SCIM APIs              │ │
-│  └───────────────────────────────────────────────────────┘ │
-│                            │                                │
-│                            │                                │
-│  ┌───────────────────────────────────────────────────────┐ │
-│  │ TIER 2: Service Roles (Application Access)           │ │
-│  │                                                       │ │
-│  │  Service:  Aruba Central Network Management          │ │
-│  │  Controls: Networks, APs, Switches, Clients, Sites   │ │
-│  │  Roles:    Aruba Central Admin, Workspace Admin, etc │ │
-│  │  Managed:  Aruba Central RBAC APIs                   │ │
-│  └───────────────────────────────────────────────────────┘ │
-│                                                             │
+│ HPE GreenLake                                               │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Tier 1 — Platform Roles                                 │ │
+│ │   Administrator / Operator / Observer                   │ │
+│ │   Scope: workspaces, users, devices, subscriptions      │ │
+│ │   APIs: /authorization/v1/*, /identity/v2beta1/scim/v2/*│ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                          │                                  │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Tier 2 — Aruba Central Service Roles                    │ │
+│ │   Aruba Central Admin / Workspace Admin / Monitor / ... │ │
+│ │   Scope: networks, APs, switches, sites, labels         │ │
+│ │   APIs: /platform/rbac/v1/*                             │ │
+│ └─────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Tier 1: HPE GreenLake Platform Roles
+## Tier 1 — Platform Roles
 
-Platform roles control access to **HPE GreenLake infrastructure resources** across all services.
+| Role          | Permissions           | Typical user                              |
+|---------------|-----------------------|-------------------------------------------|
+| Administrator | View / Edit / Delete  | Full platform management                  |
+| Operator      | View / Edit           | Day-to-day operations, no destructive ops |
+| Observer      | View only             | Monitoring, reporting, auditing           |
 
-### Available Platform Roles
+**Administrator** can create/delete workspaces, invite and remove users, assign roles, move devices, transfer subscriptions, view audit logs.
 
-| Role | Permissions | Use Case |
-|------|-------------|----------|
-| **Administrator** | View, Edit, Delete | Full platform management - can manage workspaces, users, subscriptions, devices |
-| **Operator** | View, Edit | Day-to-day operations - can configure but not delete critical resources |
-| **Observer** | View only | Read-only access - monitoring, reporting, auditing |
+**Operator** can modify workspace settings and user info, reassign devices — but can't delete workspaces or users.
 
-### Platform Role Capabilities
+**Observer** is read-only across all platform resources, including report export.
 
-**Administrator** can:
-- Create, update, delete workspaces (tenants)
-- Invite, modify, remove users
-- Assign platform and service roles to users
-- Manage device inventory
-- Subscribe devices to services
-- Transfer subscriptions between tenants (MSP)
-- View all audit logs and activity
+### Assigning Platform Roles
 
-**Operator** can:
-- View all platform resources
-- Modify workspace settings
-- Update user information
-- Reassign devices
-- Cannot delete workspaces or users
+- **API:** `POST /authorization/v1/role-assignments`
+- **UI:** `/gl/roles` (GLRolesPage)
+- **SCIM:** `/identity/v2beta1/scim/v2/Groups`
 
-**Observer** can:
-- View workspaces, users, devices, subscriptions
-- Export reports
-- Cannot make any modifications
-
-### Platform Role Assignment
-
-Platform roles are assigned via:
-- **API:** HPE GreenLake IAM API (`/authorization/v1/role-assignments`)
-- **UI:** GLRolesPage (new page created in this update)
-- **SCIM:** SCIM Groups API (`/identity/v2beta1/scim/v2/Groups`)
+Requires `GL_RBAC_CLIENT_ID` / `GL_RBAC_CLIENT_SECRET` in the environment.
 
 ---
 
-## Tier 2: Aruba Central Service Roles
+## Tier 2 — Aruba Central Service Roles
 
-Service roles control access to **Aruba Central network management features** within a workspace.
+Service roles are scoped by **application**, **groups**, **sites**, and **labels** inside a workspace.
 
-### Available Service Roles
+| Application       | Role                        | Scope                            | What it grants                         |
+|-------------------|-----------------------------|----------------------------------|----------------------------------------|
+| `nms`             | Aruba Central Administrator | allgroups / allsites / alllabels | Full network configuration             |
+| `account_setting` | Workspace Administrator     | allgroups                        | Account / workspace configuration      |
+| `monitoring`      | Network Monitor             | selected groups                  | Read-only monitoring                   |
+| `guest`           | Guest Manager               | specific sites                   | Guest WiFi management                  |
 
-| Application | Role Name | Scope | Permissions |
-|-------------|-----------|-------|-------------|
-| `nms` | Aruba Central Administrator | allgroups, allsites, alllabels | Full network management access |
-| `account_setting` | Workspace Administrator | allgroups | Account/workspace configuration |
-| `monitoring` | Network Monitor | selected groups | Read-only network monitoring |
-| `guest` | Guest Manager | specific sites | Guest WiFi management only |
+**Aruba Central Administrator** (`nms`) manages APs, switches, gateways, controllers, WLANs, VLANs, and firewall rules, plus troubleshooting tools — across every group/site/label in the workspace.
 
-### Service Role Capabilities
+**Workspace Administrator** (`account_setting`) manages SSO, RADIUS, API clients, subscriptions, and licensing. Cannot touch network devices.
 
-**Aruba Central Administrator** (`nms` application):
-- Full access to network configuration
-- Manage APs, switches, gateways, controllers
-- Configure WLANs, VLANs, firewall rules
-- View and configure all groups, sites, labels
-- Troubleshooting tools and diagnostics
+### Scope Values
 
-**Workspace Administrator** (`account_setting` application):
-- Manage workspace settings
-- Configure authentication (SSO, RADIUS)
-- API client management
-- Subscription and license management
-- Cannot modify network devices directly
+- Groups: `allgroups` or explicit list of group IDs
+- Sites: `allsites` or explicit list of site IDs
+- Labels: `alllabels` or explicit list of label IDs
 
-### Service Role Assignment
+### Assigning Service Roles
 
-Service roles are assigned via:
-- **API:** Aruba Central RBAC API (`/platform/rbac/v1/roles`)
-- **UI:** UsersPage and GLUsersPage (enhanced)
-- **Scope:** Can be restricted to specific groups, sites, or labels
+- **API:** `/platform/rbac/v1/users/{username}` (see [API Reference](#api-reference))
+- **UI:** `/users` (UsersPage), `/gl/users` (GLUsersPage)
 
 ---
 
-## How the Two Tiers Work Together
+## Example Role Combinations
 
-### Required Roles for Full Access
-
-A user needs **BOTH** a platform role and a service role to fully use Aruba Central:
-
-```
-User Access Flow:
-┌─────────────────────────────────────────────────────────────┐
-│ 1. Platform Role Check                                       │
-│    Does user have GreenLake platform role?                   │
-│    └─> NO  → Access Denied (cannot enter workspace)          │
-│    └─> YES → Proceed to Step 2                               │
-└─────────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│ 2. Service Role Check                                        │
-│    Does user have Aruba Central service role?                │
-│    └─> NO  → Limited Access (can view workspace, no network) │
-│    └─> YES → Full Access (can manage network)                │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Example User Configurations
-
-**Example 1: Network Administrator**
-- Platform Role: **Administrator**
-- Service Role: **Aruba Central Administrator (nms)**
-- Capabilities:
-  - ✅ Manage workspaces, users, devices
-  - ✅ Full network configuration access
-  - ✅ Assign roles to other users
-  - ✅ Subscribe devices to Aruba Central
-
-**Example 2: Network Operator**
-- Platform Role: **Operator**
-- Service Role: **Aruba Central Administrator (nms)**
-- Capabilities:
-  - ✅ Full network configuration access
-  - ✅ Modify workspace settings
-  - ❌ Cannot delete workspaces
-  - ❌ Cannot remove users
-
-**Example 3: Workspace Manager (No Network Access)**
-- Platform Role: **Administrator**
-- Service Role: **Workspace Administrator (account_setting)**
-- Capabilities:
-  - ✅ Manage workspaces, users, devices
-  - ✅ Configure SSO, API clients
-  - ❌ Cannot configure network devices
-  - ❌ Cannot access network monitoring
-
-**Example 4: Read-Only Auditor**
-- Platform Role: **Observer**
-- Service Role: **Network Monitor (monitoring)**
-- Capabilities:
-  - ✅ View all platform resources
-  - ✅ View network status and health
-  - ✅ Export reports
-  - ❌ Cannot modify anything
+| User type             | Platform       | Service                       | Can do                                                |
+|-----------------------|----------------|-------------------------------|-------------------------------------------------------|
+| Network admin         | Administrator  | Aruba Central Administrator   | Everything                                            |
+| Network operator      | Operator       | Aruba Central Administrator   | All network config; cannot delete workspaces / users  |
+| Workspace manager     | Administrator  | Workspace Administrator       | Manage users/workspace/SSO; no network config         |
+| Read-only auditor     | Observer       | Network Monitor               | View-only everywhere; export reports                  |
+| Limited ops           | Operator       | `nms` with specific groups    | Manage only assigned groups/sites                     |
 
 ---
 
-## MSP Multi-Tenant Considerations
+## MSP / Multi-Tenant
 
-### Workspace Isolation
+In MSP deployments each customer gets their own workspace, and a user can have **different** roles in different workspaces.
 
-In MSP (Managed Service Provider) environments:
-- Each customer gets their own **workspace** (tenant)
-- Roles are scoped **per workspace**
-- A user can have different roles in different workspaces
-
-**Example:**
 ```
-User: john@msp.com
-
-Workspace "Customer A":
-  Platform Role: Administrator
-  Service Role: Aruba Central Administrator
-
-Workspace "Customer B":
-  Platform Role: Observer
-  Service Role: Network Monitor
-
-Workspace "Customer C":
-  No access (not assigned to this workspace)
+john@msp.com
+  Workspace Customer-A  →  Platform: Administrator | Service: Aruba Central Administrator
+  Workspace Customer-B  →  Platform: Observer      | Service: Network Monitor
+  Workspace Customer-C  →  (no access)
 ```
 
-### Token Exchange for MSP
-
-When an MSP technician switches between customer workspaces:
-1. **Platform authentication** remains the same (MSP account)
-2. **Access token is exchanged** for the target workspace
-3. **Roles are re-evaluated** for the new workspace context
-4. **API calls** automatically target the new workspace
-
-This is handled by the MSP Token Transfer functionality (see GLWorkspacesPage).
+When an MSP user switches workspaces the access token is **exchanged** for the target workspace, roles are re-evaluated, and all subsequent API calls target the new tenant. The portal implements this in `GLWorkspacesPage` via the GreenLake token-exchange endpoint.
 
 ---
 
-## Role Assignment Best Practices
+## Assignment Example (JSON)
 
-### 1. Principle of Least Privilege
-- Assign the minimum role required for the job
-- Use Observer role for monitoring-only users
-- Reserve Administrator role for senior staff
+**Full admin:**
 
-### 2. Separate Duties
-- Network configuration: Aruba Central Administrator
-- User management: Platform Administrator
-- Monitoring & reporting: Observer + Network Monitor
-- Guest WiFi management: Guest Manager only
-
-### 3. Regular Audits
-- Review role assignments quarterly
-- Remove access for departed employees immediately
-- Audit logs available via HPE GreenLake Console
-
-### 4. Service Accounts
-- API clients should have minimal required roles
-- Use Operator instead of Administrator when possible
-- Rotate credentials regularly
-
----
-
-## API Reference
-
-### Platform Role APIs (HPE GreenLake)
-
-**List Platform Roles:**
-```bash
-GET /authorization/v1/roles
-Authorization: Bearer {access_token}
-```
-
-**Assign Platform Role to User:**
-```bash
-POST /authorization/v1/role-assignments
-Content-Type: application/json
-
-{
-  "userId": "user@example.com",
-  "roleId": "greenlake_administrator",
-  "scope": {
-    "workspaceId": "workspace-123"
-  }
-}
-```
-
-**Get User's Platform Roles:**
-```bash
-GET /authorization/v1/users/{userId}/role-assignments
-Authorization: Bearer {access_token}
-```
-
-### Service Role APIs (Aruba Central)
-
-**List Aruba Central Roles:**
-```bash
-GET /platform/rbac/v1/roles
-Authorization: Bearer {access_token}
-```
-
-**Get User's Service Roles:**
-```bash
-GET /platform/rbac/v1/users/{username}
-Authorization: Bearer {access_token}
-```
-
-**Response Example:**
 ```json
 {
   "applications": [
@@ -306,8 +129,26 @@ Authorization: Bearer {access_token}
       "name": "account_setting",
       "info": [{
         "role": "Workspace Administrator",
+        "scope": {"groups": ["allgroups"]}
+      }]
+    }
+  ]
+}
+```
+
+**Scoped operator:**
+
+```json
+{
+  "applications": [
+    {
+      "name": "nms",
+      "info": [{
+        "role": "Network Operations",
         "scope": {
-          "groups": ["allgroups"]
+          "groups": ["group1", "group2"],
+          "sites": ["site-sfo"],
+          "labels": []
         }
       }]
     }
@@ -317,112 +158,82 @@ Authorization: Bearer {access_token}
 
 ---
 
-## UI Implementation
+## API Reference
 
-### Pages for Role Management
+### Platform (GreenLake IAM)
 
-**GLRolesPage** (NEW):
-- View all available platform roles
-- See role descriptions and permissions
-- Assign platform roles to users
-- Distinction from Aruba Central service roles
+```http
+GET    /authorization/v1/roles
+POST   /authorization/v1/role-assignments
+GET    /authorization/v1/users/{userId}/role-assignments
+```
 
-**GLUsersPage** (ENHANCED):
-- Shows **both** platform and service roles for each user
-- Two-column layout: Platform Roles | Service Roles
-- Click user to see detailed role assignments
-- Edit button to modify either tier of roles
+```http
+POST /authorization/v1/role-assignments
+{
+  "userId": "user@example.com",
+  "roleId": "greenlake_administrator",
+  "scope": {"workspaceId": "workspace-123"}
+}
+```
 
-**UsersPage** (EXISTING):
-- Focused on Aruba Central service role management
-- SCIM-based user provisioning
-- Group membership (maps to roles)
+### Service (Aruba Central RBAC)
+
+```http
+GET    /platform/rbac/v1/roles
+GET    /platform/rbac/v1/users
+GET    /platform/rbac/v1/users/{username}
+POST   /platform/rbac/v1/users
+PATCH  /platform/rbac/v1/users/{username}
+DELETE /platform/rbac/v1/users/{username}
+```
+
+Pagination uses `limit` and `offset`.
+
+---
+
+## UI Pages
+
+| Page                | Purpose                                                                 |
+|---------------------|-------------------------------------------------------------------------|
+| `/users`            | Aruba Central service role management (SCIM + group membership)         |
+| `/gl/users`         | Combined view of platform + service roles per user                      |
+| `/gl/roles`         | Browse and assign platform roles                                        |
+| `/gl/workspaces`    | Switch between workspaces in MSP setups                                 |
+| `/gl/permissions`   | Platform permission catalogue                                           |
+
+---
+
+## Best Practices
+
+- **Least privilege** — start users at Observer / Monitor; escalate only when needed.
+- **Separate duties** — don't hand out both platform Administrator *and* service Administrator unless the user truly needs both.
+- **Scope by group/site** — full-workspace scope is rarely necessary.
+- **Service accounts** — dedicated identities for automation with the minimum role required; rotate secrets.
+- **Audit quarterly** — review `/authorization/v1/users/*/role-assignments` and remove departed employees.
 
 ---
 
 ## Troubleshooting
 
-### User Cannot Access Aruba Central
+**User can sign in but sees no devices**
+1. `GET /authorization/v1/users/{userId}/role-assignments` — assign Observer or higher if empty.
+2. `GET /platform/rbac/v1/users/{username}` — assign an `nms` service role if empty.
 
-**Symptom:** User can log in to HPE GreenLake but sees no network devices
+**User can view but not edit**
+- Platform role is likely Observer → upgrade to Operator/Administrator.
+- Service role is likely Network Monitor → assign Aruba Central Administrator.
 
-**Diagnosis:**
-1. Check platform role: `GET /authorization/v1/users/{userId}/role-assignments`
-   - If no role: Assign Observer or higher
-2. Check service role: `GET /platform/rbac/v1/users/{username}`
-   - If no `nms` application role: Assign Aruba Central Administrator
-
-### User Can View But Not Edit
-
-**Symptom:** User can see devices but gets permission errors when trying to configure
-
-**Diagnosis:**
-1. Check platform role: Likely **Observer** (view-only)
-   - Solution: Upgrade to Operator or Administrator
-2. Check service role: Likely **Network Monitor** (view-only)
-   - Solution: Assign Aruba Central Administrator role
-
-### MSP Cannot Switch Between Tenants
-
-**Symptom:** Workspace switching fails or shows "Access Denied"
-
-**Diagnosis:**
-1. Check token exchange implementation in backend
-2. Verify user has role assignment in target workspace
-3. Check GreenLake client credentials are configured
-4. Review workspace switching logs in backend
-
-**Fix:** Ensure `GL_RBAC_CLIENT_ID` and `GL_RBAC_CLIENT_SECRET` are set in environment
+**MSP workspace switching fails**
+- Confirm `GL_RBAC_CLIENT_ID` / `GL_RBAC_CLIENT_SECRET` are set.
+- Check that the user has a role in the target workspace.
+- Run `./tools/diagnose-greenlake.sh` for end-to-end diagnostics.
 
 ---
 
-## Migration from Single-Tier to Two-Tier
+## Related
 
-If you were previously using only Aruba Central RBAC:
-
-### Before (Single Tier):
-```
-User john@example.com:
-  - Aruba Central Administrator (nms)
-  - Full access to everything
-```
-
-### After (Two Tier):
-```
-User john@example.com:
-  Platform:
-    - Role: Administrator
-    - Scope: All workspaces
-  Service:
-    - Application: nms
-    - Role: Aruba Central Administrator
-    - Scope: allgroups, allsites, alllabels
-```
-
-### Migration Steps:
-1. Audit existing Aruba Central users
-2. Assign appropriate platform roles (default: Operator)
-3. Retain existing service role assignments
-4. Test access for each user
-5. Update documentation and training materials
-
----
-
-## Related Documentation
-
-- [ROLES_AND_PERMISSIONS.md](./ROLES_AND_PERMISSIONS.md) - Aruba Central RBAC details
-- [/aruba-api-docs/greenlake-authorization-apis.md](../aruba-api-docs/greenlake-authorization-apis.md) - Platform role API reference
-- [/aruba-api-docs/greenlake-identity-apis.md](../aruba-api-docs/greenlake-identity-apis.md) - SCIM user/group management
-- [/aruba-api-docs/greenlake-workspace-apis.md](../aruba-api-docs/greenlake-workspace-apis.md) - MSP tenant management
-
----
-
-## Summary
-
-✅ **Platform roles** control access to GreenLake infrastructure (workspaces, users, devices)
-✅ **Service roles** control access within Aruba Central (network configuration)
-✅ **Both are required** for full functionality
-✅ **Scope independently** - platform role per workspace, service role per group/site
-✅ **MSP support** - different roles in different customer workspaces
-
-For questions or issues, refer to the API documentation or contact HPE support.
+- [greenlake/aruba-api-docs/greenlake-authorization-apis.md](greenlake/aruba-api-docs/greenlake-authorization-apis.md) — platform role API
+- [greenlake/aruba-api-docs/greenlake-identity-apis.md](greenlake/aruba-api-docs/greenlake-identity-apis.md) — SCIM users and groups
+- [greenlake/aruba-api-docs/greenlake-workspace-apis.md](greenlake/aruba-api-docs/greenlake-workspace-apis.md) — MSP workspaces
+- [USER_MANAGEMENT_GUIDE.md](USER_MANAGEMENT_GUIDE.md) — script-based user management

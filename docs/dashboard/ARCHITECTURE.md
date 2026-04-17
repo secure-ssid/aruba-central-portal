@@ -141,7 +141,7 @@
      │                              │    (Access token + refresh)  │
      │                              │                              │
      │                              │ 4. Cache token               │
-     │                              │    (.token_cache.json)       │
+     │                              │    (.token_cache_central.json)       │
      │                              │                              │
      │                              │ 5. Generate session ID       │
      │                              │    (secrets.token_urlsafe)   │
@@ -382,7 +382,7 @@ app.py (Flask Application)
 ┌──────────────────────────────────────────────────────┐
 │              Token Generation & Caching               │
 │                                                       │
-│  .token_cache.json (Backend server only)             │
+│  .token_cache_central.json (Backend server only)             │
 │  ├── access_token                                    │
 │  ├── refresh_token                                   │
 │  └── expires_at (timestamp)                          │

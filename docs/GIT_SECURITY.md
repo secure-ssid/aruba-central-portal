@@ -9,7 +9,7 @@ This document provides guidance on maintaining security when working with git re
 The following files and patterns are already excluded via `.gitignore`:
 
 - `.env*` - Environment variable files
-- `*.token_cache.json` - Token cache files
+- `*.token_cache_central.json` - Token cache files
 - `*.key`, `*.pem`, `*.crt` - Certificate and key files
 - `credentials.json`, `secrets.json` - Credential files
 - `*.csv`, `*.xlsx` - Exported data files

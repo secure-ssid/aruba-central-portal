@@ -1,440 +1,205 @@
-# Configuration Guide
+# Configuration
 
-This document provides detailed information about configuring the Aruba Central API automation framework.
+The portal loads configuration from three sources, highest priority first:
 
-## Configuration Overview
+1. Environment variables (process env or `.env`)
+2. `config.yaml` in the repo root
+3. Hard-coded defaults in `utils/config.py`
 
-The framework uses a two-tier configuration system:
+Environment variables always win, so you can override anything per-deployment without touching files.
 
-1. **config.yaml** - Base configuration file for application settings
-2. **Environment variables** - Override config.yaml values (takes precedence)
+---
 
-Environment variables always take precedence over config.yaml settings, making it easy to adjust configuration for different environments without modifying files.
+## Required Settings
 
-## Environment Variables
+| Variable               | Purpose                                             |
+|------------------------|-----------------------------------------------------|
+| `ARUBA_BASE_URL`       | Regional API endpoint                               |
+| `ARUBA_CLIENT_ID`      | OAuth2 client ID                                    |
+| `ARUBA_CLIENT_SECRET`  | OAuth2 client secret                                |
+| `ARUBA_CUSTOMER_ID`    | Customer/tenant ID                                  |
 
-### Required Variables
+The in-app **Setup Wizard** (`http://<host>:1344`) writes these to `.env` for you.
 
-These variables are **required** for the application to function:
+Full list of optional variables: [ENV_VARIABLES.md](ENV_VARIABLES.md).
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `ARUBA_CLIENT_ID` | OAuth2 client ID from Aruba Central | `abc123def456` |
-| `ARUBA_CLIENT_SECRET` | OAuth2 client secret from Aruba Central | `xyz789uvw012` |
-| `ARUBA_CUSTOMER_ID` | Your Aruba Central customer ID | `customer123` |
+---
 
-### Optional Variables
+## Regional Base URLs
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ARUBA_BASE_URL` | API base URL for your region | `https://apigw-prod2.central.arubanetworks.com` |
-| `ARUBA_ACCESS_TOKEN` | Pre-existing access token (bypasses OAuth2) | None |
-| `ARUBA_USERNAME` | Username for password grant OAuth2 flow | None |
-| `ARUBA_PASSWORD` | Password for password grant OAuth2 flow | None |
+| Region  | URL                                                   |
+|---------|-------------------------------------------------------|
+| US East | `https://apigw-prod2.central.arubanetworks.com`       |
+| US West | `https://apigw-uswest4.central.arubanetworks.com`     |
+| EU      | `https://apigw-eucentral3.central.arubanetworks.com`  |
+| APAC    | `https://apigw-apeast1.central.arubanetworks.com`     |
 
-### Setting Up Environment Variables
+Using the wrong region returns `401 Unauthorized` on every request.
 
-#### Method 1: .env File (Recommended)
+---
 
-1. Copy the example file:
-```bash
-cp .env.example .env
-```
+## `config.yaml`
 
-2. Edit `.env` with your credentials:
-```bash
-ARUBA_BASE_URL=https://apigw-prod2.central.arubanetworks.com
-ARUBA_CLIENT_ID=your_client_id_here
-ARUBA_CLIENT_SECRET=your_client_secret_here
-ARUBA_CUSTOMER_ID=your_customer_id_here
-```
-
-3. The `.env` file is automatically loaded by the application
-
-**Security Note**: Never commit `.env` to version control. It's already in `.gitignore`.
-
-#### Method 2: System Environment Variables
-
-Set environment variables in your shell:
-
-```bash
-# Linux/macOS
-export ARUBA_CLIENT_ID="your_client_id"
-export ARUBA_CLIENT_SECRET="your_client_secret"
-export ARUBA_CUSTOMER_ID="your_customer_id"
-
-# Windows (Command Prompt)
-set ARUBA_CLIENT_ID=your_client_id
-set ARUBA_CLIENT_SECRET=your_client_secret
-set ARUBA_CUSTOMER_ID=your_customer_id
-
-# Windows (PowerShell)
-$env:ARUBA_CLIENT_ID="your_client_id"
-$env:ARUBA_CLIENT_SECRET="your_client_secret"
-$env:ARUBA_CUSTOMER_ID="your_customer_id"
-```
-
-## Regional API Endpoints
-
-Choose the appropriate `ARUBA_BASE_URL` based on your Aruba Central cluster region:
-
-| Region | Base URL |
-|--------|----------|
-| **US East** | `https://apigw-prod2.central.arubanetworks.com` |
-| **US West** | `https://apigw-uswest4.central.arubanetworks.com` |
-| **Europe** | `https://apigw-eucentral3.central.arubanetworks.com` |
-| **APAC** | `https://apigw-apeast1.central.arubanetworks.com` |
-
-**Important**: Using the wrong region endpoint will result in authentication failures. Verify your region in the Aruba Central portal.
-
-## config.yaml Structure
-
-The `config.yaml` file provides default settings that can be overridden by environment variables.
-
-### Example config.yaml
+Provides non-secret defaults used by scripts and the dashboard. Secrets never live here.
 
 ```yaml
-# Aruba Central API Configuration
 aruba_central:
   base_url: "https://apigw-prod2.central.arubanetworks.com"
-  # client_id, client_secret, customer_id should be set in .env
+  # client_id / client_secret / customer_id must come from env
 
-# Logging configuration
 logging:
-  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-# Script-specific settings
-scripts:
-  device_inventory:
-    export_format: "json"  # json, csv, xlsx
-    include_offline: true
-
-  monitoring:
-    check_interval: 300  # seconds
-    alert_threshold: 90  # percentage
 ```
 
-### Configuration Hierarchy
+Add script-specific keys here as needed — every script loads this file via `utils.load_config()` and can read arbitrary nested values.
 
-Settings are loaded in this order (later overrides earlier):
+Create `config.local.yaml` for machine-specific overrides; it's git-ignored.
 
-1. Default values in code
-2. `config.yaml` file
-3. Environment variables (highest priority)
+---
 
-Example:
-- If `config.yaml` has `base_url: "https://example.com"`
-- And `.env` has `ARUBA_BASE_URL=https://production.com`
-- The application will use `https://production.com`
+## Authentication Flows
 
-## Authentication Methods
+`utils/token_manager.py` handles OAuth2 automatically. It picks a flow based on which variables are present.
 
-The framework supports two OAuth2 authentication flows:
+### Client Credentials (default)
 
-### 1. Client Credentials Flow (Recommended)
-
-Best for service-to-service authentication. Requires:
-- `ARUBA_CLIENT_ID`
-- `ARUBA_CLIENT_SECRET`
-- `ARUBA_CUSTOMER_ID`
+Service-to-service. Requires `ARUBA_CLIENT_ID`, `ARUBA_CLIENT_SECRET`, `ARUBA_CUSTOMER_ID`.
 
 ```python
 from utils import CentralAPIClient, TokenManager, load_config
 
-config = load_config()
-aruba_config = config["aruba_central"]
+cfg = load_config()["aruba_central"]
+tm = TokenManager(client_id=cfg["client_id"], client_secret=cfg["client_secret"])
+client = CentralAPIClient(base_url=cfg["base_url"], token_manager=tm)
 
-token_manager = TokenManager(
-    client_id=aruba_config["client_id"],
-    client_secret=aruba_config["client_secret"],
-)
-client = CentralAPIClient(
-    base_url=aruba_config["base_url"],
-    token_manager=token_manager,
-)
-# Authentication happens automatically via TokenManager
-response = client.get("/monitoring/v1/devices")
+devices = client.get("/monitoring/v1/devices")
 ```
 
-### 2. Password Grant Flow
+### Password Grant
 
-For user-based authentication. Requires:
-- `ARUBA_CLIENT_ID`
-- `ARUBA_CLIENT_SECRET`
-- `ARUBA_CUSTOMER_ID`
-- `ARUBA_USERNAME`
-- `ARUBA_PASSWORD`
+User-based. Also set `ARUBA_USERNAME` and `ARUBA_PASSWORD`. `TokenManager` detects them and switches flow.
 
-The client automatically detects which flow to use based on provided credentials.
+### Pre-existing Token
 
-### 3. Pre-existing Access Token
+If you already have a bearer token, set `ARUBA_ACCESS_TOKEN` and the OAuth dance is skipped.
 
-If you already have a valid access token:
-
-```bash
-ARUBA_ACCESS_TOKEN=your_existing_token
-```
-
-This bypasses OAuth2 authentication entirely.
+---
 
 ## Token Caching
 
-### Important: Rate Limiting
+Aruba Central allows **one new access token per 30 minutes per client**. The `TokenManager` caches the token on disk so restarts don't burn quota.
 
-**Aruba Central enforces strict rate limits: 1 new access token per 30 minutes.**
+- Cache file: `.token_cache_central.json` (project root; git-ignored)
+- Token lifetime: 2 hours (7200 s)
+- Safety buffer: 5 min — refreshes happen before actual expiry
+- Docker: the `token-cache` named volume mounts to `/app/data`
 
-To prevent hitting rate limits, the framework implements automatic token caching:
-
-### How Token Caching Works
-
-1. **First Authentication**: Requests new token, saves to `.token_cache.json`
-2. **Subsequent Requests**: Loads cached token automatically
-3. **Token Expiry**: Cached tokens are valid for 2 hours (7200 seconds)
-4. **Auto-refresh**: Automatically requests new token when cache expires
-5. **Safety Buffer**: 5-minute buffer prevents expiry during long operations
-
-### Token Cache File
-
-Location: `.token_cache.json` (in project root)
+### Format
 
 ```json
 {
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "expires_at": 1699564800.123,
+  "access_token": "eyJ0eXAiOi...",
+  "expires_at": 1734200000.0,
   "token_type": "Bearer"
 }
 ```
 
-**Security Note**: `.token_cache.json` is in `.gitignore`. Keep it secure as it contains valid access tokens.
+### When to clear
 
-### Best Practices
-
-**Let TokenManager handle authentication automatically:**
-
-```python
-# ✅ CORRECT - TokenManager handles token refresh automatically
-token_manager = TokenManager(client_id=..., client_secret=...)
-client = CentralAPIClient(base_url=..., token_manager=token_manager)
-response = client.get("/monitoring/v1/devices")  # Token injected automatically
-```
-
-### Troubleshooting Token Issues
-
-If you encounter authentication errors:
-
-1. **Check token cache**:
-```bash
-cat .token_cache.json
-```
-
-2. **Delete corrupted cache**:
-```bash
-rm .token_cache.json
-```
-
-3. **Verify credentials** in `.env`
-
-4. **Check rate limiting**: Wait 30 minutes if you've recently generated multiple tokens
-
-## Obtaining API Credentials
-
-### Step 1: Access Aruba Central
-
-1. Log in to [Aruba Central](https://central.arubanetworks.com)
-2. Navigate to **Account Home** → **Platform Integration** → **API Gateway**
-
-### Step 2: Create API Client
-
-1. Click **System Apps & Tokens**
-2. Click **Add Apps & Tokens**
-3. Select **System App** (for service accounts)
-4. Configure:
-   - **App Name**: Descriptive name (e.g., "Automation Framework")
-   - **App Type**: System
-   - **Scope**: Select required permissions (e.g., "Network operations", "Monitoring")
-
-### Step 3: Retrieve Credentials
-
-After creation, Aruba Central displays:
-- **Client ID**: Copy to `ARUBA_CLIENT_ID`
-- **Client Secret**: Copy to `ARUBA_CLIENT_SECRET` (shown only once!)
-- **Customer ID**: Found in **Account Home**
-
-**Important**: Client secrets are shown only once. Store securely.
-
-### Recommended API Scopes
-
-For full framework functionality, enable these scopes:
-- ✅ Network Operations (all)
-- ✅ Monitoring (read)
-- ✅ Configuration Management (all)
-- ✅ Device Management (all)
-
-Use least-privilege principle: only enable scopes your scripts require.
-
-## Security Best Practices
-
-### Credential Storage
-
-1. **Never commit credentials** to version control
-2. **Use environment variables** or `.env` file
-3. **Rotate credentials regularly** (every 90 days recommended)
-4. **Use separate credentials** for development, staging, and production
-5. **Audit API usage** regularly in Aruba Central portal
-
-### File Permissions
-
-Ensure sensitive files have restricted permissions:
+- `401 Unauthorized` repeatedly after a credential rotation
+- You regenerated the client secret in Aruba Central
+- The file is obviously corrupt
 
 ```bash
-chmod 600 .env
-chmod 600 .token_cache.json
+# Local
+rm .token_cache_central.json
+
+# Docker
+docker compose down
+docker volume rm aruba-central-portal_token-cache
+docker compose up -d
 ```
 
-### Access Control
+---
 
-- **Create dedicated service accounts** for automation (don't use personal accounts)
-- **Enable IP allowlisting** in Aruba Central if possible
-- **Monitor API logs** for suspicious activity
-- **Set up alerts** for failed authentication attempts
+## Dashboard Backend Config
 
-## Validation
+The Flask backend (`dashboard/backend/app.py`) reads:
 
-### Verify Configuration
+- `FLASK_ENV` — `production` (default) or `development`
+- `LOG_LEVEL` — defaults to `INFO`
+- `PUID` / `PGID` — container user (Docker only; default `1000:1000`)
+- `GL_RBAC_CLIENT_ID` / `GL_RBAC_CLIENT_SECRET` — enables `/gl/*` (GreenLake RBAC) pages
+- `GRAFANA_API_KEY` — allows Grafana to pull KPIs from `/api/grafana/kpis`
+- `OLLAMA_URL` / `OLLAMA_MODEL` — configure the built-in chat assistant backend
 
-Run this command to validate your configuration:
+HTTP response caching lives in `dashboard/backend/routes/helpers.py`:
 
-```python
-from utils import load_config
-config = load_config()
-print(config)
-```
+- `cached_get(path, ttl=...)` — tiered TTL cache for GET responses
+- `parallel_get(paths)` — ThreadPoolExecutor fan-out for parallel backend fetches
 
-### Test Authentication
+### Running Behind a Reverse Proxy
+
+Production deployments should terminate TLS at a reverse proxy (nginx / Traefik / Caddy) and forward to `localhost:1344`. See [DOCKER.md](../DOCKER.md#https-in-production) for an nginx example.
+
+Set `X-Forwarded-Proto` so Flask generates correct `https://` URLs.
+
+---
+
+## Security Checklist
+
+- [ ] `.env` is git-ignored (`git check-ignore .env`)
+- [ ] `chmod 600 .env .token_cache_central.json`
+- [ ] Production uses process env vars, not a committed `.env`
+- [ ] Credentials rotated at least every 90 days
+- [ ] OAuth2 scopes reduced to what you actually use
+- [ ] Reverse proxy terminates TLS in production
+- [ ] Separate credentials for dev / staging / prod
+
+---
+
+## Validating Your Setup
 
 ```python
 from utils import CentralAPIClient, TokenManager, load_config
 
-config = load_config()
-aruba_config = config["aruba_central"]
+cfg = load_config()["aruba_central"]
+tm = TokenManager(client_id=cfg["client_id"], client_secret=cfg["client_secret"])
+client = CentralAPIClient(base_url=cfg["base_url"], token_manager=tm)
 
-token_manager = TokenManager(
-    client_id=aruba_config["client_id"],
-    client_secret=aruba_config["client_secret"],
-)
-client = CentralAPIClient(
-    base_url=aruba_config["base_url"],
-    token_manager=token_manager,
-)
-
-# Test API call
 try:
-    response = client.get("/network-monitoring/v1alpha1/devices")
-    print("Authentication successful!")
-    print(f"Devices found: {response.get('count', 0)}")
-except Exception as e:
-    print(f"Authentication failed: {e}")
+    resp = client.get("/network-monitoring/v1alpha1/devices")
+    print(f"OK — {resp.get('count', 0)} device(s)")
+except Exception as exc:
+    print(f"FAIL — {exc}")
 ```
 
-## Common Issues
+Or use the diagnostic helpers:
 
-### Error: "401 Unauthorized"
-
-**Causes:**
-- Invalid credentials
-- Expired token (shouldn't happen with caching)
-- Wrong region endpoint
-- Insufficient API scopes
-
-**Solutions:**
-1. Verify credentials in `.env`
-2. Delete `.token_cache.json` and retry
-3. Check `ARUBA_BASE_URL` matches your region
-4. Verify API scopes in Aruba Central portal
-
-### Error: "429 Too Many Requests"
-
-**Cause:** Rate limiting (1 token per 30 minutes exceeded)
-
-**Solution:**
-1. Wait 30 minutes before retrying
-2. Ensure you're not calling `authenticate()` explicitly
-3. Verify token caching is working
-
-### Error: "Module not found"
-
-**Cause:** Virtual environment not activated or dependencies not installed
-
-**Solution:**
 ```bash
-source venv/bin/activate  # Activate venv
-pip install -r requirements.txt  # Install dependencies
+./scripts/ops/debug-setup.sh        # local setup sanity
+./tools/diagnose-greenlake.sh       # GreenLake RBAC
 ```
 
-### Configuration Not Loading
+---
 
-**Cause:** `.env` file not found or python-dotenv not installed
+## Common Errors
 
-**Solution:**
-```bash
-# Ensure .env exists
-ls -la .env
+| Error                         | Likely cause                                                 | Fix                                         |
+|-------------------------------|--------------------------------------------------------------|---------------------------------------------|
+| `401 Unauthorized`            | Wrong region, bad creds, or cached token invalid             | Check `ARUBA_BASE_URL`, delete `.token_cache_central.json`, re-verify creds |
+| `429 Too Many Requests`       | Hit the 30-min token issuance limit                          | Wait 30 min; make sure caching is on       |
+| `ModuleNotFoundError`         | venv not activated / deps not installed                      | `source venv/bin/activate && make install-dev` |
+| `.env` not loading            | `python-dotenv` missing or running from wrong cwd            | `pip install python-dotenv`; run from repo root |
+| `config.yaml not found`       | Running a script outside the repo                            | `cd` to the repo root or set `CONFIG_PATH`  |
 
-# Reinstall python-dotenv
-pip install python-dotenv
-```
+---
 
-## Environment-Specific Configuration
+## References
 
-### Development Environment
-
-Create `.env.development`:
-```bash
-ARUBA_BASE_URL=https://apigw-prod2.central.arubanetworks.com
-ARUBA_CLIENT_ID=dev_client_id
-ARUBA_CLIENT_SECRET=dev_secret
-ARUBA_CUSTOMER_ID=dev_customer
-```
-
-Load with:
-```python
-from dotenv import load_dotenv
-load_dotenv(".env.development")
-```
-
-### Production Environment
-
-Use system environment variables (not `.env` files):
-```bash
-# In production server
-export ARUBA_CLIENT_ID="prod_client_id"
-export ARUBA_CLIENT_SECRET="prod_secret"
-export ARUBA_CUSTOMER_ID="prod_customer"
-```
-
-### CI/CD Pipelines
-
-Set environment variables in your CI/CD platform:
-- **GitHub Actions**: Repository Secrets
-- **GitLab CI**: CI/CD Variables
-- **Jenkins**: Credentials Manager
-- **AWS**: Parameter Store or Secrets Manager
-
-## Additional Resources
-
-- [Aruba Central API Documentation](https://developer.arubanetworks.com/aruba-central/docs)
-- [OAuth2 Client Credentials Flow](https://oauth.net/2/grant-types/client-credentials/)
-- [Aruba Central API Rate Limits](https://developer.arubanetworks.com/aruba-central/docs/api-rate-limiting)
-- [CLAUDE.md](./CLAUDE.md) - Developer guidance for Claude Code
-
-## Support
-
-For issues with this framework:
-- Check [CLAUDE.md](./CLAUDE.md) for development patterns
-- Review [README.md](./README.md) for setup instructions
-- Verify credentials in Aruba Central portal
-
-For Aruba Central API issues:
-- Contact Aruba support
-- Check [Aruba Central documentation](https://help.central.arubanetworks.com/)
+- [Aruba Central API docs](https://developer.arubanetworks.com/aruba-central/docs)
+- [OAuth2 client credentials flow](https://oauth.net/2/grant-types/client-credentials/)
+- [ENV_VARIABLES.md](ENV_VARIABLES.md) — every variable
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — end-to-end architecture
+- [GREENLAKE_ROLES.md](GREENLAKE_ROLES.md) — RBAC model

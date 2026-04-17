@@ -1,1077 +1,265 @@
-# How Everything Works - Complete System Documentation
+# How It Works
 
-This document provides a comprehensive explanation of how the Aruba Central Portal system works, from initialization to API requests, authentication, and data flow.
-
-## Table of Contents
-
-1. [System Overview](#system-overview)
-2. [Architecture](#architecture)
-3. [Initialization Process](#initialization-process)
-4. [Authentication Flow](#authentication-flow)
-5. [Token Management](#token-management)
-6. [Request Flow](#request-flow)
-7. [Frontend Architecture](#frontend-architecture)
-8. [Backend Architecture](#backend-architecture)
-9. [Data Flow](#data-flow)
-10. [Error Handling](#error-handling)
-11. [Deployment Process](#deployment-process)
-12. [Security Model](#security-model)
+End-to-end architecture of the Aruba Central Portal — how a browser click becomes an authenticated call to HPE Aruba Central, and how the response gets cached, served, and rendered.
 
 ---
 
-## System Overview
+## 1. Stack at a Glance
 
-The Aruba Central Portal is a full-stack web application that provides a secure interface to the HPE Aruba Central API. It consists of:
+| Layer         | Technology                                                  |
+|---------------|-------------------------------------------------------------|
+| Frontend      | React 18 + Vite, MUI, TanStack Query, React Router          |
+| Backend       | Flask (gunicorn in prod), Flask-CORS, Flask-Compress        |
+| Auth          | OAuth2 client credentials to Aruba Central + session cookies to the UI |
+| Token cache   | `.token_cache_central.json` (local) / Docker volume `token-cache`   |
+| API client    | `utils/central_api_client.py` + `utils/token_manager.py`    |
+| Optional      | HPE GreenLake RBAC, Ollama chat assistant, Grafana KPIs     |
 
-- **Frontend**: React-based single-page application (SPA) with Material-UI
-- **Backend**: Flask API proxy server that handles authentication and API calls
-- **Token Management**: Automatic OAuth 2.0 token refresh system
-- **Session Management**: Secure session-based authentication
+Port layout:
 
-### Key Design Principles
-
-1. **Security First**: Credentials never exposed to frontend
-2. **Stateless Backend**: Session-based with token caching
-3. **Automatic Token Refresh**: Seamless token renewal
-4. **Error Resilience**: Graceful error handling at all layers
-5. **Rate Limit Awareness**: Built-in tracking and handling
-
----
-
-## Architecture
-
-### High-Level Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    User Browser                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         React Application (Port 3000/1344)           │  │
-│  │  • React Router for navigation                       │  │
-│  │  • Material-UI components                           │  │
-│  │  • Axios for HTTP requests                           │  │
-│  │  • Session storage (localStorage)                    │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-                             │ HTTP/HTTPS
-                             │ (Session ID in header)
-                             ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Flask Backend Server (Port 1344)               │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              API Endpoints                            │  │
-│  │  • /api/auth/* - Authentication                      │  │
-│  │  • /api/devices/* - Device management               │  │
-│  │  • /api/monitoring/* - Monitoring data               │  │
-│  │  • /api/explore - Custom API calls                  │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Session Management                           │  │
-│  │  • In-memory session store (dev)                     │  │
-│  │  • Session validation decorator                      │  │
-│  │  • 1-hour session timeout                            │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Token Manager                                │  │
-│  │  • OAuth 2.0 client credentials flow                │  │
-│  │  • Automatic token refresh                          │  │
-│  │  • Token caching (2-hour expiry)                    │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Central API Client                           │  │
-│  │  • Bearer token authentication                      │  │
-│  │  • HTTP methods: GET, POST, PUT, DELETE              │  │
-│  │  • Error handling & retry logic                      │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-                             │ HTTPS (Bearer Token)
-                             ▼
-┌─────────────────────────────────────────────────────────────┐
-│         HPE Aruba Central API                                │
-│  • internal.api.central.arubanetworks.com                   │
-│  • apigw-prod2.central.arubanetworks.com (legacy)            │
-│  • OAuth 2.0 authentication                                 │
-│  • RESTful API endpoints                                    │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Component Interaction
-
-```
-┌──────────────┐
-│   Browser    │
-└──────┬───────┘
-       │
-       │ 1. User Action
-       ▼
-┌─────────────────────────────────────┐
-│  React Component (e.g., DevicesPage)│
-└──────┬──────────────────────────────┘
-       │
-       │ 2. API Call
-       ▼
-┌─────────────────────────────────────┐
-│  services/api.js (API Service Layer) │
-│  • Adds Session ID header            │
-│  • Error handling                    │
-│  • Request/response interceptors     │
-└──────┬──────────────────────────────┘
-       │
-       │ 3. HTTP Request
-       ▼
-┌─────────────────────────────────────┐
-│  Flask Backend (app.py)              │
-│  • Validates session                 │
-│  • Checks token validity             │
-│  • Forwards to Aruba API             │
-└──────┬───────────────────────────────┘
-       │
-       │ 4. Authenticated Request
-       ▼
-┌─────────────────────────────────────┐
-│  CentralAPIClient                    │
-│  • Adds Bearer token                 │
-│  • Makes HTTP request                │
-└──────┬───────────────────────────────┘
-       │
-       │ 5. API Call
-       ▼
-┌─────────────────────────────────────┐
-│  Aruba Central API                   │
-│  • Processes request                 │
-│  • Returns JSON response             │
-└──────────────────────────────────────┘
-```
+- **1344** — production: Flask serves the built SPA + API; dev: Vite dev server (proxies `/api/*` to Flask).
+- **5001** — Flask dev server (proxied to by Vite; `5000` is avoided to dodge macOS AirPlay).
 
 ---
 
-## Initialization Process
+## 2. Architecture
 
-### Backend Initialization
-
-When the Flask backend starts (`app.py`), it goes through the following initialization sequence:
-
-#### 1. Application Setup
-
-```python
-# app.py startup sequence
-1. Flask app created with CORS enabled
-2. Session management initialized (in-memory dict)
-3. API rate limiting tracker initialized
-4. Global variables initialized (aruba_client, token_manager, config)
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Browser — React SPA (MUI + TanStack Query)                      │
+│  • Calls /api/* with X-Session-ID header                         │
+└──────────────────┬───────────────────────────────────────────────┘
+                   │  HTTP(S)
+                   ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  Flask Backend — dashboard/backend/app.py                        │
+│  Blueprints (dashboard/backend/routes/):                         │
+│    auth · devices · monitoring · config · troubleshoot ·         │
+│    greenlake · chat                                              │
+│  Cross-cutting:                                                  │
+│    • Per-IP rate limit (default 300 req/min)                     │
+│    • Session store (disk-persisted, 1h timeout)                  │
+│    • cached_get() + parallel_get() in routes/helpers.py          │
+│    • Response compression (gzip + brotli)                        │
+└──────────────────┬───────────────────────────────────────────────┘
+                   │  Bearer token (auto-refreshed)
+                   ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  utils.CentralAPIClient + utils.TokenManager                     │
+│  • OAuth2 client credentials                                     │
+│  • 2h tokens, 5-min refresh buffer, 30-min issuance lock         │
+│  • Rate-limit-aware retry + exponential backoff                  │
+└──────────────────┬───────────────────────────────────────────────┘
+                   │  HTTPS
+                   ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  HPE Aruba Central — regional apigw-* endpoint                   │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-#### 2. Configuration Loading
+Optional side-channels:
 
-```python
-initialize_client() function:
-1. Loads config from config.yaml and .env file
-   - Uses utils/config.py load_config()
-   - Environment variables override YAML values
-   
-2. Validates credentials:
-   - Checks for client_id, client_secret, customer_id
-   - Verifies they're not placeholder values
-   - Sets credentials_configured flag
-   
-3. If credentials valid:
-   - Creates TokenManager instance
-   - Creates CentralAPIClient instance
-   - TokenManager handles OAuth 2.0 authentication
-```
-
-#### 3. Token Manager Initialization
-
-```python
-TokenManager.__init__():
-1. Stores client_id, client_secret
-2. Sets token URL (default: HPE SSO endpoint)
-3. Sets cache file location (.token_cache_central.json)
-4. Attempts to load cached token:
-   - Checks if cache file exists
-   - Validates token expiry (with 5-min buffer)
-   - Loads token if valid, otherwise sets to None
-```
-
-#### 4. Central API Client Initialization
-
-```python
-CentralAPIClient.__init__():
-1. Sets base URL (internal.api.central.arubanetworks.com)
-2. Creates requests.Session()
-3. Gets access token from TokenManager
-4. Sets Authorization header: "Bearer {token}"
-```
-
-### Frontend Initialization
-
-When the React app loads (`App.jsx`), it goes through:
-
-#### 1. App Component Mount
-
-```javascript
-App.jsx useEffect():
-1. Checks if setup is needed:
-   - Calls /api/setup/check
-   - If needs_setup: Shows SetupWizard
-   - If configured: Checks authentication
-   
-2. Checks authentication status:
-   - Calls authAPI.getStatus()
-   - If authenticated: Sets isAuthenticated = true
-   - If not: Redirects to /login
-   
-3. Sets up keyboard shortcuts:
-   - Cmd/Ctrl+K: Open global search
-   - Cmd/Ctrl+B: Toggle sidebar
-```
-
-#### 2. API Service Initialization
-
-```javascript
-api.js module load:
-1. Creates axios instance with base URL
-2. Sets up request interceptor:
-   - Adds X-Session-ID header from localStorage
-   
-3. Sets up response interceptor:
-   - Handles 401 errors (redirects to login)
-   - Handles optional endpoint errors gracefully
-```
+- **HPE GreenLake IAM/SCIM** — populates `/gl/*` pages when `GL_RBAC_CLIENT_ID/SECRET` are set.
+- **Ollama** — local LLM backend for the chat assistant (`OLLAMA_URL`, `OLLAMA_MODEL`).
+- **Grafana** — `/api/grafana/kpis` auth'd via header `X-Grafana-API-Key`.
 
 ---
 
-## Authentication Flow
+## 3. Startup
 
-### Initial Login Process
+`dashboard/backend/app.py`:
 
-```
-┌─────────┐                    ┌─────────┐                    ┌─────────┐
-│ Browser │                    │  Flask  │                    │  Aruba  │
-│ (React) │                    │ Backend │                    │ Central │
-└─────────┘                    └─────────┘                    └─────────┘
-     │                              │                              │
-     │ 1. User clicks "Connect"     │                              │
-     ├─────────────────────────────►│                              │
-     │                              │                              │
-     │                              │ 2. POST /api/auth/login     │
-     │                              │                              │
-     │                              │ 3. Check token cache        │
-     │                              │    (TokenManager)            │
-     │                              │                              │
-     │                              │ 4a. Token exists & valid?    │
-     │                              │      Yes: Use cached token   │
-     │                              │      No: Continue to 4b      │
-     │                              │                              │
-     │                              │ 4b. Request new token        │
-     │                              ├─────────────────────────────►│
-     │                              │    POST /as/token.oauth2     │
-     │                              │    grant_type=client_credentials
-     │                              │                              │
-     │                              │◄─────────────────────────────┤
-     │                              │    {access_token, expires_in}
-     │                              │                              │
-     │                              │ 5. Cache token               │
-     │                              │    (.token_cache_central.json)
-     │                              │                              │
-     │                              │ 6. Generate session ID       │
-     │                              │    (secrets.token_urlsafe)   │
-     │                              │                              │
-     │                              │ 7. Store session             │
-     │                              │    active_sessions[session_id]
-     │                              │    = {created, expires}      │
-     │                              │                              │
-     │ 8. Return session ID         │                              │
-     │◄─────────────────────────────┤                              │
-     │                              │                              │
-     │ 9. Store in localStorage    │                              │
-     │    (aruba_session_id)        │                              │
-     │                              │                              │
-```
+1. Loads `.env` from the repo root.
+2. Builds the Flask app, enables CORS + gzip/brotli compression.
+3. Registers blueprints via `routes.register_all_blueprints(app)`.
+4. Calls `initialize_client()` — loads `config.yaml`, builds a `TokenManager` and `CentralAPIClient`, and caches them module-globals.
+5. Starts a background thread (`_auth_retry_loop`) that keeps retrying init on credential failures with exponential backoff (60 s → 15 min, max 50 tries).
+6. Starts accepting requests on `0.0.0.0:PORT` (5001 dev / 1344 prod).
 
-### Session Validation
-
-Every API request includes session validation:
-
-```python
-@require_session decorator:
-1. Extracts X-Session-ID from request headers
-2. Checks if session exists in active_sessions
-3. Validates session hasn't expired:
-   - current_time < session['expires']
-4. If valid: Extends session expiry by 1 hour
-5. If invalid: Returns 401 Unauthorized
-```
-
-### Token Refresh Process
-
-Tokens are automatically refreshed when needed:
-
-```python
-TokenManager.get_access_token():
-1. Checks if token needs refresh:
-   - force_refresh flag
-   - No token exists
-   - Token expired (with 5-min buffer)
-   
-2. If refresh needed:
-   - Calls _refresh_token()
-   - POST to HPE SSO token endpoint
-   - Updates access_token and expires_at
-   - Saves to cache file
-   
-3. Returns valid access token
-```
+If credentials are missing or invalid, the server stays up and serves the **Setup Wizard** page — every API call returns `500 {"error": "Server not configured..."}` until credentials are saved.
 
 ---
 
-## Token Management
+## 4. Authentication
 
-### Token Lifecycle
+### OAuth2 (Aruba Central)
+
+Client credentials grant (default):
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Token Lifecycle                           │
-└─────────────────────────────────────────────────────────────┘
+POST {ARUBA_BASE_URL}/oauth2/token
+  grant_type=client_credentials
+  client_id=...
+  client_secret=...
 
-1. Token Generation
-   ├─ Client credentials sent to HPE SSO
-   ├─ OAuth 2.0 client_credentials grant
-   └─ Returns: access_token, expires_in (7200 seconds = 2 hours)
-
-2. Token Caching
-   ├─ Saved to .token_cache_central.json
-   ├─ Includes: access_token, expires_at (timestamp)
-   └─ Location: /app/data/ (Docker) or project root (dev)
-
-3. Token Usage
-   ├─ Added to Authorization header: "Bearer {token}"
-   ├─ Used for all Aruba Central API requests
-   └─ Automatically refreshed when needed
-
-4. Token Refresh
-   ├─ Triggered when: expires_at - 300 seconds < current_time
-   ├─ Same OAuth 2.0 flow
-   └─ Cache updated with new token
-
-5. Token Expiry
-   ├─ Default: 2 hours (7200 seconds)
-   ├─ 5-minute buffer before refresh
-   └─ Automatic refresh prevents expiry
+→ { "access_token": "...", "expires_in": 7200 }
 ```
 
-### Token Storage
+The token is cached to `.token_cache_central.json` (Docker: `/app/data/.token_cache_central.json`). All subsequent Central calls use `Authorization: Bearer <token>` until the token is ~5 min from expiry, then `TokenManager` refreshes automatically.
 
-**Backend (TokenManager):**
-- File: `.token_cache_central.json`
-- Location: `TOKEN_CACHE_DIR` env var or project root
-- Format:
-  ```json
-  {
-    "access_token": "eyJhbGc...",
-    "expires_at": 1234567890.123,
-    "cached_at": 1234567890.123
-  }
-  ```
+### Aruba's 30-minute Token Issuance Cap
 
-**Backend (Session):**
-- In-memory dictionary: `active_sessions`
-- Key: session_id (cryptographically secure)
-- Value: `{created: timestamp, expires: timestamp}`
-- Timeout: 1 hour (3600 seconds)
+Aruba Central only issues **1 new token per client every 30 minutes**. `TokenManager` serializes refresh and honors the cap to avoid `429` storms on restart.
 
-**Frontend:**
-- localStorage key: `aruba_session_id`
-- Value: Opaque session ID (not the actual token)
-- Cleared on logout or 401 error
+### Dashboard Sessions
+
+The React SPA stores `sessionId` in `localStorage`; every `/api/*` call sends it as `X-Session-ID`. The `require_session` decorator validates / refreshes (1 h idle timeout), and the store is persisted to disk (`TOKEN_CACHE_DIR/sessions.json`) so sessions survive worker restarts and gunicorn fan-out.
 
 ---
 
-## Request Flow
+## 5. Request Flow (typical GET)
 
-### Complete Request Lifecycle
+1. **Browser:** `useDevices()` React Query hook fires `GET /api/devices`.
+2. **Flask:** `before_request` enforces per-IP rate limit (default 300/min; stream endpoints excluded).
+3. **`@require_session`** validates `X-Session-ID`, refreshes expiry, tracks the call.
+4. **Blueprint handler** (`routes/devices.py`) calls `cached_get("/monitoring/v1/devices", ttl=30)`.
+5. **`cached_get`** hits the in-process cache; on miss, calls `aruba_client.get(...)`.
+6. **`CentralAPIClient`** attaches bearer token, retries on 429 with backoff, parses JSON.
+7. Response returns to the browser with cache headers, compressed, and TanStack Query keeps it fresh with its own client-side cache.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│              Complete API Request Flow                       │
-└─────────────────────────────────────────────────────────────┘
+Cross-cutting headers set on every response:
 
-1. USER ACTION
-   User clicks button or page loads
-   └─► Component calls API function
-
-2. FRONTEND API CALL
-   services/api.js function called
-   ├─► Axios request interceptor adds X-Session-ID header
-   ├─► Request sent to Flask backend
-   └─► Example: GET /api/devices
-
-3. BACKEND RECEIVES REQUEST
-   Flask route handler receives request
-   ├─► @require_session decorator validates session
-   ├─► Checks session expiry
-   ├─► Extends session timeout
-   └─► Proceeds to route handler
-
-4. TOKEN VALIDATION
-   Route handler checks token
-   ├─► TokenManager.get_access_token()
-   ├─► If expired: Automatically refreshes
-   └─► Returns valid token
-
-5. ARUBA API CALL
-   CentralAPIClient makes request
-   ├─► Adds Authorization: Bearer {token}
-   ├─► Makes HTTP request to Aruba Central
-   └─► Handles response/errors
-
-6. RESPONSE PROCESSING
-   Response flows back through layers
-   ├─► Aruba API returns JSON
-   ├─► CentralAPIClient returns data
-   ├─► Flask route returns JSON response
-   └─► Axios receives response
-
-7. FRONTEND UPDATE
-   Component receives data
-   ├─► Updates React state
-   ├─► Re-renders component
-   └─► User sees updated UI
-```
-
-### Example: Fetching Devices
-
-```javascript
-// 1. Frontend Component
-const DevicesPage = () => {
-  const [devices, setDevices] = useState([]);
-  
-  useEffect(() => {
-    // 2. API Call
-    deviceAPI.getAll()
-      .then(data => setDevices(data))
-      .catch(error => console.error(error));
-  }, []);
-  
-  return <DeviceTable devices={devices} />;
-};
-
-// 3. API Service Layer
-export const deviceAPI = {
-  getAll: async () => {
-    // Axios interceptor adds X-Session-ID header
-    const response = await apiClient.get('/devices');
-    return response.data;
-  }
-};
-
-// 4. Backend Route Handler
-@app.route('/api/devices', methods=['GET'])
-@require_session
-def get_devices():
-    # Session validated by decorator
-    # Token automatically refreshed if needed
-    data = aruba_client.get('/monitoring/v1alpha1/devices')
-    return jsonify(data)
-
-// 5. Central API Client
-def get(self, endpoint, params=None):
-    # Ensures valid token
-    self._ensure_valid_token()
-    # Makes request with Bearer token
-    response = self.session.get(url, params=params)
-    return response.json()
-```
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- API paths: `Cache-Control: no-store, no-cache, must-revalidate`
+- Static assets: `Cache-Control: public, max-age=31536000, immutable`
 
 ---
 
-## Frontend Architecture
+## 6. Backend Blueprints
 
-### Component Hierarchy
+Each blueprint is mounted under `/api/<name>` via `routes/__init__.py`.
 
-```
-App.jsx (Root)
-├── Router
-│   ├── SetupWizard (if credentials not configured)
-│   ├── LoginPage (if not authenticated)
-│   └── Authenticated Layout (if authenticated)
-│       ├── Sidebar
-│       │   ├── Navigation menu
-│       │   └── Menu items
-│       ├── TopBar
-│       │   ├── Menu toggle
-│       │   ├── Status indicator
-│       │   └── User menu
-│       └── Routes
-│           ├── DashboardPage
-│           │   ├── StatsCard components
-│           │   └── System status
-│           ├── DevicesPage
-│           │   ├── Search/filter
-│           │   └── Device table
-│           ├── ClientsPage
-│           ├── SitesPage
-│           ├── APIExplorerPage
-│           └── ... (other pages)
-```
+| Blueprint       | What it proxies / owns                                                        |
+|-----------------|-------------------------------------------------------------------------------|
+| `auth`          | Login, logout, session status, credential save (Setup Wizard)                 |
+| `devices`       | APs, switches, gateways — list, detail, stats, commands                       |
+| `monitoring`    | Health, sites, clients, alerts, events, topology, RF, WAN, firmware, reports  |
+| `config`        | WLAN CRUD, VLAN, AP groups, policies, guest, NAC, setup wizard config        |
+| `troubleshoot`  | Ping/trace, AP diagnostics, packet capture, cable test, RF diagnostics        |
+| `greenlake`     | `/gl/*` — SCIM users/groups, platform roles, workspaces, subscriptions, tags  |
+| `chat`          | Ollama-backed assistant, MCP client integration                               |
 
-### State Management
+Shared helpers in `routes/helpers.py`:
 
-**Local Component State:**
-- Each page component manages its own state
-- Uses React `useState` hook
-- Data fetched on component mount (`useEffect`)
-
-**Session State:**
-- Stored in `localStorage` (session ID)
-- Managed by `authAPI` service
-- Checked on app initialization
-
-**API State:**
-- No global state management (Redux/Zustand)
-- Each component fetches its own data
-- Data refetched on mount or user action
-
-### API Service Layer
-
-The `services/api.js` file provides a clean abstraction:
-
-```javascript
-// Organized by feature
-export const deviceAPI = { ... }
-export const configAPI = { ... }
-export const monitoringAPI = { ... }
-export const authAPI = { ... }
-
-// All functions:
-// 1. Use axios instance (apiClient)
-// 2. Automatically include session ID
-// 3. Handle errors consistently
-// 4. Return promise with data
-```
-
-### Routing
-
-React Router handles client-side routing:
-
-```javascript
-// Public routes
-/login - LoginPage
-/setup-wizard - SetupWizard
-
-// Protected routes (require authentication)
-/ - DashboardPage
-/devices - DevicesPage
-/devices/:serial - DeviceDetailPage
-/clients - ClientsPage
-/api-explorer - APIExplorerPage
-... (many more)
-```
+- `cached_get(path, ttl)` — tiered TTL cache (short for dynamic data, long for metadata).
+- `parallel_get(paths)` — `ThreadPoolExecutor` fan-out for dashboard pages that need many endpoints at once (e.g. the overview).
 
 ---
 
-## Backend Architecture
-
-### Route Organization
-
-Routes in `app.py` are organized by feature:
-
-```python
-# Authentication Routes
-/api/auth/login
-/api/auth/logout
-/api/auth/status
-
-# Device Management
-/api/devices
-/api/devices/<serial>
-/api/switches
-/api/aps
-
-# Configuration
-/api/sites
-/api/groups
-/api/templates
-
-# Monitoring
-/api/monitoring/network-health
-/api/monitoring/aps
-/api/monitoring/switches
-
-# Custom API Explorer
-/api/explore
-
-# System
-/api/health
-/api/setup/check
-```
-
-### Session Management
-
-**In-Memory Storage (Development):**
-```python
-active_sessions = {
-    "session_id_1": {
-        "created": 1234567890.123,
-        "expires": 1234571490.123  # +1 hour
-    },
-    "session_id_2": { ... }
-}
-```
-
-**Session Decorator:**
-```python
-@require_session
-def my_route():
-    # Session automatically validated
-    # Session expiry extended
-    # Proceed with route logic
-    pass
-```
-
-### Error Handling
-
-**Centralized Error Handlers:**
-```python
-@app.errorhandler(404)
-def not_found(e):
-    return jsonify({"error": "Not found"}), 404
-
-@app.errorhandler(500)
-def internal_error(e):
-    logger.error(f"Internal error: {e}")
-    return jsonify({"error": "Internal server error"}), 500
-```
-
-**API Error Handling:**
-```python
-try:
-    data = aruba_client.get(endpoint)
-    return jsonify(data)
-except requests.HTTPError as e:
-    logger.error(f"API error: {e}")
-    return jsonify({"error": "API request failed"}), e.response.status_code
-```
-
----
-
-## Data Flow
-
-### Data Flow Diagram
+## 7. Frontend Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Data Flow                                │
-└─────────────────────────────────────────────────────────────┘
-
-USER INTERACTION
-    │
-    ▼
-REACT COMPONENT
-    │ (calls API function)
-    ▼
-API SERVICE (api.js)
-    │ (adds session header)
-    ▼
-AXIOS INTERCEPTOR
-    │ (HTTP request)
-    ▼
-FLASK BACKEND
-    │ (validates session)
-    ▼
-ROUTE HANDLER
-    │ (checks token)
-    ▼
-TOKEN MANAGER
-    │ (refreshes if needed)
-    ▼
-CENTRAL API CLIENT
-    │ (adds Bearer token)
-    ▼
-ARUBA CENTRAL API
-    │ (processes request)
-    ▼
-JSON RESPONSE
-    │ (flows back)
-    ▼
-CENTRAL API CLIENT
-    │
-    ▼
-ROUTE HANDLER
-    │
-    ▼
-FLASK RESPONSE
-    │
-    ▼
-AXIOS RESPONSE
-    │
-    ▼
-API SERVICE
-    │
-    ▼
-REACT COMPONENT
-    │ (updates state)
-    ▼
-UI UPDATE
+dashboard/frontend/src/
+  pages/              Routed views (DashboardPage, DevicesPage, WLANsPage, GL*Page, ...)
+  hooks/              useApiQueries.js — every TanStack Query hook lives here
+  components/         Shared UI (tables, charts, modals, breadcrumbs, sidebar)
+  utils/              Formatters, API client, auth helpers
+  contexts/           Global contexts (auth, theme)
 ```
 
-### Example: Real-Time Data Flow
+Key patterns:
 
-**Dashboard Page Load:**
+- **TanStack Query** for every `/api/*` fetch — dedupes requests, caches in memory, revalidates on focus.
+- **React Router v6** for navigation; each page owns its own queries.
+- **MUI theme** switches via the theme context; preference persists in `localStorage`.
+- **Setup Wizard** is its own full-page flow rendered when the backend reports `credentials_configured: false`.
 
-1. **Component Mounts**
-   ```javascript
-   useEffect(() => {
-     fetchDashboardData();
-   }, []);
-   ```
-
-2. **Multiple API Calls**
-   ```javascript
-   Promise.all([
-     deviceAPI.getAll(),
-     monitoringAPI.getNetworkHealth(),
-     configAPI.getSites()
-   ])
-   ```
-
-3. **Backend Processes**
-   - Each request validated independently
-   - Tokens shared (cached)
-   - Parallel API calls to Aruba Central
-
-4. **Response Aggregation**
-   - All responses received
-   - Component state updated
-   - UI re-renders with data
-
----
-
-## Error Handling
-
-### Error Handling Strategy
-
-**Frontend Error Handling:**
-
-```javascript
-// API Service Layer
-apiClient.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      // Session expired
-      clearSessionId();
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Component Level
-try {
-  const data = await deviceAPI.getAll();
-  setDevices(data);
-} catch (error) {
-  setError(error.message);
-  showNotification('Failed to load devices');
-}
-```
-
-**Backend Error Handling:**
-
-```python
-# Route Level
-try:
-    data = aruba_client.get(endpoint)
-    return jsonify(data)
-except requests.HTTPError as e:
-    if e.response.status_code == 401:
-        # Token expired - will be refreshed on next request
-        return jsonify({"error": "Authentication failed"}), 401
-    elif e.response.status_code == 429:
-        # Rate limit
-        return jsonify({"error": "Rate limit exceeded"}), 429
-    else:
-        logger.error(f"API error: {e}")
-        return jsonify({"error": "API request failed"}), e.response.status_code
-except Exception as e:
-    logger.error(f"Unexpected error: {e}")
-    return jsonify({"error": "Internal server error"}), 500
-```
-
-### Error Propagation
-
-```
-Aruba API Error
-    │
-    ▼
-CentralAPIClient raises HTTPError
-    │
-    ▼
-Flask route catches exception
-    │
-    ▼
-Logs error (with details)
-    │
-    ▼
-Returns sanitized JSON error
-    │
-    ▼
-Axios receives error response
-    │
-    ▼
-Frontend displays user-friendly message
-```
-
----
-
-## Deployment Process
-
-### Docker Build Process
-
-**Multi-Stage Dockerfile:**
-
-```
-Stage 1: Frontend Builder
-├─ Node 18 Alpine
-├─ Install npm dependencies
-├─ Build React app (npm run build)
-└─ Output: /app/frontend/build
-
-Stage 2: Backend Builder
-├─ Python 3.11 Slim
-├─ Install system dependencies
-├─ Create virtual environment
-├─ Install Python packages
-└─ Output: /opt/venv
-
-Stage 3: Production
-├─ Python 3.11 Slim
-├─ Copy virtual environment
-├─ Copy application code
-├─ Copy built frontend
-├─ Set permissions
-└─ Run entrypoint script
-```
-
-### Container Startup
-
-**Entrypoint Script (`docker-entrypoint.sh`):**
+Build:
 
 ```bash
-1. Wait for .env file (if needed)
-2. Set up directories
-3. Fix permissions
-4. Start Flask app (gunicorn or flask run)
+cd dashboard/frontend && npm run build   # emits dashboard/frontend/build/
 ```
 
-### Environment Configuration
+Flask's `static_folder='../frontend/build'` serves the built SPA in production.
 
-**Configuration Sources (priority order):**
+---
 
-1. Environment variables (highest priority)
-2. `.env` file
-3. `config.yaml` file
-4. Default values
+## 8. Token Cache Layout
 
-**Required Variables:**
-```env
-ARUBA_BASE_URL=https://internal.api.central.arubanetworks.com
-ARUBA_CLIENT_ID=your_client_id
-ARUBA_CLIENT_SECRET=your_client_secret
-ARUBA_CUSTOMER_ID=your_customer_id
+Local dev (`.token_cache_central.json` in repo root):
+
+```json
+{
+  "access_token": "eyJ0eXAi...",
+  "expires_at": 1734200000.0,
+  "token_type": "Bearer"
+}
 ```
 
-### Health Checks
+Docker: `token-cache` named volume mounted at `/app/data`. `TOKEN_CACHE_DIR` env var overrides the location (used by the container).
 
-**Docker Health Check:**
-```yaml
-healthcheck:
-  test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:1344/api/health', timeout=5)"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
+Session store: `TOKEN_CACHE_DIR/sessions.json` — persists in-memory session dict across gunicorn workers.
+
+---
+
+## 9. Error Handling
+
+The `api_proxy` decorator in `app.py` converts upstream errors to consistent JSON:
+
+| Upstream                          | Response to SPA                                           |
+|-----------------------------------|-----------------------------------------------------------|
+| `aruba_client` not initialized    | 500, `{"error": "Server not configured..."}`              |
+| 401 Unauthorized                  | 401, `{"error": "Authentication required"}`               |
+| 403 Forbidden                     | 403, `{"error": "Access forbidden: <context>"}`           |
+| 404 Not Found (GET)               | 200, `{"data": [], "count": 0, "total": 0}` (graceful)   |
+| 404 Not Found (non-GET)           | 404, `{"error": "Resource not found: <context>"}`         |
+| 400 Bad Request                   | 400, passes Aruba error text through                      |
+| 429 Too Many Requests             | `TokenManager` retries with backoff before giving up      |
+| Other HTTPError                   | Propagates status code + generic message, logs details    |
+
+---
+
+## 10. Deployment
+
+### Docker (recommended)
+
+`docker-compose up -d` — builds the image (multi-stage: Node build then Python slim), runs as `PUID:PGID` (default `1000:1000`), mounts `token-cache` and `.env` as a read/write volume. The container runs `docker-entrypoint.sh`, which launches gunicorn on `0.0.0.0:1344`.
+
+Healthcheck hits `http://localhost:1344/api/health` every 30 s (40 s grace period).
+
+### Bare metal
+
+Start the backend with gunicorn:
+
+```bash
+./venv/bin/gunicorn -b 0.0.0.0:1344 -w 4 dashboard.backend.app:app
 ```
 
-**Health Endpoint:**
-```python
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    return jsonify({
-        "status": "healthy",
-        "aruba_client_initialized": aruba_client is not None
-    })
+Front with nginx/Caddy for TLS; set `X-Forwarded-Proto` so Flask generates `https://` URLs.
+
+### Updates
+
+```bash
+git pull
+docker compose up -d --build            # Docker
+# or
+pip install -r requirements.txt         # bare metal
+cd dashboard/frontend && npm ci && npm run build
+systemctl restart aruba-central-portal
 ```
 
 ---
 
-## Security Model
+## 11. Security Model
 
-### Security Layers
+- Secrets never reach the browser — all Aruba API calls are proxied through Flask.
+- OAuth2 tokens live server-side only, with an encrypted cache and the 30-min issuance lock enforced.
+- Session IDs are opaque and tied to `X-Session-ID`; no cookies with `HttpOnly: false` carry credentials.
+- Per-IP rate limits on every `/api/*` path; strict limits on login / setup.
+- Response headers: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` set on everything.
+- `.env` and `.token_cache_central.json` are git-ignored.
+- The GreenLake RBAC pages require separate credentials and present read-only banners when those aren't set.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ Layer 1: Network Security                               │
-│ • HTTPS/TLS encryption                                  │
-│ • Firewall rules                                        │
-└─────────────────────────────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 2: Application Gateway                            │
-│ • Nginx reverse proxy (production)                      │
-│ • SSL termination                                       │
-└─────────────────────────────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 3: Frontend Security                              │
-│ • Content Security Policy                               │
-│ • XSS protection (React)                                │
-│ • No credential storage                                 │
-└─────────────────────────────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 4: Backend Security                               │
-│ • Session validation                                    │
-│ • Input validation                                      │
-│ • CORS configuration                                    │
-└─────────────────────────────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 5: Authentication                                 │
-│ • OAuth 2.0 (client credentials)                        │
-│ • Secure session management                             │
-│ • Token caching                                         │
-└─────────────────────────────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 6: Data Security                                  │
-│ • Credentials in environment variables                  │
-│ • Token cache with expiry                               │
-│ • No sensitive data logging                             │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Credential Flow
-
-**Important:** Credentials flow in one direction only (downward). Frontend never sees credentials or API tokens.
-
-```
-.env file (Backend only)
-    │
-    ▼
-TokenManager (Backend)
-    │
-    ▼
-Token Cache (.token_cache_central.json)
-    │
-    ▼
-CentralAPIClient (Backend)
-    │
-    ▼
-Aruba Central API
-    │
-    ▼
-Session ID (Opaque token)
-    │
-    ▼
-Frontend (localStorage)
-```
-
-### Session Security
-
-- **Session ID Generation**: Cryptographically secure (`secrets.token_urlsafe`)
-- **Session Timeout**: 1 hour (3600 seconds)
-- **Session Validation**: Every request validated
-- **Session Extension**: Timeout extended on each request
-- **Session Storage**: In-memory (dev) or Redis (production)
-
-### Token Security
-
-- **Token Storage**: File-based cache (backend only)
-- **Token Expiry**: 2 hours (7200 seconds)
-- **Token Refresh**: Automatic (5-minute buffer)
-- **Token Transmission**: HTTPS only
-- **Token Scope**: Never exposed to frontend
+See [GREENLAKE_ROLES.md](GREENLAKE_ROLES.md) for the two-tier RBAC model and [GIT_SECURITY.md](GIT_SECURITY.md) for repo hygiene.
 
 ---
 
-## Key Concepts Summary
+## 12. Related
 
-### 1. **Separation of Concerns**
-   - Frontend: UI and user interaction
-   - Backend: Authentication and API proxy
-   - Token Manager: OAuth 2.0 token lifecycle
-   - API Client: HTTP communication with Aruba Central
-
-### 2. **Security Model**
-   - Credentials never leave backend
-   - Session-based authentication
-   - Automatic token refresh
-   - Secure token caching
-
-### 3. **Error Resilience**
-   - Graceful error handling at all layers
-   - User-friendly error messages
-   - Automatic retry for token refresh
-   - Optional endpoint handling
-
-### 4. **Performance**
-   - Token caching (2-hour expiry)
-   - Session caching (1-hour timeout)
-   - Parallel API calls where possible
-   - Efficient React rendering
-
-### 5. **Scalability**
-   - Stateless backend design
-   - Session storage can be externalized (Redis)
-   - Horizontal scaling ready
-   - Rate limit tracking
-
----
-
-## Troubleshooting Guide
-
-### Common Issues
-
-**1. "Credentials not configured"**
-- Check `.env` file exists and has correct values
-- Verify Setup Wizard completed successfully
-- Check file permissions on `.env`
-
-**2. "Session expired"**
-- Session timeout is 1 hour
-- Re-authenticate by clicking "Connect to Aruba Central"
-- Check backend logs for session validation errors
-
-**3. "Token refresh failed"**
-- Check network connectivity to HPE SSO
-- Verify client_id and client_secret are correct
-- Check token cache file permissions
-
-**4. "API request failed"**
-- Check Aruba Central API status
-- Verify token is valid (check token cache)
-- Review rate limiting (5000 calls/day limit)
-
-**5. "Frontend not loading"**
-- Verify frontend build exists (`dashboard/frontend/build`)
-- Check Flask static folder configuration
-- Verify React Router routes are correct
-
----
-
-## Additional Resources
-
-- [Architecture Documentation](dashboard/ARCHITECTURE.md)
-- [Configuration Guide](CONFIGURATION.md)
-- [Setup Wizard Guide](SETUP_WIZARD_GUIDE.md)
-- [API Documentation](../dashboard/README.md)
-- [Docker Deployment](../DOCKER_DEPLOYMENT.md)
-
----
-
-**Last Updated:** 2025-01-27
-**Version:** 2.0.0
-
+- [../DOCKER.md](../DOCKER.md) — running in Docker
+- [SETUP.md](SETUP.md) — local dev setup
+- [CONFIGURATION.md](CONFIGURATION.md) — auth flows and token cache details
+- [ENV_VARIABLES.md](ENV_VARIABLES.md) — full env reference
+- [dashboard/ARCHITECTURE.md](dashboard/ARCHITECTURE.md) — dashboard internals in more depth

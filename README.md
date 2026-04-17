@@ -1,234 +1,155 @@
 # Aruba Central Portal
 
-> **Web dashboard and automation toolkit for Aruba Central network management**
-
-[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen)](docs/project/)
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](DOCKER_DEPLOYMENT.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## New Here? **[Start Here](START_HERE.md)**
+Web dashboard and Python automation toolkit for HPE Aruba Central.
 
-**5-minute setup** | **40+ API endpoints** | **Full-featured dashboard** | **Docker ready**
-
----
-
-## Screenshots
-
-### Network Dashboard
-![Network Dashboard](docs/screenshots/dashboard.png)
-
-### Devices
-![Devices](docs/screenshots/devices.png)
-
-### Clients
-![Clients](docs/screenshots/clients.png)
-
-### Client Detail
-![Client Detail](docs/screenshots/client-detail.png)
-
-### Network Monitor
-![Network Monitor](docs/screenshots/network-monitor.png)
-
-### Troubleshooting Tools
-![Troubleshoot](docs/screenshots/troubleshoot.png)
-
-### Configuration
-![Configuration](docs/screenshots/configuration.png)
-
-### Status
-![Status](docs/screenshots/status.png)
-
-### GreenLake Devices
-![GreenLake](docs/screenshots/greenlake.png)
+- **Dashboard** — Flask + React SPA for devices, clients, monitoring, WLAN configuration, troubleshooting, and HPE GreenLake RBAC.
+- **Scripts** — reusable Python utilities for discovery, WLAN operations, user management, MSP workflows, and monitoring.
+- **Docker-first** — one command to run the portal anywhere Docker runs.
 
 ---
 
 ## Quick Start
 
-### Docker (Recommended)
+### Docker (recommended)
 
 ```bash
 git clone https://github.com/secure-ssid/aruba-central-portal.git
 cd aruba-central-portal
-docker-compose up -d
-
-# Access http://localhost:1344 and use Setup Wizard to configure
+docker compose up -d
 ```
 
-### Python Development
+Open `http://localhost:1344` and complete the Setup Wizard. Full guide: [DOCKER.md](DOCKER.md).
+
+### Local development
 
 ```bash
 git clone https://github.com/secure-ssid/aruba-central-portal.git
 cd aruba-central-portal
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+python3 -m venv venv && source venv/bin/activate
+make install-dev
+
+# Backend
+./venv/bin/python dashboard/backend/app.py &
+
+# Frontend (separate terminal)
+cd dashboard/frontend && npm install && npm run dev
 ```
 
-**Installation Guides:**
-- **[START_HERE.md](START_HERE.md)** - General setup guide
-- **[DOCKER_DESKTOP_INSTALL.md](DOCKER_DESKTOP_INSTALL.md)** - Docker Desktop setup
-- **[docs/SETUP.md](docs/SETUP.md)** - Dev and Docker detailed setup
+Open `http://localhost:1344`. Full guide: [docs/SETUP.md](docs/SETUP.md).
+
+---
+
+## Credentials
+
+You need three values from Aruba Central (**Account Home → API Gateway → System Apps & Tokens**):
+
+- Client ID
+- Client Secret
+- Customer ID
+
+Plus your region's base URL:
+
+| Region  | Base URL                                              |
+|---------|-------------------------------------------------------|
+| US East | `https://apigw-prod2.central.arubanetworks.com`       |
+| US West | `https://apigw-uswest4.central.arubanetworks.com`     |
+| EU      | `https://apigw-eucentral3.central.arubanetworks.com`  |
+| APAC    | `https://apigw-apeast1.central.arubanetworks.com`     |
+
+Paste them into the Setup Wizard at `http://localhost:1344` — no manual `.env` editing needed.
+
+---
+
+## Project Layout
+
+```
+aruba-central-portal/
+├── dashboard/
+│   ├── backend/        # Flask app + routes (auth, devices, monitoring,
+│   │                   #   config, troubleshoot, greenlake, chat)
+│   └── frontend/       # React (Vite) SPA
+├── scripts/            # Automation CLIs (discovery, network/wlan,
+│                       #   users, tenants, monitoring, wlan-testing,
+│                       #   ops, testing)
+├── utils/              # Shared Python: API client, token manager, config
+├── tests/              # Pytest suite (>90% coverage on utils/)
+├── docs/               # Project, API, and solution-guide docs
+├── tools/              # Diagnostics (e.g. GreenLake troubleshooter)
+├── Dockerfile
+└── docker-compose.yml
+```
 
 ---
 
 ## Documentation
 
-| Document | Description | Audience |
-|----------|-------------|----------|
-| **[START_HERE.md](START_HERE.md)** | Complete getting started guide | Everyone |
-| **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** | Production Docker guide | DevOps |
-| **[docs/SETUP.md](docs/SETUP.md)** | Dev and Docker setup (consolidated) | Developers |
-| **[UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)** | Update guide | Operations |
-| **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** | Configuration reference | Advanced users |
-| **[docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)** | System architecture | Developers |
-| **[docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md)** | Feature list | Everyone |
-| **[CLAUDE.md](CLAUDE.md)** | Development guidelines | Developers |
-
----
-
-## What's Included
-
-### Web Dashboard
-- **Real-time monitoring** - Network health, device status, client tracking
-- **Device management** - Inventory, configuration, firmware updates
-- **WLAN Wizard** - Create WLANs with guided workflow
-- **Analytics** - Bandwidth, usage, performance metrics
-- **Bulk operations** - Configure multiple devices at once
-
-### Python Automation
-- **User management** - Automated user/role operations
-- **MSP operations** - Multi-tenant management
-- **Reporting** - Export data to CSV/JSON
-- **Custom scripts** - Extend with your own automation
-
-### Production Ready
-- **Docker deployment** - One-command deployment
-- **Auto-updates** - Built-in update scripts
-- **Monitoring** - Health checks and logging
-- **Security** - Token caching, rate limiting
-
----
-
-## Project Structure
-
-```
-aruba-central-portal/
-├── START_HERE.md           # Start here!
-├── dashboard/              # Web application
-│   ├── backend/           # Python Flask API
-│   └── frontend/          # React dashboard
-├── scripts/               # Automation scripts
-│   ├── discovery/         # API exploration
-│   ├── network/wlan/      # WLAN management
-│   ├── users/             # User management
-│   ├── monitoring/        # Health checks
-│   ├── tenants/           # MSP operations
-│   ├── testing/           # Integration tests
-│   └── ops/               # Deployment and operational scripts
-├── utils/                 # Shared utilities
-├── tests/                 # Unit tests
-└── docs/                  # Documentation
-```
+| Doc | What it covers |
+|-----|----------------|
+| [DOCKER.md](DOCKER.md) | Docker setup, operations, updating, troubleshooting |
+| [docs/SETUP.md](docs/SETUP.md) | Local dev setup (Python + Node) |
+| [docs/DEV_SETUP.md](docs/DEV_SETUP.md) | Windows / PowerShell dev setup |
+| [docs/ENV_VARIABLES.md](docs/ENV_VARIABLES.md) | Every environment variable |
+| [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | `config.yaml`, token cache, auth flows |
+| [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | Architecture, request flow, security model |
+| [docs/SETUP_WIZARD_GUIDE.md](docs/SETUP_WIZARD_GUIDE.md) | Walk-through of the in-app Setup Wizard |
+| [docs/GREENLAKE_ROLES.md](docs/GREENLAKE_ROLES.md) | Two-tier RBAC (platform + service) |
+| [docs/USER_MANAGEMENT_GUIDE.md](docs/USER_MANAGEMENT_GUIDE.md) | Managing users via scripts |
+| [docs/dashboard/ARCHITECTURE.md](docs/dashboard/ARCHITECTURE.md) | Dashboard deep-dive |
+| [docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md) | Feature inventory |
+| [docs/troubleshooting/](docs/troubleshooting/) | Known issues and fixes |
+| [CLAUDE.md](CLAUDE.md) | Conventions and commands for contributors |
 
 ---
 
 ## Common Tasks
 
-### Update Your Container
-
 ```bash
-cd /volume1/docker/central-portal
-docker-compose down && git pull && docker-compose up -d --build
+make help          # Show all make targets
+make test          # Run pytest
+make test-cov      # Coverage report
+make lint          # ruff
+make format        # black
+make type-check    # mypy
+make all           # format + lint + type-check + test
 ```
 
-**Detailed guide:** [UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)
-
-### View Logs
+Update a running Docker deployment:
 
 ```bash
-docker-compose logs -f aruba-central-portal
+git pull && docker compose up -d --build
 ```
 
-### Configure Credentials
-
-Access the Setup Wizard at `http://your-ip:1344` and enter your Aruba Central API credentials.
-
-### Run Tests
+View logs:
 
 ```bash
-pytest                    # Unit tests
-pytest --cov=utils       # With coverage
+docker compose logs -f aruba-central-portal
 ```
 
 ---
 
 ## Troubleshooting
 
-### Container Won't Start
-
-```bash
-docker-compose logs aruba-central-portal  # Check logs
-docker-compose down && docker-compose up -d --build  # Rebuild
-```
-
-### "Token Error 400"
-
-This is normal if credentials aren't configured. Use the Setup Wizard at `http://your-ip:1344`.
-
-### More Help
-
-- Run: `./scripts/ops/debug-setup.sh`
-- See: [UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)
-- Check: [GitHub Issues](https://github.com/secure-ssid/aruba-central-portal/issues)
+- **Dashboard won't start:** `docker compose logs aruba-central-portal`
+- **"Token refresh failed 400":** Normal pre-setup; finish the Setup Wizard.
+- **Port 1344 in use:** see [docs/troubleshooting/FIX_PORT_1344.md](docs/troubleshooting/FIX_PORT_1344.md).
+- **Node.js not found (Windows):** see [docs/troubleshooting/FIX_NODEJS_PATH.md](docs/troubleshooting/FIX_NODEJS_PATH.md).
+- **GreenLake RBAC endpoints failing:** run `./tools/diagnose-greenlake.sh`.
 
 ---
 
-## For Developers
+## Security
 
-### Setup Development Environment
+- Never commit `.env` or `config.local.yaml`. Both are in `.gitignore`.
+- Credentials live in environment variables only.
+- Use least-privilege OAuth2 scopes; rotate client secrets periodically.
+- Terminate TLS at a reverse proxy in production ([DOCKER.md](DOCKER.md#https-in-production)).
 
-```bash
-# Backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements-dev.txt
-
-# Frontend
-cd dashboard/frontend
-npm install
-npm run dev
-```
-
-### Code Quality
-
-```bash
-pytest          # Tests
-black .         # Format
-ruff check .    # Lint
-```
-
-### Guidelines
-
-- See [CLAUDE.md](CLAUDE.md) for development guidelines
-- See [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) for architecture
+See [docs/GIT_SECURITY.md](docs/GIT_SECURITY.md) for repo hygiene rules.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
-
----
-
-## Quick Links
-
-- **[START_HERE.md](START_HERE.md)** - Getting started guide
-- **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** - Docker setup
-- **[docs/SETUP.md](docs/SETUP.md)** - Dev and Docker setup (consolidated)
-- **[UPDATE_DOCKER_CONTAINER.md](UPDATE_DOCKER_CONTAINER.md)** - How to update
-- **[docs/dashboard/FEATURES.md](docs/dashboard/FEATURES.md)** - Feature overview
-- **[CLAUDE.md](CLAUDE.md)** - Development guidelines
-
----
-
-**Ready to start?** [START_HERE.md](START_HERE.md)
+MIT — see [LICENSE](LICENSE).
