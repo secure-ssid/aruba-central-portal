@@ -1898,6 +1898,125 @@ User: "thanks"                          → {"action":"respond","message":"You'r
 """
 
 
+class ClaudeAgent:
+    """Anthropic Claude-powered intent classifier and networking assistant.
+
+    Uses Claude's native tool-use so intent names ARE the tool names — no JSON
+    parsing guesswork.  Falls back gracefully when ANTHROPIC_API_KEY is absent.
+    """
+
+    _client = None
+    _api_key_cached: str = ""
+
+    # Claude Haiku: fast + cheap for intent routing; Sonnet for richer Q&A
+    _MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
+
+    @classmethod
+    def is_available(cls) -> bool:
+        return bool(os.environ.get("ANTHROPIC_API_KEY", ""))
+
+    @classmethod
+    def _get_client(cls):
+        try:
+            import anthropic
+        except ImportError:
+            return None
+        key = os.environ.get("ANTHROPIC_API_KEY", "")
+        if not key:
+            return None
+        if cls._client is None or cls._api_key_cached != key:
+            cls._api_key_cached = key
+            cls._client = anthropic.Anthropic(api_key=key)
+        return cls._client
+
+    @classmethod
+    def _build_tools(cls) -> list:
+        """Build one Anthropic tool per intent so Claude picks via tool-use."""
+        common_props = {
+            "site":        {"type": "string", "description": "Site name if mentioned"},
+            "serial":      {"type": "string", "description": "Device serial number if mentioned"},
+            "mac":         {"type": "string", "description": "MAC address if mentioned"},
+            "ssid":        {"type": "string", "description": "SSID / WLAN name if mentioned"},
+            "severity":    {"type": "string", "description": "Alert severity (CRITICAL/MAJOR/MINOR) if mentioned"},
+            "destination": {"type": "string", "description": "IP address or hostname for ping / traceroute"},
+            "port":        {"type": "string", "description": "Switch port identifier if mentioned (e.g. 1/1/5)"},
+            "query":       {"type": "string", "description": "Search term, IP, or MAC for client lookup"},
+        }
+        tools = []
+        for intent in _INTENTS:
+            tools.append({
+                "name": intent["name"],
+                "description": intent["description"],
+                "input_schema": {
+                    "type": "object",
+                    "properties": common_props,
+                },
+            })
+        return tools
+
+    @classmethod
+    def classify(cls, text: str, history: list = None, context: str = "") -> dict | None:
+        """Classify intent using Claude tool-use.
+
+        Returns:
+            {"name": intent_name, "params": {...}, "via": "claude"}
+            {"name": "__llm_response__", "message": "...", "via": "claude"}
+            None on failure (caller falls back to _handle_unknown)
+        """
+        client = cls._get_client()
+        if not client:
+            return None
+
+        system = (
+            "You are a network operations assistant for an Aruba Central WiFi and switching platform. "
+            "When the user asks about network status, devices, clients, alerts, VLANs, or wants to "
+            "run an action (ping, reboot, bounce port), call the matching tool. "
+            "When the user asks a general networking concept question (What is OSPF? How does RADIUS work?) "
+            "or chats casually, answer directly in 1–3 sentences without calling any tool. "
+            "Be concise and professional."
+        )
+        if context:
+            system += f"\n\nUser is currently on page: {context}"
+
+        messages = []
+        for h in (history or [])[-8:]:
+            role = h.get("role", "user")
+            content = h.get("content", "")
+            if isinstance(content, str) and content.strip():
+                messages.append({"role": role, "content": content})
+        messages.append({"role": "user", "content": text})
+
+        try:
+            resp = client.messages.create(
+                model=cls._MODEL,
+                max_tokens=512,
+                system=system,
+                tools=cls._build_tools(),
+                messages=messages,
+            )
+
+            # Tool-use block → intent dispatch
+            for block in resp.content:
+                if block.type == "tool_use":
+                    tool_name = block.name
+                    params = dict(block.input or {})
+                    if tool_name in _HANDLERS_KEYS:
+                        logger.info(f"ClaudeAgent picked tool '{tool_name}' params={params}")
+                        return {"name": tool_name, "params": params, "via": "claude"}
+                    logger.warning(f"ClaudeAgent returned unknown tool '{tool_name}' — ignoring")
+
+            # Text block → direct LLM answer (general Q&A)
+            for block in resp.content:
+                if block.type == "text" and block.text.strip():
+                    return {"name": "__llm_response__", "message": block.text.strip(), "via": "claude"}
+
+            return None
+
+        except Exception as exc:
+            logger.warning(f"ClaudeAgent.classify error: {exc}")
+            return None
+
+
 class OllamaAgent:
     """LLM-powered intent classifier using local Ollama."""
 
@@ -2169,7 +2288,19 @@ def stream_events():
 
 @chat_bp.route("/api/chat/llm-status", methods=["GET"])
 def chat_llm_status():
-    """Return Ollama availability and loaded model info."""
+    """Return LLM availability: Claude API preferred, Ollama as fallback."""
+    # Claude API check (preferred)
+    if ClaudeAgent.is_available():
+        return jsonify(
+            {
+                "available": True,
+                "model": ClaudeAgent._MODEL,
+                "model_ready": True,
+                "via": "claude",
+            }
+        )
+
+    # Ollama fallback check
     try:
         r = httpx.get(f"{_OLLAMA_URL}/api/tags", timeout=3.0)
         if r.status_code == 200:
@@ -2183,16 +2314,18 @@ def chat_llm_status():
                     "model_ready": model_ready,
                     "models": models,
                     "url": _OLLAMA_URL,
+                    "via": "ollama",
                 }
             )
     except Exception:
         pass
+
     return jsonify(
         {
             "available": False,
-            "model": _OLLAMA_MODEL,
+            "model": None,
             "model_ready": False,
-            "error": "Ollama not reachable",
+            "error": "No LLM configured (set ANTHROPIC_API_KEY or run Ollama locally)",
         }
     )
 
@@ -2264,21 +2397,31 @@ def chat_message():
         session_id = request.headers.get("X-Session-ID", "unknown")
 
         # ── Intent classification ────────────────────────────────────────────
-        # 1. Try fast regex classifier first
+        # 1. Try fast regex classifier first (no LLM, no latency)
         intent = IntentClassifier.classify(message)
         via = "regex"
 
-        # 2. If no regex match, try Ollama (if available)
-        if intent is None:
+        # 2. If no regex match, try Claude API (preferred — always available
+        #    when ANTHROPIC_API_KEY is set, no local Ollama required)
+        if intent is None and ClaudeAgent.is_available():
+            claude_result = ClaudeAgent.classify(message, history, context=ctx)
+            if claude_result:
+                intent = claude_result
+                via = "claude"
+
+        # 3. Fallback: try local Ollama if Claude not configured
+        if intent is None and not ClaudeAgent.is_available():
             ollama_result = OllamaAgent.classify(message, history, context=ctx)
             if ollama_result:
                 intent = ollama_result
                 via = "ollama"
 
-        # 3. Handle direct LLM responses (Ollama said "respond" not "tool")
+        # 4. Handle direct LLM responses (Claude/Ollama answered directly, no tool)
         if intent and intent.get("name") == "__llm_response__":
+            llm_via = intent.get("via", via)
+            llm_model = _OLLAMA_MODEL if llm_via == "ollama" else ClaudeAgent._MODEL
             logger.info(
-                f"Chat: session={session_id[:8]}... intent=llm_response via=ollama "
+                f"Chat: session={session_id[:8]}... intent=llm_response via={llm_via} "
                 f"msg={message[:80]!r}"
             )
             new_history = list(history) + [
@@ -2289,8 +2432,8 @@ def chat_message():
                 {
                     "reply": intent["message"],
                     "intent": "llm_response",
-                    "via": "ollama",
-                    "model": _OLLAMA_MODEL,
+                    "via": llm_via,
+                    "model": llm_model,
                     "data": None,
                     "history": new_history,
                     "ts": time.time(),
@@ -2345,7 +2488,11 @@ def chat_message():
             "reply": reply,
             "intent": intent["name"] if intent else None,
             "via": via,
-            "model": _OLLAMA_MODEL if via == "ollama" else "regex",
+            "model": (
+                _OLLAMA_MODEL if via == "ollama"
+                else ClaudeAgent._MODEL if via == "claude"
+                else "regex"
+            ),
             "data": data,
             "destructive": bool(intent and intent.get("destructive")),
             "history": new_history,

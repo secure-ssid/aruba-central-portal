@@ -314,14 +314,20 @@ function MessageBubble({ msg }) {
                 }}
               />
             )}
-            {msg.via === 'ollama' && (
+            {(msg.via === 'ollama' || msg.via === 'claude') && (
               <Chip
-                label={msg.model ? `🧠 ${msg.model.split(':')[0]}` : '🧠 AI'}
+                label={
+                  msg.via === 'claude'
+                    ? `✦ ${msg.model ? msg.model.replace('claude-', '').replace(/-\d{8}$/, '') : 'Claude'}`
+                    : msg.model ? `🧠 ${msg.model.split(':')[0]}` : '🧠 AI'
+                }
                 size="small"
                 sx={{
                   height: 18, fontSize: '0.6rem', fontWeight: 600,
-                  bgcolor: 'rgba(99,102,241,0.2)', color: '#818CF8',
-                  border: '1px solid rgba(99,102,241,0.3)', borderRadius: 1,
+                  bgcolor: msg.via === 'claude' ? 'rgba(255,102,0,0.15)' : 'rgba(99,102,241,0.2)',
+                  color:   msg.via === 'claude' ? 'var(--color-primary)' : '#818CF8',
+                  border: `1px solid ${msg.via === 'claude' ? 'rgba(255,102,0,0.3)' : 'rgba(99,102,241,0.3)'}`,
+                  borderRadius: 1,
                   '& .MuiChip-label': { px: 0.75 },
                 }}
               />
@@ -792,7 +798,11 @@ function ChatDrawer({ pageContext = '' }) {
             )}
           </Box>
           <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
-            {llmStatus.available && llmStatus.model_ready ? `AI · ${llmStatus.model}` : 'Aruba Central API'}
+            {llmStatus.available && llmStatus.model_ready
+              ? llmStatus.via === 'claude'
+                ? `Claude AI · ${llmStatus.model?.replace('claude-', '').replace(/-\d{8}$/, '') ?? ''}`
+                : `Ollama · ${llmStatus.model}`
+              : 'Aruba Central API'}
           </Typography>
         </Box>
 
