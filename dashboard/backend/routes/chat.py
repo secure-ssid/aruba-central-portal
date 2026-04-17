@@ -2025,7 +2025,7 @@ class GeminiAgent:
     API directly with httpx.
     """
 
-    _MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+    _MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
     _API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
     @classmethod
