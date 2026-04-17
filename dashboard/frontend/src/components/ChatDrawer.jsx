@@ -314,19 +314,31 @@ function MessageBubble({ msg }) {
                 }}
               />
             )}
-            {(msg.via === 'ollama' || msg.via === 'claude') && (
+            {(msg.via === 'ollama' || msg.via === 'claude' || msg.via === 'gemini') && (
               <Chip
                 label={
-                  msg.via === 'claude'
+                  msg.via === 'gemini'
+                    ? `✦ ${msg.model ?? 'Gemini'}`
+                    : msg.via === 'claude'
                     ? `✦ ${msg.model ? msg.model.replace('claude-', '').replace(/-\d{8}$/, '') : 'Claude'}`
-                    : msg.model ? `🧠 ${msg.model.split(':')[0]}` : '🧠 AI'
+                    : msg.model ? `🧠 ${msg.model.split(':')[0]}` : '🧠 Ollama'
                 }
                 size="small"
                 sx={{
                   height: 18, fontSize: '0.6rem', fontWeight: 600,
-                  bgcolor: msg.via === 'claude' ? 'rgba(255,102,0,0.15)' : 'rgba(99,102,241,0.2)',
-                  color:   msg.via === 'claude' ? 'var(--color-primary)' : '#818CF8',
-                  border: `1px solid ${msg.via === 'claude' ? 'rgba(255,102,0,0.3)' : 'rgba(99,102,241,0.3)'}`,
+                  bgcolor:
+                    msg.via === 'gemini' ? 'rgba(66,133,244,0.15)'
+                    : msg.via === 'claude' ? 'rgba(255,102,0,0.15)'
+                    : 'rgba(99,102,241,0.2)',
+                  color:
+                    msg.via === 'gemini' ? '#4285F4'
+                    : msg.via === 'claude' ? 'var(--color-primary)'
+                    : '#818CF8',
+                  border: `1px solid ${
+                    msg.via === 'gemini' ? 'rgba(66,133,244,0.3)'
+                    : msg.via === 'claude' ? 'rgba(255,102,0,0.3)'
+                    : 'rgba(99,102,241,0.3)'
+                  }`,
                   borderRadius: 1,
                   '& .MuiChip-label': { px: 0.75 },
                 }}
@@ -799,8 +811,10 @@ function ChatDrawer({ pageContext = '' }) {
           </Box>
           <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
             {llmStatus.available && llmStatus.model_ready
-              ? llmStatus.via === 'claude'
-                ? `Claude AI · ${llmStatus.model?.replace('claude-', '').replace(/-\d{8}$/, '') ?? ''}`
+              ? llmStatus.via === 'gemini'
+                ? `Gemini · ${llmStatus.model ?? ''}`
+                : llmStatus.via === 'claude'
+                ? `Claude · ${llmStatus.model?.replace('claude-', '').replace(/-\d{8}$/, '') ?? ''}`
                 : `Ollama · ${llmStatus.model}`
               : 'Aruba Central API'}
           </Typography>

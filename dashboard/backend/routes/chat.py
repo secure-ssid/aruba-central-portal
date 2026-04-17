@@ -2017,6 +2017,106 @@ class ClaudeAgent:
             return None
 
 
+class GeminiAgent:
+    """Google Gemini-powered intent classifier — free tier: 15 RPM, 1M tokens/day.
+
+    Set GEMINI_API_KEY in .env to activate.  Uses gemini-1.5-flash by default
+    (override with GEMINI_MODEL).  No extra packages required — calls the REST
+    API directly with httpx.
+    """
+
+    _MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+    _API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+
+    @classmethod
+    def is_available(cls) -> bool:
+        return bool(os.environ.get("GEMINI_API_KEY", ""))
+
+    @classmethod
+    def _build_function_declarations(cls) -> list:
+        common_props = {
+            "site":        {"type": "STRING", "description": "Site name if mentioned"},
+            "serial":      {"type": "STRING", "description": "Device serial number if mentioned"},
+            "mac":         {"type": "STRING", "description": "MAC address if mentioned"},
+            "ssid":        {"type": "STRING", "description": "SSID/WLAN name if mentioned"},
+            "severity":    {"type": "STRING", "description": "Alert severity (CRITICAL/MAJOR/MINOR) if mentioned"},
+            "destination": {"type": "STRING", "description": "IP or hostname for ping / traceroute"},
+            "port":        {"type": "STRING", "description": "Switch port identifier e.g. 1/1/5"},
+            "query":       {"type": "STRING", "description": "Search term, IP, or MAC for client lookup"},
+        }
+        return [
+            {
+                "name": intent["name"],
+                "description": intent["description"],
+                "parameters": {"type": "OBJECT", "properties": common_props},
+            }
+            for intent in _INTENTS
+        ]
+
+    @classmethod
+    def classify(cls, text: str, history: list = None, context: str = "") -> dict | None:
+        key = os.environ.get("GEMINI_API_KEY", "")
+        if not key:
+            return None
+
+        system_instruction = (
+            "You are a network operations assistant for an Aruba Central WiFi and switching platform. "
+            "Call the appropriate function when the user asks about network status, devices, clients, "
+            "alerts, VLANs, or wants to run an action (ping, reboot, bounce port). "
+            "For general networking concept questions (What is OSPF? How does RADIUS work?) "
+            "or casual chat, answer directly in 1–3 sentences without calling any function."
+        )
+        if context:
+            system_instruction += f" User is currently on page: {context}"
+
+        contents = []
+        for h in (history or [])[-8:]:
+            role = "user" if h.get("role") == "user" else "model"
+            content = h.get("content", "").strip()
+            if content:
+                contents.append({"role": role, "parts": [{"text": content}]})
+        contents.append({"role": "user", "parts": [{"text": text}]})
+
+        payload = {
+            "system_instruction": {"parts": [{"text": system_instruction}]},
+            "contents": contents,
+            "tools": [{"function_declarations": cls._build_function_declarations()}],
+            "tool_config": {"function_calling_config": {"mode": "AUTO"}},
+            "generation_config": {"temperature": 0.05, "max_output_tokens": 512},
+        }
+
+        try:
+            url = f"{cls._API_BASE}/{cls._MODEL}:generateContent?key={key}"
+            resp = httpx.post(url, json=payload, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+
+            parts = (data.get("candidates") or [{}])[0].get("content", {}).get("parts", [])
+            for part in parts:
+                if "functionCall" in part:
+                    fn   = part["functionCall"]
+                    name = fn.get("name", "")
+                    args = fn.get("args") or {}
+                    if name in _HANDLERS_KEYS:
+                        logger.info(f"GeminiAgent picked '{name}' args={args}")
+                        return {"name": name, "params": args, "via": "gemini"}
+                    logger.warning(f"GeminiAgent returned unknown function '{name}' — ignored")
+
+            # Text response → direct LLM answer
+            for part in parts:
+                if "text" in part and part["text"].strip():
+                    return {"name": "__llm_response__", "message": part["text"].strip(), "via": "gemini"}
+
+            return None
+
+        except httpx.TimeoutException:
+            logger.warning("GeminiAgent timeout — skipping")
+            return None
+        except Exception as exc:
+            logger.warning(f"GeminiAgent.classify error: {exc}")
+            return None
+
+
 class OllamaAgent:
     """LLM-powered intent classifier using local Ollama."""
 
@@ -2288,46 +2388,49 @@ def stream_events():
 
 @chat_bp.route("/api/chat/llm-status", methods=["GET"])
 def chat_llm_status():
-    """Return LLM availability: Claude API preferred, Ollama as fallback."""
-    # Claude API check (preferred)
-    if ClaudeAgent.is_available():
-        return jsonify(
-            {
-                "available": True,
-                "model": ClaudeAgent._MODEL,
-                "model_ready": True,
-                "via": "claude",
-            }
-        )
+    """Return active LLM info: Gemini → Claude → Ollama priority."""
+    # Gemini free cloud
+    if GeminiAgent.is_available():
+        return jsonify({
+            "available": True,
+            "model": GeminiAgent._MODEL,
+            "model_ready": True,
+            "via": "gemini",
+        })
 
-    # Ollama fallback check
+    # Claude paid cloud
+    if ClaudeAgent.is_available():
+        return jsonify({
+            "available": True,
+            "model": ClaudeAgent._MODEL,
+            "model_ready": True,
+            "via": "claude",
+        })
+
+    # Ollama free local (any engine)
     try:
         r = httpx.get(f"{_OLLAMA_URL}/api/tags", timeout=3.0)
         if r.status_code == 200:
             tags = r.json()
             models = [m["name"] for m in tags.get("models", [])]
             model_ready = any(_OLLAMA_MODEL.split(":")[0] in m for m in models)
-            return jsonify(
-                {
-                    "available": True,
-                    "model": _OLLAMA_MODEL,
-                    "model_ready": model_ready,
-                    "models": models,
-                    "url": _OLLAMA_URL,
-                    "via": "ollama",
-                }
-            )
+            return jsonify({
+                "available": True,
+                "model": _OLLAMA_MODEL,
+                "model_ready": model_ready,
+                "models": models,
+                "url": _OLLAMA_URL,
+                "via": "ollama",
+            })
     except Exception:
         pass
 
-    return jsonify(
-        {
-            "available": False,
-            "model": None,
-            "model_ready": False,
-            "error": "No LLM configured (set ANTHROPIC_API_KEY or run Ollama locally)",
-        }
-    )
+    return jsonify({
+        "available": False,
+        "model": None,
+        "model_ready": False,
+        "error": "No LLM configured — set GEMINI_API_KEY, ANTHROPIC_API_KEY, or run Ollama locally",
+    })
 
 
 @chat_bp.route("/api/chat/intents", methods=["GET"])
@@ -2401,25 +2504,36 @@ def chat_message():
         intent = IntentClassifier.classify(message)
         via = "regex"
 
-        # 2. If no regex match, try Claude API (preferred — always available
-        #    when ANTHROPIC_API_KEY is set, no local Ollama required)
-        if intent is None and ClaudeAgent.is_available():
-            claude_result = ClaudeAgent.classify(message, history, context=ctx)
-            if claude_result:
-                intent = claude_result
-                via = "claude"
+        # 2–4. LLM fallback cascade (first available wins):
+        #       Gemini free cloud → Claude paid cloud → Ollama free local
+        if intent is None:
+            for agent_cls, agent_via in [
+                (GeminiAgent, "gemini"),
+                (ClaudeAgent, "claude"),
+            ]:
+                if agent_cls.is_available():
+                    result = agent_cls.classify(message, history, context=ctx)
+                    if result:
+                        intent = result
+                        via = agent_via
+                    break  # stop after first configured cloud agent
 
-        # 3. Fallback: try local Ollama if Claude not configured
-        if intent is None and not ClaudeAgent.is_available():
+        # 5. Ollama local fallback (free, any engine)
+        if intent is None:
             ollama_result = OllamaAgent.classify(message, history, context=ctx)
             if ollama_result:
                 intent = ollama_result
                 via = "ollama"
 
-        # 4. Handle direct LLM responses (Claude/Ollama answered directly, no tool)
+        # 6. Handle direct LLM responses (answered without calling a tool)
         if intent and intent.get("name") == "__llm_response__":
             llm_via = intent.get("via", via)
-            llm_model = _OLLAMA_MODEL if llm_via == "ollama" else ClaudeAgent._MODEL
+            llm_model = (
+                _OLLAMA_MODEL if llm_via == "ollama"
+                else GeminiAgent._MODEL if llm_via == "gemini"
+                else ClaudeAgent._MODEL if llm_via == "claude"
+                else "unknown"
+            )
             logger.info(
                 f"Chat: session={session_id[:8]}... intent=llm_response via={llm_via} "
                 f"msg={message[:80]!r}"
@@ -2490,6 +2604,7 @@ def chat_message():
             "via": via,
             "model": (
                 _OLLAMA_MODEL if via == "ollama"
+                else GeminiAgent._MODEL if via == "gemini"
                 else ClaudeAgent._MODEL if via == "claude"
                 else "regex"
             ),
