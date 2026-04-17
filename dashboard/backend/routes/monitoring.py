@@ -223,32 +223,6 @@ def get_service_subscriptions():
         return jsonify({"error": str(e)}), 500
 
 
-@monitoring_bp.route("/api/services/audit-logs", methods=["GET"])
-@require_session
-def get_service_audit_logs():
-    """Get service audit logs."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-    try:
-        limit = request.args.get("limit", 100)
-        offset = request.args.get("offset", 0)
-
-        params = {"limit": limit, "offset": offset}
-
-        try:
-            response = aruba_client.get("/platform/auditlogs/v1/logs", params=params)
-            return jsonify(response)
-        except CentralAPIError as aerr:
-            if aerr.status_code in (400, 404):
-                logger.warning("Audit logs not available; returning empty list")
-                return jsonify({"logs": [], "count": 0, "offset": int(offset)})
-            raise aerr
-    except Exception as e:
-        logger.error(f"Error fetching audit logs: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
 @monitoring_bp.route("/api/services/capacity", methods=["GET"])
 @require_session
 def get_service_capacity():

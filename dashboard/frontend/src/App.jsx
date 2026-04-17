@@ -51,7 +51,6 @@ const GLRolesPage         = lazy(() => import('./pages/GLRolesPage'));
 const GLPermissionsPage   = lazy(() => import('./pages/GLPermissionsPage'));
 const ReportingPage       = lazy(() => import('./pages/ReportingPage'));
 const ScheduledReportsPage    = lazy(() => import('./pages/ScheduledReportsPage'));
-const AuditLogPage            = lazy(() => import('./pages/AuditLogPage'));
 
 // Configuration sub-pages
 const ConfigurationIndexPage      = lazy(() => import('./pages/configuration/ConfigurationIndexPage'));
@@ -372,7 +371,6 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/api-explorer" element={<APIExplorerPage />} />
             <Route path="/reporting" element={<ErrorBoundary><ReportingPage /></ErrorBoundary>} />
             <Route path="/scheduled-reports" element={<ErrorBoundary><ScheduledReportsPage /></ErrorBoundary>} />
-            <Route path="/audit-log" element={<ErrorBoundary><AuditLogPage /></ErrorBoundary>} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/status" element={<StatusPage />} />
             {/* Global Layer (MSP) routes */}
