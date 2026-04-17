@@ -135,12 +135,7 @@ make test              # pytest — backend + utils
 make test-cov          # with coverage
 ```
 
-Frontend tests live alongside components (`*.test.jsx`) and run under Vitest:
-
-```bash
-cd dashboard/frontend
-npm test
-```
+Frontend tests are not yet set up.
 
 ---
 
