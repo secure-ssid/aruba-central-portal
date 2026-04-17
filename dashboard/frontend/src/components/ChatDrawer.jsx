@@ -40,7 +40,11 @@ import {
   TableHead,
   TableRow,
   Slide,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SendIcon             from '@mui/icons-material/Send';
 import CloseIcon            from '@mui/icons-material/Close';
 import OpenInFullIcon       from '@mui/icons-material/OpenInFull';
@@ -70,6 +74,16 @@ const MAX_MESSAGES = 50;
 const PANEL_WIDTH_OPEN = 400;
 const PANEL_WIDTH_WIDE = 560;
 const TOPBAR_HEIGHT    = 64; // px — matches TopBar height
+
+// Floating-card defaults and constraints
+const FLOAT_DEFAULT_W = 420;
+const FLOAT_DEFAULT_H = 600;
+const FLOAT_MIN_W     = 320;
+const FLOAT_MIN_H     = 400;
+const FLOAT_MAX_W     = 800;
+const FLOAT_MAX_H     = 900;
+const FLOAT_MARGIN    = 20;
+const SIZE_STORAGE_KEY = 'chat_drawer_size';
 
 const ORANGE      = 'var(--color-primary)';
 const PAPER_BG    = 'var(--bg-paper)';
@@ -112,7 +126,6 @@ const FOLLOWUP_CHIPS = {
   bounce_port:          ['Switch port status', 'Show VLANs', 'Show devices'],
   ack_alert:            ['Show alerts', 'AP status', 'Site health'],
   disconnect_client:    ['Show clients', 'Show alerts', 'AP status'],
-  audit_logs:           ['Show alerts', 'Show devices', 'Site health'],
   ap_radios:            ['AP status', 'Show clients', 'Site health'],
   device_events:        ['Show alerts', 'AP status', 'Firmware status'],
   help:                 ['Show devices', 'AP status', 'Show alerts', 'Show clients'],
@@ -147,7 +160,6 @@ const INTENT_COLORS = {
   show_switch_interfaces: '#A855F7',
   device_events:          'var(--color-secondary)',
   ap_radios:              'var(--color-secondary)',
-  audit_logs:             'var(--text-muted)',
   llm_response:           'rgba(99,102,241,0.8)',
 };
 
@@ -179,69 +191,219 @@ function ThinkingDots() {
 
 // ─── Compact data table (scrollable) ─────────────────────────────────────────
 
+// Safe cell rendering: handles null/undefined, objects/arrays, and long strings.
+// Returns { display, full, truncated } so caller can decide on tooltip wrapping.
+function formatCellValue(value) {
+  if (value === null || value === undefined || value === '') {
+    return { display: '—', full: '', truncated: false };
+  }
+  if (typeof value === 'object') {
+    const full = JSON.stringify(value);
+    if (full.length > 40) {
+      return { display: full.slice(0, 40) + '…', full, truncated: true };
+    }
+    return { display: full, full, truncated: false };
+  }
+  const str = String(value);
+  if (str.length > 50) {
+    return { display: str.slice(0, 50) + '…', full: str, truncated: true };
+  }
+  return { display: str, full: str, truncated: false };
+}
+
+const DEFAULT_ROW_LIMIT = 8;
+
 function DataTable({ data }) {
+  const [showAll, setShowAll] = useState(false);
+  const [popout, setPopout] = useState(false);
+
   // Accept an array of objects or a plain object
   const rows = Array.isArray(data) ? data : [data];
   if (!rows.length) return null;
 
-  const keys = Object.keys(rows[0]);
+  const keys = Object.keys(rows[0] || {});
   if (!keys.length) return null;
 
+  const hasMore = rows.length > DEFAULT_ROW_LIMIT;
+  const visibleRows = showAll || !hasMore ? rows : rows.slice(0, DEFAULT_ROW_LIMIT);
+
   return (
-    <Box
-      sx={{
-        mt: 1,
-        overflowX: 'auto',
-        overflowY: 'auto',
-        maxHeight: 200,
-        borderRadius: 1,
-        border: `1px solid ${BORDER_CLR}`,
-      }}
-    >
-      <Table size="small" stickyHeader>
-        <TableHead>
-          <TableRow>
-            {keys.map((k) => (
-              <TableCell
-                key={k}
-                sx={{
-                  color:         'text.secondary',
-                  fontSize:      '0.7rem',
-                  fontWeight:    600,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                  borderBottom:  `1px solid ${BORDER_CLR}`,
-                  bgcolor:       PAPER_BG,
-                  py: 0.5,
-                }}
-              >
-                {k}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, ri) => (
-            <TableRow key={ri}>
+    <Box sx={{ mt: 1, width: '100%' }}>
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'auto',
+          overflowY: 'auto',
+          maxHeight: 320,
+          borderRadius: 1,
+          border: `1px solid ${BORDER_CLR}`,
+        }}
+      >
+        <Table
+          size="small"
+          stickyHeader
+          sx={{
+            '& .MuiTableCell-root': {
+              px: 1,
+              py: 0.5,
+              fontSize: '0.75rem',
+              whiteSpace: 'nowrap',
+            },
+          }}
+        >
+          <TableHead>
+            <TableRow>
               {keys.map((k) => (
                 <TableCell
                   key={k}
                   sx={{
-                    fontSize:  '0.75rem',
-                    color:     'text.primary',
-                    border:    'none',
-                    py:        0.5,
+                    color:         'text.secondary',
+                    fontSize:      '0.7rem !important',
+                    fontWeight:    600,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                    borderBottom:  `1px solid ${BORDER_CLR}`,
+                    bgcolor:       PAPER_BG,
                   }}
                 >
-                  {row[k] === null || row[k] === undefined
-                    ? '—'
-                    : String(row[k])}
+                  {k}
                 </TableCell>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {visibleRows.map((row, ri) => (
+              <TableRow key={ri}>
+                {keys.map((k) => {
+                  const { display, full, truncated } = formatCellValue(row ? row[k] : null);
+                  const cell = (
+                    <TableCell
+                      key={k}
+                      sx={{
+                        color:     'text.primary',
+                        border:    'none',
+                        maxWidth:  260,
+                        overflow:  'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {display}
+                    </TableCell>
+                  );
+                  if (truncated && full) {
+                    return (
+                      <Tooltip key={k} title={full} placement="top" arrow>
+                        {cell}
+                      </Tooltip>
+                    );
+                  }
+                  return cell;
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+      <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5 }}>
+        {hasMore && (
+          <Box
+            component="button"
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            sx={{
+              flex: 1,
+              py: 0.4,
+              border: `1px solid ${BORDER_CLR}`,
+              borderRadius: 1,
+              bgcolor: 'transparent',
+              color: 'text.secondary',
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.05)', color: 'text.primary' },
+            }}
+          >
+            {showAll
+              ? `Show less (${DEFAULT_ROW_LIMIT} of ${rows.length})`
+              : `+${rows.length - DEFAULT_ROW_LIMIT} more`}
+          </Box>
+        )}
+        <Box
+          component="button"
+          type="button"
+          onClick={() => setPopout(true)}
+          sx={{
+            flex: hasMore ? '0 0 auto' : 1,
+            px: 1.2,
+            py: 0.4,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 0.5,
+            border: `1px solid var(--color-primary)`,
+            borderRadius: 1,
+            bgcolor: 'rgba(255,102,0,0.08)',
+            color: 'var(--color-primary)',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            '&:hover': { bgcolor: 'rgba(255,102,0,0.18)' },
+          }}
+        >
+          <OpenInNewIcon sx={{ fontSize: 13 }} />
+          Pop out
+        </Box>
+      </Box>
+
+      <Dialog
+        open={popout}
+        onClose={() => setPopout(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{ sx: { height: '85vh' } }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1 }}>
+          <Typography variant="subtitle1" fontWeight={600}>
+            {rows.length} {rows.length === 1 ? 'item' : 'items'}
+          </Typography>
+          <IconButton size="small" onClick={() => setPopout(false)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 0 }}>
+          <Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
+            <Table size="small" stickyHeader sx={{ '& .MuiTableCell-root': { px: 1.5, py: 0.75, fontSize: '0.8rem', whiteSpace: 'nowrap' } }}>
+              <TableHead>
+                <TableRow>
+                  {keys.map((k) => (
+                    <TableCell key={k} sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, bgcolor: PAPER_BG }}>
+                      {k}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row, ri) => (
+                  <TableRow key={ri} hover>
+                    {keys.map((k) => {
+                      const { display, full, truncated } = formatCellValue(row ? row[k] : null);
+                      const cell = (
+                        <TableCell key={k} sx={{ color: 'text.primary', maxWidth: 480, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {display}
+                        </TableCell>
+                      );
+                      return truncated && full
+                        ? <Tooltip key={k} title={full} placement="top" arrow>{cell}</Tooltip>
+                        : cell;
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
@@ -452,6 +614,73 @@ function ChatDrawer({ pageContext = '' }) {
   const [lastIntent,    setLastIntent]    = useState(null);
   // Pending destructive action: { text, confirmed } — shows confirm/cancel before executing
   const [pendingAction, setPendingAction] = useState(null);
+  // Pending destructive MCP tool call proposed by the backend (Gemini picked a
+  // destructive MCP tool). Shape: { token, tool, params, summary }. When set,
+  // a confirm/cancel card is rendered below the messages.
+  const [pendingMcpAction, setPendingMcpAction] = useState(null);
+
+  // ── Floating-card panel size/mode (persisted in localStorage) ────────────
+  // panelMode: 'floating' (bottom-right card) | 'fullscreen' (full right drawer)
+  const [panelMode,   setPanelMode]   = useState('floating');
+  const [panelWidthPx,  setPanelWidthPx]  = useState(FLOAT_DEFAULT_W);
+  const [panelHeightPx, setPanelHeightPx] = useState(FLOAT_DEFAULT_H);
+
+  // Load persisted size/mode once on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SIZE_STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved.mode === 'floating' || saved.mode === 'fullscreen') {
+        setPanelMode(saved.mode);
+      }
+      if (typeof saved.width === 'number') {
+        setPanelWidthPx(Math.max(FLOAT_MIN_W, Math.min(FLOAT_MAX_W, saved.width)));
+      }
+      if (typeof saved.height === 'number') {
+        setPanelHeightPx(Math.max(FLOAT_MIN_H, Math.min(FLOAT_MAX_H, saved.height)));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIZE_STORAGE_KEY, JSON.stringify({
+        mode:   panelMode,
+        width:  panelWidthPx,
+        height: panelHeightPx,
+      }));
+    } catch { /* ignore */ }
+  }, [panelMode, panelWidthPx, panelHeightPx]);
+
+  // Resize handler — drags top-left corner, grows up/left
+  const startResize = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = panelWidthPx;
+    const startH = panelHeightPx;
+
+    const onMove = (ev) => {
+      // Dragging left/up increases size (handle is top-left)
+      const dx = startX - ev.clientX;
+      const dy = startY - ev.clientY;
+      const nextW = Math.max(FLOAT_MIN_W, Math.min(FLOAT_MAX_W, startW + dx));
+      const nextH = Math.max(FLOAT_MIN_H, Math.min(FLOAT_MAX_H, startH + dy));
+      setPanelWidthPx(nextW);
+      setPanelHeightPx(nextH);
+    };
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.userSelect = '';
+    };
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [panelWidthPx, panelHeightPx]);
 
   const messagesEndRef  = useRef(null);
   const inputRef        = useRef(null);
@@ -487,14 +716,9 @@ function ChatDrawer({ pageContext = '' }) {
   // ── Width calculation (right-side panel) ────────────────────────────────
 
   const isCollapsed  = drawerState === 'collapsed';
-  const isFull       = drawerState === 'full';
-  // Responsive width: full viewport on xs screens, fixed width on sm+
-  const panelWidth   = isCollapsed
-    ? 0
-    : {
-        xs: '100vw',
-        sm: isFull ? PANEL_WIDTH_WIDE : PANEL_WIDTH_OPEN,
-      };
+  const isFullscreenMode = panelMode === 'fullscreen';
+  // Kept for legacy expand icon state — now tracks fullscreen mode toggle
+  const isFull = isFullscreenMode;
 
   // ── Scroll to bottom on new messages ────────────────────────────────────
 
@@ -609,6 +833,17 @@ function ChatDrawer({ pageContext = '' }) {
       if (json.intent) setLastIntent(json.intent);
       setMessages((prev) => [...prev, assistantMsg].slice(-MAX_MESSAGES));
 
+      // Backend wants explicit confirmation before running a destructive MCP tool.
+      // Stash the pending-action payload; the confirm card below renders from it.
+      if (json.intent === 'confirm_mcp_action' && json.pending_action?.token) {
+        setPendingMcpAction({
+          token:   json.pending_action.token,
+          tool:    json.pending_action.tool,
+          params:  json.pending_action.params || {},
+          summary: json.pending_action.summary || json.reply || '',
+        });
+      }
+
       // Badge if drawer is collapsed
       if (isCollapsed) {
         setUnreadReply((c) => c + 1);
@@ -658,7 +893,9 @@ function ChatDrawer({ pageContext = '' }) {
 
   const toggleFullScreen = (e) => {
     e.stopPropagation();
-    setDrawerState((prev) => (prev === 'full' ? 'half' : 'full'));
+    setPanelMode((prev) => (prev === 'fullscreen' ? 'floating' : 'fullscreen'));
+    // Ensure drawer is open in a visible state
+    setDrawerState((prev) => (prev === 'collapsed' ? 'half' : prev));
   };
 
   const collapseDrawer = (e) => {
@@ -694,6 +931,63 @@ function ChatDrawer({ pageContext = '' }) {
       id:      generateId(),
       role:    'system',
       content: 'Action cancelled.',
+      ts:      Date.now(),
+    };
+    setMessages((prev) => [...prev, cancelMsg].slice(-MAX_MESSAGES));
+  };
+
+  // ── MCP destructive action: confirm / cancel ────────────────────────────
+  // Triggered when the backend returned intent="confirm_mcp_action". Confirming
+  // POSTs the token back to /api/chat/mcp-confirm; the server holds the real
+  // tool+params so the client can't tamper with what actually runs.
+  const confirmMcpAction = useCallback(async () => {
+    const action = pendingMcpAction;
+    if (!action || isLoading) return;
+    setPendingMcpAction(null);
+    setIsLoading(true);
+    try {
+      const sessionId = localStorage.getItem(SESSION_KEY);
+      const headers   = { 'Content-Type': 'application/json' };
+      if (sessionId) headers['X-Session-ID'] = sessionId;
+
+      const res = await fetch(`${API_BASE}/chat/mcp-confirm`, {
+        method:  'POST',
+        headers,
+        body:    JSON.stringify({ token: action.token }),
+      });
+      const json = await res.json().catch(() => ({}));
+
+      const assistantMsg = {
+        id:          generateId(),
+        role:        'assistant',
+        content:     json.reply ?? (res.ok ? 'Done.' : `Error: HTTP ${res.status}`),
+        intent:      json.intent ?? 'mcp_tool_result',
+        via:         'gemini+mcp',
+        data:        json.data ?? null,
+        destructive: true,
+        ts:          Date.now(),
+      };
+      setMessages((prev) => [...prev, assistantMsg].slice(-MAX_MESSAGES));
+    } catch (err) {
+      const errMsg = {
+        id:      generateId(),
+        role:    'system',
+        content: `Error confirming action: ${err.message}`,
+        ts:      Date.now(),
+      };
+      setMessages((prev) => [...prev, errMsg].slice(-MAX_MESSAGES));
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [pendingMcpAction, isLoading]);
+
+  const cancelMcpAction = () => {
+    setPendingMcpAction(null);
+    const cancelMsg = {
+      id:      generateId(),
+      role:    'system',
+      content: 'Cancelled.',
       ts:      Date.now(),
     };
     setMessages((prev) => [...prev, cancelMsg].slice(-MAX_MESSAGES));
@@ -750,30 +1044,79 @@ function ChatDrawer({ pageContext = '' }) {
         </Box>
       )}
 
-      {/* ── Right-side chat panel ──────────────────────────────────────────── */}
+      {/* ── Chat panel (floating card OR fullscreen right drawer) ─────────── */}
       <Box
         component="aside"
         role="complementary"
         aria-label="Network assistant chat"
-        sx={{
+        sx={isFullscreenMode ? {
+          // Fullscreen right-edge drawer (legacy behavior)
           position:      'fixed',
           right:         0,
           top:           TOPBAR_HEIGHT,
           bottom:        0,
-          width:         panelWidth,
+          width:         { xs: '100vw', sm: PANEL_WIDTH_WIDE },
           zIndex:        1300,
-          display:       'flex',
+          display:       isCollapsed ? 'none' : 'flex',
           flexDirection: 'column',
           bgcolor:       SURFACE_BG,
           borderLeft:    `2px solid ${ORANGE}`,
           boxShadow:     '-8px 0 40px rgba(0,0,0,0.6)',
-          transition:    'width 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
           overflow:      'hidden',
-          // Hide completely when collapsed (width=0) so it doesn't intercept clicks
+          pointerEvents: isCollapsed ? 'none' : 'auto',
+          visibility:    isCollapsed ? 'hidden' : 'visible',
+        } : {
+          // Floating bottom-right card
+          position:      'fixed',
+          right:         `${FLOAT_MARGIN}px`,
+          bottom:        `${FLOAT_MARGIN}px`,
+          width:         `${panelWidthPx}px`,
+          height:        `${panelHeightPx}px`,
+          maxWidth:      `calc(100vw - ${FLOAT_MARGIN * 2}px)`,
+          maxHeight:     `calc(100vh - ${FLOAT_MARGIN * 2}px)`,
+          zIndex:        1300,
+          display:       isCollapsed ? 'none' : 'flex',
+          flexDirection: 'column',
+          bgcolor:       SURFACE_BG,
+          border:        `1px solid ${BORDER_CLR}`,
+          borderRadius:  3,
+          boxShadow:     '0 16px 48px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.4)',
+          overflow:      'hidden',
           pointerEvents: isCollapsed ? 'none' : 'auto',
           visibility:    isCollapsed ? 'hidden' : 'visible',
         }}
       >
+        {/* Resize handle (floating mode only) — top-left corner */}
+        {!isFullscreenMode && !isCollapsed && (
+          <Box
+            onMouseDown={startResize}
+            role="separator"
+            aria-label="Resize chat panel"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: 16,
+              height: 16,
+              cursor: 'nwse-resize',
+              zIndex: 10,
+              // Visual corner hint
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 4,
+                left: 4,
+                width: 8,
+                height: 8,
+                borderTop: `2px solid ${ORANGE}`,
+                borderLeft: `2px solid ${ORANGE}`,
+                borderTopLeftRadius: 2,
+                opacity: 0.7,
+              },
+              '&:hover::before': { opacity: 1 },
+            }}
+          />
+        )}
       {/* ── Panel header ──────────────────────────────────────────────────── */}
       <Box
         sx={{
@@ -917,6 +1260,68 @@ function ChatDrawer({ pageContext = '' }) {
                 <Box
                   component="button"
                   onClick={cancelDestructive}
+                  sx={{
+                    flex: 1, py: 0.5, borderRadius: 1,
+                    border: `1px solid ${BORDER_CLR}`, cursor: 'pointer',
+                    bgcolor: 'transparent', color: 'text.secondary',
+                    fontSize: '0.78rem', fontWeight: 600,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
+                  }}
+                >
+                  Cancel
+                </Box>
+              </Box>
+            </Box>
+          )}
+
+          {/* MCP destructive tool confirmation (issued by backend) */}
+          {pendingMcpAction && !isLoading && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mb: 1, px: 0.5 }}>
+              <Box
+                sx={{
+                  px: 1.5, py: 1,
+                  borderRadius: '4px 16px 16px 16px',
+                  bgcolor: 'rgba(239,68,68,0.1)',
+                  border: '1px solid rgba(239,68,68,0.35)',
+                  fontSize: '0.83rem',
+                  color: 'text.primary',
+                }}
+              >
+                <Box sx={{ fontWeight: 700, mb: 0.5, color: 'var(--color-error)' }}>
+                  ⚠️ Confirm destructive action
+                </Box>
+                <Box sx={{ fontSize: '0.8rem', mb: 0.5 }}>
+                  {pendingMcpAction.summary}
+                </Box>
+                <Box sx={{
+                  fontSize: '0.72rem',
+                  fontFamily: 'monospace',
+                  color: 'text.secondary',
+                  bgcolor: 'rgba(0,0,0,0.25)',
+                  px: 0.75, py: 0.5, borderRadius: 0.5,
+                  whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+                }}>
+                  {pendingMcpAction.tool}
+                  {Object.keys(pendingMcpAction.params).length > 0 &&
+                    ` ${JSON.stringify(pendingMcpAction.params)}`}
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  component="button"
+                  onClick={confirmMcpAction}
+                  sx={{
+                    flex: 1, py: 0.5, borderRadius: 1, border: 'none', cursor: 'pointer',
+                    bgcolor: 'var(--color-error)', color: '#fff',
+                    fontSize: '0.78rem', fontWeight: 600,
+                    '&:hover': { opacity: 0.85 },
+                  }}
+                >
+                  Confirm
+                </Box>
+                <Box
+                  component="button"
+                  onClick={cancelMcpAction}
                   sx={{
                     flex: 1, py: 0.5, borderRadius: 1,
                     border: `1px solid ${BORDER_CLR}`, cursor: 'pointer',

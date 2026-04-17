@@ -26,6 +26,10 @@ import {
   Link,
   Chip,
   Collapse,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Visibility,
@@ -38,8 +42,9 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   HelpOutline as HelpIcon,
+  SmartToy as SmartToyIcon,
 } from '@mui/icons-material';
-import { workspaceAPI, clusterAPI } from '../services/api';
+import { workspaceAPI, clusterAPI, llmAPI } from '../services/api';
 import { DEFAULT_API_BASE_URL } from '../config/apiEndpoints';
 
 function SettingsPage() {
@@ -70,11 +75,85 @@ function SettingsPage() {
   const [glSuccess, setGlSuccess] = useState('');
   const [glConfigured, setGlConfigured] = useState(null);
 
+  // AI Assistant (LLM) config state
+  const [llmConfig, setLlmConfig] = useState(null);
+  const [llmStatus, setLlmStatus] = useState(null);
+  const [anthropicKey, setAnthropicKey] = useState('');
+  const [geminiKey, setGeminiKey] = useState('');
+  const [ollamaUrl, setOllamaUrl] = useState('');
+  const [ollamaModel, setOllamaModel] = useState('');
+  const [geminiModel, setGeminiModel] = useState('');
+  const [claudeModel, setClaudeModel] = useState('');
+  const [showAnthropicKey, setShowAnthropicKey] = useState(false);
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [llmLoading, setLlmLoading] = useState(false);
+  const [llmError, setLlmError] = useState('');
+  const [llmSuccess, setLlmSuccess] = useState('');
+
   useEffect(() => {
     fetchWorkspaceInfo();
     fetchClusterInfo();
     fetchGLStatus();
+    fetchLlmConfig();
   }, []);
+
+  const fetchLlmConfig = async () => {
+    try {
+      const [cfg, status] = await Promise.all([llmAPI.getConfig(), llmAPI.status()]);
+      setLlmConfig(cfg);
+      setLlmStatus(status);
+      setOllamaUrl(cfg.ollama_url || '');
+      setOllamaModel(cfg.ollama_model || '');
+      setGeminiModel(cfg.gemini_model || 'gemini-2.5-flash');
+      setClaudeModel(cfg.claude_model || 'claude-haiku-4-5-20251001');
+    } catch (err) {
+      console.error('Failed to fetch LLM config:', err);
+    }
+  };
+
+  const handleSaveLlmConfig = async () => {
+    setLlmLoading(true);
+    setLlmError('');
+    setLlmSuccess('');
+    const payload = {};
+    if (anthropicKey !== '') payload.anthropic_api_key = anthropicKey;
+    if (geminiKey !== '') payload.gemini_api_key = geminiKey;
+    if (ollamaUrl !== (llmConfig?.ollama_url || '')) payload.ollama_url = ollamaUrl;
+    if (ollamaModel !== (llmConfig?.ollama_model || '')) payload.ollama_model = ollamaModel;
+    if (geminiModel !== (llmConfig?.gemini_model || '')) payload.gemini_model = geminiModel;
+    if (claudeModel !== (llmConfig?.claude_model || '')) payload.claude_model = claudeModel;
+    if (Object.keys(payload).length === 0) {
+      setLlmError('Nothing to save — enter a key or change a value first.');
+      setLlmLoading(false);
+      return;
+    }
+    try {
+      await llmAPI.saveConfig(payload);
+      setLlmSuccess('AI settings saved.');
+      setAnthropicKey('');
+      setGeminiKey('');
+      await fetchLlmConfig();
+    } catch (err) {
+      setLlmError(err.response?.data?.error || err.message || 'Failed to save AI settings');
+    } finally {
+      setLlmLoading(false);
+    }
+  };
+
+  const handleClearLlmKey = async (field) => {
+    setLlmLoading(true);
+    setLlmError('');
+    setLlmSuccess('');
+    try {
+      await llmAPI.saveConfig({ [field]: '' });
+      setLlmSuccess('Key removed.');
+      await fetchLlmConfig();
+    } catch (err) {
+      setLlmError(err.response?.data?.error || err.message || 'Failed to remove key');
+    } finally {
+      setLlmLoading(false);
+    }
+  };
 
   const fetchWorkspaceInfo = async () => {
     try {
@@ -465,6 +544,150 @@ function SettingsPage() {
                   )}
                 </Box>
               </Collapse>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* AI Assistant (LLM) configuration */}
+        <Grid item xs={12}>
+          <Card variant="outlined">
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                <SmartToyIcon sx={{ mr: 1, color: 'var(--color-primary)' }} />
+                <Typography variant="h6" fontWeight={600}>AI Assistant</Typography>
+                {llmStatus?.available && (
+                  <Chip
+                    size="small"
+                    icon={<CheckIcon />}
+                    label={`Active: ${llmStatus.via}${llmStatus.model ? ' · ' + llmStatus.model : ''}`}
+                    color="success"
+                    sx={{ ml: 2 }}
+                  />
+                )}
+                {!llmStatus?.available && (
+                  <Chip size="small" label="Not configured" sx={{ ml: 2 }} />
+                )}
+              </Box>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                Configure an LLM for the chatbot. Priority order: Gemini → Claude → Ollama (local).
+                Keys are written to the server's <code>.env</code> file.
+              </Typography>
+
+              {llmError && <Alert severity="error" sx={{ mb: 2 }}>{llmError}</Alert>}
+              {llmSuccess && <Alert severity="success" sx={{ mb: 2 }}>{llmSuccess}</Alert>}
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Gemini API Key"
+                    type={showGeminiKey ? 'text' : 'password'}
+                    value={geminiKey}
+                    onChange={(e) => setGeminiKey(e.target.value)}
+                    placeholder={llmConfig?.gemini_configured ? llmConfig.gemini_api_key : 'Not set'}
+                    helperText={llmConfig?.gemini_configured ? 'A key is saved — enter a new one to replace.' : 'Free tier available at aistudio.google.com'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setShowGeminiKey(!showGeminiKey)}>
+                            {showGeminiKey ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                          {llmConfig?.gemini_configured && (
+                            <Button size="small" onClick={() => handleClearLlmKey('gemini_api_key')} disabled={llmLoading}>Clear</Button>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <FormControl fullWidth size="small" sx={{ mt: 1 }} disabled={!llmConfig?.gemini_configured}>
+                    <InputLabel id="gemini-model-label">Gemini Model</InputLabel>
+                    <Select
+                      labelId="gemini-model-label"
+                      label="Gemini Model"
+                      value={geminiModel}
+                      onChange={(e) => setGeminiModel(e.target.value)}
+                    >
+                      <MenuItem value="gemini-2.5-flash">gemini-2.5-flash (default, 20 RPD free)</MenuItem>
+                      <MenuItem value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (higher quota)</MenuItem>
+                      <MenuItem value="gemini-flash-latest">gemini-flash-latest</MenuItem>
+                      <MenuItem value="gemini-flash-lite-latest">gemini-flash-lite-latest</MenuItem>
+                      <MenuItem value="gemini-2.5-pro">gemini-2.5-pro</MenuItem>
+                      <MenuItem value="gemini-pro-latest">gemini-pro-latest</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Anthropic (Claude) API Key"
+                    type={showAnthropicKey ? 'text' : 'password'}
+                    value={anthropicKey}
+                    onChange={(e) => setAnthropicKey(e.target.value)}
+                    placeholder={llmConfig?.anthropic_configured ? llmConfig.anthropic_api_key : 'Not set'}
+                    helperText={llmConfig?.anthropic_configured ? 'A key is saved — enter a new one to replace.' : 'Get a key at console.anthropic.com'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setShowAnthropicKey(!showAnthropicKey)}>
+                            {showAnthropicKey ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                          {llmConfig?.anthropic_configured && (
+                            <Button size="small" onClick={() => handleClearLlmKey('anthropic_api_key')} disabled={llmLoading}>Clear</Button>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <FormControl fullWidth size="small" sx={{ mt: 1 }} disabled={!llmConfig?.anthropic_configured}>
+                    <InputLabel id="claude-model-label">Claude Model</InputLabel>
+                    <Select
+                      labelId="claude-model-label"
+                      label="Claude Model"
+                      value={claudeModel}
+                      onChange={(e) => setClaudeModel(e.target.value)}
+                    >
+                      <MenuItem value="claude-haiku-4-5-20251001">claude-haiku-4-5-20251001 (fast/cheap)</MenuItem>
+                      <MenuItem value="claude-sonnet-4-5-20250929">claude-sonnet-4-5-20250929 (more capable)</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Ollama URL (local)"
+                    value={ollamaUrl}
+                    onChange={(e) => setOllamaUrl(e.target.value)}
+                    placeholder="http://localhost:11434"
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Ollama Model"
+                    value={ollamaModel}
+                    onChange={(e) => setOllamaModel(e.target.value)}
+                    placeholder="llama3.2:3b"
+                  />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  onClick={handleSaveLlmConfig}
+                  disabled={llmLoading}
+                  startIcon={llmLoading ? <CircularProgress size={16} /> : null}
+                >
+                  Save AI Settings
+                </Button>
+                <Button variant="outlined" onClick={fetchLlmConfig} disabled={llmLoading}>
+                  Test Connection
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </Grid>

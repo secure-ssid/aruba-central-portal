@@ -21,6 +21,10 @@ from .helpers import require_session, cached_get
 chat_bp = Blueprint("chat", __name__)
 logger = logging.getLogger(__name__)
 
+# Silence httpx request logging — it includes full URLs with query strings,
+# which would leak the Gemini API key if it were passed via ?key=.
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 # ---------------------------------------------------------------------------
 # centralmcp client — lazy-initialised, uses dashboard credentials
@@ -65,6 +69,309 @@ def _get_mcp_client():
         except Exception as exc:
             logger.warning(f"centralmcp: init failed: {exc}")
             return None
+
+
+# ---------------------------------------------------------------------------
+# centralmcp FastMCP tool registry — every @mcp.tool() across all servers
+# ---------------------------------------------------------------------------
+# We introspect the FastMCP server objects (monitoring/config/nac/ops/glp) to
+# dynamically expose every registered tool to Gemini as a function declaration.
+# Destructive tools (update/create/delete/set/reboot/...) are filtered out.
+# Results are cached for 60s to avoid hammering list_tools() on every turn.
+
+import asyncio as _asyncio
+import threading as _threading
+from typing import Any
+
+_MCP_DESTRUCTIVE_RE = re.compile(
+    r"(?:^|_)(update|delete|create|set|reboot|reload|bounce|disconnect|ack|acknowledge|configure|push|apply|write)(?:_|$)",
+    re.IGNORECASE,
+)
+_MCP_TOOL_CACHE: dict = {"expires": 0.0, "tools": {}, "decls": []}
+_MCP_TOOL_CACHE_TTL = 60.0
+_MCP_TOOL_CACHE_LOCK = _threading.Lock()
+_MCP_CALL_TIMEOUT = 15.0
+_MCP_SERVERS_INITED = False
+_MCP_SERVERS_INIT_LOCK = _threading.Lock()
+
+
+def _init_mcp_servers():
+    """Import FastMCP server modules and inject portal's CentralClient so MCP
+    tools reuse the same auth as the rest of the dashboard.
+
+    Returns the list of FastMCP objects, or an empty list if unavailable.
+    """
+    global _MCP_SERVERS_INITED
+    if _MCP_SERVERS_INITED:
+        try:
+            from mcp_servers import monitoring, config as mcp_config, nac, ops, glp
+            return [monitoring.mcp, mcp_config.mcp, nac.mcp, ops.mcp, glp.mcp]
+        except Exception:
+            return []
+    with _MCP_SERVERS_INIT_LOCK:
+        if _MCP_SERVERS_INITED:
+            try:
+                from mcp_servers import monitoring, config as mcp_config, nac, ops, glp
+                return [monitoring.mcp, mcp_config.mcp, nac.mcp, ops.mcp, glp.mcp]
+            except Exception:
+                return []
+        try:
+            # Inject portal's CentralClient into mcp_servers.shared so tools don't
+            # try to load config/credentials.yaml from centralmcp's cwd.
+            portal_mcp = _get_mcp_client()  # wraps CentralClient
+            if portal_mcp is None:
+                logger.warning("MCP tool registry: portal CentralClient not ready — skipping")
+                _MCP_SERVERS_INITED = True
+                return []
+            from mcp_servers import shared as _shared
+            _shared._central_client = portal_mcp._client  # type: ignore[attr-defined]
+            _shared._mcp_client = portal_mcp              # type: ignore[attr-defined]
+
+            from mcp_servers import monitoring, config as mcp_config, nac, ops, glp
+            servers = [monitoring.mcp, mcp_config.mcp, nac.mcp, ops.mcp, glp.mcp]
+            _MCP_SERVERS_INITED = True
+            logger.info(f"MCP tool registry: loaded {len(servers)} FastMCP servers")
+            return servers
+        except Exception as exc:
+            logger.warning(f"MCP tool registry: init failed: {exc}")
+            _MCP_SERVERS_INITED = True
+            return []
+
+
+def _json_schema_to_gemini(schema: dict) -> dict:
+    """Convert a JSON Schema object to Gemini function_declarations format.
+
+    Gemini accepts a restricted subset — type strings must be uppercase
+    (STRING/NUMBER/INTEGER/BOOLEAN/ARRAY/OBJECT), and unknown keywords must
+    be stripped. We walk the tree and normalize.
+    """
+    _TYPE_MAP = {
+        "string": "STRING",
+        "number": "NUMBER",
+        "integer": "INTEGER",
+        "boolean": "BOOLEAN",
+        "array": "ARRAY",
+        "object": "OBJECT",
+    }
+
+    def _convert(node):
+        if not isinstance(node, dict):
+            return node
+        out: dict = {}
+        t = node.get("type")
+        if isinstance(t, list):
+            # Gemini doesn't support union types — pick first non-null
+            t = next((x for x in t if x != "null"), "string")
+        if isinstance(t, str):
+            out["type"] = _TYPE_MAP.get(t.lower(), "STRING")
+        desc = node.get("description") or node.get("title")
+        if isinstance(desc, str):
+            out["description"] = desc[:256]
+        if "enum" in node and isinstance(node["enum"], list):
+            out["enum"] = [str(x) for x in node["enum"]]
+        if node.get("type") == "array" and isinstance(node.get("items"), dict):
+            out["items"] = _convert(node["items"]) or {"type": "STRING"}
+        if node.get("type") == "object":
+            props = node.get("properties") or {}
+            if props:
+                out["properties"] = {k: _convert(v) for k, v in props.items()}
+            req = node.get("required")
+            if isinstance(req, list) and req:
+                out["required"] = [r for r in req if isinstance(r, str)]
+        return out
+
+    result = _convert(schema or {}) or {}
+    if result.get("type") != "OBJECT":
+        result = {"type": "OBJECT", "properties": {}}
+    result.setdefault("properties", {})
+    return result
+
+
+def _load_mcp_tools(force: bool = False) -> tuple[dict, list]:
+    """Return (tools_by_prefixed_name, gemini_function_declarations).
+
+    Cached for _MCP_TOOL_CACHE_TTL seconds. Each entry in tools_by_prefixed_name
+    maps 'mcp__<tool_name>' -> {"server": FastMCP, "name": str, "schema": dict}.
+    """
+    now = time.time()
+    if not force and _MCP_TOOL_CACHE["expires"] > now and _MCP_TOOL_CACHE["tools"]:
+        return _MCP_TOOL_CACHE["tools"], _MCP_TOOL_CACHE["decls"]
+    with _MCP_TOOL_CACHE_LOCK:
+        if not force and _MCP_TOOL_CACHE["expires"] > now and _MCP_TOOL_CACHE["tools"]:
+            return _MCP_TOOL_CACHE["tools"], _MCP_TOOL_CACHE["decls"]
+        servers = _init_mcp_servers()
+        if not servers:
+            _MCP_TOOL_CACHE["expires"] = now + _MCP_TOOL_CACHE_TTL
+            _MCP_TOOL_CACHE["tools"] = {}
+            _MCP_TOOL_CACHE["decls"] = []
+            return {}, []
+
+        tools_map: dict = {}
+        decls: list = []
+        destructive_count = 0
+
+        async def _collect():
+            out = []
+            for srv in servers:
+                try:
+                    items = await srv.list_tools()
+                    out.append((srv, items))
+                except Exception as exc:
+                    logger.warning(f"MCP list_tools on {getattr(srv, 'name', '?')} failed: {exc}")
+            return out
+
+        try:
+            collected = _asyncio.run(_collect())
+        except RuntimeError:
+            # Already inside an event loop (shouldn't happen in Flask sync, but defensive)
+            loop = _asyncio.new_event_loop()
+            try:
+                collected = loop.run_until_complete(_collect())
+            finally:
+                loop.close()
+
+        for srv, items in collected:
+            for t in items:
+                name = t.name
+                is_destructive = bool(_MCP_DESTRUCTIVE_RE.search(name))
+                prefixed = f"mcp__{name}"
+                if prefixed in tools_map:
+                    continue  # first wins
+                schema = t.inputSchema or {"type": "object", "properties": {}}
+                try:
+                    params = _json_schema_to_gemini(schema)
+                except Exception as exc:
+                    logger.warning(f"MCP schema conversion failed for {name}: {exc}")
+                    params = {"type": "OBJECT", "properties": {}}
+                raw_desc = (t.description or name).strip()
+                # Tag with server so user/logs can tell them apart. Mark destructive
+                # tools in the description so the LLM understands they need confirmation.
+                prefix = f"[{srv.name}]"
+                if is_destructive:
+                    prefix += " [DESTRUCTIVE — requires user confirmation]"
+                    destructive_count += 1
+                desc = f"{prefix} {raw_desc}"[:1024]
+                tools_map[prefixed] = {
+                    "server": srv,
+                    "name": name,
+                    "schema": schema,
+                    "description": desc,
+                    "destructive": is_destructive,
+                }
+                decls.append({"name": prefixed, "description": desc, "parameters": params})
+
+        _MCP_TOOL_CACHE["expires"] = now + _MCP_TOOL_CACHE_TTL
+        _MCP_TOOL_CACHE["tools"] = tools_map
+        _MCP_TOOL_CACHE["decls"] = decls
+        logger.info(
+            f"MCP tools loaded: {len(tools_map)} "
+            f"({destructive_count} destructive, will require confirmation)"
+        )
+        return tools_map, decls
+
+
+def _call_mcp_tool(prefixed_name: str, args: dict) -> Any:  # noqa: ANN401
+    """Invoke an MCP tool by its 'mcp__<name>' prefixed identifier.
+
+    Uses the FastMCP tool manager's call_tool with convert_result=False so we
+    get the raw Python value (list/dict) instead of ContentBlock envelopes.
+    Times out at _MCP_CALL_TIMEOUT seconds.
+    """
+    tools_map, _ = _load_mcp_tools()
+    entry = tools_map.get(prefixed_name)
+    if entry is None:
+        raise KeyError(f"unknown MCP tool: {prefixed_name}")
+    srv = entry["server"]
+    name = entry["name"]
+
+    async def _run():
+        return await _asyncio.wait_for(
+            srv._tool_manager.call_tool(name, args or {}, context=None, convert_result=False),
+            timeout=_MCP_CALL_TIMEOUT,
+        )
+
+    try:
+        return _asyncio.run(_run())
+    except RuntimeError:
+        loop = _asyncio.new_event_loop()
+        try:
+            return loop.run_until_complete(_run())
+        finally:
+            loop.close()
+
+
+def _mcp_result_to_table(result) -> tuple[list, int]:
+    """Normalize an MCP tool result into a list-of-dicts for DataTable rendering.
+
+    Returns (rows, total_count). Handles:
+      * list[dict]           -> unchanged
+      * list[scalar]         -> [{"value": x}, ...]
+      * dict with 'items'    -> items (recursed)
+      * dict of dicts        -> list of values with 'id' injected from the key
+      * dict (single object) -> single-row list
+      * scalar / None        -> []
+    """
+    if result is None:
+        return [], 0
+    # Paginated envelope: {"_pagination": {..., "list_key": "role"}, "role": [...]}
+    if isinstance(result, dict) and "_pagination" in result:
+        pagination = result.get("_pagination") or {}
+        list_key = pagination.get("list_key") if isinstance(pagination, dict) else None
+        data = None
+        if list_key and isinstance(result.get(list_key), list):
+            data = result[list_key]
+        else:
+            for candidate in ("items", "data", "results", "records"):
+                if isinstance(result.get(candidate), list):
+                    data = result[candidate]
+                    break
+            if data is None:
+                for k, v in result.items():
+                    if k == "_pagination":
+                        continue
+                    if isinstance(v, list):
+                        data = v
+                        break
+        if data is None:
+            return [{"result": "no items"}], 0
+        if not data:
+            return [{"result": "no items"}], 0
+        result = data
+    # FastMCP "bound list" wrapper
+    if isinstance(result, dict) and "items" in result and isinstance(result["items"], list):
+        result = result["items"]
+    # Single-list-key envelope: {"role": [...]} or {"devices": [...]} with no other
+    # significant keys. Seen when MCP returns full_list=True without pagination metadata.
+    if isinstance(result, dict):
+        list_keys = [k for k, v in result.items() if isinstance(v, list)]
+        if len(list_keys) == 1:
+            other_keys = [k for k in result if k != list_keys[0]]
+            if not other_keys or all(
+                result[k] is None or isinstance(result[k], (str, int, float, bool))
+                for k in other_keys
+            ):
+                result = result[list_keys[0]]
+    if isinstance(result, list):
+        rows = []
+        for item in result:
+            if isinstance(item, dict):
+                rows.append(item)
+            else:
+                rows.append({"value": item})
+        return rows, len(rows)
+    if isinstance(result, dict):
+        # dict-of-dicts keyed by id?
+        vals = list(result.values())
+        if vals and all(isinstance(v, dict) for v in vals):
+            rows = []
+            for k, v in result.items():
+                row = dict(v)
+                row.setdefault("id", k)
+                rows.append(row)
+            return rows, len(rows)
+        # single object
+        return [result], 1
+    return [{"value": result}], 1
 
 
 # Shown when a field is missing in chat tables / summaries (matches portal em dash usage)
@@ -167,6 +474,60 @@ def _chat_action_allowed(session_id: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Pending destructive MCP actions — two-step confirmation
+# ---------------------------------------------------------------------------
+# When Gemini picks a destructive MCP tool we return a confirm_mcp_action
+# payload instead of executing. The (tool, params) pair is stashed server-side
+# keyed by a random token so the eventual /mcp-confirm POST can't be forged
+# to execute arbitrary tool/params of the attacker's choosing.
+import secrets as _secrets  # stdlib — token_urlsafe
+
+_PENDING_MCP: dict = {}  # token -> {session_id, tool, args, expires}
+_PENDING_MCP_LOCK = _threading.Lock()
+_PENDING_MCP_TTL = 300.0  # 5 minutes
+
+
+def _pending_mcp_put(session_id: str, tool: str, args: dict) -> str:
+    token = _secrets.token_urlsafe(24)
+    with _PENDING_MCP_LOCK:
+        # Opportunistic GC of expired entries
+        now = time.time()
+        expired = [k for k, v in _PENDING_MCP.items() if v["expires"] < now]
+        for k in expired:
+            _PENDING_MCP.pop(k, None)
+        _PENDING_MCP[token] = {
+            "session_id": session_id,
+            "tool": tool,
+            "args": args or {},
+            "expires": now + _PENDING_MCP_TTL,
+        }
+    return token
+
+
+def _pending_mcp_pop(token: str, session_id: str) -> dict | None:
+    """Pop a pending action iff the token exists, matches the session, and hasn't expired."""
+    with _PENDING_MCP_LOCK:
+        entry = _PENDING_MCP.get(token)
+        if entry is None:
+            return None
+        if entry["session_id"] != session_id:
+            return None
+        if entry["expires"] < time.time():
+            _PENDING_MCP.pop(token, None)
+            return None
+        _PENDING_MCP.pop(token, None)
+        return entry
+
+
+def _summarize_mcp_action(tool: str, args: dict) -> str:
+    """Human-readable one-liner describing a destructive MCP call."""
+    if args:
+        shown = ", ".join(f"{k}={v!r}" for k, v in list(args.items())[:4])
+        return f"Run MCP tool `{tool}` with {shown}"
+    return f"Run MCP tool `{tool}` (no arguments)"
+
+
+# ---------------------------------------------------------------------------
 # Intent definitions
 # ---------------------------------------------------------------------------
 # Each intent is a dict with:
@@ -229,6 +590,9 @@ _intent(
         r"\bwifi\b.*client",
         r"client.*wlan",
         r"wlan.*client",
+        r"^\s*ssid\s+\S+",
+        r"^\s*on\s+\S+\s*$",
+        r"\bclient[s]?\s+(?:on|in)\s+[A-Za-z0-9][\w\-]*",
     ],
 )
 
@@ -516,12 +880,12 @@ _intent(
     "show_switch_vlans",
     "List VLANs configured on a switch",
     [
-        r"\bvlan[s]?\b.*\bswitch\b",
-        r"\bswitch\b.*\bvlan[s]?\b",
-        r"show.*vlan",
-        r"vlan.*list",
-        r"what.*vlan[s]?\b",
-        r"vlan.*\bon\b",
+        # Require an imperative trigger (list/show/get/display) + vlan + switch context,
+        # and explicitly reject conceptual/compare questions ("what is", "difference", "vxlan", "vs").
+        r"(?i)^(?!.*\b(?:vxlan|vlan\s+vs|vs\.?\s+vlan|difference\s+between|compare|explain|what\s+is|what's|how\s+does)\b)"
+        r"(?:list|show|get|display|fetch)\b.*\bvlan[s]?\b.*\b(?:switch|on\s+switch|for\s+switch|[A-Z0-9]{8,14})\b",
+        r"(?i)^(?!.*\b(?:vxlan|vlan\s+vs|vs\.?\s+vlan|difference\s+between|compare|explain|what\s+is|what's|how\s+does)\b)"
+        r"(?:list|show|get|display|fetch)\b.*\bswitch\b.*\bvlan[s]?\b",
     ],
 )
 
@@ -555,10 +919,18 @@ class IntentClassifier:
     be listed before catch-all ones.
     """
 
+    # Action intents stay on the regex fast-path. All others (read/search
+    # intents like device_status, client_count, etc.) are deferred to the
+    # Gemini+MCP cascade so it can pick a tool with proper filters.
+    _ACTION_INTENT_NAMES = {"ping_test", "traceroute", "help"}
+
     @staticmethod
     def classify(text: str) -> dict | None:
         text = text.strip()
         for intent in _INTENTS:
+            is_action = bool(intent.get("destructive")) or intent["name"] in IntentClassifier._ACTION_INTENT_NAMES
+            if not is_action:
+                continue
             for pattern in intent["patterns"]:
                 if pattern.search(text):
                     return intent
@@ -574,7 +946,16 @@ class IntentClassifier:
         m = re.search(
             r"\b(?:at|for|in|on|site)\s+([A-Za-z0-9][A-Za-z0-9_\-\.]{1,40})", text, re.IGNORECASE
         )
-        return m.group(1) if m else None
+        if not m:
+            return None
+        candidate = m.group(1)
+        _RESERVED = {
+            "health", "status", "summary", "overview", "all",
+            "down", "up", "alerts",
+        }
+        if candidate.lower() in _RESERVED:
+            return None
+        return candidate
 
     @staticmethod
     def extract_serial(text: str) -> str | None:
@@ -623,6 +1004,10 @@ class IntentClassifier:
             return m.group(1)
         # Keyword-preceded: 'ssid CorpWiFi' / 'WLAN CorpWiFi'
         m = re.search(r"\b(?:ssid|wlan)\s+([A-Za-z0-9_\-\.]{1,64})", text, re.IGNORECASE)
+        if m:
+            return m.group(1)
+        # 'clients on CorpWiFi' / 'who is on CorpWiFi'
+        m = re.search(r"\bon\s+([A-Za-z0-9][\w\-\.]{1,63})\s*$", text.strip(), re.IGNORECASE)
         return m.group(1) if m else None
 
     @staticmethod
@@ -674,7 +1059,7 @@ def _handle_help(_text, _session_id):
         "📊 **Monitoring:** show devices, show APs down, site health, show alerts, device inventory\n"
         "👥 **Clients:** show clients, find client <ip>, clients on SSID <name>, client count\n"
         "🔧 **Actions:** ping from switch <serial>, bounce AP <serial>, bounce port <switch> <port>\n"
-        "❓ **Info:** firmware status, WLAN list, top bandwidth, show sites, audit logs\n"
+        "❓ **Info:** firmware status, WLAN list, top bandwidth, show sites\n"
         "🔍 **Device Detail:** events for device <serial>, VLANs on switch <serial>, radios on AP <serial>\n"
         "💬 **General:** ask me anything — networking concepts, config tips, troubleshooting advice\n\n"
         "Tip: be specific — e.g. *'APs down at Site-A'* or *'events for switch CN12345678'*."
@@ -1280,7 +1665,9 @@ def _handle_device_inventory(text, _session_id):
         lines = [f"**Fleet inventory**: **{total}** total devices"]
         for dt, cnt in sorted(by_type.items()):
             lines.append(f"- {dt}: {cnt}")
-        return "\n".join(lines), cached, 200
+        rows = [{"type": dt, "count": cnt} for dt, cnt in sorted(by_type.items())]
+        rows.append({"type": "Total", "count": total})
+        return "\n".join(lines), rows, 200
 
     try:
         r = cached_get("/network-monitoring/v1/devices")
@@ -1295,7 +1682,9 @@ def _handle_device_inventory(text, _session_id):
         for dt, cnt in sorted(by_type.items()):
             lines.append(f"- {dt}: {cnt}")
 
-        return "\n".join(lines), {"total": total, "by_type": by_type}, 200
+        rows = [{"type": dt, "count": cnt} for dt, cnt in sorted(by_type.items())]
+        rows.append({"type": "Total", "count": total})
+        return "\n".join(lines), rows, 200
 
     except Exception as e:
         logger.error(f"Chat device_inventory error: {e}")
@@ -1466,35 +1855,97 @@ def _handle_device_status(text, _session_id):
 
 
 def _handle_find_client(text, _session_id):
-    """Find a client by IP or MAC address."""
+    """Find a client by IP, MAC, or substring match on hostname/os/device_type/username."""
     mac = IntentClassifier.extract_mac(text)
     # Try to extract IP
     ip_m = re.search(r"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b", text)
     ip = ip_m.group(1) if ip_m else None
 
-    if not mac and not ip:
-        return ("Please provide a MAC or IP address, e.g. *'find client 192.168.1.50'*", None, 200)
+    # Extract a substring query term (words after "find client" / "client named" / etc.)
+    substr_query = None
+    sm = re.search(
+        r"(?:find|show|search|lookup|locate|get)\s+(?:a\s+|the\s+)?client[s]?\s+(?:named\s+|called\s+|with\s+name\s+)?([A-Za-z0-9][\w\-\.]{2,63})",
+        text,
+        re.IGNORECASE,
+    )
+    if sm:
+        cand = sm.group(1)
+        # Skip if candidate looks like MAC/IP fragment or generic keyword
+        if cand.lower() not in {"mac", "ip", "name", "hostname", "with", "by"} and len(cand) >= 3:
+            substr_query = cand
+    if not substr_query and not mac and not ip:
+        # Last resort: any 3+ alphanumeric token that isn't a generic word
+        for tok in re.findall(r"\b([A-Za-z][\w\-]{2,63})\b", text):
+            if tok.lower() not in {"find", "show", "search", "lookup", "locate", "get",
+                                   "client", "clients", "the", "a", "an", "named", "called",
+                                   "with", "by", "name", "hostname", "for", "please"}:
+                substr_query = tok
+                break
 
-    query = mac or ip
+    if not mac and not ip and not substr_query:
+        return ("Please provide a MAC, IP, or name, e.g. *'find client 192.168.1.50'*", None, 200)
+
+    query = mac or ip or substr_query
     try:
         mcp = _get_mcp_client()
-        if mcp:
+        c = None
+        clients_list = []
+        if mcp and (mac or ip):
             c = mcp.find_client(query)
-            if not c:
-                return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
-        else:
-            import app as _app
-            aruba_client = _app.aruba_client
-            r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
-            clients = r.get("clients", r.get("items", []))
+            if c:
+                # Wrap single result for unified handling below
+                pass
+        # Always fetch the client list too, for substring fallback
+        if not c:
+            try:
+                if mcp:
+                    clients_list = mcp.get_clients(limit=100) or []
+                else:
+                    import app as _app
+                    aruba_client = _app.aruba_client
+                    r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
+                    clients_list = r.get("clients", r.get("items", []))
+            except Exception as _fetch_err:
+                logger.debug(f"find_client list fetch failed: {_fetch_err}")
+                clients_list = []
+
             found = []
-            for client in clients:
+            for client in clients_list:
                 c_mac = (client.get("macaddr", client.get("mac", "")) or "").lower().replace("-", ":")
                 c_ip = client.get("ip_address", client.get("ipv4", "")) or ""
                 if (mac and mac in c_mac) or (ip and ip == c_ip):
                     found.append(client)
+            # Substring fallback when MAC/IP didn't match
+            if not found and substr_query and len(substr_query) >= 3:
+                q_low = substr_query.lower()
+                for client in clients_list:
+                    fields = [
+                        str(client.get("hostname") or ""),
+                        str(client.get("name") or ""),
+                        str(client.get("os_type") or ""),
+                        str(client.get("os") or ""),
+                        str(client.get("device_type") or ""),
+                        str(client.get("username") or ""),
+                    ]
+                    if any(q_low in f.lower() for f in fields if f):
+                        found.append(client)
             if not found:
-                return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
+                label = "MAC" if mac else ("IP" if ip else "name")
+                return (f"No client found matching {label} **{query}**.", [], 200)
+            # If multiple matches from substring, return a table of them
+            if substr_query and not mac and not ip and len(found) > 1:
+                rows = []
+                for cl in found[:25]:
+                    rows.append({
+                        "Hostname": _cell(_client_display_name(cl)),
+                        "MAC": _cell(_first_present_str(cl, "macaddr", "mac", "macAddress")),
+                        "IP": _cell(_first_present_str(cl, "ip_address", "ipv4", "ip")),
+                        "OS": _cell(_first_present_str(cl, "os_type", "os", "device_type")),
+                        "SSID": _cell(_first_present_str(cl, "ssid", "wlanName", "network", "essid")),
+                        "Status": _cell(_first_present_str(cl, "status", "connection_status")),
+                    })
+                reply = f"Found **{len(found)}** client(s) matching *{substr_query}*:"
+                return reply, rows, 200
             c = found[0]
 
         logger.debug(f"find_client raw fields: {list(c.keys())}")
@@ -1595,7 +2046,12 @@ def _handle_traceroute(text, _session_id):
 
 
 def _handle_client_count(_text, _session_id):
-    """Show total client count and breakdown by type."""
+    """Show total client count and breakdown by type.
+
+    Supports an optional post-fetch filter by device-type / OS keyword in the
+    user's text (e.g. 'how many roku clients'). This is a belt-and-suspenders
+    fallback for cases where the MCP list tool cannot filter server-side.
+    """
     try:
         mcp = _get_mcp_client()
         if mcp:
@@ -1605,6 +2061,36 @@ def _handle_client_count(_text, _session_id):
             aruba_client = _app.aruba_client
             r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
             clients = r.get("clients", r.get("items", []))
+
+        # Post-fetch filter: look for a device-type/OS keyword in the text
+        filter_term = None
+        if _text:
+            fm = re.search(
+                r"\b(?:count|how\s+many|number\s+of|total)\s+([A-Za-z][\w\-]{2,32})\s+clients?",
+                _text, re.IGNORECASE,
+            )
+            if not fm:
+                fm = re.search(
+                    r"\bclients?\s+(?:of\s+type|that\s+are|running|with\s+os)\s+([A-Za-z][\w\-]{2,32})",
+                    _text, re.IGNORECASE,
+                )
+            if fm:
+                cand = fm.group(1).lower()
+                if cand not in {"the", "all", "any", "connected", "active", "wireless", "wired"}:
+                    filter_term = cand
+        if filter_term and clients:
+            q = filter_term
+            filtered = []
+            for cl in clients:
+                fields = [
+                    str(cl.get("hostname") or ""),
+                    str(cl.get("os_type") or ""),
+                    str(cl.get("os") or ""),
+                    str(cl.get("device_type") or ""),
+                ]
+                if any(q in f.lower() for f in fields if f):
+                    filtered.append(cl)
+            clients = filtered
 
         total = len(clients)
         if not clients:
@@ -1847,34 +2333,34 @@ def _handle_ap_radios(text, _session_id):
         return f"Could not retrieve radio info for {serial}: {e}", None, 200
 
 
-def _handle_audit_logs(_text, _session_id):
-    """Show recent audit log entries (configuration changes)."""
-    import app as _app
+def _handle_mcp_tool_result(text, session_id, *, intent=None):
+    """Invoke an MCP tool (dispatched by Gemini tool-use) and shape the reply.
 
-    aruba_client = _app.aruba_client
-
+    `intent` carries the pre-resolved tool call: {"tool": <unprefixed>, "args": {...}}.
+    Falls back to "unknown" behavior if called without that context.
+    """
+    if not intent or "tool" not in intent:
+        return "I wasn't sure which MCP tool to call.", None, 200
+    original_name = intent["tool"]
+    prefixed = f"mcp__{original_name}"
+    args = intent.get("args") or {}
     try:
-        data = aruba_client.get(
-            "/platform/auditlogs/v1/logs",
-            params={"limit": 20},
-        )
-        logs = data.get("audit_logs", data.get("items", data.get("logs", [])))
-        if not logs:
-            return "No recent audit log entries found.", [], 200
-        table = [
-            {
-                "Time": l.get("ts", l.get("timestamp", ""))[:19].replace("T", " "),
-                "User": l.get("user_str", l.get("username", "")),
-                "Action": l.get("description", l.get("action", ""))[:60],
-                "Target": l.get("target", l.get("device", "")),
-                "Result": l.get("result", ""),
-            }
-            for l in logs[:15]
-        ]
-        return f"**Last {len(table)} audit log entries:**", table, 200
-    except Exception as e:
-        logger.error(f"Chat audit_logs error: {e}")
-        return f"Could not retrieve audit logs: {e}", None, 200
+        result = _call_mcp_tool(prefixed, args)
+    except _asyncio.TimeoutError:
+        return f"MCP tool `{original_name}` timed out after {_MCP_CALL_TIMEOUT:.0f}s.", None, 200
+    except KeyError:
+        return f"MCP tool `{original_name}` is not registered on this server.", None, 200
+    except Exception as exc:
+        logger.warning(f"MCP call {original_name} failed: {exc}", exc_info=True)
+        return f"MCP tool `{original_name}` failed: {exc}", None, 200
+
+    rows, n = _mcp_result_to_table(result)
+    arg_summary = ""
+    if args:
+        pairs = ", ".join(f"{k}={v!r}" for k, v in list(args.items())[:3])
+        arg_summary = f" ({pairs})"
+    reply = f"MCP {original_name}{arg_summary}: {n} item(s)"
+    return reply, rows, 200
 
 
 def _handle_unknown(text, _session_id):
@@ -1906,7 +2392,7 @@ def _handle_unknown(text, _session_id):
 # ---------------------------------------------------------------------------
 
 _OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-_OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:cloud")
+_OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
 
 _OLLAMA_SYSTEM_PROMPT = """\
 You are a network assistant. Output ONLY valid JSON — no other text, no markdown.
@@ -1936,7 +2422,6 @@ Use "tool" ONLY when the user is clearly asking for live network data matching o
   device_events   — "events for device SERIAL" / "what happened on switch X"  → params: {"serial":"SERIAL"}
   switch_vlans    — "VLANs on switch SERIAL" / "what VLANs"  → params: {"serial":"SERIAL"}
   ap_radios       — "radios on AP SERIAL" / "AP radio info"  → params: {"serial":"SERIAL"}
-  audit_logs      — "audit log" / "recent changes" / "who changed what"
   ping_test       — "ping IP from SERIAL"  → params: {"serial":"SERIAL","target":"IP"}
   traceroute      — "traceroute to IP from SERIAL"  → params: {"serial":"SERIAL","target":"IP"}
   bounce_ap       — "reboot AP SERIAL" / "restart AP"  → params: {"serial":"SERIAL"}
@@ -2076,12 +2561,12 @@ class ClaudeAgent:
 class GeminiAgent:
     """Google Gemini-powered intent classifier — free tier: 15 RPM, 1M tokens/day.
 
-    Set GEMINI_API_KEY in .env to activate.  Uses gemini-1.5-flash by default
+    Set GEMINI_API_KEY in .env to activate.  Uses gemini-2.5-flash by default
     (override with GEMINI_MODEL).  No extra packages required — calls the REST
     API directly with httpx.
     """
 
-    _MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+    _MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     _API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
     @classmethod
@@ -2100,7 +2585,7 @@ class GeminiAgent:
             "port":        {"type": "STRING", "description": "Switch port identifier e.g. 1/1/5"},
             "query":       {"type": "STRING", "description": "Search term, IP, or MAC for client lookup"},
         }
-        return [
+        base = [
             {
                 "name": intent["name"],
                 "description": intent["description"],
@@ -2108,6 +2593,14 @@ class GeminiAgent:
             }
             for intent in _INTENTS
         ]
+        # Dynamically add every read-only FastMCP tool so Gemini can pick
+        # from the full centralmcp surface, not just the hand-coded intents.
+        try:
+            _, mcp_decls = _load_mcp_tools()
+            base.extend(mcp_decls)
+        except Exception as exc:
+            logger.warning(f"GeminiAgent: failed to load MCP function decls: {exc}")
+        return base
 
     @classmethod
     def classify(cls, text: str, history: list = None, context: str = "") -> dict | None:
@@ -2142,8 +2635,16 @@ class GeminiAgent:
         }
 
         try:
-            url = f"{cls._API_BASE}/{cls._MODEL}:generateContent?key={key}"
-            resp = httpx.post(url, json=payload, timeout=5.0)
+            url = f"{cls._API_BASE}/{cls._MODEL}:generateContent"
+            headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
+            resp = None
+            for attempt in range(2):
+                resp = httpx.post(url, json=payload, headers=headers, timeout=15.0)
+                if resp.status_code in (429, 500, 502, 503, 504) and attempt == 0:
+                    logger.info(f"GeminiAgent {resp.status_code} — retrying once")
+                    time.sleep(1.0)
+                    continue
+                break
             resp.raise_for_status()
             data = resp.json()
 
@@ -2153,6 +2654,15 @@ class GeminiAgent:
                     fn   = part["functionCall"]
                     name = fn.get("name", "")
                     args = fn.get("args") or {}
+                    if name.startswith("mcp__"):
+                        original = name[len("mcp__"):]
+                        logger.info(f"GeminiAgent picked MCP tool '{original}' args={args}")
+                        return {
+                            "name": "mcp_tool_result",
+                            "tool": original,
+                            "args": args,
+                            "via": "gemini+mcp",
+                        }
                     if name in _HANDLERS_KEYS:
                         logger.info(f"GeminiAgent picked '{name}' args={args}")
                         return {"name": name, "params": args, "via": "gemini"}
@@ -2167,6 +2677,10 @@ class GeminiAgent:
 
         except httpx.TimeoutException:
             logger.warning("GeminiAgent timeout — skipping")
+            return None
+        except httpx.HTTPStatusError as exc:
+            body = exc.response.text[:500] if exc.response is not None else ""
+            logger.warning(f"GeminiAgent HTTP {exc.response.status_code}: {body}")
             return None
         except Exception as exc:
             logger.warning(f"GeminiAgent.classify error: {exc}")
@@ -2275,6 +2789,10 @@ class OllamaAgent:
         except httpx.TimeoutException:
             logger.warning("Ollama timeout — falling back to regex classifier")
             return None
+        except httpx.HTTPStatusError as e:
+            body = e.response.text[:500] if e.response is not None else ""
+            logger.warning(f"Ollama HTTP {e.response.status_code}: {body}")
+            return None
         except Exception as e:
             logger.warning(f"Ollama classify error: {e}")
             return None
@@ -2311,9 +2829,10 @@ _HANDLERS = {
     "switch_vlans": _handle_switch_vlans,
     "show_switch_vlans": _handle_switch_vlans,        # alias for new intent
     "ap_radios": _handle_ap_radios,
-    "audit_logs": _handle_audit_logs,
     # New intents
     "show_switch_interfaces": _handle_switch_port_errors,  # reuse port-status handler
+    # Dynamic MCP tool dispatch (Gemini picks a mcp__* function)
+    "mcp_tool_result": _handle_mcp_tool_result,
 }
 
 # Used by OllamaAgent to validate tool names (defined after _HANDLERS)
@@ -2489,6 +3008,136 @@ def chat_llm_status():
     })
 
 
+def _mask_secret(value: str) -> str:
+    """Mask a secret for display: keep last 4 chars, prefix with dots."""
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "****"
+    return "••••••••" + value[-4:]
+
+
+def _env_file_path():
+    """Resolve .env path the same way routes/auth.py does."""
+    from pathlib import Path
+    return Path(__file__).parent.parent.parent.parent / ".env"
+
+
+def _merge_env_vars(updates: dict):
+    """Merge-update .env file: preserves existing keys, overwrites only the
+    keys present in `updates`. Empty-string values remove the key."""
+    from pathlib import Path
+    import stat
+
+    env_path = _env_file_path()
+    lines = []
+    if env_path.exists():
+        lines = env_path.read_text().splitlines()
+
+    seen = set()
+    new_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            new_lines.append(line)
+            continue
+        key = stripped.split("=", 1)[0].strip()
+        if key in updates:
+            seen.add(key)
+            new_val = updates[key]
+            if new_val == "":
+                continue  # drop the line
+            new_lines.append(f"{key}={new_val}")
+        else:
+            new_lines.append(line)
+
+    # Append any updates that weren't in the original file
+    appended = [f"{k}={v}" for k, v in updates.items() if k not in seen and v != ""]
+    if appended:
+        if new_lines and new_lines[-1].strip() != "":
+            new_lines.append("")
+        new_lines.append("# AI Assistant Configuration")
+        new_lines.extend(appended)
+
+    env_path.write_text("\n".join(new_lines) + "\n")
+    try:
+        os.chmod(env_path, stat.S_IRUSR | stat.S_IWUSR)
+    except (OSError, PermissionError):
+        pass
+
+    # Reload into current process
+    from dotenv import load_dotenv
+    load_dotenv(env_path, override=True)
+
+    # Refresh module-level Ollama config so changes take effect without restart
+    global _OLLAMA_URL, _OLLAMA_MODEL
+    _OLLAMA_URL = os.environ.get("OLLAMA_URL", _OLLAMA_URL)
+    _OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", _OLLAMA_MODEL)
+
+    # Refresh class-level model attrs so reloaded .env takes effect without restart
+    GeminiAgent._MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    ClaudeAgent._MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
+
+    # Invalidate cached Anthropic client so a rotated key is picked up next call
+    ClaudeAgent._client = None
+    ClaudeAgent._api_key_cached = ""
+
+
+@chat_bp.route("/api/chat/llm-config", methods=["GET"])
+@require_session
+def chat_llm_config_get():
+    """Return current LLM config with secrets masked."""
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    gemini_key = os.environ.get("GEMINI_API_KEY", "")
+    return jsonify({
+        "anthropic_api_key": _mask_secret(anthropic_key),
+        "anthropic_configured": bool(anthropic_key),
+        "gemini_api_key": _mask_secret(gemini_key),
+        "gemini_configured": bool(gemini_key),
+        "ollama_url": os.environ.get("OLLAMA_URL", _OLLAMA_URL),
+        "ollama_model": os.environ.get("OLLAMA_MODEL", _OLLAMA_MODEL),
+        "gemini_model": os.environ.get("GEMINI_MODEL", GeminiAgent._MODEL),
+        "claude_model": os.environ.get("CLAUDE_MODEL", ClaudeAgent._MODEL),
+    })
+
+
+@chat_bp.route("/api/chat/llm-config", methods=["POST"])
+@require_session
+def chat_llm_config_post():
+    """Persist LLM config to .env. Fields omitted or null are left unchanged;
+    empty string removes a key."""
+    data = request.get_json() or {}
+    updates = {}
+    for field, env_key in [
+        ("anthropic_api_key", "ANTHROPIC_API_KEY"),
+        ("gemini_api_key", "GEMINI_API_KEY"),
+        ("ollama_url", "OLLAMA_URL"),
+        ("ollama_model", "OLLAMA_MODEL"),
+        ("gemini_model", "GEMINI_MODEL"),
+        ("claude_model", "CLAUDE_MODEL"),
+    ]:
+        if field not in data:
+            continue
+        val = data.get(field)
+        if val is None:
+            continue
+        val = str(val).strip()
+        if "\n" in val or "\r" in val:
+            return jsonify({"error": f"{field} must not contain newlines"}), 400
+        updates[env_key] = val
+
+    if not updates:
+        return jsonify({"error": "No fields to update"}), 400
+
+    try:
+        _merge_env_vars(updates)
+    except (OSError, PermissionError) as e:
+        return jsonify({"error": f"Could not write .env: {e}"}), 500
+
+    logger.info("LLM config updated: %s", list(updates.keys()))
+    return jsonify({"success": True, "updated": list(updates.keys())})
+
+
 @chat_bp.route("/api/chat/intents", methods=["GET"])
 @require_session
 def chat_intents():
@@ -2504,6 +3153,32 @@ def chat_intents():
                 for i in _INTENTS
             ],
             "count": len(_INTENTS),
+        }
+    )
+
+
+@chat_bp.route("/api/chat/mcp-tools", methods=["GET"])
+@require_session
+def chat_mcp_tools():
+    """Return the filtered centralmcp tool list currently exposed to Gemini."""
+    force = request.args.get("refresh") == "1"
+    tools_map, decls = _load_mcp_tools(force=force)
+    tools_info = [
+        {
+            "name": prefixed,
+            "tool": entry["name"],
+            "server": getattr(entry["server"], "name", ""),
+            "description": entry["description"],
+        }
+        for prefixed, entry in tools_map.items()
+    ]
+    tools_info.sort(key=lambda x: (x["server"], x["tool"]))
+    return jsonify(
+        {
+            "count": len(tools_info),
+            "tools": tools_info,
+            "gemini_declarations": len(decls),
+            "cache_expires_in": max(0, _MCP_TOOL_CACHE["expires"] - time.time()),
         }
     )
 
@@ -2631,7 +3306,60 @@ def chat_message():
                 dispatch_text = f"{message} {query}"
 
         try:
-            reply, data, status = handler(dispatch_text, session_id)
+            if intent and intent.get("name") == "mcp_tool_result":
+                # Two-step confirmation for destructive MCP tools: don't execute —
+                # stash the pending action, let the frontend render a confirm card.
+                tool_name = intent.get("tool") or ""
+                prefixed = f"mcp__{tool_name}"
+                tools_map, _ = _load_mcp_tools()
+                entry = tools_map.get(prefixed)
+                if entry and entry.get("destructive"):
+                    args = intent.get("args") or {}
+                    token = _pending_mcp_put(session_id, tool_name, args)
+                    summary = _summarize_mcp_action(tool_name, args)
+                    new_history = list(history) + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": summary},
+                    ]
+                    daily_remaining = max(
+                        0, 5000 - _app.api_call_tracker.get("daily_calls", 0)
+                    )
+                    actions_this_min = len(
+                        _chat_action_tracker.get(session_id, _collections.deque())
+                    )
+                    return jsonify(
+                        {
+                            "reply": summary,
+                            "intent": "confirm_mcp_action",
+                            "via": via,
+                            "model": (
+                                _OLLAMA_MODEL if via == "ollama"
+                                else GeminiAgent._MODEL if via == "gemini"
+                                else ClaudeAgent._MODEL if via == "claude"
+                                else "regex"
+                            ),
+                            "data": None,
+                            "destructive": True,
+                            "pending_action": {
+                                "token": token,
+                                "tool": tool_name,
+                                "params": args,
+                                "summary": summary,
+                            },
+                            "history": new_history,
+                            "ts": time.time(),
+                            "rate_limit": {
+                                "daily_calls_remaining": daily_remaining,
+                                "actions_this_minute": actions_this_min,
+                                "action_limit_per_minute": _CHAT_ACTION_LIMIT,
+                            },
+                        }
+                    )
+                reply, data, status = _handle_mcp_tool_result(
+                    dispatch_text, session_id, intent=intent
+                )
+            else:
+                reply, data, status = handler(dispatch_text, session_id)
         except Exception as handler_err:
             logger.error(
                 f"Chat handler {intent['name'] if intent else '?'} " f"raised: {handler_err}",
@@ -2688,3 +3416,99 @@ def chat_message():
             ),
             500,
         )
+
+
+@chat_bp.route("/api/chat/mcp-confirm", methods=["POST"])
+@require_session
+def chat_mcp_confirm():
+    """Execute a previously-stashed destructive MCP tool call after the
+    user clicked Confirm in the chat drawer.
+
+    Body: {"token": "<opaque>"}
+    The token must have been issued for this session by the /message endpoint.
+    Tool name and params are read from the server-side stash — never from the
+    client — so a compromised frontend can't alter which call executes.
+    """
+    import app as _app
+
+    body = request.get_json(silent=True) or {}
+    token = (body.get("token") or "").strip()
+    if not token:
+        return jsonify({"error": "token is required"}), 400
+
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("session_id") or ""
+    entry = _pending_mcp_pop(token, session_id)
+    if entry is None:
+        return (
+            jsonify(
+                {
+                    "error": "Pending action not found or expired.",
+                    "reply": "That confirmation is no longer valid — please ask again.",
+                }
+            ),
+            404,
+        )
+
+    # Rate-limit destructive actions just like built-in bounce/reboot intents
+    if not _chat_action_allowed(session_id):
+        return (
+            jsonify(
+                {
+                    "reply": (
+                        f"Rate limit: too many destructive actions "
+                        f"(max {_CHAT_ACTION_LIMIT} per minute). Wait a moment and try again."
+                    ),
+                    "intent": "mcp_tool_result",
+                    "destructive": True,
+                    "data": None,
+                    "ts": time.time(),
+                }
+            ),
+            429,
+        )
+
+    if not _app.aruba_client:
+        return (
+            jsonify(
+                {
+                    "reply": "The portal is not connected to Aruba Central.",
+                    "intent": "mcp_tool_result",
+                    "data": None,
+                    "ts": time.time(),
+                }
+            ),
+            503,
+        )
+
+    tool = entry["tool"]
+    args = entry["args"]
+    logger.info(
+        f"Chat mcp-confirm: session={session_id[:8]}... tool={tool} "
+        f"args_keys={list(args.keys())}"
+    )
+
+    reply, data, status = _handle_mcp_tool_result(
+        "", session_id, intent={"tool": tool, "args": args}
+    )
+
+    daily_remaining = max(0, 5000 - _app.api_call_tracker.get("daily_calls", 0))
+    actions_this_min = len(_chat_action_tracker.get(session_id, _collections.deque()))
+
+    return (
+        jsonify(
+            {
+                "reply": reply,
+                "intent": "mcp_tool_result",
+                "tool": tool,
+                "destructive": True,
+                "data": data,
+                "ts": time.time(),
+                "rate_limit": {
+                    "daily_calls_remaining": daily_remaining,
+                    "actions_this_minute": actions_this_min,
+                    "action_limit_per_minute": _CHAT_ACTION_LIMIT,
+                },
+            }
+        ),
+        status,
+    )
