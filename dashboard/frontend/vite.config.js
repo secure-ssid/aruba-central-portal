@@ -1,10 +1,12 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteCompression from 'vite-plugin-compression'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
   plugins: [
     react(),
     // Gzip compression for production builds
@@ -30,9 +32,10 @@ export default defineConfig({
   server: {
     port: 1344,
     strictPort: true,
+    // Must match Flask dev port (app.py default PORT=5001 — avoids macOS AirPlay on 5000). Override with DASHBOARD_DEV_API_PROXY.
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: env.DASHBOARD_DEV_API_PROXY || 'http://127.0.0.1:5001',
         changeOrigin: true,
       }
     }
@@ -84,4 +87,5 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@imgly/background-removal'], // Exclude from pre-bundling
   },
+  }
 })

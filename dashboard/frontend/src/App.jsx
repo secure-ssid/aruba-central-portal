@@ -416,9 +416,36 @@ function AppInner() {
 
   const checkSetup = async () => {
     try {
-      // First check if credentials are configured
-      const setupResponse = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/setup/check`);
-      const setupData = await setupResponse.json();
+      const res = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/setup/check`);
+      const raw = await res.text();
+      let setupData = null;
+      if (raw) {
+        try {
+          setupData = JSON.parse(raw);
+        } catch {
+          console.error(
+            'Setup check: API returned non-JSON (wrong port or not Flask?).',
+            res.status,
+            raw.slice(0, 200),
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
+      if (!res.ok) {
+        console.error(
+          'Setup check failed:',
+          res.status,
+          setupData?.error || raw?.slice(0, 200) || '(empty body)',
+        );
+        setIsLoading(false);
+        return;
+      }
+      if (!setupData) {
+        console.error('Setup check: empty response');
+        setIsLoading(false);
+        return;
+      }
 
       if (setupData.needs_setup) {
         setNeedsSetup(true);
@@ -426,7 +453,6 @@ function AppInner() {
         return;
       }
 
-      // If configured, check auth
       checkAuth();
     } catch (error) {
       console.error('Setup check failed:', error);

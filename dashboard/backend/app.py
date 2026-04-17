@@ -37,6 +37,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Repo-root .env — load before any code reads ARUBA_* (works even if cwd is dashboard/backend).
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+try:
+    from dotenv import load_dotenv as _load_dotenv
+
+    _load_dotenv(_REPO_ROOT / ".env")
+except Exception as _dotenv_err:
+    logger.debug("Could not load %s/.env: %s", _REPO_ROOT, _dotenv_err)
+
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 CORS(app, origins=os.environ.get('CORS_ORIGINS', 'http://localhost:1344,http://localhost:5000,http://localhost:5001').split(','))
@@ -348,7 +357,11 @@ def track_api_call():
         api_call_tracker['second_window'].append(current_time)
 
 
-SESSION_STORE_FILE = Path(os.environ.get('TOKEN_CACHE_DIR', '/app/data')) / 'sessions.json'
+# Docker sets TOKEN_CACHE_DIR=/app/data; local dev uses a writable folder under backend/.
+_DEFAULT_TOKEN_CACHE_DIR = Path(__file__).resolve().parent / "data"
+SESSION_STORE_FILE = Path(
+    os.environ.get("TOKEN_CACHE_DIR", str(_DEFAULT_TOKEN_CACHE_DIR))
+) / "sessions.json"
 
 def _load_sessions_from_disk():
     try:
@@ -497,5 +510,5 @@ def api_proxy(endpoint_builder, method='GET', error_msg="API", fallback_data=Non
 # ============= Main =============
 
 if __name__ == '__main__':
-    # Run Flask app
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=os.environ.get('FLASK_DEBUG', '').lower() == 'true')
+    # Default 5001: macOS often binds AirPlay Receiver to 5000, so /api proxied to 5000 can hit the wrong service (403/non-JSON).
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=os.environ.get('FLASK_DEBUG', '').lower() == 'true')

@@ -34,7 +34,7 @@ if (-not (Test-Path "dashboard\frontend\node_modules")) {
 Set-Location dashboard\frontend
 Write-Host ""
 Write-Host "Frontend will be available at: http://localhost:1344" -ForegroundColor Cyan
-Write-Host "API requests will be proxied to: http://localhost:5000" -ForegroundColor Cyan
+Write-Host "API requests will be proxied to: http://localhost:5001 (set DASHBOARD_DEV_API_PROXY in .env if backend uses another port)" -ForegroundColor Cyan
 Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Yellow
 Write-Host ""
 

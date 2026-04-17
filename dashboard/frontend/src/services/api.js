@@ -94,7 +94,28 @@ export const authAPI = {
       }
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Login failed');
+      const serverErr = error.response?.data?.error;
+      const detail =
+        typeof serverErr === 'string'
+          ? serverErr
+          : serverErr && typeof serverErr === 'object'
+            ? JSON.stringify(serverErr)
+            : null;
+      const unreachable =
+        error.code === 'ERR_NETWORK' ||
+        error.message === 'Network Error' ||
+        /ECONNREFUSED/i.test(error.message || '');
+      let msg =
+        detail ||
+        (unreachable
+          ? 'Cannot reach the API. Start the Flask backend (dashboard/backend, default port 5001) and ensure Vite proxy DASHBOARD_DEV_API_PROXY matches PORT.'
+          : null) ||
+        (error.response?.status
+          ? `Login failed (HTTP ${error.response.status})`
+          : null) ||
+        error.message ||
+        'Login failed';
+      throw new Error(msg);
     }
   },
 

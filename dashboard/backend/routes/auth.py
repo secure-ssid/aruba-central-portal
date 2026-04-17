@@ -24,7 +24,11 @@ def login():
     import app as _app
     try:
         if not _app.aruba_client and not _app.initialize_client():
-            return jsonify({"error": "Server configuration error"}), 500
+            return jsonify({
+                "error": "Server configuration error: Aruba API client not initialized. "
+                         "Add ARUBA_CLIENT_ID, ARUBA_CLIENT_SECRET, ARUBA_CUSTOMER_ID, and ARUBA_BASE_URL "
+                         "to the repo-root .env (or use the setup wizard), restart the backend, and try again.",
+            }), 500
 
         _app.token_manager.get_access_token(force_refresh=True)
         token_info = _app.token_manager.get_token_info()

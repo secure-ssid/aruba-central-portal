@@ -25,11 +25,12 @@ if (-not (Test-Path "data")) {
 
 # Change to backend directory and run Flask
 Set-Location dashboard\backend
-Write-Host "Backend API will be available at: http://localhost:5000" -ForegroundColor Cyan
-Write-Host "Frontend will proxy /api requests to this backend" -ForegroundColor Cyan
+$env:PORT = if ($env:PORT) { $env:PORT } else { "5001" }
+Write-Host "Backend API will be available at: http://localhost:$($env:PORT)" -ForegroundColor Cyan
+Write-Host "Frontend (Vite on 1344) proxies /api to this port — see DASHBOARD_DEV_API_PROXY if you change PORT" -ForegroundColor Cyan
 Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Yellow
 Write-Host ""
 
-# Run Flask in development mode (on port 5000, frontend on 1344 will proxy to it)
-python -m flask run --host=0.0.0.0 --port=5000 --debug
+# Match vite.config.js default proxy (5001 avoids macOS AirPlay on 5000)
+python app.py
 
