@@ -21,6 +21,52 @@ from .helpers import require_session, cached_get
 chat_bp = Blueprint("chat", __name__)
 logger = logging.getLogger(__name__)
 
+
+# ---------------------------------------------------------------------------
+# centralmcp client — lazy-initialised, uses dashboard credentials
+# ---------------------------------------------------------------------------
+# Maps ARUBA_* env vars (dashboard) → SOURCE_* (centralmcp) so we don't need
+# a separate credentials file.  Falls back gracefully if the package isn't
+# installed or credentials are missing.
+
+_mcp_client = None
+_mcp_client_lock = __import__("threading").Lock()
+
+
+def _get_mcp_client():
+    """Return a shared MCPClient built from dashboard env vars, or None."""
+    global _mcp_client
+    if _mcp_client is not None:
+        return _mcp_client
+    with _mcp_client_lock:
+        if _mcp_client is not None:
+            return _mcp_client
+        try:
+            from pipeline.clients.central_client import CentralClient
+            from pipeline.clients.token_manager import TokenManager
+            from pipeline.clients.mcp_client import MCPClient
+
+            base_url = os.environ.get("ARUBA_BASE_URL") or os.environ.get("SOURCE_BASE_URL", "")
+            client_id = os.environ.get("ARUBA_CLIENT_ID") or os.environ.get("SOURCE_CLIENT_ID", "")
+            client_secret = os.environ.get("ARUBA_CLIENT_SECRET") or os.environ.get("SOURCE_CLIENT_SECRET", "")
+
+            if not all([base_url, client_id, client_secret]):
+                logger.warning("centralmcp: missing credentials — MCP tools unavailable")
+                return None
+
+            tm = TokenManager(client_id=client_id, client_secret=client_secret, cache_key="chat_mcp")
+            central = CentralClient(base_url=base_url, token_manager=tm)
+            _mcp_client = MCPClient(central)
+            logger.info("centralmcp: MCPClient initialised from dashboard credentials")
+            return _mcp_client
+        except ImportError:
+            logger.warning("centralmcp package not installed — install from GitHub to enable MCP tools")
+            return None
+        except Exception as exc:
+            logger.warning(f"centralmcp: init failed: {exc}")
+            return None
+
+
 # Shown when a field is missing in chat tables / summaries (matches portal em dash usage)
 _CHAT_MISSING = "—"
 
@@ -660,13 +706,18 @@ def _handle_ap_status(text, _session_id):
     want_down = any(w in text.lower() for w in ["down", "offline", "fail", "unreachable"])
 
     try:
-        # Try New Central v1 first, fall back to v1alpha1
-        try:
-            r = cached_get("/network-monitoring/v1/aps", params={"limit": 100})
-            items = r.get("aps", r.get("items", []))
-        except Exception:
-            r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 100})
-            items = r.get("items", [])
+        # Try MCPClient first (proven endpoints), fall back to direct API
+        mcp = _get_mcp_client()
+        if mcp:
+            all_devices = mcp.get_devices(limit=200)
+            items = [d for d in all_devices if "ap" in d.get("deviceType", "").lower()]
+        else:
+            try:
+                r = cached_get("/network-monitoring/v1/aps", params={"limit": 100})
+                items = r.get("aps", r.get("items", []))
+            except Exception:
+                r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 100})
+                items = r.get("items", [])
 
         if site_name:
             items = [
@@ -821,10 +872,6 @@ def _handle_site_health(text, _session_id):
 
 def _handle_clients_by_ssid(text, _session_id):
     """List clients on a given SSID.  Requires site-id or iterates all sites."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     ssid = IntentClassifier.extract_ssid(text)
     if not ssid:
         return (
@@ -834,18 +881,22 @@ def _handle_clients_by_ssid(text, _session_id):
         )
 
     try:
-        # Fetch clients without site filter (monitoring v1 endpoint)
-        try:
-            r = aruba_client.get("/monitoring/v1/clients")
-        except Exception:
-            r = aruba_client.get("/network-monitoring/v1/clients")
-
-        all_items = r.get("items", r.get("clients", []))
-        matched = [
-            c
-            for c in all_items
-            if ssid.lower() in (c.get("ssid", c.get("essid", "")) or "").lower()
-        ]
+        mcp = _get_mcp_client()
+        if mcp:
+            matched = mcp.get_clients(ssid=ssid, limit=100)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            try:
+                r = aruba_client.get("/monitoring/v1/clients")
+            except Exception:
+                r = aruba_client.get("/network-monitoring/v1/clients")
+            all_items = r.get("items", r.get("clients", []))
+            matched = [
+                c
+                for c in all_items
+                if ssid.lower() in (c.get("ssid", c.get("essid", "")) or "").lower()
+            ]
 
         total = len(matched)
         sample = [
@@ -1086,30 +1137,31 @@ def _handle_bounce_port(text, session_id):
 
 def _handle_alert_summary(text, _session_id):
     """Return recent alerts, optionally filtered by severity."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     severity = IntentClassifier.extract_severity(text)
     try:
-        params = {"limit": 20}
-        if severity:
-            params["severity"] = severity
-
-        # Try multiple alert endpoints (correct namespace is network-notifications)
-        alerts = []
-        for ep in [
-            "/network-notifications/v1/alerts",
-            "/network-notifications/v1alpha1/alerts",
-            "/network-monitoring/v1/alerts",
-        ]:
-            try:
-                r = aruba_client.get(ep, params=params)
-                alerts = r.get("alerts", r.get("items", []))
-                if alerts or r.get("count", 0) == 0:
-                    break
-            except Exception:
-                continue
+        # MCPClient uses the correct network-notifications namespace
+        mcp = _get_mcp_client()
+        if mcp:
+            alerts = mcp.get_alerts(severity=severity, limit=20)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            params = {"limit": 20}
+            if severity:
+                params["severity"] = severity
+            alerts = []
+            for ep in [
+                "/network-notifications/v1/alerts",
+                "/network-notifications/v1alpha1/alerts",
+                "/network-monitoring/v1/alerts",
+            ]:
+                try:
+                    r = aruba_client.get(ep, params=params)
+                    alerts = r.get("alerts", r.get("items", []))
+                    if alerts or r.get("count", 0) == 0:
+                        break
+                except Exception:
+                    continue
 
         if not alerts:
             sev_clause = f" with severity '{severity}'" if severity else ""
@@ -1353,10 +1405,6 @@ def _handle_ping_test(text, _session_id):
 
 def _handle_device_status(text, _session_id):
     """Show all online/offline devices, optionally filtered by type or status."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     want_down = any(w in text.lower() for w in ["down", "offline", "fail", "unreachable"])
     want_type = None
     for t in ["switch", "gateway", "ap", "access point"]:
@@ -1365,14 +1413,17 @@ def _handle_device_status(text, _session_id):
             break
 
     try:
-        # Use device-inventory — most complete list
-        r = aruba_client.get("/network-monitoring/v1alpha1/device-inventory", params={"limit": 200})
-        items = r.get("devices", r.get("items", []))
-
-        if not items:
-            # fallback to monitoring endpoint
-            r = cached_get("/network-monitoring/v1/devices", params={"limit": 200})
+        mcp = _get_mcp_client()
+        if mcp:
+            items = mcp.get_devices(limit=200)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            r = aruba_client.get("/network-monitoring/v1alpha1/device-inventory", params={"limit": 200})
             items = r.get("devices", r.get("items", []))
+            if not items:
+                r = cached_get("/network-monitoring/v1/devices", params={"limit": 200})
+                items = r.get("devices", r.get("items", []))
 
         if want_type:
             items = [
@@ -1420,10 +1471,6 @@ def _handle_device_status(text, _session_id):
 
 def _handle_find_client(text, _session_id):
     """Find a client by IP or MAC address."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     mac = IntentClassifier.extract_mac(text)
     # Try to extract IP
     ip_m = re.search(r"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b", text)
@@ -1432,21 +1479,28 @@ def _handle_find_client(text, _session_id):
     if not mac and not ip:
         return ("Please provide a MAC or IP address, e.g. *'find client 192.168.1.50'*", None, 200)
 
+    query = mac or ip
     try:
-        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
-        clients = r.get("clients", r.get("items", []))
-        found = []
-        for c in clients:
-            c_mac = (c.get("macaddr", c.get("mac", "")) or "").lower().replace("-", ":")
-            c_ip = c.get("ip_address", c.get("ipv4", "")) or ""
-            if (mac and mac in c_mac) or (ip and ip == c_ip):
-                found.append(c)
+        mcp = _get_mcp_client()
+        if mcp:
+            c = mcp.find_client(query)
+            if not c:
+                return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
+            clients = r.get("clients", r.get("items", []))
+            found = []
+            for client in clients:
+                c_mac = (client.get("macaddr", client.get("mac", "")) or "").lower().replace("-", ":")
+                c_ip = client.get("ip_address", client.get("ipv4", "")) or ""
+                if (mac and mac in c_mac) or (ip and ip == c_ip):
+                    found.append(client)
+            if not found:
+                return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
+            c = found[0]
 
-        if not found:
-            query = mac or ip
-            return (f"No client found with {'MAC' if mac else 'IP'} **{query}**.", [], 200)
-
-        c = found[0]
         logger.debug(f"find_client raw fields: {list(c.keys())}")
         details = {
             "MAC": _cell(_first_present_str(c, "macaddr", "mac", "macAddress")),
@@ -1546,13 +1600,15 @@ def _handle_traceroute(text, _session_id):
 
 def _handle_client_count(_text, _session_id):
     """Show total client count and breakdown by type."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     try:
-        r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
-        clients = r.get("clients", r.get("items", []))
+        mcp = _get_mcp_client()
+        if mcp:
+            clients = mcp.get_clients(limit=100)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
+            clients = r.get("clients", r.get("items", []))
 
         total = len(clients)
         if not clients:
@@ -1587,13 +1643,15 @@ def _handle_client_count(_text, _session_id):
 
 def _handle_site_list(_text, _session_id):
     """List all sites with device counts."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     try:
-        r = aruba_client.get("/network-config/v1/sites")
-        sites = r.get("sites", r.get("items", []))
+        mcp = _get_mcp_client()
+        if mcp:
+            sites = mcp.get_sites(limit=200)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            r = aruba_client.get("/network-config/v1/sites")
+            sites = r.get("sites", r.get("items", []))
 
         if not sites:
             return "No sites found.", [], 200
@@ -1675,10 +1733,6 @@ def _handle_top_bandwidth(_text, _session_id):
 
 def _handle_device_events(text, _session_id):
     """Show recent events for a specific device (by serial number)."""
-    import app as _app
-
-    aruba_client = _app.aruba_client
-
     serial = (
         IntentClassifier.extract_serial(text)
         if hasattr(IntentClassifier, "extract_serial")
@@ -1695,11 +1749,17 @@ def _handle_device_events(text, _session_id):
             200,
         )
     try:
-        data = aruba_client.get(
-            f"/network-monitoring/v1/events",
-            params={"serial": serial, "limit": 20},
-        )
-        events = data.get("events", data.get("items", []))
+        mcp = _get_mcp_client()
+        if mcp:
+            events = mcp.get_events(serial, hours=24)
+        else:
+            import app as _app
+            aruba_client = _app.aruba_client
+            data = aruba_client.get(
+                "/network-monitoring/v1/events",
+                params={"serial": serial, "limit": 20},
+            )
+            events = data.get("events", data.get("items", []))
         if not events:
             return f"No events found for device **{serial}**.", [], 200
         table = [
