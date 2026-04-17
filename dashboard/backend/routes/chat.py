@@ -582,35 +582,31 @@ class IntentClassifier:
         Extract a device serial number.  Aruba serials are typically 9–12
         uppercase alphanumeric characters.  Also matches lower-case input.
         """
-        m = re.search(r"\b([A-Za-z0-9]{6,14})\b", text)
-        # Avoid matching common English words as serials
         STOPWORDS = {
-            "the",
-            "and",
-            "for",
-            "are",
-            "that",
-            "with",
-            "this",
-            "have",
-            "from",
-            "they",
-            "will",
-            "been",
-            "were",
-            "said",
-            "each",
-            "which",
-            "she",
-            "there",
-            "their",
-            "what",
-            "about",
-            "would",
-            "make",
+            # Common English
+            "the", "and", "for", "are", "that", "with", "this", "have", "from",
+            "they", "will", "been", "were", "said", "each", "which", "she",
+            "there", "their", "what", "about", "would", "make", "please",
+            # Action words that match serial regex but are not serials
+            "bounce", "reboot", "restart", "reset", "status", "device",
+            "devices", "switch", "access", "client", "clients", "gateway",
+            "router", "please", "serial", "number", "online", "offline",
+            "show", "list", "find", "locate", "check", "give", "tell",
+            "connect", "disconnect", "ping", "trace", "traceroute",
         }
+        # First pass: look for serial explicitly after a device keyword
+        m = re.search(
+            r"\b(?:ap|switch|serial|device|router|gateway)\s+([A-Za-z0-9]{6,14})\b",
+            text,
+            re.IGNORECASE,
+        )
         if m and m.group(1).lower() not in STOPWORDS:
             return m.group(1).upper()
+        # Second pass: find any 6-14 char alphanumeric token that's not a stopword
+        for match in re.finditer(r"\b([A-Za-z0-9]{6,14})\b", text):
+            candidate = match.group(1)
+            if candidate.lower() not in STOPWORDS:
+                return candidate.upper()
         return None
 
     @staticmethod
@@ -788,7 +784,7 @@ def _handle_ap_status(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat ap_status error: {e}")
-        return f"Could not retrieve AP status: {e}", None, 500
+        return f"Could not retrieve AP status: {e}", None, 200
 
 
 def _handle_site_health(text, _session_id):
@@ -862,7 +858,7 @@ def _handle_site_health(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat site_health error: {e}")
-        return f"Could not retrieve site health: {e}", None, 500
+        return f"Could not retrieve site health: {e}", None, 200
 
 
 # ---------------------------------------------------------------------------
@@ -920,7 +916,7 @@ def _handle_clients_by_ssid(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat clients_by_ssid error: {e}")
-        return f"Could not retrieve clients for SSID {ssid}: {e}", None, 500
+        return f"Could not retrieve clients for SSID {ssid}: {e}", None, 200
 
 
 def _handle_client_by_mac(text, _session_id):
@@ -960,10 +956,10 @@ def _handle_client_by_mac(text, _session_id):
 
     except Exception as e:
         err = str(e)
-        if "404" in err or "Not Found" in err:
+        if "404" in err or "not found" in err.lower():
             return f"No active client found with MAC **{mac}**.", None, 200
         logger.error(f"Chat client_by_mac error: {e}")
-        return f"Error looking up client {mac}: {e}", None, 500
+        return f"Error looking up client {mac}: {e}", None, 200
 
 
 def _handle_switch_port_errors(text, _session_id):
@@ -1037,7 +1033,7 @@ def _handle_switch_port_errors(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat switch_port_errors error: {e}")
-        return f"Could not retrieve switch error data: {e}", None, 500
+        return f"Could not retrieve switch error data: {e}", None, 200
 
 
 def _handle_bounce_ap(text, session_id):
@@ -1081,7 +1077,7 @@ def _handle_bounce_ap(text, session_id):
                 f"Failed to reboot AP **{serial}**: {err}\n"
                 "Verify the serial number and that you have write permissions.",
                 None,
-                500,
+                200,
             )
 
 
@@ -1132,7 +1128,7 @@ def _handle_bounce_port(text, session_id):
 
     except Exception as e:
         logger.error(f"Chat bounce_port error: {e}")
-        return f"Failed to bounce port {port} on {serial}: {e}", None, 500
+        return f"Failed to bounce port {port} on {serial}: {e}", None, 200
 
 
 def _handle_alert_summary(text, _session_id):
@@ -1183,7 +1179,7 @@ def _handle_alert_summary(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat alert_summary error: {e}")
-        return f"Could not retrieve alerts: {e}", None, 500
+        return f"Could not retrieve alerts: {e}", None, 200
 
 
 def _handle_firmware_status(text, _session_id):
@@ -1210,7 +1206,7 @@ def _handle_firmware_status(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat firmware_status error: {e}")
-        return f"Could not retrieve firmware data: {e}", None, 500
+        return f"Could not retrieve firmware data: {e}", None, 200
 
 
 def _handle_wlan_list(text, _session_id):
@@ -1240,7 +1236,7 @@ def _handle_wlan_list(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat wlan_list error: {e}")
-        return f"Could not retrieve WLAN list: {e}", None, 500
+        return f"Could not retrieve WLAN list: {e}", None, 200
 
 
 def _handle_top_clients(text, _session_id):
@@ -1268,7 +1264,7 @@ def _handle_top_clients(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat top_clients error: {e}")
-        return f"Could not retrieve top client data: {e}", None, 500
+        return f"Could not retrieve top client data: {e}", None, 200
 
 
 def _handle_device_inventory(text, _session_id):
@@ -1303,7 +1299,7 @@ def _handle_device_inventory(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat device_inventory error: {e}")
-        return f"Could not retrieve device inventory: {e}", None, 500
+        return f"Could not retrieve device inventory: {e}", None, 200
 
 
 def _handle_ack_alert(text, session_id):
@@ -1328,7 +1324,7 @@ def _handle_ack_alert(text, session_id):
         )
     except Exception as e:
         logger.error(f"Chat ack_alert error: {e}")
-        return f"Could not acknowledge alert {alert_id}: {e}", None, 500
+        return f"Could not acknowledge alert {alert_id}: {e}", None, 200
 
 
 def _handle_ping_test(text, _session_id):
@@ -1400,7 +1396,7 @@ def _handle_ping_test(text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat ping_test error: {e}")
-        return f"Could not run ping: {e}", None, 500
+        return f"Could not run ping: {e}", None, 200
 
 
 def _handle_device_status(text, _session_id):
@@ -1466,7 +1462,7 @@ def _handle_device_status(text, _session_id):
         return reply, table if table else None, 200
     except Exception as e:
         logger.error(f"Chat device_status error: {e}")
-        return f"Could not retrieve device status: {e}", None, 500
+        return f"Could not retrieve device status: {e}", None, 200
 
 
 def _handle_find_client(text, _session_id):
@@ -1523,7 +1519,7 @@ def _handle_find_client(text, _session_id):
         return reply, [details], 200
     except Exception as e:
         logger.error(f"Chat find_client error: {e}")
-        return f"Could not search for client: {e}", None, 500
+        return f"Could not search for client: {e}", None, 200
 
 
 def _handle_disconnect_client(text, session_id):
@@ -1553,7 +1549,7 @@ def _handle_disconnect_client(text, session_id):
         )
     except Exception as e:
         logger.error(f"Chat disconnect_client error: {e}")
-        return f"Could not disconnect client {mac}: {e}", None, 500
+        return f"Could not disconnect client {mac}: {e}", None, 200
 
 
 def _handle_traceroute(text, _session_id):
@@ -1595,7 +1591,7 @@ def _handle_traceroute(text, _session_id):
         return (f"Traceroute request returned HTTP {resp.status_code}.", None, 200)
     except Exception as e:
         logger.error(f"Chat traceroute error: {e}")
-        return f"Could not run traceroute: {e}", None, 500
+        return f"Could not run traceroute: {e}", None, 200
 
 
 def _handle_client_count(_text, _session_id):
@@ -1638,7 +1634,7 @@ def _handle_client_count(_text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat client_count error: {e}")
-        return f"Could not retrieve client count: {e}", None, 500
+        return f"Could not retrieve client count: {e}", None, 200
 
 
 def _handle_site_list(_text, _session_id):
@@ -1677,7 +1673,7 @@ def _handle_site_list(_text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat site_list error: {e}")
-        return f"Could not retrieve site list: {e}", None, 500
+        return f"Could not retrieve site list: {e}", None, 200
 
 
 def _handle_top_bandwidth(_text, _session_id):
@@ -1728,7 +1724,7 @@ def _handle_top_bandwidth(_text, _session_id):
 
     except Exception as e:
         logger.error(f"Chat top_bandwidth error: {e}")
-        return f"Could not retrieve bandwidth data: {e}", None, 500
+        return f"Could not retrieve bandwidth data: {e}", None, 200
 
 
 def _handle_device_events(text, _session_id):
@@ -1774,7 +1770,7 @@ def _handle_device_events(text, _session_id):
         return f"**Last {len(table)} events for {serial}:**", table, 200
     except Exception as e:
         logger.error(f"Chat device_events error: {e}")
-        return f"Could not retrieve events for {serial}: {e}", None, 500
+        return f"Could not retrieve events for {serial}: {e}", None, 200
 
 
 def _handle_switch_vlans(text, _session_id):
@@ -1811,7 +1807,7 @@ def _handle_switch_vlans(text, _session_id):
         return f"**VLANs on {serial}:**", table, 200
     except Exception as e:
         logger.error(f"Chat switch_vlans error: {e}")
-        return f"Could not retrieve VLANs for {serial}: {e}", None, 500
+        return f"Could not retrieve VLANs for {serial}: {e}", None, 200
 
 
 def _handle_ap_radios(text, _session_id):
@@ -1848,7 +1844,7 @@ def _handle_ap_radios(text, _session_id):
         return f"**Radios on AP {serial}:**", table, 200
     except Exception as e:
         logger.error(f"Chat ap_radios error: {e}")
-        return f"Could not retrieve radio info for {serial}: {e}", None, 500
+        return f"Could not retrieve radio info for {serial}: {e}", None, 200
 
 
 def _handle_audit_logs(_text, _session_id):
@@ -1878,7 +1874,7 @@ def _handle_audit_logs(_text, _session_id):
         return f"**Last {len(table)} audit log entries:**", table, 200
     except Exception as e:
         logger.error(f"Chat audit_logs error: {e}")
-        return f"Could not retrieve audit logs: {e}", None, 500
+        return f"Could not retrieve audit logs: {e}", None, 200
 
 
 def _handle_unknown(text, _session_id):
@@ -2147,7 +2143,7 @@ class GeminiAgent:
 
         try:
             url = f"{cls._API_BASE}/{cls._MODEL}:generateContent?key={key}"
-            resp = httpx.post(url, json=payload, timeout=10.0)
+            resp = httpx.post(url, json=payload, timeout=5.0)
             resp.raise_for_status()
             data = resp.json()
 

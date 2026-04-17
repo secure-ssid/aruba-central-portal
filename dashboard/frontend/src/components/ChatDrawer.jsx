@@ -537,11 +537,13 @@ function ChatDrawer({ pageContext = '' }) {
   ];
 
   const sendMessage = useCallback(async (overrideText) => {
-    const text = (overrideText ?? inputValue).trim();
+    // IconButton passes a click event as the first arg; only real strings override input.
+    const raw = typeof overrideText === 'string' ? overrideText : inputValue;
+    const text = raw.trim();
     if (!text || isLoading) return;
 
     // If not already confirmed and text matches a destructive pattern, gate it
-    if (overrideText === undefined && DESTRUCTIVE_PATTERNS.some((p) => p.test(text))) {
+    if (typeof overrideText !== 'string' && DESTRUCTIVE_PATTERNS.some((p) => p.test(text))) {
       setInputValue('');
       setPendingAction(text);
       // Show the user's message in the chat immediately
@@ -797,7 +799,12 @@ function ChatDrawer({ pageContext = '' }) {
             </Typography>
             {llmStatus.available && (
               <Chip
-                label={llmStatus.model_ready ? (llmStatus.model || 'AI') : 'Loading…'}
+                label={llmStatus.model_ready ? (
+                  llmStatus.via === 'gemini' ? 'Gemini'
+                  : llmStatus.via === 'claude' ? 'Claude'
+                  : llmStatus.via === 'ollama' ? `Ollama`
+                  : 'AI'
+                ) : 'Loading…'}
                 size="small"
                 sx={{
                   height: 15, fontSize: '0.6rem', fontWeight: 700,
@@ -810,13 +817,17 @@ function ChatDrawer({ pageContext = '' }) {
             )}
           </Box>
           <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
-            {llmStatus.available && llmStatus.model_ready
-              ? llmStatus.via === 'gemini'
-                ? `Gemini · ${llmStatus.model ?? ''}`
-                : llmStatus.via === 'claude'
-                ? `Claude · ${llmStatus.model?.replace('claude-', '').replace(/-\d{8}$/, '') ?? ''}`
-                : `Ollama · ${llmStatus.model}`
-              : 'Aruba Central API'}
+            {(() => {
+              // Show actual LLM used in last assistant message, fall back to status
+              const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant' && m.via && m.via !== 'regex');
+              const via   = lastAssistant?.via   ?? llmStatus.via;
+              const model = lastAssistant?.model  ?? llmStatus.model;
+              if (!llmStatus.available && !lastAssistant) return 'Aruba Central API';
+              if (via === 'gemini') return `Gemini · ${model ?? ''}`;
+              if (via === 'claude') return `Claude · ${model?.replace('claude-', '').replace(/-\d{8}$/, '') ?? ''}`;
+              if (via === 'ollama') return `Ollama · ${model?.split(':')[0] ?? model ?? ''}`;
+              return 'Aruba Central API';
+            })()}
           </Typography>
         </Box>
 
@@ -1043,7 +1054,7 @@ function ChatDrawer({ pageContext = '' }) {
             <Tooltip title="Send (Enter)">
               <span>
                 <IconButton
-                  onClick={sendMessage}
+                  onClick={() => sendMessage()}
                   disabled={!inputValue.trim() || isLoading}
                   sx={{
                     bgcolor:   inputValue.trim() && !isLoading ? ORANGE : 'var(--border-default)',
