@@ -146,7 +146,11 @@ def get_device_details(serial):
                 latest = samples[-1]
                 if "data" not in latest or not latest["data"]:
                     return
-                avg_value = round(sum(latest["data"]) / len(latest["data"]), 2)
+                # Filter out None values that Central sometimes returns in trend series
+                clean = [v for v in latest["data"] if isinstance(v, (int, float))]
+                if not clean:
+                    return
+                avg_value = round(sum(clean) / len(clean), 2)
                 if "power" in device_key.lower():
                     device[device_key] = f"{avg_value}W"
                     device["power_consumption"] = avg_value

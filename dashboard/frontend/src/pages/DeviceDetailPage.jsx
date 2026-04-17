@@ -32,7 +32,26 @@ import {
   AccordionSummary,
   AccordionDetails,
   IconButton,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+  Paper,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TablePagination,
+  InputAdornment,
+  Checkbox,
+  Menu,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DevicesIcon from '@mui/icons-material/Devices';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -383,6 +402,511 @@ function ToolCard({ icon, label, description, inputLabel, inputPlaceholder, onRu
         </DialogActions>
       </Dialog>
     </>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Events Tab — per-device event log viewer
+// ──────────────────────────────────────────────────────────────────────────────
+
+const HOURS_OPTIONS = [
+  { value: 1, label: 'Last 1 hour' },
+  { value: 4, label: 'Last 4 hours' },
+  { value: 24, label: 'Last 24 hours' },
+  { value: 72, label: 'Last 3 days' },
+  { value: 168, label: 'Last 7 days' },
+  { value: 720, label: 'Last 30 days' },
+];
+
+// Preferred column order when these keys exist on the event payload
+const PREFERRED_EVENT_KEYS = [
+  'timestamp',
+  'time',
+  'severity',
+  'category',
+  'source',
+  'message',
+  'description',
+  'event',
+  'name',
+];
+
+const TIMESTAMP_KEYS = ['timestamp', 'time', 'event_time', 'eventTime', 'ts'];
+
+const prettyHeader = (key) =>
+  key
+    .replace(/[_\-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+const detectTimestampKey = (event) => {
+  if (!event) return null;
+  for (const k of TIMESTAMP_KEYS) {
+    if (k in event) return k;
+  }
+  // Fallback: any key containing "time" or "date"
+  const keys = Object.keys(event);
+  return keys.find((k) => /time|date/i.test(k)) || null;
+};
+
+const parseTs = (val) => {
+  if (val == null) return NaN;
+  if (typeof val === 'number') {
+    // Heuristic: treat values < 10^12 as seconds
+    return val < 1e12 ? val * 1000 : val;
+  }
+  const t = Date.parse(val);
+  return isNaN(t) ? NaN : t;
+};
+
+const formatRelative = (ms) => {
+  const diff = Date.now() - ms;
+  const abs = Math.abs(diff);
+  const sign = diff >= 0 ? 'ago' : 'from now';
+  const s = Math.floor(abs / 1000);
+  if (s < 60) return `${s}s ${sign}`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} min ${sign}`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} hr ${sign}`;
+  const d = Math.floor(h / 24);
+  return `${d} day${d === 1 ? '' : 's'} ${sign}`;
+};
+
+const formatTimestampCell = (val) => {
+  const ms = parseTs(val);
+  if (isNaN(ms)) return String(val ?? '—');
+  const date = new Date(ms);
+  const local = date.toLocaleString();
+  return (
+    <Box>
+      <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+        {local}
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+        {formatRelative(ms)}
+      </Typography>
+    </Box>
+  );
+};
+
+const renderCellValue = (val) => {
+  if (val === null || val === undefined || val === '') return '—';
+  if (typeof val === 'object') {
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return '[object]';
+    }
+  }
+  return String(val);
+};
+
+const severityColor = (sev) => {
+  const s = String(sev || '').toLowerCase();
+  if (s.includes('crit') || s.includes('fatal') || s.includes('error')) return 'error';
+  if (s.includes('warn')) return 'warning';
+  if (s.includes('info') || s.includes('notice')) return 'info';
+  if (s.includes('debug')) return 'default';
+  return 'default';
+};
+
+function EventFilterMenu({ fields, filters, onToggle, activeCount }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [activeField, setActiveField] = useState(fields[0]?.field || null);
+
+  useEffect(() => {
+    if (!activeField && fields.length > 0) setActiveField(fields[0].field);
+  }, [fields, activeField]);
+
+  const current = fields.find((f) => f.field === activeField) || fields[0];
+
+  return (
+    <>
+      <Button
+        size="small"
+        variant="outlined"
+        startIcon={<FilterListIcon />}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+      >
+        Filters{activeCount > 0 ? ` (${activeCount})` : ''}
+      </Button>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        PaperProps={{ sx: { minWidth: 320, maxHeight: 480 } }}
+      >
+        <Box sx={{ display: 'flex', borderBottom: '1px solid', borderColor: 'divider' }}>
+          {fields.map((f) => (
+            <Button
+              key={f.field}
+              size="small"
+              onClick={() => setActiveField(f.field)}
+              sx={{
+                flex: 1,
+                borderRadius: 0,
+                borderBottom:
+                  activeField === f.field ? '2px solid #FF6600' : '2px solid transparent',
+                color: activeField === f.field ? '#FF6600' : 'text.secondary',
+                fontSize: '0.7rem',
+                textTransform: 'none',
+              }}
+            >
+              {prettyHeader(f.field)}
+              {filters[f.field]?.size > 0 ? ` (${filters[f.field].size})` : ''}
+            </Button>
+          ))}
+        </Box>
+        <Box sx={{ maxHeight: 320, overflowY: 'auto' }}>
+          {current?.values.map((val) => {
+            const checked = Boolean(filters[current.field]?.has(val));
+            return (
+              <MenuItem
+                key={val}
+                onClick={() => onToggle(current.field, val)}
+                dense
+              >
+                <Checkbox size="small" checked={checked} sx={{ p: 0.5, mr: 1 }} />
+                <ListItemText
+                  primary={val}
+                  primaryTypographyProps={{ fontSize: '0.85rem' }}
+                />
+              </MenuItem>
+            );
+          })}
+        </Box>
+      </Menu>
+    </>
+  );
+}
+
+function EventsTab({ device, resolvedSerial }) {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [hoursFilter, setHoursFilter] = useState(24);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  // Multi-select filters: {fieldName: Set(selected values)}
+  const [filters, setFilters] = useState({});
+
+  const siteId = device?.siteId;
+
+  const fetchEvents = useCallback(async () => {
+    if (!resolvedSerial) return;
+    setLoading(true);
+    setError('');
+    try {
+      const params = { hours: hoursFilter, limit: 500 };
+      if (siteId) params.site_id = siteId;
+      const data = await deviceAPI.getDeviceEvents(resolvedSerial, params);
+      const list = Array.isArray(data?.events) ? data.events : [];
+      setEvents(list);
+      setTotal(typeof data?.total === 'number' ? data.total : list.length);
+    } catch (e) {
+      const msg =
+        e?.response?.data?.error ||
+        e?.response?.data?.message ||
+        e?.message ||
+        'Failed to load events';
+      setError(msg);
+      setEvents([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [resolvedSerial, siteId, hoursFilter]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  // Build column order: preferred keys (that exist) first, then any extras.
+  const columns = (() => {
+    if (!events.length) return [];
+    const keys = Object.keys(events[0] || {});
+    const keySet = new Set(keys);
+    const ordered = PREFERRED_EVENT_KEYS.filter((k) => keySet.has(k));
+    const extras = keys.filter((k) => !PREFERRED_EVENT_KEYS.includes(k));
+    return [...ordered, ...extras];
+  })();
+
+  const tsKey = detectTimestampKey(events[0]);
+
+  const sortedEvents = (() => {
+    if (!tsKey) return events;
+    return [...events].sort((a, b) => {
+      const ta = parseTs(a?.[tsKey]);
+      const tb = parseTs(b?.[tsKey]);
+      if (isNaN(ta) && isNaN(tb)) return 0;
+      if (isNaN(ta)) return 1;
+      if (isNaN(tb)) return -1;
+      return tb - ta;
+    });
+  })();
+
+  // Apply full-text search + per-field multi-select filters
+  const filteredEvents = (() => {
+    const q = search.trim().toLowerCase();
+    const activeFilters = Object.entries(filters).filter(
+      ([, set]) => set && set.size > 0,
+    );
+    if (!q && activeFilters.length === 0) return sortedEvents;
+    return sortedEvents.filter((ev) => {
+      if (q) {
+        try {
+          if (!JSON.stringify(ev).toLowerCase().includes(q)) return false;
+        } catch {
+          return false;
+        }
+      }
+      for (const [field, allowed] of activeFilters) {
+        const val = ev?.[field];
+        if (val == null || !allowed.has(String(val))) return false;
+      }
+      return true;
+    });
+  })();
+
+  // Build the list of filterable fields + their distinct values from loaded events.
+  // Only categorical columns with reasonable cardinality (≤ 30 distinct values).
+  const filterableFields = (() => {
+    const candidates = ['severity', 'category', 'sourceType', 'eventName'];
+    const out = [];
+    for (const field of candidates) {
+      const vals = new Set();
+      for (const ev of events) {
+        const v = ev?.[field];
+        if (v != null && v !== '') vals.add(String(v));
+        if (vals.size > 30) break;
+      }
+      if (vals.size > 1 && vals.size <= 30) {
+        out.push({ field, values: [...vals].sort() });
+      }
+    }
+    return out;
+  })();
+
+  const activeFilterCount = Object.values(filters).reduce(
+    (sum, s) => sum + (s?.size || 0),
+    0,
+  );
+
+  const toggleFilterValue = (field, value) => {
+    setFilters((prev) => {
+      const current = new Set(prev[field] || []);
+      if (current.has(value)) current.delete(value);
+      else current.add(value);
+      return { ...prev, [field]: current };
+    });
+  };
+
+  const clearAllFilters = () => {
+    setFilters({});
+    setSearch('');
+  };
+
+  // Reset to first page whenever filter/search/time range/data changes
+  useEffect(() => {
+    setPage(0);
+  }, [search, hoursFilter, events.length, filters]);
+
+  const pagedEvents = filteredEvents.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
+
+  return (
+    <Box>
+      {/* Toolbar */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          mb: 2,
+          flexWrap: 'wrap',
+        }}
+      >
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+          <InputLabel id="events-hours-label">Time Range</InputLabel>
+          <Select
+            labelId="events-hours-label"
+            label="Time Range"
+            value={hoursFilter}
+            onChange={(e) => setHoursFilter(Number(e.target.value))}
+          >
+            {HOURS_OPTIONS.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          size="small"
+          placeholder="Search events…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ minWidth: 240, flex: '1 1 240px', maxWidth: 420 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        {filterableFields.length > 0 && (
+          <EventFilterMenu
+            fields={filterableFields}
+            filters={filters}
+            onToggle={toggleFilterValue}
+            activeCount={activeFilterCount}
+          />
+        )}
+
+        {activeFilterCount > 0 && (
+          <Button size="small" onClick={clearAllFilters} sx={{ color: 'text.secondary' }}>
+            Clear ({activeFilterCount})
+          </Button>
+        )}
+
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<RefreshIcon />}
+          onClick={fetchEvents}
+          disabled={loading}
+          sx={{
+            borderColor: '#FF6600',
+            color: '#FF6600',
+            '&:hover': { borderColor: '#E55A00', bgcolor: 'rgba(255,102,0,0.04)' },
+          }}
+        >
+          Refresh
+        </Button>
+
+        {!loading && !error && events.length > 0 && (
+          <Typography variant="caption" sx={{ color: 'text.secondary', ml: 'auto' }}>
+            {search.trim() || activeFilterCount > 0
+              ? `${filteredEvents.length} match${filteredEvents.length === 1 ? '' : 'es'} of ${events.length}`
+              : `Showing ${events.length}${total && total !== events.length ? ` of ${total}` : ''} event${events.length === 1 ? '' : 's'}`}
+          </Typography>
+        )}
+      </Box>
+
+      {activeFilterCount > 0 && (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+          {Object.entries(filters).flatMap(([field, set]) =>
+            [...(set || [])].map((val) => (
+              <Chip
+                key={`${field}:${val}`}
+                size="small"
+                label={`${prettyHeader(field)}: ${val}`}
+                onDelete={() => toggleFilterValue(field, val)}
+                sx={{ fontSize: '0.7rem' }}
+              />
+            )),
+          )}
+        </Box>
+      )}
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+          <CircularProgress sx={{ color: '#FF6600' }} />
+        </Box>
+      ) : events.length === 0 && !error ? (
+        <Card variant="outlined">
+          <CardContent sx={{ textAlign: 'center', py: 6 }}>
+            <EventNoteIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+            <Typography color="text.secondary">
+              No events in the last {hoursFilter} hour{hoursFilter === 1 ? '' : 's'}.
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : events.length > 0 ? (
+        <TableContainer component={Paper} variant="outlined">
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableCell
+                    key={col}
+                    sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}
+                  >
+                    {prettyHeader(col)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {pagedEvents.map((ev, idx) => (
+                <TableRow key={idx} hover>
+                  {columns.map((col) => {
+                    const val = ev?.[col];
+                    let content;
+                    if (col === tsKey) {
+                      content = formatTimestampCell(val);
+                    } else if (col === 'severity' || col === 'level') {
+                      content = val ? (
+                        <Chip
+                          label={String(val)}
+                          size="small"
+                          color={severityColor(val)}
+                          sx={{ fontSize: '0.7rem', height: 20 }}
+                        />
+                      ) : (
+                        '—'
+                      );
+                    } else {
+                      content = renderCellValue(val);
+                    }
+                    return (
+                      <TableCell
+                        key={col}
+                        sx={{
+                          fontSize: '0.8rem',
+                          verticalAlign: 'top',
+                          maxWidth: 420,
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {content}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            component="div"
+            count={filteredEvents.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            sx={{ borderTop: '1px solid', borderColor: 'divider' }}
+          />
+        </TableContainer>
+      ) : null}
+    </Box>
   );
 }
 
@@ -2387,6 +2911,11 @@ function DeviceDetailPage() {
               icon={<BuildIcon sx={{ fontSize: 16 }} />}
               iconPosition="start"
             />
+            <Tab
+              label="Events"
+              icon={<EventNoteIcon sx={{ fontSize: 16 }} />}
+              iconPosition="start"
+            />
           </Tabs>
         </Box>
       )}
@@ -2394,6 +2923,11 @@ function DeviceDetailPage() {
       {/* Diagnostics Tab */}
       {tabValue === 1 && resolvedSerial && device && (
         <DiagnosticsTab device={device} resolvedSerial={resolvedSerial} />
+      )}
+
+      {/* Events Tab */}
+      {tabValue === 2 && resolvedSerial && device && (
+        <EventsTab device={device} resolvedSerial={resolvedSerial} />
       )}
 
       {/* Overview Tab */}

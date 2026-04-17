@@ -51,7 +51,6 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import ShieldIcon from '@mui/icons-material/Shield';
 import HubIcon from '@mui/icons-material/Hub';
 import ScheduleIcon from '@mui/icons-material/Schedule';
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -89,12 +88,6 @@ const toolsItems = [
   { text: 'Scheduled Reports', icon: <ScheduleIcon />,   path: '/scheduled-reports' },
 ];
 
-const systemItems = [
-  { text: 'Status',        icon: <MonitorHeartIcon />,   path: '/status' },
-  { text: 'Audit Log',     icon: <HistoryEduIcon />,     path: '/audit-log' },
-  { text: 'Settings',      icon: <SettingsIcon />,       path: '/settings' },
-];
-
 const glItems = [
   { text: 'Devices',       icon: <DevicesIcon />,     path: '/gl/devices' },
   { text: 'Locations',     icon: <LocationOnIcon />,  path: '/gl/locations' },
@@ -110,7 +103,6 @@ const navGroups = [
   { id: 'monitoring',    title: 'Monitoring',       items: monitoringItems },
   { id: 'management',    title: 'Management',       items: managementItems },
   { id: 'tools',         title: 'Tools',            items: toolsItems },
-  { id: 'system',        title: 'System',           items: systemItems },
   { id: 'gl',            title: 'GreenLake',        items: glItems },
 ];
 
@@ -282,7 +274,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
   const location = useLocation();
   const theme = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'system', 'gl']);
+  const [expandedGroups, setExpandedGroups] = useState(['monitoring', 'management', 'tools', 'gl']);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
