@@ -12,12 +12,23 @@ import pytest
 
 from pipeline.llm import LLMError, LLMResult, LLMUnavailable
 from pipeline.syslog.clusterer import cluster_once
+from pipeline.syslog.reviewer_agent import ReviewResult
 from pipeline.syslog.storage import SyslogStore
 from pipeline.syslog.writer_agent import (
     _build_prompt,
     fallback_summary,
     write_alert,
 )
+
+
+@pytest.fixture(autouse=True)
+def _stub_reviewer():
+    """Default: reviewer approves. Individual tests override as needed."""
+    with patch(
+        "pipeline.syslog.clusterer.review_alert",
+        return_value=ReviewResult(approved=True, notes="ok", raw="{}"),
+    ) as m:
+        yield m
 
 
 @pytest.fixture()
@@ -133,7 +144,8 @@ def test_clusterer_writes_alert_for_anomalous_incident(store):
     alert = store.get_alert_by_incident(incident_id)
     assert alert is not None
     assert alert["summary"] == "mocked summary"
-    assert alert["approved"] == 0  # reviewer hasn't run yet
+    # Auto-stubbed reviewer approves → alerts.approved == 1
+    assert alert["approved"] == 1
     assert mock_writer.called
 
 
@@ -211,11 +223,13 @@ def test_update_alert_review_roundtrip(store):
         cluster_once(store, now=t + timedelta(seconds=30))
 
     alert = store.list_alerts()[0]
-    assert alert["approved"] == 0
-    store.update_alert_review(alert["id"], review_notes="looks right", approved=1)
+    # Auto-stubbed reviewer approved it → flip to rejected here to prove
+    # the manual-override API round-trips independently of what the
+    # reviewer decided.
+    store.update_alert_review(alert["id"], review_notes="operator rejected", approved=-1)
     after = store.list_alerts()[0]
-    assert after["approved"] == 1
-    assert after["review_notes"] == "looks right"
+    assert after["approved"] == -1
+    assert after["review_notes"] == "operator rejected"
 
     with pytest.raises(ValueError):
         store.update_alert_review(alert["id"], review_notes="x", approved=7)

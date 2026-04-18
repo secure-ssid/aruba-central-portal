@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from .anomaly import score_incident
+from .reviewer_agent import review_alert
 from .storage import StoredEvent, SyslogStore
 from .writer_agent import LLMError, fallback_summary, write_alert
 
@@ -38,6 +39,10 @@ from .writer_agent import LLMError, fallback_summary, write_alert
 # generating a human summary. Tunable via env for cost control.
 WRITER_THRESHOLD = float(os.environ.get("SYSLOG_WRITER_THRESHOLD", "2.0"))
 WRITER_ENABLED = os.environ.get("SYSLOG_WRITER_ENABLED", "true").lower() in ("1", "true", "yes")
+
+# Reviewer agent — audits the writer's output before publication. Disabling
+# it leaves alerts pending (approved=0) until a human decides.
+REVIEWER_ENABLED = os.environ.get("SYSLOG_REVIEWER_ENABLED", "true").lower() in ("1", "true", "yes")
 
 logger = logging.getLogger(__name__)
 
@@ -190,24 +195,45 @@ def cluster_once(
         if WRITER_ENABLED and result.score >= WRITER_THRESHOLD:
             updated["anomaly_score"] = result.score  # include latest score in prompt
             events_for_prompt = store.incident_events(incident_id, limit=20)
+            summary_text: str | None = None
+            notes: str | None = None
+            approved = 0
+
             try:
                 llm = write_alert(updated, events_for_prompt)
-                store.upsert_alert(
-                    incident_id=incident_id,
-                    summary=llm.text,
-                    approved=0,  # reviewer (phase 5) sets to 1 or -1
-                )
+                summary_text = llm.text
             except LLMError as exc:
                 logger.warning(
                     "writer: LLM unavailable for incident=%s — using fallback (%s)",
                     incident_id, exc,
                 )
-                store.upsert_alert(
-                    incident_id=incident_id,
-                    summary=fallback_summary(updated),
-                    review_notes=f"fallback: {exc}",
-                    approved=0,
-                )
+                summary_text = fallback_summary(updated)
+                notes = f"fallback: {exc}"
+
+            # Reviewer pass — only runs when we have an LLM-generated summary
+            # (skipped for fallback text, which isn't the writer's work).
+            if REVIEWER_ENABLED and notes is None:
+                try:
+                    verdict = review_alert(updated, events_for_prompt, summary_text)
+                    if verdict.pending:
+                        approved = 0
+                        notes = f"review pending: {verdict.notes}"
+                    else:
+                        approved = 1 if verdict.approved else -1
+                        notes = verdict.notes
+                except LLMError as exc:
+                    logger.warning(
+                        "reviewer: LLM unavailable for incident=%s — leaving pending (%s)",
+                        incident_id, exc,
+                    )
+                    notes = f"review unavailable: {exc}"
+
+            store.upsert_alert(
+                incident_id=incident_id,
+                summary=summary_text,
+                review_notes=notes,
+                approved=approved,
+            )
 
     logger.info(
         "clusterer: processed=%d groups=%d new=%d",
