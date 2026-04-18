@@ -70,9 +70,12 @@ def test_same_device_same_code_same_bucket_clusters(store):
 
 
 def test_different_codes_make_separate_incidents(store):
+    # Use two codes in DIFFERENT families (broadcast storm vs DHCP) —
+    # LINK_UP / LINK_DOWN are now in the same LINK_STATE family by
+    # design (they describe the same port-flap story).
     t0 = datetime.now(timezone.utc) - timedelta(minutes=2)
-    _ingest(store, code="LINK_UP", when=t0)
-    _ingest(store, code="LINK_DOWN", when=t0 + timedelta(seconds=10))
+    _ingest(store, code="BROADCAST_STORM_DETECTED", when=t0)
+    _ingest(store, code="DHCP_POOL_EXHAUSTED", when=t0 + timedelta(seconds=10))
     result = cluster_once(store)
     assert result.new_incidents == 2
 
@@ -162,3 +165,79 @@ def test_lookback_excludes_ancient_events(store):
     _ingest(store, when=t_old)
     result = cluster_once(store, lookback=timedelta(minutes=30))
     assert result.processed == 0
+
+
+# ──────────────── Phase 9: family-based + sliding-window clustering ────────
+
+def test_related_codes_cluster_into_same_family(store):
+    """AOS emits 132094 (MIC failure) and 520013 (handshake timeout) together
+    for the same WPA failure. They must land in ONE incident."""
+    t = datetime(2026, 4, 18, 0, 0, 30, tzinfo=timezone.utc)
+    for i in range(5):
+        _ingest(store, code="132094", when=t + timedelta(seconds=i))
+    for i in range(5):
+        _ingest(store, code="520013", when=t + timedelta(seconds=i + 10))
+
+    cluster_once(store, now=t + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+    incidents = store.list_incidents()
+    assert len(incidents) == 1
+    assert incidents[0]["event_count"] == 10
+
+
+def test_continuous_activity_merges_across_bucket_boundary(store):
+    """(device, family) events that span the 5-min bucket boundary should
+    merge into ONE incident now that we have sliding-window extension."""
+    # First bucket (0:00-0:05): 5 events ending at 0:04:30
+    t0 = datetime(2026, 4, 18, 0, 4, 30, tzinfo=timezone.utc)
+    for i in range(5):
+        _ingest(store, code="132094", when=t0 + timedelta(seconds=i))
+    cluster_once(store, now=t0 + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+    assert len(store.list_incidents()) == 1
+    first_id = store.list_incidents()[0]["id"]
+
+    # Second bucket (0:05-0:10): 5 more events starting at 0:05:10 — within
+    # 5 min of the previous last_seen, so should extend the same incident.
+    t1 = datetime(2026, 4, 18, 0, 5, 10, tzinfo=timezone.utc)
+    for i in range(5):
+        _ingest(store, code="132094", when=t1 + timedelta(seconds=i))
+    cluster_once(store, now=t1 + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+
+    incidents = store.list_incidents()
+    assert len(incidents) == 1
+    assert incidents[0]["id"] == first_id
+    assert incidents[0]["event_count"] == 10
+
+
+def test_gap_longer_than_window_still_starts_new_incident(store):
+    """If the next burst arrives > window later, it's a new incident."""
+    t0 = datetime(2026, 4, 18, 0, 0, 30, tzinfo=timezone.utc)
+    for i in range(3):
+        _ingest(store, code="132094", when=t0 + timedelta(seconds=i))
+    cluster_once(store, now=t0 + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+
+    # 10 minutes later (window = 5 min default) → new incident
+    t1 = datetime(2026, 4, 18, 0, 10, 30, tzinfo=timezone.utc)
+    for i in range(3):
+        _ingest(store, code="132094", when=t1 + timedelta(seconds=i))
+    cluster_once(store, now=t1 + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+
+    assert len(store.list_incidents()) == 2
+
+
+def test_different_families_do_not_merge_on_same_device(store):
+    """Different root causes (WPA vs broadcast storm) stay separate even
+    on the same AP in the same window."""
+    t = datetime(2026, 4, 18, 0, 0, 30, tzinfo=timezone.utc)
+    for i in range(5):
+        _ingest(store, code="132094", when=t + timedelta(seconds=i))  # WPA_HANDSHAKE
+    for i in range(5):
+        _ingest(store, code="BROADCAST_STORM_DETECTED", when=t + timedelta(seconds=i + 10))
+
+    cluster_once(store, now=t + timedelta(seconds=30),
+                 lookback=timedelta(days=3650))
+    assert len(store.list_incidents()) == 2
