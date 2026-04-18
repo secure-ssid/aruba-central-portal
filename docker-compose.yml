@@ -8,6 +8,11 @@ services:
     restart: unless-stopped
     ports:
       - "1344:1344"
+      # Syslog ingest (LAN-facing). Host 514 (privileged) → container 5140.
+      # Host 1514 → container 5141 (TCP). Override with SYSLOG_UDP_PORT /
+      # SYSLOG_TCP_PORT if these host ports are already in use.
+      - "${SYSLOG_UDP_HOST_PORT:-514}:5140/udp"
+      - "${SYSLOG_TCP_HOST_PORT:-1514}:5141/tcp"
     user: "${PUID:-1000}:${PGID:-1000}"  # Use PUID/PGID from .env, default to appuser (1000:1000)
     env_file:
       - .env

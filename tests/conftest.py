@@ -3,6 +3,10 @@
 import json
 import os
 
+# Syslog listeners must NOT bind during unit tests — tests that own a server
+# spin up their own on ephemeral ports. Set before anything imports app.py.
+os.environ.setdefault("SYSLOG_ENABLED", "false")
+
 # Add project root to path
 import sys
 import tempfile
