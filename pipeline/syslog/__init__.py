@@ -8,6 +8,7 @@ clustering, anomaly detection, and human-readable alerting.
 Phase 1 scope: ingest + parse + store + list API. No clustering yet.
 """
 
+from .anomaly import AnomalyScore, score_incident
 from .clusterer import ClusterResult, cluster_once
 from .parser import ParsedEvent, parse_syslog
 from .server import SyslogServer, get_store, start_default_server
@@ -23,4 +24,6 @@ __all__ = [
     "start_default_server",
     "cluster_once",
     "ClusterResult",
+    "score_incident",
+    "AnomalyScore",
 ]
