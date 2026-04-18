@@ -1164,8 +1164,6 @@ function ConfigurationPage() {
             <Tab label={`Sites (${sites.length})`} />
             <Tab label={`Groups (${groups.length})`} />
             <Tab label={`SSIDs (${wlans.length})`} />
-            <Tab label="Roles & ACLs" />
-            <Tab label="NAC" />
             <Tab label={`Webhooks (${webhooks.length})`} />
             <Tab label="Bulk Operations" />
           </Tabs>
@@ -1193,10 +1191,8 @@ function ConfigurationPage() {
               {tabValue === 0 && renderSitesTable()}
               {tabValue === 1 && renderGroupsTable()}
               {tabValue === 2 && renderWlansTable()}
-              {tabValue === 3 && renderRolesAcls()}
-              {tabValue === 4 && renderNAC()}
-              {tabValue === 5 && renderWebhooks()}
-              {tabValue === 6 && renderBulkOperations()}
+              {tabValue === 3 && renderWebhooks()}
+              {tabValue === 4 && renderBulkOperations()}
             </>
           )}
         </CardContent>

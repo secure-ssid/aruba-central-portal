@@ -71,10 +71,8 @@ const monitoringItems = [
   { text: 'Overview',        icon: <SummarizeIcon />,      path: '/overview' },
   { text: 'Devices',         icon: <DevicesIcon />,        path: '/devices' },
   { text: 'Clients',         icon: <GroupsIcon />,         path: '/clients' },
-  { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },
   { text: 'Topology',        icon: <AccountTreeIcon />,    path: '/topology' },
-  { text: 'Alerts',          icon: <NotificationsIcon />,  path: '/alerts', badge: true },
-  { text: 'Events',          icon: <ReceiptLongIcon />,    path: '/syslog' },
+  { text: 'Notifications',   icon: <NotificationsIcon />,  path: '/notifications', badge: true },
 ];
 
 const managementItems = [
@@ -82,14 +80,12 @@ const managementItems = [
   { text: 'Sites',         icon: <LocationOnIcon />,     path: '/sites' },
   { text: 'Configuration', icon: <TuneIcon />,           path: '/configuration' },
   { text: 'Firmware',      icon: <SystemUpdateIcon />,   path: '/firmware' },
-  { text: 'Webhooks',      icon: <NotificationsIcon />,  path: '/webhooks' },
 ];
 
 const toolsItems = [
   { text: 'Troubleshoot',  icon: <BugReportIcon />,      path: '/troubleshoot' },
-{ text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
-{ text: 'Reporting',     icon: <DescriptionIcon />,    path: '/reporting' },
-  { text: 'Scheduled Reports', icon: <ScheduleIcon />,   path: '/scheduled-reports' },
+  { text: 'API Explorer',  icon: <ApiIcon />,            path: '/api-explorer' },
+  { text: 'Reports',       icon: <DescriptionIcon />,    path: '/reports' },
 ];
 
 const glItems = [
@@ -379,7 +375,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                   letterSpacing: '-0.02em',
                 }}
               >
-                Aruba
+                HPE
               </Typography>
               <Typography
                 sx={{
@@ -391,7 +387,7 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
                   lineHeight: 1,
                 }}
               >
-                Central · MSP
+                Central
               </Typography>
             </Box>
           )}
@@ -620,11 +616,11 @@ function Sidebar({ open, onToggle, onSearchOpen, alertCount = 0 }) {
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
               <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.65rem' }}>
-                Aruba Central
+                HPE Central
               </Typography>
             </Box>
           ) : (
-            <Tooltip title="Connected to Aruba Central" placement="right" arrow>
+            <Tooltip title="Connected to HPE Central" placement="right" arrow>
               <Box
                 sx={{
                   display: 'flex',

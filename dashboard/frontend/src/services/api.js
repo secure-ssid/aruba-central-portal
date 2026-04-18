@@ -730,6 +730,31 @@ export const troubleshootAPI = {
     return response.data;
   },
 
+  cxTraceroute: async (serial, target) => {
+    const response = await apiClient.post('/troubleshoot/cx/traceroute', { device_serial: serial, target });
+    return response.data;
+  },
+
+  cxAaaTest: async (serial, username, password) => {
+    const response = await apiClient.post('/troubleshoot/cx/aaa-test', { device_serial: serial, username, password });
+    return response.data;
+  },
+
+  cxListShowCommands: async (serial) => {
+    const response = await apiClient.get('/troubleshoot/cx/show-commands', { params: { device_serial: serial } });
+    return response.data;
+  },
+
+  cxRunShowCommand: async (serial, command) => {
+    const response = await apiClient.post('/troubleshoot/cx/show-command', { device_serial: serial, command });
+    return response.data;
+  },
+
+  cxReboot: async (serial) => {
+    const response = await apiClient.post('/troubleshoot/cx/reboot', { device_serial: serial });
+    return response.data;
+  },
+
   exportConfig: async (serial) => {
     const response = await apiClient.get('/config/export', { params: { serial }, responseType: 'blob' });
     return response.data;

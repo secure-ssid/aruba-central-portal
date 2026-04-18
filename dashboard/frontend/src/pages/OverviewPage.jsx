@@ -253,7 +253,7 @@ export default function OverviewPage() {
     invalidate();
   };
   const handleOpenLogs = (id) => {
-    navigate(`/syslog?incident=${id}`);
+    navigate(`/notifications?tab=1&incident=${id}`);
   };
   const handleRescan = async () => {
     try {

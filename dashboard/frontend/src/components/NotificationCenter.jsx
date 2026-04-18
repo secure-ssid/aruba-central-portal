@@ -56,12 +56,12 @@ const NotificationCenter = () => {
 
   const handleViewAll = () => {
     handleClose();
-    navigate('/alerts');
+    navigate('/notifications');
   };
 
   const handleNotificationClick = (alertId) => {
     handleClose();
-    navigate(`/alerts?highlight=${alertId}`);
+    navigate(`/notifications?highlight=${alertId}`);
   };
 
   const getSeverityIcon = (severity) => {

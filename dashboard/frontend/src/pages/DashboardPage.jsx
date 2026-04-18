@@ -313,7 +313,7 @@ function DashboardPage() {
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>Network Dashboard</Typography>
           <Typography variant="body2" color="text.secondary">
-            Real-time overview of your Aruba Central infrastructure
+            Real-time overview of your HPE Central infrastructure
           </Typography>
           {lastUpdated && !loading && (
             <Typography variant="caption" sx={{ color: 'var(--text-disabled)', fontSize: '0.67rem', mt: 0.25, display: 'block' }}>
@@ -462,7 +462,7 @@ function DashboardPage() {
                   <Chip
                     label="View all"
                     size="small"
-                    onClick={() => navigate('/alerts')}
+                    onClick={() => navigate('/notifications')}
                     sx={{ fontSize: '0.65rem', height: 20, cursor: 'pointer', bgcolor: 'rgba(255,102,0,0.1)', color: C.primary, border: 'none' }}
                   />
                 }

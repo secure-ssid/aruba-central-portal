@@ -115,7 +115,7 @@ function LoginPage({ onLogin }) {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Aruba Central
+            HPE Central
           </Typography>
 
           <Box sx={{ textAlign: 'center', mb: 4 }}>
@@ -186,7 +186,7 @@ function LoginPage({ onLogin }) {
               transition: 'all 0.2s ease',
             }}
           >
-            {loading ? 'Connecting...' : 'Connect to Aruba Central'}
+            {loading ? 'Connecting...' : 'Connect to HPE Central'}
           </Button>
 
           {/* Setup Wizard — secondary CTA */}

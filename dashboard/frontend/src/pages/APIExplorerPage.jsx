@@ -515,7 +515,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/interfaces',
+    path: '/network-monitoring/v1/switches/{serial}/interfaces',
     method: 'GET',
     description: 'Get switch interfaces',
     params: {},
@@ -523,7 +523,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/vlans',
+    path: '/network-monitoring/v1/switches/{serial}/vlans',
     method: 'GET',
     description: 'Get switch VLANs',
     params: {},
@@ -531,7 +531,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/cpu-utilization-trends',
+    path: '/network-monitoring/v1/switches/{serial}/cpu-utilization-trends',
     method: 'GET',
     description: 'Get switch CPU utilization trends',
     params: { interval: '5m', duration: '1h' },
@@ -539,7 +539,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/memory-utilization-trends',
+    path: '/network-monitoring/v1/switches/{serial}/memory-utilization-trends',
     method: 'GET',
     description: 'Get switch memory utilization trends',
     params: { interval: '5m', duration: '1h' },
@@ -555,7 +555,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/stack/{stack_id}',
+    path: '/network-monitoring/v1/switches/{serial}/stack/{stack_id}',
     method: 'GET',
     description: 'Get switch stack member details',
     params: {},
@@ -563,7 +563,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/hardware',
+    path: '/network-monitoring/v1/switches/{serial}/hardware',
     method: 'GET',
     description: 'Get switch hardware details',
     params: {},
@@ -571,7 +571,7 @@ const COMMON_ENDPOINTS = [
     category: 'Switches'
   },
   {
-    path: '/network-monitoring/v1alpha1/switch/{serial}/lag',
+    path: '/network-monitoring/v1/switches/{serial}/lag',
     method: 'GET',
     description: 'Get switch LAG summary',
     params: {},

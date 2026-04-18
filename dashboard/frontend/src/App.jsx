@@ -32,12 +32,8 @@ const NACPage            = lazy(() => import('./pages/NACPage'));
 const SettingsPage       = lazy(() => import('./pages/SettingsPage'));
 const SitesPage          = lazy(() => import('./pages/SitesPage'));
 const WLANsPage          = lazy(() => import('./pages/WLANsPage'));
-const AlertsPage         = lazy(() => import('./pages/AlertsPage'));
-const SyslogPage         = lazy(() => import('./pages/SyslogPage'));
 const AnalyticsPage      = lazy(() => import('./pages/AnalyticsPage'));
 const FirmwarePage       = lazy(() => import('./pages/FirmwarePage'));
-const WebhooksPage       = lazy(() => import('./pages/WebhooksPage'));
-const NetworkMonitorPage = lazy(() => import('./pages/NetworkMonitorPage'));
 const GatewayWANPage     = lazy(() => import('./pages/GatewayWANPage'));
 const TroubleshootPage   = lazy(() => import('./pages/TroubleshootPage'));
 const APTroubleshootPage = lazy(() => import('./pages/APTroubleshootPage'));
@@ -51,8 +47,8 @@ const GLWorkspacesPage    = lazy(() => import('./pages/GLWorkspacesPage'));
 const GLUsersPage         = lazy(() => import('./pages/GLUsersPage'));
 const GLRolesPage         = lazy(() => import('./pages/GLRolesPage'));
 const GLPermissionsPage   = lazy(() => import('./pages/GLPermissionsPage'));
-const ReportingPage       = lazy(() => import('./pages/ReportingPage'));
-const ScheduledReportsPage    = lazy(() => import('./pages/ScheduledReportsPage'));
+const ReportsPage         = lazy(() => import('./pages/ReportsPage'));
+const NotificationsPage   = lazy(() => import('./pages/NotificationsPage'));
 
 // Configuration sub-pages
 const ConfigurationIndexPage      = lazy(() => import('./pages/configuration/ConfigurationIndexPage'));
@@ -321,11 +317,9 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
         component="main"
         sx={{
           flexGrow: 1,
+          minWidth: 0,
           minHeight: '100vh',
           backgroundColor: 'background.default',
-          transition: 'margin-left 0.3s',
-          marginLeft: sidebarOpen ? 0 : '-240px',
-          // Right-side chat panel doesn't need bottom padding
         }}
       >
         <TopBar
@@ -362,19 +356,19 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/configuration/wireless" element={<ErrorBoundary><WirelessPage /></ErrorBoundary>} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/nac" element={<NACPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/syslog" element={<SyslogPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/alerts" element={<Navigate to="/notifications" replace />} />
+            <Route path="/syslog" element={<Navigate to="/notifications?tab=1" replace />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/firmware" element={<FirmwarePage />} />
-            <Route path="/webhooks" element={<WebhooksPage />} />
-            <Route path="/network-monitor" element={<ErrorBoundary><NetworkMonitorPage /></ErrorBoundary>} />
             <Route path="/gateway-wan" element={<ErrorBoundary><GatewayWANPage /></ErrorBoundary>} />
             <Route path="/troubleshoot" element={<ErrorBoundary><TroubleshootPage /></ErrorBoundary>} />
             <Route path="/ap-troubleshoot" element={<ErrorBoundary><APTroubleshootPage /></ErrorBoundary>} />
             <Route path="/topology" element={<TopologyPage />} />
             <Route path="/api-explorer" element={<APIExplorerPage />} />
-            <Route path="/reporting" element={<ErrorBoundary><ReportingPage /></ErrorBoundary>} />
-            <Route path="/scheduled-reports" element={<ErrorBoundary><ScheduledReportsPage /></ErrorBoundary>} />
+            <Route path="/reports" element={<ErrorBoundary><ReportsPage /></ErrorBoundary>} />
+            <Route path="/reporting" element={<Navigate to="/reports" replace />} />
+            <Route path="/scheduled-reports" element={<Navigate to="/reports?tab=1" replace />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/status" element={<StatusPage />} />
             {/* Global Layer (MSP) routes */}

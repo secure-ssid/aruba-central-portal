@@ -549,14 +549,14 @@ function GLWorkspacesPage() {
           </Alert>
           <Stack spacing={2}>
             <TextField
-              label="Client ID (Aruba Central)"
+              label="Client ID (HPE Central)"
               fullWidth
               value={switchData.clientId}
               onChange={(e) => setSwitchData({ ...switchData, clientId: e.target.value })}
               required
             />
             <TextField
-              label="Client Secret (Aruba Central)"
+              label="Client Secret (HPE Central)"
               fullWidth
               type="password"
               value={switchData.clientSecret}
