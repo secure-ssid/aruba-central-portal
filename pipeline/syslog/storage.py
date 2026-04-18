@@ -457,6 +457,8 @@ class SyslogStore:
         status: str | None = None,
         since: datetime | None = None,
         severity_max: int | None = None,
+        anomaly_min: float | None = None,
+        order_by: str = "last_seen",
     ) -> list[dict[str, Any]]:
         sql = ["SELECT * FROM incidents WHERE 1=1"]
         params: list[Any] = []
@@ -469,7 +471,16 @@ class SyslogStore:
         if severity_max is not None:
             sql.append("AND (severity IS NULL OR severity <= ?)")
             params.append(severity_max)
-        sql.append("ORDER BY last_seen DESC LIMIT ? OFFSET ?")
+        if anomaly_min is not None:
+            sql.append("AND COALESCE(anomaly_score, 0) >= ?")
+            params.append(float(anomaly_min))
+
+        # Allow-listed sort columns so query params can't inject SQL.
+        sort_col = {"last_seen": "last_seen DESC",
+                    "anomaly_score": "COALESCE(anomaly_score, 0) DESC, last_seen DESC",
+                    "severity": "COALESCE(severity, 99) ASC, last_seen DESC"
+                    }.get(order_by, "last_seen DESC")
+        sql.append(f"ORDER BY {sort_col} LIMIT ? OFFSET ?")
         params.extend([int(limit), int(offset)])
         cur = self._conn.execute(" ".join(sql), params)
         return [dict(r) for r in cur.fetchall()]
@@ -505,6 +516,72 @@ class SyslogStore:
                 (status, incident_id),
             )
         return (cur.rowcount or 0) > 0
+
+    def set_incident_anomaly_score(self, incident_id: int, score: float) -> None:
+        with self._write_lock:
+            self._conn.execute(
+                "UPDATE incidents SET anomaly_score = ? WHERE id = ?",
+                (float(score), incident_id),
+            )
+
+    # ─────────────────────── anomaly baseline (phase 3) ───────
+
+    def bucketed_event_counts(
+        self,
+        *,
+        device_key: str,
+        event_code: str | None,
+        window_sec: int,
+        since: datetime,
+        before: datetime,
+    ) -> list[tuple[str, int]]:
+        """
+        Return per-bucket event counts for a (device_key, event_code) pair,
+        excluding the bucket that starts at `before`. Bucket boundaries are
+        aligned to the epoch with the given `window_sec` — identical to the
+        clusterer's `_bucket_start` so counts are comparable.
+
+        `device_key` may match any of `device_serial`, `hostname`, or
+        `source_ip` (in that priority). `event_code` None means NOCODE, i.e.
+        rows where `event_code` column is NULL.
+
+        Returns [(bucket_iso, count), ...] sorted by bucket ascending.
+        """
+        # Use strftime('%s') to get epoch seconds from the stored ISO
+        # timestamp. Prefer event_time; fall back to received_at.
+        ts_expr = "CAST(strftime('%s', COALESCE(event_time, received_at)) AS INTEGER)"
+        bucket_expr = f"({ts_expr} / ?) * ?"
+
+        sql = [
+            "SELECT",
+            f"  {bucket_expr} AS bucket_epoch,",
+            "  COUNT(*) AS n",
+            "FROM events",
+            "WHERE (device_serial = ? OR hostname = ? OR source_ip = ?)",
+        ]
+        params: list[Any] = [window_sec, window_sec, device_key, device_key, device_key]
+
+        if event_code is None:
+            sql.append("AND event_code IS NULL")
+        else:
+            sql.append("AND event_code = ?")
+            params.append(event_code)
+
+        # Time bounds — COALESCE again so events without event_time still
+        # fall into a bucket based on ingest time.
+        sql.append("AND COALESCE(event_time, received_at) >= ?")
+        params.append(_iso(since))
+        sql.append("AND COALESCE(event_time, received_at) < ?")
+        params.append(_iso(before))
+
+        sql.append("GROUP BY bucket_epoch ORDER BY bucket_epoch ASC")
+
+        cur = self._conn.execute(" ".join(sql), params)
+        out: list[tuple[str, int]] = []
+        for row in cur.fetchall():
+            bucket_dt = datetime.fromtimestamp(row["bucket_epoch"], tz=timezone.utc)
+            out.append((_iso(bucket_dt), int(row["n"])))
+        return out
 
 
 def _iso(dt: datetime) -> str:

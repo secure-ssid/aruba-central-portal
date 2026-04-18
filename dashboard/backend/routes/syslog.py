@@ -168,10 +168,22 @@ def list_incidents():
     if status and status not in ("open", "ack", "resolved"):
         return jsonify({"error": "status must be open|ack|resolved"}), 400
 
+    anomaly_min = None
+    if "anomaly_min" in args:
+        try:
+            anomaly_min = float(args["anomaly_min"])
+        except ValueError:
+            return jsonify({"error": "anomaly_min must be numeric"}), 400
+
+    order_by = args.get("order_by", "last_seen")
+    if order_by not in ("last_seen", "anomaly_score", "severity"):
+        return jsonify({"error": "order_by must be last_seen|anomaly_score|severity"}), 400
+
     return jsonify({
         "items": get_store().list_incidents(
             limit=limit, offset=offset, status=status,
             since=since, severity_max=severity_max,
+            anomaly_min=anomaly_min, order_by=order_by,
         ),
         "limit": limit,
         "offset": offset,
