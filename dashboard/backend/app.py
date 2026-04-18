@@ -77,6 +77,25 @@ try:
 except Exception as _syslog_err:  # noqa: BLE001 — never block app boot
     logger.warning("Syslog pipeline failed to start: %s", _syslog_err)
 
+# ── Central Events API poller ─────────────────────────────────────────────
+# Pulls /network-troubleshooting/v1/events every minute, normalizes rows
+# into the same `events` table syslog writes to, and lets the clusterer
+# treat both streams uniformly. Uses a lazy provider for `aruba_client`
+# because it's initialized later in this file and may be None when the
+# pipeline starts (no creds yet / startup race).
+try:
+    from pipeline.central_events.poller import start_default_poller as _start_central
+    from pipeline.syslog import get_store as _syslog_store
+
+    def _aruba_client_provider():
+        # Re-read each tick so the poller picks up the client as soon as
+        # `initialize_client()` sets it further down in this module.
+        return globals().get("aruba_client")
+
+    _start_central(_syslog_store(), _aruba_client_provider)
+except Exception as _central_err:  # noqa: BLE001
+    logger.warning("Central Events poller failed to start: %s", _central_err)
+
 # Cache control helper functions
 def add_cache_headers(response, cache_max_age=3600, is_static=False):
     """Add cache-control headers to response."""
