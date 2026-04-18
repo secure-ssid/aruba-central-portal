@@ -138,16 +138,20 @@ CATEGORIES: list[DeviceCategory] = [
         name="Aruba AP",
         description="Aruba access point (LR-AP735, BY-AP763, Off_655, MB_635, etc.)",
         normal_behaviours=[
-            "AP_INTERNAL codes (312402, 312404) are LACP/redis telemetry — not client-facing",
-            "IDS rogue-AP scan logs are informational",
-            "GW-HA cluster references in logs are status messages, not failures",
-            "prefer_v6 / IP mismatch is informational unless tunnels are actually flapping",
+            "312402 / 312404 (AP_INTERNAL): dal_lacpInfo_get_all and Redis event package "
+            "validation errors are EMBEDDED telemetry noise — the AP queries LACP state "
+            "defensively even with no LAG, and Redis is local to the AP, not your network. "
+            "Traffic forwarding is unaffected.",
+            "IDS rogue-AP scan logs (127001) are informational — usually a neighbour router",
+            "GW-HA cluster references and prefer_v6/IP-mismatch messages are status-only",
+            "Short burst of AP_INTERNAL events after SSID config changes is expected",
         ],
         watch_for=[
-            "Repeated client MIC failures → MPSK cache stale, PSK wrong, or roaming remnants",
-            "AP goes offline → PoE budget, uplink, or config push issue",
-            "Broadcast storm on wired uplink → STP/loop issue on trunk",
-            "RADIUS timeout → check AAA reachability from this AP's site",
+            "Repeated client MIC failures (132094/520013) → MPSK entry wrong or stale PSK",
+            "AP_INTERNAL errors persisting for hours or accompanied by client disconnects",
+            "AP goes offline → check PoE budget and uplink",
+            "Broadcast storm → STP/loop on trunk uplink",
+            "RADIUS timeout → AAA reachability from this AP's site",
             "Multicast VLAN map failed → check SSID multicast config (bridged vs tunneled)",
         ],
         hostname_patterns=_p(

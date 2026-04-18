@@ -37,6 +37,8 @@ from typing import Any
 
 from pipeline.llm import LLMError, generate
 from .device_categories import classify
+from .event_families import family_for
+from .event_knowledge import get_knowledge
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +130,10 @@ def _build_prompt(incident: dict, events: list[Any], *, max_event_samples: int =
         messages=messages,
     )
 
+    event_code = incident.get("event_code")
+    family = family_for(event_code)
+    knowledge = get_knowledge(event_code, family)
+
     lines = [
         "=== DEVICE CONTEXT ===",
         f"Device category : {cat.name}",
@@ -141,6 +147,31 @@ def _build_prompt(incident: dict, events: list[Any], *, max_event_samples: int =
         lines.append("Worth investigating for this device type:")
         for w in cat.watch_for:
             lines.append(f"  • {w}")
+
+    if knowledge:
+        lines += [
+            "",
+            "=== EVENT CODE KNOWLEDGE BASE ===",
+            f"Event family    : {family or event_code}",
+            f"Verdict hint    : {knowledge.verdict_hint}",
+            f"What is happening: {knowledge.plain_english}",
+        ]
+        if knowledge.why_it_fires:
+            lines.append("Why this fires:")
+            for r in knowledge.why_it_fires:
+                lines.append(f"  • {r}")
+        if knowledge.benign_when:
+            lines.append("Benign when:")
+            for b in knowledge.benign_when:
+                lines.append(f"  • {b}")
+        if knowledge.action_required:
+            lines.append("Action required (if any):")
+            for a in knowledge.action_required:
+                lines.append(f"  • {a}")
+        if knowledge.never_do:
+            lines.append("NEVER do:")
+            for n in knowledge.never_do:
+                lines.append(f"  • {n}")
 
     lines += [
         "",
