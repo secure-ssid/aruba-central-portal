@@ -1449,3 +1449,46 @@ export const llmAPI = {
   },
 };
 
+/**
+ * Syslog ingest + anomaly alerts API.
+ *
+ * Backs the local-network syslog pipeline (phases 1-5): raw events,
+ * rule-clustered incidents, and LLM-written + reviewed alerts.
+ */
+export const syslogAPI = {
+  health: async () => {
+    const { data } = await apiClient.get('/syslog/health');
+    return data;
+  },
+  getEvents: async (params = {}) => {
+    const { data } = await apiClient.get('/syslog/events', { params });
+    return data;
+  },
+  getStats: async (windowHours = 24) => {
+    const { data } = await apiClient.get('/syslog/stats', {
+      params: { window_hours: windowHours },
+    });
+    return data;
+  },
+  getIncidents: async (params = {}) => {
+    const { data } = await apiClient.get('/syslog/incidents', { params });
+    return data;
+  },
+  getIncident: async (id) => {
+    const { data } = await apiClient.get(`/syslog/incidents/${id}`);
+    return data;
+  },
+  setIncidentStatus: async (id, status) => {
+    const { data } = await apiClient.post(`/syslog/incidents/${id}/status`, { status });
+    return data;
+  },
+  runCluster: async () => {
+    const { data } = await apiClient.post('/syslog/cluster/run');
+    return data;
+  },
+  getAlerts: async (params = {}) => {
+    const { data } = await apiClient.get('/syslog/alerts', { params });
+    return data;
+  },
+};
+

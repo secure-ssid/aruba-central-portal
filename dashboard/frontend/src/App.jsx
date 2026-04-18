@@ -32,6 +32,7 @@ const SettingsPage       = lazy(() => import('./pages/SettingsPage'));
 const SitesPage          = lazy(() => import('./pages/SitesPage'));
 const WLANsPage          = lazy(() => import('./pages/WLANsPage'));
 const AlertsPage         = lazy(() => import('./pages/AlertsPage'));
+const SyslogPage         = lazy(() => import('./pages/SyslogPage'));
 const AnalyticsPage      = lazy(() => import('./pages/AnalyticsPage'));
 const FirmwarePage       = lazy(() => import('./pages/FirmwarePage'));
 const WebhooksPage       = lazy(() => import('./pages/WebhooksPage'));
@@ -360,6 +361,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
             <Route path="/users" element={<UsersPage />} />
             <Route path="/nac" element={<NACPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/syslog" element={<SyslogPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/firmware" element={<FirmwarePage />} />
             <Route path="/webhooks" element={<WebhooksPage />} />

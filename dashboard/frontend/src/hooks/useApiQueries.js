@@ -24,6 +24,7 @@ import {
   greenlakeTagsAPI,
   greenlakeDeviceAPI,
   greenlakeSubscriptionsAPI,
+  syslogAPI,
 } from '../services/api';
 import apiClient from '../services/api';
 
@@ -256,5 +257,58 @@ export const useGLLocations = ({ page = 1, limit = 25 } = {}, options = {}) =>
     queryKey: ['gl-locations', { page, limit }],
     queryFn: () => apiClient.get('/greenlake/locations', { params: { offset: (page - 1) * limit, limit } }).then(r => r.data),
     staleTime: 5 * 60_000,
+    ...options,
+  });
+
+// ── Local-network syslog pipeline (phase 6) ──────────────────────────────
+// The clusterer ticks every ~30s server-side, so refetching once a minute
+// keeps the dashboard fresh without over-polling the API.
+
+export const useSyslogAlerts = ({ approvedOnly = true, sinceHours, limit = 50 } = {}, options = {}) => {
+  const params = { limit };
+  if (approvedOnly) params.approved_only = true;
+  if (sinceHours !== undefined) params.since_hours = sinceHours;
+  return useQuery({
+    queryKey: ['syslog-alerts', params],
+    queryFn: () => syslogAPI.getAlerts(params),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    ...options,
+  });
+};
+
+export const useSyslogIncidents = (
+  { status, sinceHours, severityMax, anomalyMin, orderBy = 'last_seen', limit = 50 } = {},
+  options = {},
+) => {
+  const params = { limit, order_by: orderBy };
+  if (status) params.status = status;
+  if (sinceHours !== undefined) params.since_hours = sinceHours;
+  if (severityMax !== undefined) params.severity_max = severityMax;
+  if (anomalyMin !== undefined) params.anomaly_min = anomalyMin;
+  return useQuery({
+    queryKey: ['syslog-incidents', params],
+    queryFn: () => syslogAPI.getIncidents(params),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    ...options,
+  });
+};
+
+export const useSyslogIncident = (id, options = {}) =>
+  useQuery({
+    queryKey: ['syslog-incident', id],
+    queryFn: () => syslogAPI.getIncident(id),
+    enabled: id != null,
+    staleTime: 30_000,
+    ...options,
+  });
+
+export const useSyslogStats = (windowHours = 24, options = {}) =>
+  useQuery({
+    queryKey: ['syslog-stats', windowHours],
+    queryFn: () => syslogAPI.getStats(windowHours),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
     ...options,
   });

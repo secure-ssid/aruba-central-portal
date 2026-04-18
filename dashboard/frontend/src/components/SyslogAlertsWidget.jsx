@@ -1,0 +1,217 @@
+/**
+ * SyslogAlertsWidget — compact list of LLM-written, reviewer-approved
+ * alerts derived from local-network syslog. Drops into the Dashboard
+ * and the Alerts page as a side-by-side view with Central's alerts.
+ *
+ * Data path: useSyslogAlerts → /api/syslog/alerts?approved_only=true
+ * Clusterer + writer + reviewer run server-side every ~30s (phases 2-5),
+ * so this widget just polls once a minute.
+ */
+
+import { useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { useSyslogAlerts } from '../hooks/useApiQueries';
+
+// RFC 5424 severity (lower = more severe)
+const SEVERITY_LABEL = {
+  0: 'emerg', 1: 'alert', 2: 'crit', 3: 'error',
+  4: 'warn', 5: 'notice', 6: 'info', 7: 'debug',
+};
+
+function severityColor(sev) {
+  if (sev == null) return 'default';
+  if (sev <= 2) return 'error';
+  if (sev === 3) return 'error';
+  if (sev === 4) return 'warning';
+  if (sev === 5) return 'info';
+  return 'default';
+}
+
+function anomalyColor(score) {
+  const n = Number(score) || 0;
+  if (n >= 5) return 'error';
+  if (n >= 2) return 'warning';
+  return 'default';
+}
+
+function formatTs(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function AlertRow({ alert }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <Box sx={{ py: 1.25, px: 0.5 }}>
+      <Stack direction="row" spacing={1} alignItems="flex-start">
+        {alert.approved === 1 ? (
+          <Tooltip title="Reviewer-approved">
+            <VerifiedIcon fontSize="small" sx={{ color: 'success.main', mt: '2px' }} />
+          </Tooltip>
+        ) : (
+          <Tooltip title="Pending review">
+            <ErrorOutlineIcon fontSize="small" sx={{ color: 'warning.main', mt: '2px' }} />
+          </Tooltip>
+        )}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: 1.4 }}>
+            {alert.summary}
+          </Typography>
+          <Stack direction="row" spacing={0.75} sx={{ mt: 0.75, flexWrap: 'wrap', gap: 0.5 }}>
+            {alert.device_serial && (
+              <Chip size="small" label={alert.device_serial} variant="outlined" />
+            )}
+            {alert.event_code && (
+              <Chip size="small" label={alert.event_code} variant="outlined" />
+            )}
+            {alert.severity != null && (
+              <Chip
+                size="small"
+                label={SEVERITY_LABEL[alert.severity] ?? `sev${alert.severity}`}
+                color={severityColor(alert.severity)}
+              />
+            )}
+            {alert.anomaly_score != null && Number(alert.anomaly_score) > 0 && (
+              <Chip
+                size="small"
+                label={`anomaly ${Number(alert.anomaly_score).toFixed(1)}`}
+                color={anomalyColor(alert.anomaly_score)}
+              />
+            )}
+            <Chip
+              size="small"
+              label={`${alert.event_count} events`}
+              variant="outlined"
+            />
+            <Chip
+              size="small"
+              label={formatTs(alert.last_seen || alert.created_at)}
+              variant="outlined"
+            />
+          </Stack>
+          {expanded && (alert.review_notes || alert.first_seen) && (
+            <Box sx={{ mt: 1, pl: 1, borderLeft: '2px solid', borderColor: 'divider' }}>
+              {alert.first_seen && (
+                <Typography variant="caption" display="block" color="text.secondary">
+                  window: {formatTs(alert.first_seen)} → {formatTs(alert.last_seen)}
+                </Typography>
+              )}
+              {alert.review_notes && (
+                <Typography variant="caption" display="block" color="text.secondary">
+                  review: {alert.review_notes}
+                </Typography>
+              )}
+            </Box>
+          )}
+        </Box>
+        <IconButton
+          size="small"
+          onClick={() => setExpanded((v) => !v)}
+          aria-label={expanded ? 'collapse' : 'expand'}
+        >
+          {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+        </IconButton>
+      </Stack>
+    </Box>
+  );
+}
+
+function SyslogAlertsWidget({
+  title = 'Syslog Alerts',
+  approvedOnly = true,
+  limit = 10,
+  sinceHours,
+  showLink = true,
+}) {
+  const { data, isLoading, isError, error, refetch, isFetching } = useSyslogAlerts({
+    approvedOnly,
+    limit,
+    sinceHours,
+  });
+
+  const items = data?.items ?? [];
+
+  return (
+    <Card sx={{ height: '100%' }}>
+      <CardContent sx={{ '&:last-child': { pb: 2 } }}>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, flex: 1 }}>
+            {title}
+          </Typography>
+          <Tooltip title="Refresh">
+            <span>
+              <IconButton size="small" onClick={() => refetch()} disabled={isFetching}>
+                {isFetching ? <CircularProgress size={16} /> : <RefreshIcon fontSize="small" />}
+              </IconButton>
+            </span>
+          </Tooltip>
+          {showLink && (
+            <Typography
+              component={RouterLink}
+              to="/syslog"
+              variant="caption"
+              sx={{ color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+            >
+              View all
+            </Typography>
+          )}
+        </Stack>
+        <Divider sx={{ mb: 1 }} />
+
+        {isLoading && (
+          <Box sx={{ textAlign: 'center', py: 3 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+
+        {isError && (
+          <Typography variant="body2" color="error.main" sx={{ py: 2 }}>
+            Failed to load syslog alerts: {error?.message || 'unknown error'}
+          </Typography>
+        )}
+
+        {!isLoading && !isError && items.length === 0 && (
+          <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
+            No alerts yet. Point a device's syslog at this server and wait for a
+            spike — the pipeline will cluster, score, and summarize automatically.
+          </Typography>
+        )}
+
+        {!isLoading && items.length > 0 && (
+          <Stack divider={<Divider flexItem />}>
+            {items.map((alert) => (
+              <AlertRow key={alert.id} alert={alert} />
+            ))}
+          </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export default SyslogAlertsWidget;
