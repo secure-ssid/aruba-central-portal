@@ -96,6 +96,26 @@ try:
 except Exception as _central_err:  # noqa: BLE001
     logger.warning("Central Events poller failed to start: %s", _central_err)
 
+# ── Alert backlog pass ────────────────────────────────────────────────────
+# One-shot catch-up: if the threshold was lowered (or the backend has been
+# offline while events piled up), some high-anomaly incidents have no alert
+# row yet because the clusterer only writes alerts on NEW activity. Runs on
+# a background thread so startup doesn't block on LLM calls.
+try:
+    from threading import Thread as _BacklogThread
+    from pipeline.syslog.alert_backlog import run_backlog as _run_backlog
+    from pipeline.syslog import get_store as _bl_store
+
+    def _backlog_worker():
+        try:
+            _run_backlog(_bl_store())
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("alert backlog failed: %s", exc)
+
+    _BacklogThread(target=_backlog_worker, name="alert-backlog", daemon=True).start()
+except Exception as _backlog_err:  # noqa: BLE001
+    logger.warning("Alert backlog could not start: %s", _backlog_err)
+
 # Cache control helper functions
 def add_cache_headers(response, cache_max_age=3600, is_static=False):
     """Add cache-control headers to response."""

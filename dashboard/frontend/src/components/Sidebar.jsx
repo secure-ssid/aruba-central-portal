@@ -72,7 +72,7 @@ const monitoringItems = [
   { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },
   { text: 'Topology',        icon: <AccountTreeIcon />,    path: '/topology' },
   { text: 'Alerts',          icon: <NotificationsIcon />,  path: '/alerts', badge: true },
-  { text: 'Syslog',          icon: <ReceiptLongIcon />,    path: '/syslog' },
+  { text: 'Events',          icon: <ReceiptLongIcon />,    path: '/syslog' },
 ];
 
 const managementItems = [
