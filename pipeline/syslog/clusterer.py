@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from .anomaly import score_incident
+from .event_families import cluster_key_for
 from .reviewer_agent import review_alert
 from .storage import StoredEvent, SyslogStore
 from .writer_agent import (
@@ -91,6 +92,58 @@ def _signature(device_key: str, code: str, bucket: datetime) -> str:
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
 
 
+def _find_continuing_incident(
+    store: SyslogStore,
+    device_key: str,
+    cluster_key: str,
+    new_event_ts: datetime,
+    window: timedelta,
+) -> str | None:
+    """Return the cluster_signature of an existing incident this event
+    should extend, or None if the event should start a fresh bucket.
+
+    "Continuing" = same device + same cluster_key + last_seen within
+    `window` of the new event's timestamp. Works across bucket
+    boundaries — that's the whole point.
+    """
+    cutoff_iso = (new_event_ts - window).isoformat().replace("+00:00", "Z")
+    # Check both device_serial and hostname so we match incidents that
+    # were created before we had the serial enriched onto the row.
+    row = store._conn.execute(  # noqa: SLF001 — intentional direct read
+        """
+        SELECT cluster_signature
+        FROM incidents
+        WHERE (device_serial = ? OR device_name = ? OR device_serial IS NULL)
+          AND last_seen >= ?
+          AND status = 'open'
+        ORDER BY last_seen DESC
+        LIMIT 20
+        """,
+        (device_key, device_key, cutoff_iso),
+    ).fetchall()
+
+    for candidate in row:
+        # We only know the family via signature reconstruction, so compare
+        # against each candidate's signature computed from its own
+        # (device_key, cluster_key) and *its* original bucket. Simpler:
+        # just check if this exact (device, cluster_key) pairing was
+        # already chosen for this candidate, using a stored column.
+        # To avoid a join we encode cluster_key inside signature already,
+        # so we just need to verify by looking up the incident's fields.
+        incident = store.get_incident_by_signature(candidate["cluster_signature"])
+        if not incident:
+            continue
+        incident_key = cluster_key_for(incident.get("event_code"))
+        incident_dev = (
+            incident.get("device_serial")
+            or incident.get("device_name")
+            or "unknown"
+        )
+        if incident_key == cluster_key and incident_dev == device_key:
+            return str(candidate["cluster_signature"])
+    return None
+
+
 def _event_ts(ev: StoredEvent) -> datetime:
     """Prefer the device-reported time; fall back to server ingest time."""
     for candidate in (ev.event_time, ev.received_at):
@@ -124,16 +177,35 @@ def cluster_once(
     if not events:
         return ClusterResult(processed=0, incidents_touched=0, new_incidents=0)
 
-    # Group events by (signature, device_key, code, bucket).
-    # We bucket in-memory so we can compute first_seen/last_seen per group
-    # with a single INSERT/UPDATE each.
+    # Group events by (signature, device_key, family, bucket).
+    #
+    # `cluster_key_for` returns the event family when the raw code is
+    # known (e.g. AOS codes 132094 and 520013 both map to WPA_HANDSHAKE
+    # so they land in the same incident), or the raw code otherwise.
+    #
+    # Bucket alignment is kept because it's our primary dedup knob;
+    # sliding-window merging below extends *existing* incidents whose
+    # last_seen is within `window` of the new event.
     groups: dict[str, dict] = {}
     for ev in events:
         ts = _event_ts(ev)
         bucket = _bucket_start(ts, window)
         dkey = _device_key(ev)
-        code = ev.event_code or "NOCODE"
-        sig = _signature(dkey, code, bucket)
+        cluster_key = cluster_key_for(ev.event_code)
+        sig = _signature(dkey, cluster_key, bucket)
+
+        # Sliding-window extension: if an incident with the same
+        # (device, cluster_key) already exists and its last_seen is
+        # within `window` of this event, reuse its signature so the
+        # event appends to that row instead of spawning a new one.
+        # This collapses the classic "spans the 12:00 bucket boundary"
+        # case — signatures from adjacent buckets now merge.
+        if sig not in groups:
+            prior = _find_continuing_incident(
+                store, dkey, cluster_key, ts, window,
+            )
+            if prior is not None:
+                sig = prior
 
         g = groups.get(sig)
         if g is None:
