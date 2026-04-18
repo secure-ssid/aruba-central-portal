@@ -45,6 +45,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -71,6 +72,7 @@ const monitoringItems = [
   { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },
   { text: 'Topology',        icon: <AccountTreeIcon />,    path: '/topology' },
   { text: 'Alerts',          icon: <NotificationsIcon />,  path: '/alerts', badge: true },
+  { text: 'Syslog',          icon: <ReceiptLongIcon />,    path: '/syslog' },
 ];
 
 const managementItems = [
