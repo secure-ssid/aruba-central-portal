@@ -8,3 +8,7 @@ rich>=13.0.0
 flask>=3.0.0
 flask-cors>=4.0.0
 flask-compress>=1.14
+
+# MCP servers (centralmcp)
+mcp[cli]>=1.0.0
+pycentral>=2.0a0

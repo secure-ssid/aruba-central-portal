@@ -507,6 +507,17 @@ def api_proxy(endpoint_builder, method='GET', error_msg="API", fallback_data=Non
     return decorator
 
 
+# ============= SPA Fallback (catch-all) =============
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_spa(path):
+    """Serve React SPA — return index.html for all non-API routes."""
+    if path and (path.startswith('api/') or path.startswith('static/')):
+        return jsonify({"error": "Not Found"}), 404
+    return send_from_directory(app.static_folder, 'index.html')
+
+
 # ============= Main =============
 
 if __name__ == '__main__':
