@@ -63,11 +63,10 @@ CREATE INDEX IF NOT EXISTS idx_events_received_at ON events(received_at);
 CREATE INDEX IF NOT EXISTS idx_events_device_serial ON events(device_serial);
 CREATE INDEX IF NOT EXISTS idx_events_severity ON events(severity);
 CREATE INDEX IF NOT EXISTS idx_events_event_code ON events(event_code);
--- Phase 8: Central Events polling overlaps — use the API event id stored
--- in `msg_id` + `source` for idempotent re-ingest. NULL msg_ids are fine
--- here because SQLite treats each NULL as distinct in UNIQUE indexes.
-CREATE UNIQUE INDEX IF NOT EXISTS idx_events_source_msgid
-    ON events(source, msg_id) WHERE msg_id IS NOT NULL;
+-- Note: idx_events_source_msgid depends on the `source` column added in
+-- Phase 8. It's created in _POST_MIGRATION_INDEXES below so it runs
+-- AFTER the ALTER TABLE migrations, otherwise existing pre-Phase-8 DBs
+-- break at startup with "no such column: source".
 
 -- Phase 2+ schema reserved now so migrations aren't needed later.
 CREATE TABLE IF NOT EXISTS incidents (
@@ -140,6 +139,15 @@ _MIGRATIONS = [
     # roll up "same client bouncing off the same AP" as one group
     # without a second query per row.
     "ALTER TABLE incidents ADD COLUMN client_mac TEXT",
+]
+
+# Indexes that depend on migrated columns — must run AFTER _MIGRATIONS.
+# Keeping them out of SCHEMA avoids the "no such column: source" crash
+# that hit pre-Phase-8 DBs on upgrade (the CREATE INDEX was trying to
+# reference a column the ALTER TABLE hadn't added yet).
+_POST_MIGRATION_INDEXES = [
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_source_msgid "
+    "ON events(source, msg_id) WHERE msg_id IS NOT NULL",
 ]
 
 
@@ -244,6 +252,9 @@ class SyslogStore:
                 except sqlite3.OperationalError as exc:
                     if "duplicate column" not in str(exc).lower():
                         raise
+            # Indexes that reference migrated columns — safe to run now.
+            for stmt in _POST_MIGRATION_INDEXES:
+                self._conn.execute(stmt)
         logger.info("SyslogStore initialized at %s", self.db_path)
 
     def close(self) -> None:
