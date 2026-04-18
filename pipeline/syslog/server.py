@@ -22,6 +22,7 @@ import os
 import threading
 from datetime import datetime, timezone
 
+from .clusterer import cluster_once
 from .parser import parse_syslog
 from .storage import SyslogStore
 
@@ -36,6 +37,11 @@ SYSLOG_ENABLED = os.environ.get("SYSLOG_ENABLED", "true").lower() in ("1", "true
 
 # Retention sweep cadence: once an hour is plenty for a 7-day window.
 PRUNE_INTERVAL_SEC = int(os.environ.get("SYSLOG_PRUNE_INTERVAL", "3600"))
+
+# Clusterer tick cadence. 30s keeps the dashboard fresh without hammering
+# the DB or producing a blizzard of tiny incidents during a burst.
+CLUSTER_INTERVAL_SEC = int(os.environ.get("SYSLOG_CLUSTER_INTERVAL_SEC", "30"))
+CLUSTER_ENABLED = os.environ.get("SYSLOG_CLUSTER_ENABLED", "true").lower() in ("1", "true", "yes")
 
 
 class _SyslogUDPProtocol(asyncio.DatagramProtocol):
@@ -128,6 +134,7 @@ class SyslogServer:
         self._udp_transport: asyncio.DatagramTransport | None = None
         self._tcp_server: asyncio.AbstractServer | None = None
         self._prune_task: asyncio.Task[None] | None = None
+        self._cluster_task: asyncio.Task[None] | None = None
 
     # ─────────────────────── lifecycle ────────────────────
 
@@ -192,6 +199,21 @@ class SyslogServer:
         logger.info("syslog: TCP listening on %s:%d", self.tcp_host, self.tcp_port)
 
         self._prune_task = asyncio.create_task(self._prune_loop())
+        if CLUSTER_ENABLED:
+            self._cluster_task = asyncio.create_task(self._cluster_loop())
+            logger.info("syslog: clusterer running every %ds", CLUSTER_INTERVAL_SEC)
+
+    async def _cluster_loop(self) -> None:
+        while True:
+            try:
+                await asyncio.sleep(CLUSTER_INTERVAL_SEC)
+                await asyncio.get_running_loop().run_in_executor(
+                    None, cluster_once, self.store
+                )
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.exception("syslog: cluster loop error")
 
     async def _prune_loop(self) -> None:
         while True:
@@ -207,12 +229,13 @@ class SyslogServer:
                 logger.exception("syslog: prune loop error")
 
     async def _shutdown(self) -> None:
-        if self._prune_task:
-            self._prune_task.cancel()
-            try:
-                await self._prune_task
-            except asyncio.CancelledError:
-                pass
+        for task in (self._cluster_task, self._prune_task):
+            if task:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
         if self._udp_transport:
             self._udp_transport.close()
         if self._tcp_server:

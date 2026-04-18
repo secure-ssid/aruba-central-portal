@@ -1,0 +1,165 @@
+"""
+Rule-based event clusterer.
+
+Groups unclustered events by (device, event_code, time-bucket) and writes
+them to the `incidents` table. Intentionally deterministic — no ML, no LLM —
+so operators can predict why two events joined the same incident.
+
+Design
+------
+- A "bucket" is an aligned window of size `CLUSTER_WINDOW` (default 5 min).
+  Two events with the same (device_key, event_code) fall in the same
+  incident iff they land in the same bucket.
+- `device_key` = `device_serial or hostname or source_ip`. Keeps events
+  from the same physical box together even when one log line is missing
+  the serial (common on boot).
+- `event_code` missing → `"NOCODE"`. We still cluster by device so a
+  device spamming generic messages shows up as one incident.
+- Signature = sha1("{device_key}|{code}|{bucket_iso}") truncated to 16
+  chars. Short enough for logs, unique enough for this corpus.
+- Events already in `incident_events` are skipped (see
+  `SyslogStore.unclustered_events`), so repeated ticks are idempotent.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import os
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+
+from .storage import StoredEvent, SyslogStore
+
+logger = logging.getLogger(__name__)
+
+# Bucket size. 5 minutes matches the Phase 1 design doc; tunable via env
+# so operators can tighten (burst detection) or loosen (noisy devices).
+CLUSTER_WINDOW = timedelta(seconds=int(os.environ.get("SYSLOG_CLUSTER_WINDOW_SEC", "300")))
+
+# How far back the clusterer looks on each tick. Should comfortably exceed
+# `CLUSTER_WINDOW` + ingest jitter so late events still find their bucket.
+CLUSTER_LOOKBACK = timedelta(seconds=int(os.environ.get("SYSLOG_CLUSTER_LOOKBACK_SEC", "1800")))
+
+# Hard cap per tick so a backlog doesn't monopolize the event loop.
+CLUSTER_BATCH_LIMIT = int(os.environ.get("SYSLOG_CLUSTER_BATCH", "1000"))
+
+
+@dataclass
+class ClusterResult:
+    """Summary of one clusterer run, useful for logs and tests."""
+    processed: int
+    incidents_touched: int
+    new_incidents: int
+
+
+def _device_key(ev: StoredEvent) -> str:
+    return ev.device_serial or ev.hostname or ev.source_ip or "unknown"
+
+
+def _bucket_start(ts: datetime, window: timedelta) -> datetime:
+    """Floor `ts` to the nearest window boundary, UTC."""
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    ts = ts.astimezone(timezone.utc)
+    window_s = int(window.total_seconds())
+    epoch = int(ts.timestamp())
+    floored = epoch - (epoch % window_s)
+    return datetime.fromtimestamp(floored, tz=timezone.utc)
+
+
+def _signature(device_key: str, code: str, bucket: datetime) -> str:
+    raw = f"{device_key}|{code}|{bucket.isoformat()}"
+    return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
+
+
+def _event_ts(ev: StoredEvent) -> datetime:
+    """Prefer the device-reported time; fall back to server ingest time."""
+    for candidate in (ev.event_time, ev.received_at):
+        if not candidate:
+            continue
+        if isinstance(candidate, datetime):
+            return candidate if candidate.tzinfo else candidate.replace(tzinfo=timezone.utc)
+        # Stored as ISO string
+        try:
+            s = candidate.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(s)
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    return datetime.now(timezone.utc)
+
+
+def cluster_once(
+    store: SyslogStore,
+    *,
+    window: timedelta = CLUSTER_WINDOW,
+    lookback: timedelta = CLUSTER_LOOKBACK,
+    batch_limit: int = CLUSTER_BATCH_LIMIT,
+    now: datetime | None = None,
+) -> ClusterResult:
+    """Run one clustering pass. Returns counts; never raises on data issues."""
+    now = now or datetime.now(timezone.utc)
+    since = now - lookback
+
+    events = store.unclustered_events(since=since, limit=batch_limit)
+    if not events:
+        return ClusterResult(processed=0, incidents_touched=0, new_incidents=0)
+
+    # Group events by (signature, device_key, code, bucket).
+    # We bucket in-memory so we can compute first_seen/last_seen per group
+    # with a single INSERT/UPDATE each.
+    groups: dict[str, dict] = {}
+    for ev in events:
+        ts = _event_ts(ev)
+        bucket = _bucket_start(ts, window)
+        dkey = _device_key(ev)
+        code = ev.event_code or "NOCODE"
+        sig = _signature(dkey, code, bucket)
+
+        g = groups.get(sig)
+        if g is None:
+            groups[sig] = {
+                "device_serial": ev.device_serial,
+                "event_code": ev.event_code,
+                "severity": ev.severity,
+                "first_seen": ts,
+                "last_seen": ts,
+                "event_ids": [ev.id],
+            }
+            continue
+
+        g["event_ids"].append(ev.id)
+        if ts < g["first_seen"]:
+            g["first_seen"] = ts
+        if ts > g["last_seen"]:
+            g["last_seen"] = ts
+        # Lowest severity wins (emerg=0 beats debug=7).
+        if g["severity"] is None or ev.severity is not None and ev.severity < g["severity"]:
+            g["severity"] = ev.severity
+        # Prefer a real device_serial over None.
+        if not g["device_serial"] and ev.device_serial:
+            g["device_serial"] = ev.device_serial
+
+    new_count = 0
+    touched = 0
+    for sig, g in groups.items():
+        existed = store.get_incident_by_signature(sig) is not None
+        store.upsert_incident(
+            cluster_signature=sig,
+            device_serial=g["device_serial"],
+            event_code=g["event_code"],
+            severity=g["severity"],
+            first_seen=g["first_seen"],
+            last_seen=g["last_seen"],
+            event_ids=g["event_ids"],
+        )
+        touched += 1
+        if not existed:
+            new_count += 1
+
+    logger.info(
+        "clusterer: processed=%d groups=%d new=%d",
+        len(events), touched, new_count,
+    )
+    return ClusterResult(processed=len(events), incidents_touched=touched, new_incidents=new_count)
