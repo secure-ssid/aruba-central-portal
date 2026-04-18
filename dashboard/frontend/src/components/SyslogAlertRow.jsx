@@ -85,8 +85,12 @@ export function AlertRow({ alert, onChanged }) {
             {alert.summary}
           </Typography>
           <Stack direction="row" spacing={0.75} sx={{ mt: 0.75, flexWrap: 'wrap', gap: 0.5 }}>
-            {alert.device_serial && (
-              <Chip size="small" label={alert.device_serial} variant="outlined" />
+            {(alert.device_name || alert.device_serial) && (
+              <Chip
+                size="small"
+                label={alert.device_name || alert.device_serial}
+                variant="outlined"
+              />
             )}
             {alert.event_code && (
               <Chip size="small" label={alert.event_code} variant="outlined" />

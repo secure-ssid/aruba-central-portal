@@ -9,6 +9,31 @@ def test_aos8_wpa_handshake_codes_share_a_family():
     assert family_for("520013") == "WPA_HANDSHAKE"
 
 
+def test_aos10_wpa_family_covers_all_observed_codes():
+    """Live AOS 10 emits all of these together for one client's failed
+    4-way handshake — MIC mismatch, wrong Message 2, auth integrity
+    fail, post-fail RSSI telemetry. Must share a family so operators
+    see one incident per client/AP pair, not five."""
+    for code in ("132093", "132094", "341004", "341005", "520013"):
+        assert family_for(code) == "WPA_HANDSHAKE", f"{code} should be WPA_HANDSHAKE"
+
+
+def test_aos10_ap_internal_family():
+    """Telemetry / LACP / redis-event subsystems — low-actionability,
+    clustered together so they don't drown out client-facing alerts."""
+    assert family_for("312402") == "AP_INTERNAL"
+    assert family_for("312404") == "AP_INTERNAL"
+
+
+def test_aos10_rogue_ap_family():
+    assert family_for("127001") == "ROGUE_AP"
+
+
+def test_aos10_client_lifecycle_roam_sync():
+    """del-client / roam-sync codes belong with the other CLIENT_LIFECYCLE."""
+    assert family_for("541023") == "CLIENT_LIFECYCLE"
+
+
 def test_central_wpa_onboarding_maps_to_same_family():
     """Central's normalized string code should cluster with the AOS
     numeric codes — that's the whole point of a family map."""

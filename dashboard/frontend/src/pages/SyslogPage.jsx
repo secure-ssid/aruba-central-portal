@@ -246,7 +246,7 @@ function IncidentsTable() {
                   const disabled = busyId === r.id;
                   return (
                   <TableRow key={r.id} hover sx={{ opacity: r.status === 'resolved' ? 0.55 : 1 }}>
-                    <TableCell>{r.device_serial || <Typography component="span" variant="caption" color="text.secondary">unknown</Typography>}</TableCell>
+                    <TableCell>{r.device_name || r.device_serial || <Typography component="span" variant="caption" color="text.secondary">unknown</Typography>}</TableCell>
                     <TableCell>{r.event_code || <Typography component="span" variant="caption" color="text.secondary">—</Typography>}</TableCell>
                     <TableCell align="right">{r.event_count}</TableCell>
                     <TableCell>

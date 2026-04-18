@@ -119,8 +119,12 @@ def test_claude_happy_path(monkeypatch):
 def test_ollama_happy_path(monkeypatch):
     monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
     monkeypatch.setenv("OLLAMA_MODEL", "llama3.2:3b")
-    resp = _mock_resp({"message": {"content": "yo"}})
-    with patch.object(llm_client.httpx, "post", return_value=resp) as post:
+    monkeypatch.delenv("OLLAMA_FALLBACK_MODEL", raising=False)
+    # Stub the /api/tags probe so model-picker sees the model as present.
+    tags_resp = _mock_resp({"models": [{"name": "llama3.2:3b"}]})
+    chat_resp = _mock_resp({"message": {"content": "yo"}})
+    with patch.object(llm_client.httpx, "get", return_value=tags_resp), \
+         patch.object(llm_client.httpx, "post", return_value=chat_resp) as post:
         out = _call_ollama("prompt", "sys", 50, 0.1, 10.0)
     assert out.text == "yo"
     assert out.provider == "ollama"
@@ -132,6 +136,51 @@ def test_ollama_happy_path(monkeypatch):
 
 def test_ollama_http_error_wrapped(monkeypatch):
     monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
-    with patch.object(llm_client.httpx, "post", side_effect=httpx.ConnectError("refused")):
+    # Clear fallback so ConnectError doesn't get retried.
+    monkeypatch.setenv("OLLAMA_FALLBACK_MODEL", "")
+    with patch.object(llm_client.httpx, "get", side_effect=httpx.ConnectError("x")), \
+         patch.object(llm_client.httpx, "post", side_effect=httpx.ConnectError("refused")):
         with pytest.raises(LLMError):
             _call_ollama("p", None, 10, 0.0, 5.0)
+
+
+def test_ollama_model_picker_falls_back_when_requested_missing(monkeypatch):
+    """User configures a model the server doesn't have — picker should
+    loose-prefix-match or pick something present instead of 404-ing."""
+    monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
+    monkeypatch.setenv("OLLAMA_MODEL", "gemma3:4b")  # requested
+    monkeypatch.setenv("OLLAMA_FALLBACK_MODEL", "")
+    # Only "gemma3:latest" exists — prefix match should still resolve.
+    tags = _mock_resp({"models": [{"name": "gemma3:latest"}, {"name": "other"}]})
+    chat = _mock_resp({"message": {"content": "ok"}})
+    with patch.object(llm_client.httpx, "get", return_value=tags), \
+         patch.object(llm_client.httpx, "post", return_value=chat) as post:
+        out = _call_ollama("p", None, 10, 0.0, 5.0)
+    assert out.text == "ok"
+    assert post.call_args.kwargs["json"]["model"] == "gemma3:latest"
+
+
+def test_ollama_qwen_fallback_on_primary_failure(monkeypatch):
+    """Qwen Cloud fallback kicks in when the local model fails with a
+    rate-limit / 5xx / timeout — not on genuine bad requests."""
+    monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
+    monkeypatch.setenv("OLLAMA_MODEL", "gemma3:4b")
+    monkeypatch.setenv("OLLAMA_FALLBACK_MODEL", "qwen3.5:cloud")
+    tags = _mock_resp({"models": [{"name": "gemma3:4b"}, {"name": "qwen3.5:cloud"}]})
+
+    # First POST raises 503 (Ollama rarely does, but mimics the cloud
+    # backing-model being overloaded); second POST returns content.
+    req_obj = httpx.Request("POST", "http://localhost:11434/api/chat")
+    bad = httpx.Response(status_code=503, request=req_obj)
+    bad_err = httpx.HTTPStatusError("503 Service Unavailable", request=req_obj, response=bad)
+    good = _mock_resp({"message": {"content": "rescued"}})
+
+    with patch.object(llm_client.httpx, "get", return_value=tags), \
+         patch.object(llm_client.httpx, "post", side_effect=[
+             type("R", (), {"raise_for_status": lambda self: (_ for _ in ()).throw(bad_err),
+                            "json": lambda self: {}, "text": "503"})(),
+             good,
+         ]):
+        out = _call_ollama("p", None, 10, 0.0, 5.0)
+    assert out.text == "rescued"
+    assert out.model == "qwen3.5:cloud"
