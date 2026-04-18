@@ -20,6 +20,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy-loaded page components
 const DashboardPage      = lazy(() => import('./pages/DashboardPage'));
+const OverviewPage       = lazy(() => import('./pages/OverviewPage'));
 const DevicesPage        = lazy(() => import('./pages/DevicesPage'));
 const DeviceDetailPage   = lazy(() => import('./pages/DeviceDetailPage'));
 const ClientsPage        = lazy(() => import('./pages/ClientsPage'));
@@ -339,6 +340,7 @@ function AuthenticatedLayout({ sidebarOpen, setSidebarOpen, searchOpen, setSearc
           <Suspense fallback={<LazyFallback />}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/overview" element={<OverviewPage />} />
             <Route path="/devices" element={<DevicesPage />} />
             <Route path="/devices/:serial" element={<DeviceDetailPage />} />
             <Route path="/clients" element={<ClientsPage />} />

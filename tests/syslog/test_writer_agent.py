@@ -283,7 +283,10 @@ def test_alert_is_upserted_not_duplicated(store):
     for i in range(25, 40):
         _ingest(store, when=t + timedelta(seconds=i), code="520013")
 
-    with patch(
+    # Disable the per-signature cooldown for this test so the novel-content
+    # path actually re-invokes the writer. The cooldown is validated
+    # independently in test_writer_skipped_by_cooldown.
+    with patch("pipeline.syslog.clusterer.WRITER_COOLDOWN_SEC", 0), patch(
         "pipeline.syslog.clusterer.write_alert",
         return_value=_wo("second", ["two"]),
     ):

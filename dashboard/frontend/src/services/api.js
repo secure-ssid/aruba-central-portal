@@ -1494,5 +1494,13 @@ export const syslogAPI = {
     const { data } = await apiClient.get('/syslog/alerts', { params });
     return data;
   },
+  getOverview: async (params = {}) => {
+    const { data } = await apiClient.get('/syslog/overview', { params });
+    return data;
+  },
+  getLLMMetrics: async (days = 1) => {
+    const { data } = await apiClient.get('/syslog/llm-metrics', { params: { days } });
+    return data;
+  },
 };
 

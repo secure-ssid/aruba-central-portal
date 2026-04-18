@@ -50,6 +50,13 @@ WRITER_ENABLED = os.environ.get("SYSLOG_WRITER_ENABLED", "true").lower() in ("1"
 # it leaves alerts pending (approved=0) until a human decides.
 REVIEWER_ENABLED = os.environ.get("SYSLOG_REVIEWER_ENABLED", "true").lower() in ("1", "true", "yes")
 
+# Phase 14a — cost-control gates. All numeric, all tunable via env so
+# operators can widen the throttle when a Pro tier is paid for.
+WRITER_MIN_EVENTS = int(os.environ.get("SYSLOG_WRITER_MIN_EVENTS", "3"))
+WRITER_COOLDOWN_SEC = int(os.environ.get("SYSLOG_WRITER_COOLDOWN_SEC", "900"))
+WRITER_MAX_CALLS_PER_TICK = int(os.environ.get("SYSLOG_WRITER_MAX_CALLS_PER_TICK", "5"))
+WRITER_DAILY_CAP = int(os.environ.get("SYSLOG_WRITER_DAILY_CAP", "200"))
+
 logger = logging.getLogger(__name__)
 
 # Bucket size. 5 minutes matches the Phase 1 design doc; tunable via env
@@ -168,6 +175,93 @@ def _event_ts(ev: StoredEvent) -> datetime:
     return datetime.now(timezone.utc)
 
 
+@dataclass
+class _WriterDecision:
+    """Outcome of the pre-LLM gate stack. When `skip_reason` is set the
+    caller must NOT call the LLM; if `cached` is also set, the caller
+    should upsert that prior summary onto the incident instead."""
+    skip_reason: str | None
+    cached: dict | None
+    fp_now: str
+
+
+def _should_call_writer(
+    *,
+    store: SyslogStore,
+    incident_id: int,
+    signature: str,
+    event_count: int,
+    calls_this_tick: int,
+) -> _WriterDecision:
+    """All pre-LLM gates in cheapest-first order. Each gate that fires
+    bumps the matching metric so the operator can see which throttle
+    saved the most money this week."""
+    fp_now = store.incident_fingerprints_hash(incident_id)
+
+    # Gate 1 — min cluster size. Single-event "anomalies" almost always
+    # turn out to be noise, and the LLM produces a generic summary for
+    # them. Blanket-skip below N.
+    if event_count < WRITER_MIN_EVENTS:
+        store.incr_llm_metric("calls_skipped_min_size")
+        return _WriterDecision(
+            skip_reason=f"below-min-size ({event_count}<{WRITER_MIN_EVENTS})",
+            cached=None, fp_now=fp_now,
+        )
+
+    # Gate 2 — fingerprint unchanged since last alert on this incident.
+    # The old single-tick skip lived inline; now it's a named gate so the
+    # metric shows up in the dashboard.
+    fp_prev = store.alert_fingerprints_hash(incident_id)
+    if fp_now and fp_now == fp_prev:
+        store.incr_llm_metric("calls_skipped_fp_growth")
+        return _WriterDecision(
+            skip_reason=f"fingerprint-unchanged ({fp_now})",
+            cached=None, fp_now=fp_now,
+        )
+
+    # Gate 3 — signature-level cache. A different incident (or a restart)
+    # may have already summarized this exact content. Reuse verbatim.
+    if fp_now:
+        cached = store.get_cached_summary(signature, fp_now)
+        if cached:
+            store.incr_llm_metric("calls_skipped_cache")
+            return _WriterDecision(
+                skip_reason="llm-cache-hit", cached=cached, fp_now=fp_now,
+            )
+
+    # Gate 4 — per-signature cooldown. Even if fingerprints drift, don't
+    # re-ask the LLM about the same signature more often than the
+    # cooldown window. Prevents a hot device from chewing quota.
+    age = store.cached_summary_age_seconds(signature)
+    if age is not None and age < WRITER_COOLDOWN_SEC:
+        store.incr_llm_metric("calls_skipped_cooldown")
+        return _WriterDecision(
+            skip_reason=f"cooldown ({int(age)}s<{WRITER_COOLDOWN_SEC}s)",
+            cached=None, fp_now=fp_now,
+        )
+
+    # Gate 5 — per-tick cap. Protects against a flood day burning the
+    # daily quota in one cluster pass. Remaining incidents re-evaluate
+    # on the next tick.
+    if calls_this_tick >= WRITER_MAX_CALLS_PER_TICK:
+        store.incr_llm_metric("calls_skipped_tick_cap")
+        return _WriterDecision(
+            skip_reason=f"tick-cap ({WRITER_MAX_CALLS_PER_TICK})",
+            cached=None, fp_now=fp_now,
+        )
+
+    # Gate 6 — per-day quota ceiling. Hard cap independent of cooldown;
+    # once hit, nothing new gets summarized until the UTC day rolls over.
+    if store.llm_calls_today() >= WRITER_DAILY_CAP:
+        store.incr_llm_metric("calls_skipped_daily_cap")
+        return _WriterDecision(
+            skip_reason=f"daily-cap ({WRITER_DAILY_CAP})",
+            cached=None, fp_now=fp_now,
+        )
+
+    return _WriterDecision(skip_reason=None, cached=None, fp_now=fp_now)
+
+
 def cluster_once(
     store: SyslogStore,
     *,
@@ -252,6 +346,7 @@ def cluster_once(
 
     new_count = 0
     touched = 0
+    calls_this_tick = 0
     for sig, g in groups.items():
         existed_row = store.get_incident_by_signature(sig)
         incident_id = store.upsert_incident(
@@ -287,21 +382,32 @@ def cluster_once(
         store.set_incident_anomaly_score(incident_id, result.score)
 
         # If the incident is interesting enough, ask the LLM to produce a
-        # human summary. Below threshold we skip the call entirely (saves
-        # tokens; the incident is still available via /api/syslog/incidents).
+        # human summary. Gates run in cheapest-first order — anything that
+        # can avoid an LLM call happens before we spend tokens.
         if WRITER_ENABLED and result.score >= WRITER_THRESHOLD:
-            # Fingerprint dedup: if the set of distinct fingerprints on
-            # this incident hasn't changed since we last wrote the alert,
-            # the new events are duplicates of existing content — skip
-            # the writer/reviewer pass entirely. Saves LLM quota dramatically
-            # when a single bad client emits the same line thousands of times.
-            fp_now = store.incident_fingerprints_hash(incident_id)
-            fp_prev = store.alert_fingerprints_hash(incident_id)
-            if fp_now and fp_now == fp_prev:
+            decision = _should_call_writer(
+                store=store,
+                incident_id=incident_id,
+                signature=sig,
+                event_count=int(updated["event_count"]),
+                calls_this_tick=calls_this_tick,
+            )
+            if decision.skip_reason:
                 logger.debug(
-                    "writer: incident=%s fingerprint unchanged — skip LLM (%s)",
-                    incident_id, fp_now,
+                    "writer: incident=%s skipped (%s)", incident_id, decision.skip_reason,
                 )
+                if decision.cached:
+                    # Reuse prior summary verbatim — the incident row still
+                    # needs an alert if it doesn't have one yet.
+                    store.upsert_alert(
+                        incident_id=incident_id,
+                        summary=decision.cached["summary"],
+                        troubleshooting=decision.cached["troubleshooting"],
+                        review_notes=decision.cached.get("review_notes"),
+                        approved=int(decision.cached.get("approved") or 0),
+                    )
+                    if decision.fp_now:
+                        store.set_alert_fingerprints_hash(incident_id, decision.fp_now)
                 continue
 
             updated["anomaly_score"] = result.score  # include latest score in prompt
@@ -316,6 +422,8 @@ def cluster_once(
                 llm = write_alert(updated, events_for_prompt)
                 summary_text = llm.summary
                 troubleshooting = llm.troubleshooting or fallback_troubleshooting(updated)
+                store.incr_llm_metric("calls_made")
+                calls_this_tick += 1
             except LLMError as exc:
                 logger.warning(
                     "writer: LLM unavailable for incident=%s — using fallback (%s)",
@@ -337,6 +445,7 @@ def cluster_once(
                     else:
                         approved = 1 if verdict.approved else -1
                         notes = verdict.notes
+                    store.incr_llm_metric("calls_made")
                 except LLMError as exc:
                     logger.warning(
                         "reviewer: LLM unavailable for incident=%s — leaving pending (%s)",
@@ -353,8 +462,19 @@ def cluster_once(
             )
             # Stamp the alert with the fingerprint set we just summarized
             # so the next tick can skip the LLM if nothing new arrived.
-            if fp_now:
-                store.set_alert_fingerprints_hash(incident_id, fp_now)
+            if decision.fp_now:
+                store.set_alert_fingerprints_hash(incident_id, decision.fp_now)
+            # Cache the LLM output keyed on cluster_signature so a restart
+            # or a replay doesn't re-spend tokens on the same content.
+            if not used_fallback and decision.fp_now:
+                store.put_cached_summary(
+                    signature=sig,
+                    fingerprints_hash=decision.fp_now,
+                    summary=summary_text or "",
+                    troubleshooting=troubleshooting,
+                    review_notes=notes,
+                    approved=approved,
+                )
 
     logger.info(
         "clusterer: processed=%d groups=%d new=%d",
