@@ -119,7 +119,7 @@ def test_qa_writer_fallback_does_not_leak_fenced_json():
     """If the LLM returns garbled JSON we can't parse, the summary must
     not contain fences or `"summary":` — operators saw that in prod."""
     text = '```json\n{"summary": "unclosed'  # malformed, no closing
-    summary, steps = _parse_output(text)
+    summary, steps, _ = _parse_output(text)
     assert "```" not in summary
     assert '"summary"' not in summary
     assert steps == []
@@ -129,7 +129,7 @@ def test_qa_writer_fallback_clean_text_passes_through():
     """If the LLM returns a plain sentence (no JSON at all), we still
     surface it — fallback shouldn't be *too* aggressive."""
     text = "Device AP-1 lost uplink for 30 seconds."
-    summary, steps = _parse_output(text)
+    summary, steps, _ = _parse_output(text)
     assert summary == "Device AP-1 lost uplink for 30 seconds."
 
 

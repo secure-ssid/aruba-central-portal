@@ -25,6 +25,7 @@ import {
   Collapse,
   Container,
   Divider,
+  IconButton,
   InputAdornment,
   Stack,
   TextField,
@@ -68,114 +69,138 @@ function formatRelative(iso) {
   return `${Math.round(diffHr / 24)}d ago`;
 }
 
+const VERDICT_COLOR = { benign: 'success', warning: 'warning', critical: 'error' };
+
 function ProblemCard({ row, onStatus, onDismiss, onOpenLogs }) {
   const [expanded, setExpanded] = useState(false);
   const sevBand = severityBand(row.severity);
   const anomBand = anomalyBand(row.anomaly_score);
+  const verdictColor = VERDICT_COLOR[row.verdict] || sevBand.color;
+
   const label =
     row.summary ||
     `${row.device_name || row.device_serial || 'Unknown device'} — ${row.event_code || 'event'} (${row.event_count})`;
 
+  const hasBenign = row.benign_items?.length > 0;
+  const hasReal   = row.real_items?.length > 0;
+  const hasSteps  = row.troubleshooting?.length > 0;
+
   return (
-    <Card sx={{ mb: 1.5 }}>
-      <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-        <Stack direction="row" alignItems="flex-start" spacing={2}>
+    <Card sx={{ mb: 1, borderLeft: 4, borderColor: `${verdictColor}.main` }}>
+      <CardContent sx={{ py: 1.25, '&:last-child': { pb: 1.25 } }}>
+        {/* ── Collapsed: just 2 lines ── */}
+        <Stack direction="row" alignItems="center" spacing={1.5}
+               sx={{ cursor: 'pointer' }} onClick={() => setExpanded((v) => !v)}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body1" fontWeight={600} sx={{ mb: 0.5 }}>
+            <Typography variant="body2" fontWeight={600}
+                        sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {label}
             </Typography>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap', rowGap: 0.5, mb: 0.5 }}>
+            <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexWrap: 'wrap', rowGap: 0.25 }}>
               <Tooltip title={severityTooltip(row.severity)}>
-                <Chip size="small" color={sevBand.color} label={sevBand.label} />
+                <Chip size="small" color={sevBand.color} label={sevBand.label} sx={{ height: 18, fontSize: '0.68rem' }} />
               </Tooltip>
-              {row.anomaly_score != null && row.anomaly_score >= 2 && (
-                <Tooltip title={anomalyTooltip(row.anomaly_score)}>
-                  <Chip size="small" color={anomBand.color} variant="outlined"
-                        label={`anomaly ${Number(row.anomaly_score).toFixed(1)}`} />
-                </Tooltip>
+              {row.verdict && (
+                <Chip size="small" color={verdictColor} variant="outlined"
+                      label={row.verdict} sx={{ height: 18, fontSize: '0.68rem' }} />
               )}
-              <Typography variant="caption" color="text.secondary">
-                {row.device_name || row.device_serial || 'unknown'}
-                {row.client_mac ? ` · client ${row.client_mac}` : ''}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
+              {row.device_category && (
+                <Typography variant="caption" color="text.secondary">{row.device_category}</Typography>
+              )}
+              <Typography variant="caption" color="text.disabled">
+                · {row.device_name || row.device_serial || 'unknown'}
                 · {row.event_count} events
+                · {formatRelative(row.first_seen)}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                · started {formatRelative(row.first_seen)}
-              </Typography>
-              {!row.has_llm_summary && (
-                <Chip size="small" variant="outlined" label="pending AI summary"
-                      sx={{ borderStyle: 'dashed' }} />
-              )}
             </Stack>
-            {row.suggested_fix && (
-              <Typography variant="body2" color="text.secondary"
-                          sx={{ overflow: 'hidden', textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap' }}>
-                Suggested: {row.suggested_fix}
-              </Typography>
-            )}
           </Box>
-          <Stack direction="row" spacing={0.5}>
-            <Tooltip title="Acknowledge — hide from Overview while you work on it">
+          <Stack direction="row" spacing={0.5} onClick={(e) => e.stopPropagation()}>
+            <Tooltip title="Acknowledge">
               <span>
-                <Button size="small" color="primary" variant="outlined"
+                <Button size="small" variant="outlined" color="primary"
                         disabled={row.status === 'ack'}
-                        startIcon={<CheckCircleOutlineIcon />}
-                        onClick={() => onStatus(row.incident_id, 'ack')}>
+                        onClick={() => onStatus(row.incident_id, 'ack')}
+                        sx={{ minWidth: 0, px: 1 }}>
                   Ack
                 </Button>
               </span>
             </Tooltip>
             <Tooltip title="Resolve — mark fixed">
               <span>
-                <Button size="small" color="success" variant="outlined"
+                <Button size="small" variant="outlined" color="success"
                         disabled={row.status === 'resolved'}
-                        onClick={() => onStatus(row.incident_id, 'resolved')}>
+                        onClick={() => onStatus(row.incident_id, 'resolved')}
+                        sx={{ minWidth: 0, px: 1 }}>
                   Resolve
                 </Button>
               </span>
             </Tooltip>
-            <Tooltip title="Dismiss and delete this incident">
+            <Tooltip title="Dismiss and delete">
               <span>
-                <Button size="small" color="error" variant="text"
-                        startIcon={<DoDisturbIcon />}
-                        onClick={() => onDismiss(row.incident_id)}>
-                  Dismiss
+                <Button size="small" variant="text" color="error"
+                        onClick={() => onDismiss(row.incident_id)}
+                        sx={{ minWidth: 0, px: 0.5 }}>
+                  <DoDisturbIcon fontSize="small" />
                 </Button>
               </span>
             </Tooltip>
-            <Tooltip title={expanded ? 'Hide details' : 'Show steps & raw logs'}>
-              <Button size="small" onClick={() => setExpanded((v) => !v)}
-                      endIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}>
-                Details
-              </Button>
-            </Tooltip>
+            <IconButton size="small" onClick={() => setExpanded((v) => !v)}>
+              {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+            </IconButton>
           </Stack>
         </Stack>
+
+        {/* ── Expanded: full breakdown ── */}
         <Collapse in={expanded} unmountOnExit>
-          <Divider sx={{ my: 1.5 }} />
-          {row.troubleshooting && row.troubleshooting.length > 0 ? (
-            <Box component="ol" sx={{ pl: 2.5, my: 0 }}>
-              {row.troubleshooting.map((step, i) => (
-                <li key={i}>
-                  <Typography variant="body2">{step}</Typography>
-                </li>
-              ))}
+          <Divider sx={{ my: 1.25 }} />
+          {hasBenign && (
+            <Box sx={{ mb: 1.25 }}>
+              <Typography variant="caption" fontWeight={700} color="success.main"
+                          sx={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Benign / expected
+              </Typography>
+              <Box component="ul" sx={{ pl: 2.5, my: 0.5 }}>
+                {row.benign_items.map((item, i) => (
+                  <li key={i}><Typography variant="body2" color="text.secondary">{item}</Typography></li>
+                ))}
+              </Box>
             </Box>
-          ) : (
+          )}
+          {hasReal && (
+            <Box sx={{ mb: 1.25 }}>
+              <Typography variant="caption" fontWeight={700} color="warning.main"
+                          sx={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Needs attention
+              </Typography>
+              <Box component="ul" sx={{ pl: 2.5, my: 0.5 }}>
+                {row.real_items.map((item, i) => (
+                  <li key={i}><Typography variant="body2">{item}</Typography></li>
+                ))}
+              </Box>
+            </Box>
+          )}
+          {hasSteps && (
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="caption" fontWeight={700} color="text.secondary"
+                          sx={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Fix steps
+              </Typography>
+              <Box component="ol" sx={{ pl: 2.5, my: 0.5 }}>
+                {row.troubleshooting.map((step, i) => (
+                  <li key={i}><Typography variant="body2">{step}</Typography></li>
+                ))}
+              </Box>
+            </Box>
+          )}
+          {!hasBenign && !hasReal && !hasSteps && (
             <Typography variant="body2" color="text.secondary">
-              No troubleshooting steps yet — run the clusterer or wait for the
-              next AI summary window.
+              No AI analysis yet — re-scan or wait for the next cluster tick.
             </Typography>
           )}
-          <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
-            <Button size="small" startIcon={<LaunchIcon />}
-                    onClick={() => onOpenLogs(row.incident_id)}>
-              View raw logs
-            </Button>
-          </Stack>
+          <Button size="small" startIcon={<LaunchIcon />} sx={{ mt: 0.5 }}
+                  onClick={() => onOpenLogs(row.incident_id)}>
+            View raw logs
+          </Button>
         </Collapse>
       </CardContent>
     </Card>

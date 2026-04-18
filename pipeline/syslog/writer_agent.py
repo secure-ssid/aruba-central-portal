@@ -32,10 +32,11 @@ from __future__ import annotations
 import json
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from pipeline.llm import LLMError, generate
+from .device_categories import classify
 
 logger = logging.getLogger(__name__)
 
@@ -48,18 +49,42 @@ _SEVERITY_LABELS = {
 }
 
 
-_SYSTEM_PROMPT = (
-    "You are a senior network-operations engineer writing a brief alert "
-    "for on-call. Convert raw syslog incident data into two sections: "
-    "(1) a 1-2 sentence plain-English summary of what is happening and on "
-    "which device(s); (2) 3-5 concrete troubleshooting steps tailored to "
-    "the actual event content — what to check, what to run, what to rule "
-    "out. Steps must be specific (name the port/SSID/VLAN/client when it's "
-    "in the data) and safe (never recommend destructive actions without a "
-    "diagnostic first). Never invent facts not present in the data. "
-    "Respond with STRICT JSON ONLY, no prose before or after, of the form: "
-    '{"summary": "...", "troubleshooting": ["step 1", "step 2", ...]}'
-)
+_SYSTEM_PROMPT = """\
+You are a senior network-operations engineer writing a structured alert for
+on-call staff who are NOT network experts. Your job is to separate noise from
+real problems and tell them exactly what to do.
+
+Output STRICT JSON ONLY — no prose before or after, no markdown fences.
+
+Schema:
+{
+  "summary": "1-2 sentence plain-English headline. What is happening, on which device.",
+  "verdict": "benign|warning|critical",
+  "device_category": "detected device type label (e.g. Roku, Apple TV, Aruba AP)",
+  "benign_items": [
+    "Short explanation of each error that is NORMAL for this device type and needs no action"
+  ],
+  "real_items": [
+    "Short explanation of each error that ACTUALLY matters and why"
+  ],
+  "troubleshooting": [
+    "Concrete step 1 — be specific: name port/SSID/VLAN/client from the data",
+    "Concrete step 2",
+    "..."
+  ]
+}
+
+Rules:
+- verdict=benign → all errors are normal/expected for this device type
+- verdict=warning → at least one error needs investigation but is not urgent
+- verdict=critical → service impact, security issue, or data loss risk
+- benign_items: explain WHY it is benign (device behaviour, not just "ignore this")
+- real_items: explain the root cause, not just the symptom
+- troubleshooting: 3-5 safe, specific steps. Never recommend destructive actions first.
+- Never invent facts not in the provided data.
+- Use the device category context to inform your assessment — what is normal for a
+  Roku is not normal for a gateway.
+"""
 
 
 _JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
@@ -72,38 +97,86 @@ class WriterOutput:
     provider: str
     model: str
     raw: str
+    # Phase 14b enrichments — may be None on legacy/fallback outputs.
+    verdict: str | None = None          # "benign" | "warning" | "critical"
+    device_category: str | None = None  # e.g. "Roku / streaming stick"
+    benign_items: list[str] = field(default_factory=list)
+    real_items: list[str] = field(default_factory=list)
 
 
 def _build_prompt(incident: dict, events: list[Any], *, max_event_samples: int = 8) -> str:
     sev = incident.get("severity")
     sev_label = _SEVERITY_LABELS.get(sev, "unknown") if sev is not None else "unknown"
 
+    # Collect event fields for device classification.
+    ev_list = events[:max_event_samples]
+    messages: list[str] = []
+    hostnames: set[str] = set()
+    for ev in ev_list:
+        get = (lambda k: getattr(ev, k, None)) if not isinstance(ev, dict) else ev.get
+        h = get("hostname") or ""
+        m = get("message") or ""
+        if h:
+            hostnames.add(h)
+        if m:
+            messages.append(m.strip().replace("\n", " ")[:200])
+
+    primary_host = next(iter(hostnames), None)
+    cat = classify(
+        hostname=primary_host,
+        device_name=incident.get("device_name"),
+        messages=messages,
+    )
+
     lines = [
-        "Incident summary data:",
-        f"- device_serial: {incident.get('device_serial') or 'unknown'}",
-        f"- event_code:    {incident.get('event_code') or 'NOCODE'}",
-        f"- severity:      {sev_label} ({sev})",
-        f"- event_count:   {incident.get('event_count')}",
-        f"- first_seen:    {incident.get('first_seen')}",
-        f"- last_seen:     {incident.get('last_seen')}",
-        f"- anomaly_score: {incident.get('anomaly_score')}",
-        "",
-        f"Sample events (up to {max_event_samples}):",
+        "=== DEVICE CONTEXT ===",
+        f"Device category : {cat.name}",
+        f"Description     : {cat.description}",
     ]
-    for ev in events[:max_event_samples]:
+    if cat.normal_behaviours:
+        lines.append("Known-normal for this device type (likely benign):")
+        for b in cat.normal_behaviours:
+            lines.append(f"  • {b}")
+    if cat.watch_for:
+        lines.append("Worth investigating for this device type:")
+        for w in cat.watch_for:
+            lines.append(f"  • {w}")
+
+    lines += [
+        "",
+        "=== INCIDENT DATA ===",
+        f"device_serial : {incident.get('device_serial') or 'unknown'}",
+        f"device_name   : {incident.get('device_name') or primary_host or 'unknown'}",
+        f"event_code    : {incident.get('event_code') or 'NOCODE'}",
+        f"severity      : {sev_label} ({sev})",
+        f"event_count   : {incident.get('event_count')}",
+        f"first_seen    : {incident.get('first_seen')}",
+        f"last_seen     : {incident.get('last_seen')}",
+        f"anomaly_score : {incident.get('anomaly_score')}",
+        "",
+        f"Sample log lines (up to {max_event_samples}):",
+    ]
+    for ev in ev_list:
         get = (lambda k: getattr(ev, k, None)) if not isinstance(ev, dict) else ev.get
         msg = (get("message") or "").strip().replace("\n", " ")[:240]
         host = get("hostname") or ""
         ts = get("event_time") or get("received_at") or ""
-        lines.append(f"- [{ts}] {host}: {msg}")
-    lines += [
-        "",
-        "Write the JSON now.",
-    ]
+        lines.append(f"  [{ts}] {host}: {msg}")
+
+    lines += ["", "Write the JSON now."]
     return "\n".join(lines)
 
 
-def _parse_output(text: str) -> tuple[str, list[str]]:
+def _extract_str_list(obj: dict, key: str) -> list[str]:
+    raw = obj.get(key, [])
+    if isinstance(raw, list):
+        return [str(s).strip() for s in raw if str(s).strip()]
+    if isinstance(raw, str):
+        return [s.strip(" -*•") for s in raw.splitlines() if s.strip()]
+    return []
+
+
+def _parse_output(text: str) -> tuple[str, list[str], dict]:
     """Pull {summary, troubleshooting} out of the LLM text.
 
     Robust to two common LLM habits that defeated the earlier version:
@@ -116,7 +189,7 @@ def _parse_output(text: str) -> tuple[str, list[str]]:
     """
     raw = (text or "").strip()
     if not raw:
-        return "", []
+        return "", [], {}
 
     # 1. Strip ```json ... ``` and ``` ... ``` fences wholesale.
     stripped = re.sub(r"^```(?:json)?\s*", "", raw)
@@ -135,14 +208,15 @@ def _parse_output(text: str) -> tuple[str, list[str]]:
             obj = None
         if isinstance(obj, dict):
             summary = str(obj.get("summary", "")).strip()
-            ts_raw = obj.get("troubleshooting", [])
-            troubleshooting: list[str] = []
-            if isinstance(ts_raw, list):
-                troubleshooting = [str(s).strip() for s in ts_raw if str(s).strip()]
-            elif isinstance(ts_raw, str):
-                troubleshooting = [s.strip(" -*•") for s in ts_raw.splitlines() if s.strip()]
+            troubleshooting = _extract_str_list(obj, "troubleshooting")
             if summary:
-                return summary, troubleshooting[:8]
+                extras = {
+                    "verdict": str(obj.get("verdict", "")).strip() or None,
+                    "device_category": str(obj.get("device_category", "")).strip() or None,
+                    "benign_items": _extract_str_list(obj, "benign_items"),
+                    "real_items": _extract_str_list(obj, "real_items"),
+                }
+                return summary, troubleshooting[:8], extras
 
     # 3. Fallback: return a safe plain-text summary and no steps. Never
     #    leak a JSON envelope or code fences into the summary column —
@@ -153,8 +227,8 @@ def _parse_output(text: str) -> tuple[str, list[str]]:
         return (
             "LLM response could not be parsed. Check the review notes on "
             "this alert for the raw output."
-        ), []
-    return stripped, []
+        ), [], {}
+    return stripped, [], {}
 
 
 def write_alert(
@@ -176,10 +250,11 @@ def write_alert(
         max_output_tokens=max_output_tokens,
         temperature=0.2,
     )
-    summary, troubleshooting = _parse_output(result.text)
+    summary, troubleshooting, extras = _parse_output(result.text)
     logger.info(
-        "writer: incident=%s provider=%s model=%s summary_chars=%d steps=%d",
+        "writer: incident=%s provider=%s model=%s verdict=%s category=%s summary_chars=%d steps=%d",
         incident.get("id"), result.provider, result.model,
+        extras.get("verdict"), extras.get("device_category"),
         len(summary), len(troubleshooting),
     )
     return WriterOutput(
@@ -188,6 +263,10 @@ def write_alert(
         provider=result.provider,
         model=result.model,
         raw=result.text,
+        verdict=extras.get("verdict"),
+        device_category=extras.get("device_category"),
+        benign_items=extras.get("benign_items", []),
+        real_items=extras.get("real_items", []),
     )
 
 

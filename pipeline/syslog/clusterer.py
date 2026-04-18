@@ -418,10 +418,19 @@ def cluster_once(
             approved = 0
             used_fallback = False
 
+            llm_verdict: str | None = None
+            llm_device_category: str | None = None
+            llm_benign_items: list[str] = []
+            llm_real_items: list[str] = []
+
             try:
                 llm = write_alert(updated, events_for_prompt)
                 summary_text = llm.summary
                 troubleshooting = llm.troubleshooting or fallback_troubleshooting(updated)
+                llm_verdict = llm.verdict
+                llm_device_category = llm.device_category
+                llm_benign_items = llm.benign_items
+                llm_real_items = llm.real_items
                 store.incr_llm_metric("calls_made")
                 calls_this_tick += 1
             except LLMError as exc:
@@ -438,13 +447,13 @@ def cluster_once(
             # (skipped for fallback text, which isn't the writer's work).
             if REVIEWER_ENABLED and not used_fallback:
                 try:
-                    verdict = review_alert(updated, events_for_prompt, summary_text)
-                    if verdict.pending:
+                    review_verdict = review_alert(updated, events_for_prompt, summary_text)
+                    if review_verdict.pending:
                         approved = 0
-                        notes = f"review pending: {verdict.notes}"
+                        notes = f"review pending: {review_verdict.notes}"
                     else:
-                        approved = 1 if verdict.approved else -1
-                        notes = verdict.notes
+                        approved = 1 if review_verdict.approved else -1
+                        notes = review_verdict.notes
                     store.incr_llm_metric("calls_made")
                 except LLMError as exc:
                     logger.warning(
@@ -459,6 +468,10 @@ def cluster_once(
                 troubleshooting=troubleshooting,
                 review_notes=notes,
                 approved=approved,
+                verdict=llm_verdict,
+                device_category=llm_device_category,
+                benign_items=llm_benign_items,
+                real_items=llm_real_items,
             )
             # Stamp the alert with the fingerprint set we just summarized
             # so the next tick can skip the LLM if nothing new arrived.

@@ -168,6 +168,13 @@ _MIGRATIONS = [
     # roll up "same client bouncing off the same AP" as one group
     # without a second query per row.
     "ALTER TABLE incidents ADD COLUMN client_mac TEXT",
+    # Phase 14b: structured writer output — verdict, device category, split
+    # benign vs real items. Stored as additive columns so existing alerts
+    # remain valid (NULL = old format, use troubleshooting only).
+    "ALTER TABLE alerts ADD COLUMN verdict TEXT",
+    "ALTER TABLE alerts ADD COLUMN device_category TEXT",
+    "ALTER TABLE alerts ADD COLUMN benign_items TEXT",  # JSON array
+    "ALTER TABLE alerts ADD COLUMN real_items TEXT",    # JSON array
     # Phase 13: fingerprint = sha1(device_key, event_code, normalized_message).
     # Identical log lines repeating dozens of times collapse under the same
     # fingerprint. Used by the grouped-events UI to show one row per
@@ -746,6 +753,10 @@ class SyslogStore:
                 i.status             AS status,
                 a.summary            AS summary,
                 a.troubleshooting    AS troubleshooting,
+                a.verdict            AS verdict,
+                a.device_category    AS device_category,
+                a.benign_items       AS benign_items,
+                a.real_items         AS real_items,
                 a.approved           AS approved
             FROM incidents i
             LEFT JOIN alerts a ON a.incident_id = i.id
@@ -762,13 +773,14 @@ class SyslogStore:
         rows: list[dict[str, Any]] = []
         for r in cur.fetchall():
             d = dict(r)
-            tb_raw = d.pop("troubleshooting", None)
-            try:
-                steps = json.loads(tb_raw) if tb_raw else []
-            except (ValueError, TypeError):
-                steps = []
-            d["troubleshooting"] = steps
-            d["suggested_fix"] = steps[0] if steps else None
+            for col in ("troubleshooting", "benign_items", "real_items"):
+                raw_val = d.pop(col, None)
+                try:
+                    parsed = json.loads(raw_val) if raw_val else []
+                    d[col] = parsed if isinstance(parsed, list) else []
+                except (ValueError, TypeError):
+                    d[col] = []
+            d["suggested_fix"] = d["troubleshooting"][0] if d["troubleshooting"] else None
             d["has_llm_summary"] = bool(d.get("summary"))
             rows.append(d)
         return rows
@@ -837,6 +849,10 @@ class SyslogStore:
         troubleshooting: list[str] | None = None,
         review_notes: str | None = None,
         approved: int = 0,
+        verdict: str | None = None,
+        device_category: str | None = None,
+        benign_items: list[str] | None = None,
+        real_items: list[str] | None = None,
     ) -> int:
         """Create or replace the alert row for an incident.
 
@@ -846,6 +862,8 @@ class SyslogStore:
         """
         now_iso = _iso(datetime.now(timezone.utc))
         ts_json = json.dumps(list(troubleshooting)) if troubleshooting else None
+        bi_json = json.dumps(list(benign_items)) if benign_items else None
+        ri_json = json.dumps(list(real_items)) if real_items else None
         with self._write_lock:
             row = self._conn.execute(
                 "SELECT id FROM alerts WHERE incident_id = ?", (incident_id,)
@@ -854,16 +872,20 @@ class SyslogStore:
                 cur = self._conn.execute(
                     "INSERT INTO alerts ("
                     "  incident_id, created_at, summary, troubleshooting, "
-                    "  review_notes, approved"
-                    ") VALUES (?,?,?,?,?,?)",
-                    (incident_id, now_iso, summary, ts_json, review_notes, int(approved)),
+                    "  review_notes, approved, verdict, device_category, "
+                    "  benign_items, real_items"
+                    ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+                    (incident_id, now_iso, summary, ts_json, review_notes, int(approved),
+                     verdict, device_category, bi_json, ri_json),
                 )
                 return int(cur.lastrowid)
             alert_id = int(row["id"])
             self._conn.execute(
-                "UPDATE alerts SET summary=?, troubleshooting=?, review_notes=?, approved=? "
+                "UPDATE alerts SET summary=?, troubleshooting=?, review_notes=?, approved=?,"
+                " verdict=?, device_category=?, benign_items=?, real_items=? "
                 "WHERE id=?",
-                (summary, ts_json, review_notes, int(approved), alert_id),
+                (summary, ts_json, review_notes, int(approved),
+                 verdict, device_category, bi_json, ri_json, alert_id),
             )
             return alert_id
 
@@ -1276,18 +1298,18 @@ def _decode_action_row(row: sqlite3.Row) -> dict[str, Any]:
 
 
 def _decode_alert_row(row: sqlite3.Row) -> dict[str, Any]:
-    """Turn an alerts row into a dashboard-friendly dict. Parses the
-    JSON-encoded `troubleshooting` column into a list; keeps an empty
-    list when the column is null/blank so the frontend never has to
-    guard against `undefined.map`."""
+    """Turn an alerts row into a dashboard-friendly dict. Parses all
+    JSON-encoded list columns; keeps empty lists when null so the
+    frontend never has to guard against `undefined.map`."""
     d = dict(row)
-    raw_ts = d.get("troubleshooting")
-    if raw_ts:
-        try:
-            parsed = json.loads(raw_ts)
-            d["troubleshooting"] = parsed if isinstance(parsed, list) else []
-        except (TypeError, ValueError):
-            d["troubleshooting"] = []
-    else:
-        d["troubleshooting"] = []
+    for col in ("troubleshooting", "benign_items", "real_items"):
+        raw_val = d.get(col)
+        if raw_val:
+            try:
+                parsed = json.loads(raw_val)
+                d[col] = parsed if isinstance(parsed, list) else []
+            except (TypeError, ValueError):
+                d[col] = []
+        else:
+            d[col] = []
     return d
