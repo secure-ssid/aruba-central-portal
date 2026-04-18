@@ -13,6 +13,7 @@ from .troubleshoot import troubleshoot_bp
 from .greenlake import greenlake_bp
 from .chat import chat_bp
 from .events import events_bp
+from .syslog import syslog_bp
 
 
 def register_all_blueprints(app):
@@ -25,3 +26,4 @@ def register_all_blueprints(app):
     app.register_blueprint(greenlake_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(events_bp)
+    app.register_blueprint(syslog_bp)

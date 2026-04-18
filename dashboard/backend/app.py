@@ -68,6 +68,15 @@ except Exception as _bp_err:
     )
     _blueprints_registered = False
 
+# ── Syslog ingest pipeline ────────────────────────────────────────────────
+# Runs on a background asyncio thread; listens for LAN device syslog.
+# Disabled automatically in tests / when SYSLOG_ENABLED=false.
+try:
+    from pipeline.syslog.server import start_default_server as _start_syslog
+    _start_syslog()
+except Exception as _syslog_err:  # noqa: BLE001 — never block app boot
+    logger.warning("Syslog pipeline failed to start: %s", _syslog_err)
+
 # Cache control helper functions
 def add_cache_headers(response, cache_max_age=3600, is_static=False):
     """Add cache-control headers to response."""
