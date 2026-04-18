@@ -11,7 +11,7 @@
  * worth of UI, not a sub-app.
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Box,
@@ -20,10 +20,13 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Collapse,
   Container,
   Divider,
   FormControl,
   Grid,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -36,11 +39,15 @@ import {
   TableRow,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import SearchIcon from '@mui/icons-material/Search';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import SyslogAlertsWidget from '../components/SyslogAlertsWidget';
 import {
@@ -50,6 +57,7 @@ import {
 import SyslogAlertsGrouped from '../components/SyslogAlertsGrouped';
 import {
   useSyslogAlerts,
+  useSyslogIncident,
   useSyslogIncidents,
   useSyslogStats,
 } from '../hooks/useApiQueries';
@@ -157,6 +165,93 @@ function StatsStrip() {
   );
 }
 
+// ── Incident detail (inline expander for table rows) ─────────────────────
+
+function IncidentDetail({ incidentId }) {
+  const { data, isLoading, isError } = useSyslogIncident(incidentId);
+  if (isLoading) {
+    return <Box sx={{ p: 2 }}><CircularProgress size={18} /></Box>;
+  }
+  if (isError || !data) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Alert severity="error">Couldn't load incident details.</Alert>
+      </Box>
+    );
+  }
+  const incident = data.incident || {};
+  const events = Array.isArray(data.events) ? data.events : [];
+  return (
+    <Box sx={{ p: 2, bgcolor: 'action.hover' }}>
+      <Stack direction="row" spacing={3} sx={{ mb: 1.5, flexWrap: 'wrap' }}>
+        <Box>
+          <Typography variant="caption" color="text.secondary">Device</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            {incident.device_name || incident.device_serial || 'unknown'}
+          </Typography>
+        </Box>
+        {incident.client_mac && (
+          <Box>
+            <Typography variant="caption" color="text.secondary">Client MAC</Typography>
+            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+              {incident.client_mac}
+            </Typography>
+          </Box>
+        )}
+        <Box>
+          <Typography variant="caption" color="text.secondary">Signature</Typography>
+          <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+            {incident.cluster_signature}
+          </Typography>
+        </Box>
+      </Stack>
+      <Typography variant="subtitle2" sx={{ mb: 0.75 }}>
+        Recent events ({events.length} shown)
+      </Typography>
+      {events.length === 0 && (
+        <Typography variant="caption" color="text.secondary">
+          No raw events linked to this incident.
+        </Typography>
+      )}
+      {events.length > 0 && (
+        <TableContainer sx={{ maxHeight: 320 }}>
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ width: 170 }}>Time</TableCell>
+                <TableCell sx={{ width: 100 }}>Source</TableCell>
+                <TableCell>Message</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {events.map((e) => (
+                <TableRow key={e.id}>
+                  <TableCell>
+                    <Typography variant="caption">
+                      {formatTs(e.event_time || e.received_at)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip size="small" label={e.source || e.transport} variant="outlined" />
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                    >
+                      {e.message}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
+  );
+}
+
 // ── Incidents table ──────────────────────────────────────────────────────
 
 function IncidentsTable() {
@@ -164,6 +259,8 @@ function IncidentsTable() {
   const [orderBy, setOrderBy] = useState('anomaly_score');
   const [status, setStatus] = useState('');
   const [busyId, setBusyId] = useState(null);
+  const [search, setSearch] = useState('');
+  const [expandedId, setExpandedId] = useState(null);
 
   const { data, isLoading, isError } = useSyslogIncidents({
     orderBy,
@@ -171,7 +268,21 @@ function IncidentsTable() {
     limit: 100,
   });
 
-  const rows = data?.items ?? [];
+  // Client-side filter: match device name/serial, client MAC, or event code.
+  // Runs on the already-loaded page; for larger result sets we'd move this
+  // into the query params, but 100 rows is fine.
+  const allRows = data?.items ?? [];
+  const rows = search.trim()
+    ? allRows.filter((r) => {
+        const q = search.toLowerCase();
+        return (
+          (r.device_name || '').toLowerCase().includes(q) ||
+          (r.device_serial || '').toLowerCase().includes(q) ||
+          (r.client_mac || '').toLowerCase().includes(q) ||
+          (r.event_code || '').toLowerCase().includes(q)
+        );
+      })
+    : allRows;
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ['syslog-alerts'] });
@@ -187,10 +298,24 @@ function IncidentsTable() {
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2, flexWrap: 'wrap', rowGap: 1 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, flex: 1 }}>
             Incidents
           </Typography>
+          <TextField
+            size="small"
+            placeholder="Search device, client MAC, or event code…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ minWidth: 280 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
           <FormControl size="small" sx={{ minWidth: 160 }}>
             <InputLabel id="sort-label">Sort by</InputLabel>
             <Select
@@ -242,6 +367,7 @@ function IncidentsTable() {
             <Table size="small">
               <TableHead>
                 <TableRow>
+                  <TableCell sx={{ width: 40 }} />
                   <TableCell>Device</TableCell>
                   <TableCell>Event code</TableCell>
                   <TableCell align="right">Events</TableCell>
@@ -255,83 +381,107 @@ function IncidentsTable() {
               <TableBody>
                 {rows.map((r) => {
                   const disabled = busyId === r.id;
+                  const isExpanded = expandedId === r.id;
+                  const toggle = () => setExpandedId(isExpanded ? null : r.id);
                   return (
-                  <TableRow key={r.id} hover sx={{ opacity: r.status === 'resolved' ? 0.55 : 1 }}>
-                    <TableCell>{r.device_name || r.device_serial || <Typography component="span" variant="caption" color="text.secondary">unknown</Typography>}</TableCell>
-                    <TableCell>{r.event_code || <Typography component="span" variant="caption" color="text.secondary">—</Typography>}</TableCell>
-                    <TableCell align="right">{r.event_count}</TableCell>
-                    <TableCell>
-                      {r.severity != null ? (
-                        (() => {
-                          const band = severityBand(r.severity);
-                          return (
-                            <Tooltip title={severityTooltip(r.severity)}>
-                              <Chip size="small" label={band.label} color={band.color} />
-                            </Tooltip>
-                          );
-                        })()
-                      ) : '—'}
-                    </TableCell>
-                    <TableCell align="right">
-                      {r.anomaly_score != null ? (
-                        (() => {
-                          const band = anomalyBand(r.anomaly_score);
-                          return (
-                            <Tooltip title={anomalyTooltip(r.anomaly_score)}>
-                              <Chip size="small" label={band.label} color={band.color} />
-                            </Tooltip>
-                          );
-                        })()
-                      ) : '—'}
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption">
-                        {formatTs(r.first_seen)} → {formatTs(r.last_seen)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        size="small"
-                        label={r.status}
-                        color={r.status === 'open' ? 'warning' : r.status === 'resolved' ? 'success' : 'default'}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                        {r.status === 'open' && (
-                          <Button
+                    <React.Fragment key={r.id}>
+                      <TableRow
+                        hover
+                        sx={{
+                          opacity: r.status === 'resolved' ? 0.55 : 1,
+                          cursor: 'pointer',
+                          '& > *': { borderBottom: isExpanded ? 'unset' : undefined },
+                        }}
+                        onClick={toggle}
+                      >
+                        <TableCell>
+                          <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggle(); }}>
+                            {isExpanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+                          </IconButton>
+                        </TableCell>
+                        <TableCell>{r.device_name || r.device_serial || <Typography component="span" variant="caption" color="text.secondary">unknown</Typography>}</TableCell>
+                        <TableCell>{r.event_code || <Typography component="span" variant="caption" color="text.secondary">—</Typography>}</TableCell>
+                        <TableCell align="right">{r.event_count}</TableCell>
+                        <TableCell>
+                          {r.severity != null ? (
+                            (() => {
+                              const band = severityBand(r.severity);
+                              return (
+                                <Tooltip title={severityTooltip(r.severity)}>
+                                  <Chip size="small" label={band.label} color={band.color} />
+                                </Tooltip>
+                              );
+                            })()
+                          ) : '—'}
+                        </TableCell>
+                        <TableCell align="right">
+                          {r.anomaly_score != null ? (
+                            (() => {
+                              const band = anomalyBand(r.anomaly_score);
+                              return (
+                                <Tooltip title={anomalyTooltip(r.anomaly_score)}>
+                                  <Chip size="small" label={band.label} color={band.color} />
+                                </Tooltip>
+                              );
+                            })()
+                          ) : '—'}
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="caption">
+                            {formatTs(r.first_seen)} → {formatTs(r.last_seen)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
                             size="small"
-                            variant="text"
-                            onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'ack'))}
-                            disabled={disabled}
-                          >
-                            Ack
-                          </Button>
-                        )}
-                        {r.status !== 'resolved' && (
-                          <Button
-                            size="small"
-                            variant="text"
-                            color="success"
-                            onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'resolved'))}
-                            disabled={disabled}
-                          >
-                            Resolve
-                          </Button>
-                        )}
-                        <Button
-                          size="small"
-                          variant="text"
-                          color="error"
-                          onClick={() => actOn(r.id, () => syslogAPI.deleteIncident(r.id))}
-                          disabled={disabled}
-                        >
-                          Dismiss
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
+                            label={r.status}
+                            color={r.status === 'open' ? 'warning' : r.status === 'resolved' ? 'success' : 'default'}
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                          <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                            {r.status === 'open' && (
+                              <Button
+                                size="small"
+                                variant="text"
+                                onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'ack'))}
+                                disabled={disabled}
+                              >
+                                Ack
+                              </Button>
+                            )}
+                            {r.status !== 'resolved' && (
+                              <Button
+                                size="small"
+                                variant="text"
+                                color="success"
+                                onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'resolved'))}
+                                disabled={disabled}
+                              >
+                                Resolve
+                              </Button>
+                            )}
+                            <Button
+                              size="small"
+                              variant="text"
+                              color="error"
+                              onClick={() => actOn(r.id, () => syslogAPI.deleteIncident(r.id))}
+                              disabled={disabled}
+                            >
+                              Dismiss
+                            </Button>
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell colSpan={9} sx={{ p: 0, borderBottom: isExpanded ? undefined : 'none' }}>
+                          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                            {isExpanded && <IncidentDetail incidentId={r.id} />}
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
                   );
                 })}
               </TableBody>
