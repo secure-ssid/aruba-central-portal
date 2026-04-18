@@ -11,6 +11,7 @@ Phase 1 scope: ingest + parse + store + list API. No clustering yet.
 from .anomaly import AnomalyScore, score_incident
 from .clusterer import ClusterResult, cluster_once
 from .parser import ParsedEvent, parse_syslog
+from .reviewer_agent import ReviewResult, review_alert
 from .server import SyslogServer, get_store, start_default_server
 from .storage import DEFAULT_DB_PATH, SyslogStore
 from .writer_agent import fallback_summary, write_alert
@@ -29,4 +30,6 @@ __all__ = [
     "AnomalyScore",
     "write_alert",
     "fallback_summary",
+    "review_alert",
+    "ReviewResult",
 ]
