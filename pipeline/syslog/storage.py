@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS events (
     received_at     TEXT    NOT NULL,      -- ISO8601 UTC, server-side ingest time
     event_time      TEXT,                  -- ISO8601 UTC from the syslog timestamp (may be null)
     source_ip       TEXT    NOT NULL,
-    transport       TEXT    NOT NULL,      -- 'udp' | 'tcp'
+    transport       TEXT    NOT NULL,      -- 'udp' | 'tcp' | 'api'
+    source          TEXT    DEFAULT 'udp', -- 'udp' | 'tcp' | 'central' | 'test'
     facility        INTEGER,
     severity        INTEGER,               -- 0 emerg .. 7 debug (RFC 5424)
     hostname        TEXT,
@@ -62,6 +63,11 @@ CREATE INDEX IF NOT EXISTS idx_events_received_at ON events(received_at);
 CREATE INDEX IF NOT EXISTS idx_events_device_serial ON events(device_serial);
 CREATE INDEX IF NOT EXISTS idx_events_severity ON events(severity);
 CREATE INDEX IF NOT EXISTS idx_events_event_code ON events(event_code);
+-- Phase 8: Central Events polling overlaps — use the API event id stored
+-- in `msg_id` + `source` for idempotent re-ingest. NULL msg_ids are fine
+-- here because SQLite treats each NULL as distinct in UNIQUE indexes.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_events_source_msgid
+    ON events(source, msg_id) WHERE msg_id IS NOT NULL;
 
 -- Phase 2+ schema reserved now so migrations aren't needed later.
 CREATE TABLE IF NOT EXISTS incidents (
@@ -106,6 +112,10 @@ CREATE TABLE IF NOT EXISTS alerts (
 _MIGRATIONS = [
     "ALTER TABLE alerts ADD COLUMN troubleshooting TEXT",
     "ALTER TABLE incidents ADD COLUMN device_name TEXT",
+    # Phase 8: events can come from LAN syslog or the Aruba Central API.
+    # 'udp' | 'tcp' | 'central' | 'test'. Back-filled to 'udp' for legacy
+    # rows via the default; new rows will carry their actual source.
+    "ALTER TABLE events ADD COLUMN source TEXT DEFAULT 'udp'",
 ]
 
 
@@ -129,10 +139,14 @@ class StoredEvent:
     message: str
     raw: str
     structured_data: dict[str, Any] | None
+    source: str = "udp"
 
     @classmethod
     def from_row(cls, row: sqlite3.Row) -> StoredEvent:
         sd = row["structured_data"]
+        # `source` is a phase-8 column; keys() membership guard lets the
+        # dataclass load cleanly from legacy rows that predate the migration.
+        keys = row.keys() if hasattr(row, "keys") else ()
         return cls(
             id=row["id"],
             received_at=row["received_at"],
@@ -151,6 +165,7 @@ class StoredEvent:
             message=row["message"],
             raw=row["raw"],
             structured_data=json.loads(sd) if sd else None,
+            source=row["source"] if "source" in keys else "udp",
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -171,6 +186,7 @@ class StoredEvent:
             "event_code": self.event_code,
             "message": self.message,
             "structured_data": self.structured_data,
+            "source": self.source,
         }
 
 
@@ -231,22 +247,27 @@ class SyslogStore:
         message: str,
         raw: str,
         structured_data: dict[str, Any] | None,
+        source: str = "udp",
     ) -> int:
         sd_json = json.dumps(structured_data) if structured_data else None
         with self._write_lock:
+            # INSERT OR IGNORE so a duplicate (source, msg_id) — common when
+            # the Central poller re-scans an overlapping window — silently
+            # skips without blowing up the whole batch.
             cur = self._conn.execute(
                 """
-                INSERT INTO events (
-                    received_at, event_time, source_ip, transport,
+                INSERT OR IGNORE INTO events (
+                    received_at, event_time, source_ip, transport, source,
                     facility, severity, hostname, app_name, proc_id, msg_id,
                     device_serial, device_name, event_code, message, raw, structured_data
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
                 (
                     _iso(received_at),
                     _iso(event_time) if event_time else None,
                     source_ip,
                     transport,
+                    source,
                     facility,
                     severity,
                     hostname,
@@ -261,7 +282,27 @@ class SyslogStore:
                     sd_json,
                 ),
             )
+            # If the INSERT was ignored (duplicate), look up the existing id.
+            if cur.rowcount == 0 and msg_id is not None:
+                existing = self._conn.execute(
+                    "SELECT id FROM events WHERE source = ? AND msg_id = ?",
+                    (source, msg_id),
+                ).fetchone()
+                if existing:
+                    return int(existing["id"])
             return int(cur.lastrowid)
+
+    def event_exists_by_source_msgid(self, source: str, msg_id: str | None) -> bool:
+        """Used by the Central Events poller to tell insert-vs-dedup apart
+        without relying on cursor.rowcount (which lies on INSERT OR IGNORE
+        on some SQLite builds)."""
+        if msg_id is None:
+            return False
+        row = self._conn.execute(
+            "SELECT 1 FROM events WHERE source = ? AND msg_id = ? LIMIT 1",
+            (source, msg_id),
+        ).fetchone()
+        return row is not None
 
     # ─────────────────────── reads ────────────────────────
 
