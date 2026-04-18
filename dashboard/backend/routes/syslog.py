@@ -87,6 +87,46 @@ def list_events():
     })
 
 
+@syslog_bp.route("/events/grouped", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def list_events_grouped():
+    """Roll up raw events by fingerprint — one row per unique
+    (device, code, normalized-message) with an occurrences counter.
+
+    Query params: since_hours, severity_max, device_key, limit.
+    """
+    args = request.args
+    try:
+        limit = min(int(args.get("limit", 200)), 500)
+    except ValueError:
+        return jsonify({"error": "limit must be integer"}), 400
+
+    since = None
+    if "since_hours" in args:
+        try:
+            since = datetime.now(timezone.utc) - timedelta(hours=float(args["since_hours"]))
+        except ValueError:
+            return jsonify({"error": "since_hours must be numeric"}), 400
+
+    severity_max = None
+    if "severity_max" in args:
+        try:
+            severity_max = int(args["severity_max"])
+        except ValueError:
+            return jsonify({"error": "severity_max must be integer 0..7"}), 400
+
+    return jsonify({
+        "items": get_store().grouped_events(
+            since=since,
+            severity_max=severity_max,
+            device_key=args.get("device_key"),
+            limit=limit,
+        ),
+        "limit": limit,
+    })
+
+
 @syslog_bp.route("/stats", methods=["GET"])
 @require_session
 @rate_limit(max_requests=60, window_seconds=60)

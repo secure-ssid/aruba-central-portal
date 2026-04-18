@@ -139,6 +139,16 @@ _MIGRATIONS = [
     # roll up "same client bouncing off the same AP" as one group
     # without a second query per row.
     "ALTER TABLE incidents ADD COLUMN client_mac TEXT",
+    # Phase 13: fingerprint = sha1(device_key, event_code, normalized_message).
+    # Identical log lines repeating dozens of times collapse under the same
+    # fingerprint. Used by the grouped-events UI to show one row per
+    # distinct story with a count, and by the clusterer's LLM gate to
+    # skip re-summarizing when only duplicate content has arrived.
+    "ALTER TABLE events ADD COLUMN fingerprint TEXT",
+    # Remember the fingerprint set an incident's alert was written for.
+    # When the next tick adds only duplicate-fingerprint events, we
+    # can reuse the existing summary — no LLM call needed.
+    "ALTER TABLE alerts ADD COLUMN fingerprints_hash TEXT",
 ]
 
 # Indexes that depend on migrated columns — must run AFTER _MIGRATIONS.
@@ -148,6 +158,8 @@ _MIGRATIONS = [
 _POST_MIGRATION_INDEXES = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_source_msgid "
     "ON events(source, msg_id) WHERE msg_id IS NOT NULL",
+    # Phase 13: grouped-events dashboard query plans over this.
+    "CREATE INDEX IF NOT EXISTS idx_events_fingerprint ON events(fingerprint)",
 ]
 
 
@@ -172,6 +184,7 @@ class StoredEvent:
     raw: str
     structured_data: dict[str, Any] | None
     source: str = "udp"
+    fingerprint: str | None = None
 
     @classmethod
     def from_row(cls, row: sqlite3.Row) -> StoredEvent:
@@ -198,6 +211,7 @@ class StoredEvent:
             raw=row["raw"],
             structured_data=json.loads(sd) if sd else None,
             source=row["source"] if "source" in keys else "udp",
+            fingerprint=row["fingerprint"] if "fingerprint" in keys else None,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -285,6 +299,15 @@ class SyslogStore:
         source: str = "udp",
     ) -> int:
         sd_json = json.dumps(structured_data) if structured_data else None
+        # Compute the fingerprint once at insert time so downstream queries
+        # and the dashboard rollup are a single GROUP BY instead of a full
+        # scan. Normalized so identical content collapses across repeats.
+        from .fingerprint import fingerprint as _fp  # local import avoids circular
+        fp = _fp(
+            device_serial or device_name or hostname or source_ip,
+            event_code,
+            message,
+        )
         with self._write_lock:
             # INSERT OR IGNORE so a duplicate (source, msg_id) — common when
             # the Central poller re-scans an overlapping window — silently
@@ -294,8 +317,9 @@ class SyslogStore:
                 INSERT OR IGNORE INTO events (
                     received_at, event_time, source_ip, transport, source,
                     facility, severity, hostname, app_name, proc_id, msg_id,
-                    device_serial, device_name, event_code, message, raw, structured_data
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    device_serial, device_name, event_code, message, raw,
+                    structured_data, fingerprint
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
                 (
                     _iso(received_at),
@@ -315,6 +339,7 @@ class SyslogStore:
                     message,
                     raw,
                     sd_json,
+                    fp,
                 ),
             )
             # If the INSERT was ignored (duplicate), look up the existing id.
@@ -374,6 +399,52 @@ class SyslogStore:
 
         cur = self._conn.execute(" ".join(sql), params)
         return [StoredEvent.from_row(r) for r in cur.fetchall()]
+
+    def grouped_events(
+        self,
+        *,
+        since: datetime | None = None,
+        severity_max: int | None = None,
+        device_key: str | None = None,
+        limit: int = 200,
+    ) -> list[dict[str, Any]]:
+        """Return events rolled up by fingerprint (device + code + normalized
+        message). Each row carries a count, first/last seen, a sample
+        message, and the most-severe severity observed.
+
+        Powers the "grouped events" tab — turns 500 identical MIC-failure
+        lines into 1 row labelled "× 500".
+        """
+        sql = [
+            "SELECT fingerprint,",
+            "       COUNT(*) AS occurrences,",
+            "       MIN(COALESCE(event_time, received_at)) AS first_seen,",
+            "       MAX(COALESCE(event_time, received_at)) AS last_seen,",
+            "       MIN(severity) AS worst_severity,",
+            "       MAX(event_code) AS event_code,",
+            "       MAX(device_serial) AS device_serial,",
+            "       MAX(device_name) AS device_name,",
+            "       MAX(hostname) AS hostname,",
+            "       MAX(source) AS source,",
+            "       MAX(message) AS sample_message",
+            "FROM events WHERE fingerprint IS NOT NULL",
+        ]
+        params: list[Any] = []
+        if since:
+            sql.append("AND received_at >= ?")
+            params.append(_iso(since))
+        if severity_max is not None:
+            sql.append("AND severity <= ?")
+            params.append(severity_max)
+        if device_key:
+            sql.append("AND (device_serial = ? OR device_name = ? OR hostname = ?)")
+            params.extend([device_key, device_key, device_key])
+        sql.append("GROUP BY fingerprint")
+        sql.append("ORDER BY occurrences DESC, last_seen DESC")
+        sql.append("LIMIT ?")
+        params.append(int(limit))
+        cur = self._conn.execute(" ".join(sql), params)
+        return [dict(r) for r in cur.fetchall()]
 
     def count_events(
         self,
@@ -718,6 +789,44 @@ class SyslogStore:
         params.extend([int(limit), int(offset)])
         cur = self._conn.execute(" ".join(sql), params)
         return [_decode_alert_row(r) for r in cur.fetchall()]
+
+    def incident_fingerprints_hash(self, incident_id: int) -> str:
+        """Hash of the sorted, distinct fingerprints covered by this
+        incident. Used by the clusterer to tell "same content" (skip
+        the LLM) apart from "new content" (re-run writer + reviewer).
+        """
+        cur = self._conn.execute(
+            """
+            SELECT DISTINCT e.fingerprint
+            FROM events e
+            JOIN incident_events ie ON ie.event_id = e.id
+            WHERE ie.incident_id = ? AND e.fingerprint IS NOT NULL
+            ORDER BY e.fingerprint
+            """,
+            (incident_id,),
+        )
+        fps = [r["fingerprint"] for r in cur.fetchall()]
+        if not fps:
+            return ""
+        import hashlib
+        return hashlib.sha1("|".join(fps).encode("utf-8")).hexdigest()[:16]
+
+    def alert_fingerprints_hash(self, incident_id: int) -> str | None:
+        """Return the last fingerprints_hash we wrote into the alert row
+        for this incident, or None if no alert yet."""
+        row = self._conn.execute(
+            "SELECT fingerprints_hash FROM alerts WHERE incident_id = ?",
+            (incident_id,),
+        ).fetchone()
+        return row["fingerprints_hash"] if row else None
+
+    def set_alert_fingerprints_hash(self, incident_id: int, fp_hash: str) -> None:
+        """Record the fingerprint set the current alert was written for."""
+        with self._write_lock:
+            self._conn.execute(
+                "UPDATE alerts SET fingerprints_hash = ? WHERE incident_id = ?",
+                (fp_hash, incident_id),
+            )
 
     def update_alert_review(
         self,

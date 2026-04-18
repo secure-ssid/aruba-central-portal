@@ -264,10 +264,14 @@ def test_clusterer_uses_fallback_when_llm_unavailable(store):
 
 
 def test_alert_is_upserted_not_duplicated(store):
-    """Re-running the clusterer on a growing incident must overwrite, not append."""
+    """Growing an incident with *novel* content re-summarizes and
+    overwrites (single row). Uses two codes in the same WPA_HANDSHAKE
+    family so clustering stays as one incident; the different codes
+    produce different fingerprints so the LLM dedup doesn't skip the
+    second pass."""
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     for i in range(25):
-        _ingest(store, when=t + timedelta(seconds=i))
+        _ingest(store, when=t + timedelta(seconds=i), code="132094")
 
     with patch(
         "pipeline.syslog.clusterer.write_alert",
@@ -275,9 +279,9 @@ def test_alert_is_upserted_not_duplicated(store):
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
 
-    # More events, same bucket.
+    # Different code in same family → same incident, different fingerprint.
     for i in range(25, 40):
-        _ingest(store, when=t + timedelta(seconds=i))
+        _ingest(store, when=t + timedelta(seconds=i), code="520013")
 
     with patch(
         "pipeline.syslog.clusterer.write_alert",
@@ -285,9 +289,40 @@ def test_alert_is_upserted_not_duplicated(store):
     ):
         cluster_once(store, now=t + timedelta(seconds=45))
 
+    incidents = store.list_incidents()
+    assert len(incidents) == 1, f"expected 1 incident (same family), got {incidents}"
     alerts = store.list_alerts()
     assert len(alerts) == 1
     assert alerts[0]["summary"] == "second"
+
+
+def test_writer_skipped_when_fingerprints_unchanged(store):
+    """Phase 13 dedup: if the next cluster tick brings only events with
+    fingerprints already covered, the writer is NOT called — saves LLM
+    quota when a bad client emits the same line thousands of times."""
+    t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
+    for i in range(25):
+        _ingest(store, when=t + timedelta(seconds=i), code="STORM")
+
+    with patch(
+        "pipeline.syslog.clusterer.write_alert",
+        return_value=_wo("first summary", ["a"]),
+    ) as first:
+        cluster_once(store, now=t + timedelta(seconds=30))
+    assert first.call_count == 1
+
+    # Add more identical events — same code, same default message.
+    for i in range(25, 40):
+        _ingest(store, when=t + timedelta(seconds=i), code="STORM")
+
+    with patch("pipeline.syslog.clusterer.write_alert") as second:
+        cluster_once(store, now=t + timedelta(seconds=45))
+    assert second.call_count == 0, "writer should be skipped when fingerprints unchanged"
+
+    # The original summary is preserved.
+    alerts = store.list_alerts()
+    assert len(alerts) == 1
+    assert alerts[0]["summary"] == "first summary"
 
 
 # ──────────────── reviewer stub (approval flag persistence) ────────────
