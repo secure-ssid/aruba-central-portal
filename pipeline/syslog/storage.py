@@ -357,6 +357,155 @@ class SyslogStore:
             logger.info("Pruned %d syslog events older than %d days", deleted, days)
         return deleted
 
+    # ─────────────────────── incidents (phase 2) ──────────────
+
+    def unclustered_events(
+        self,
+        *,
+        since: datetime | None = None,
+        limit: int = 1000,
+    ) -> list[StoredEvent]:
+        """Events not yet attached to any incident.
+
+        Phase 2 clusterer reads this each tick, groups, and writes
+        incident_events rows so the same event isn't reprocessed next tick.
+        """
+        sql = [
+            "SELECT e.* FROM events e "
+            "LEFT JOIN incident_events ie ON ie.event_id = e.id "
+            "WHERE ie.event_id IS NULL",
+        ]
+        params: list[Any] = []
+        if since:
+            sql.append("AND e.received_at >= ?")
+            params.append(_iso(since))
+        sql.append("ORDER BY e.id ASC LIMIT ?")
+        params.append(int(limit))
+        cur = self._conn.execute(" ".join(sql), params)
+        return [StoredEvent.from_row(r) for r in cur.fetchall()]
+
+    def upsert_incident(
+        self,
+        *,
+        cluster_signature: str,
+        device_serial: str | None,
+        event_code: str | None,
+        severity: int | None,
+        first_seen: datetime,
+        last_seen: datetime,
+        event_ids: list[int],
+    ) -> int:
+        """Insert a new incident or extend an existing one with more events.
+
+        Returns the incident id. The caller supplies `event_ids` — they are
+        linked via `incident_events` so the same event is never double-counted
+        by later clusterer ticks.
+        """
+        if not event_ids:
+            raise ValueError("event_ids must be non-empty")
+        with self._write_lock:
+            row = self._conn.execute(
+                "SELECT id, first_seen, last_seen, event_count, severity "
+                "FROM incidents WHERE cluster_signature = ?",
+                (cluster_signature,),
+            ).fetchone()
+
+            if row is None:
+                cur = self._conn.execute(
+                    "INSERT INTO incidents ("
+                    "  first_seen, last_seen, device_serial, event_code, "
+                    "  severity, event_count, cluster_signature, status"
+                    ") VALUES (?,?,?,?,?,?,?, 'open')",
+                    (
+                        _iso(first_seen),
+                        _iso(last_seen),
+                        device_serial,
+                        event_code,
+                        severity,
+                        len(event_ids),
+                        cluster_signature,
+                    ),
+                )
+                incident_id = int(cur.lastrowid)
+            else:
+                incident_id = int(row["id"])
+                new_first = min(row["first_seen"], _iso(first_seen))
+                new_last = max(row["last_seen"], _iso(last_seen))
+                # Lowest severity number wins (emerg=0 beats debug=7).
+                cur_sev = row["severity"]
+                new_sev = severity if cur_sev is None else (
+                    cur_sev if severity is None else min(cur_sev, severity)
+                )
+                self._conn.execute(
+                    "UPDATE incidents SET first_seen=?, last_seen=?, "
+                    "event_count = event_count + ?, severity=? "
+                    "WHERE id=?",
+                    (new_first, new_last, len(event_ids), new_sev, incident_id),
+                )
+
+            self._conn.executemany(
+                "INSERT OR IGNORE INTO incident_events (incident_id, event_id) VALUES (?,?)",
+                [(incident_id, eid) for eid in event_ids],
+            )
+            return incident_id
+
+    def list_incidents(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        status: str | None = None,
+        since: datetime | None = None,
+        severity_max: int | None = None,
+    ) -> list[dict[str, Any]]:
+        sql = ["SELECT * FROM incidents WHERE 1=1"]
+        params: list[Any] = []
+        if status:
+            sql.append("AND status = ?")
+            params.append(status)
+        if since:
+            sql.append("AND last_seen >= ?")
+            params.append(_iso(since))
+        if severity_max is not None:
+            sql.append("AND (severity IS NULL OR severity <= ?)")
+            params.append(severity_max)
+        sql.append("ORDER BY last_seen DESC LIMIT ? OFFSET ?")
+        params.extend([int(limit), int(offset)])
+        cur = self._conn.execute(" ".join(sql), params)
+        return [dict(r) for r in cur.fetchall()]
+
+    def get_incident(self, incident_id: int) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT * FROM incidents WHERE id = ?", (incident_id,)
+        ).fetchone()
+        return dict(row) if row else None
+
+    def get_incident_by_signature(self, signature: str) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT * FROM incidents WHERE cluster_signature = ?", (signature,)
+        ).fetchone()
+        return dict(row) if row else None
+
+    def incident_events(self, incident_id: int, *, limit: int = 200) -> list[StoredEvent]:
+        cur = self._conn.execute(
+            "SELECT e.* FROM events e "
+            "JOIN incident_events ie ON ie.event_id = e.id "
+            "WHERE ie.incident_id = ? "
+            "ORDER BY e.id ASC LIMIT ?",
+            (incident_id, int(limit)),
+        )
+        return [StoredEvent.from_row(r) for r in cur.fetchall()]
+
+    def update_incident_status(self, incident_id: int, status: str) -> bool:
+        if status not in ("open", "ack", "resolved"):
+            raise ValueError(f"invalid status: {status}")
+        with self._write_lock:
+            cur = self._conn.execute(
+                "UPDATE incidents SET status = ? WHERE id = ?",
+                (status, incident_id),
+            )
+        return (cur.rowcount or 0) > 0
+
 
 def _iso(dt: datetime) -> str:
     """Normalize to ISO8601 UTC with trailing Z, microsecond precision."""

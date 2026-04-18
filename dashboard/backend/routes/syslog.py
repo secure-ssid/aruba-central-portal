@@ -3,10 +3,10 @@ Syslog Blueprint — local-network syslog ingest browser.
 
 This does NOT talk to Aruba Central. Devices on the LAN (configured via
 Central to log to this container's IP) send syslog here; these routes
-expose the stored events to the dashboard.
+expose the stored events + derived incidents to the dashboard.
 
-Phase 1: read-only listing, stats, and a test-ingest endpoint for local
-smoke tests. Phases 2+ will add /incidents and /alerts.
+Phase 1: events, stats, test-ingest.
+Phase 2: incidents (rule-clustered groups of events) + on-demand run.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, jsonify, request
 
 from pipeline.syslog import get_store  # type: ignore
+from pipeline.syslog.clusterer import cluster_once  # type: ignore
 from pipeline.syslog.parser import parse_syslog  # type: ignore
 
 from .helpers import rate_limit, require_session
@@ -133,3 +134,88 @@ def test_ingest():
         structured_data=parsed.structured_data,
     )
     return jsonify({"id": event_id, "format": parsed.format})
+
+
+# ─────────────────────── incidents (phase 2) ──────────────────
+
+@syslog_bp.route("/incidents", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def list_incidents():
+    """List clustered incidents. Filters: status, since_hours, severity_max."""
+    args = request.args
+    try:
+        limit = min(int(args.get("limit", 50)), 200)
+        offset = max(int(args.get("offset", 0)), 0)
+    except ValueError:
+        return jsonify({"error": "limit/offset must be integers"}), 400
+
+    since = None
+    if "since_hours" in args:
+        try:
+            since = datetime.now(timezone.utc) - timedelta(hours=float(args["since_hours"]))
+        except ValueError:
+            return jsonify({"error": "since_hours must be numeric"}), 400
+
+    severity_max = None
+    if "severity_max" in args:
+        try:
+            severity_max = int(args["severity_max"])
+        except ValueError:
+            return jsonify({"error": "severity_max must be integer 0..7"}), 400
+
+    status = args.get("status")
+    if status and status not in ("open", "ack", "resolved"):
+        return jsonify({"error": "status must be open|ack|resolved"}), 400
+
+    return jsonify({
+        "items": get_store().list_incidents(
+            limit=limit, offset=offset, status=status,
+            since=since, severity_max=severity_max,
+        ),
+        "limit": limit,
+        "offset": offset,
+    })
+
+
+@syslog_bp.route("/incidents/<int:incident_id>", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def get_incident(incident_id: int):
+    """Single incident + its constituent events."""
+    store = get_store()
+    incident = store.get_incident(incident_id)
+    if not incident:
+        return jsonify({"error": "incident not found"}), 404
+    return jsonify({
+        "incident": incident,
+        "events": [e.to_dict() for e in store.incident_events(incident_id)],
+    })
+
+
+@syslog_bp.route("/incidents/<int:incident_id>/status", methods=["POST"])
+@require_session
+@rate_limit(max_requests=60, window_seconds=60)
+def set_incident_status(incident_id: int):
+    """Transition an incident: open → ack → resolved."""
+    body = request.get_json(silent=True) or {}
+    status = body.get("status")
+    if status not in ("open", "ack", "resolved"):
+        return jsonify({"error": "status must be open|ack|resolved"}), 400
+    ok = get_store().update_incident_status(incident_id, status)
+    if not ok:
+        return jsonify({"error": "incident not found"}), 404
+    return jsonify({"id": incident_id, "status": status})
+
+
+@syslog_bp.route("/cluster/run", methods=["POST"])
+@require_session
+@rate_limit(max_requests=6, window_seconds=60)
+def run_cluster_now():
+    """Force a clusterer tick. Useful for tests and the dashboard 'refresh'."""
+    result = cluster_once(get_store())
+    return jsonify({
+        "processed": result.processed,
+        "incidents_touched": result.incidents_touched,
+        "new_incidents": result.new_incidents,
+    })
