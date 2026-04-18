@@ -40,27 +40,10 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useSyslogAlerts } from '../hooks/useApiQueries';
 import { AlertRow as InlineAlertRow } from './SyslogAlertRow';
-
-// Lightweight display helpers — just for the group header row.
-const SEVERITY_LABEL = {
-  0: 'emerg', 1: 'alert', 2: 'crit', 3: 'error',
-  4: 'warn', 5: 'notice', 6: 'info', 7: 'debug',
-};
-
-function severityColor(sev) {
-  if (sev == null) return 'default';
-  if (sev <= 3) return 'error';
-  if (sev === 4) return 'warning';
-  if (sev === 5) return 'info';
-  return 'default';
-}
-
-function anomalyColor(score) {
-  const n = Number(score) || 0;
-  if (n >= 5) return 'error';
-  if (n >= 2) return 'warning';
-  return 'default';
-}
+import {
+  severityBand, severityTooltip,
+  anomalyBand, anomalyTooltip,
+} from './alertLabels';
 
 function formatTs(iso) {
   if (!iso) return '';
@@ -165,20 +148,22 @@ function GroupRow({ group, onChanged }) {
 
           <Stack direction="row" spacing={0.75} sx={{ mt: 0.5, flexWrap: 'wrap', gap: 0.5 }}>
             <Chip size="small" label={`${group.totalEvents} events`} variant="outlined" />
-            {group.worstSeverity != null && (
-              <Chip
-                size="small"
-                label={`worst: ${SEVERITY_LABEL[group.worstSeverity] ?? `sev${group.worstSeverity}`}`}
-                color={severityColor(group.worstSeverity)}
-              />
-            )}
-            {group.worstAnomaly > 0 && (
-              <Chip
-                size="small"
-                label={`anomaly ${group.worstAnomaly.toFixed(1)}`}
-                color={anomalyColor(group.worstAnomaly)}
-              />
-            )}
+            {group.worstSeverity != null && (() => {
+              const band = severityBand(group.worstSeverity);
+              return (
+                <Tooltip title={`Worst severity in this group — ${severityTooltip(group.worstSeverity)}`}>
+                  <Chip size="small" label={`worst: ${band.label}`} color={band.color} />
+                </Tooltip>
+              );
+            })()}
+            {group.worstAnomaly > 0 && (() => {
+              const band = anomalyBand(group.worstAnomaly);
+              return (
+                <Tooltip title={anomalyTooltip(group.worstAnomaly)}>
+                  <Chip size="small" label={band.label} color={band.color} />
+                </Tooltip>
+              );
+            })()}
             {group.earliest && group.latest && (
               <Chip
                 size="small"
