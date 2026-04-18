@@ -5,6 +5,9 @@
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen)](docs/project/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue)](DOCKER_DEPLOYMENT.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
+[![Flask](https://img.shields.io/badge/flask-backend-black.svg)](https://flask.palletsprojects.com/)
 
 ## New Here? **[Start Here](START_HERE.md)**
 
