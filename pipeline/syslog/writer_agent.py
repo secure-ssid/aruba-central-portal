@@ -106,31 +106,48 @@ def _build_prompt(incident: dict, events: list[Any], *, max_event_samples: int =
 def _parse_output(text: str) -> tuple[str, list[str]]:
     """Pull {summary, troubleshooting} out of the LLM text.
 
-    Falls back gracefully: malformed JSON → treat the whole response as
-    the summary so the dashboard still has something useful to show.
+    Robust to two common LLM habits that defeated the earlier version:
+    - Wrapping JSON in ```json ... ``` fences
+    - Multi-line JSON where the first brace-to-last-brace span is well-formed
+      but a lazy `\\{.*\\}` would also match nested fragments
+
+    Falls back to returning the *cleaned* raw text as summary (never the
+    raw JSON envelope) if we genuinely can't parse anything.
     """
-    m = _JSON_OBJECT_RE.search(text or "")
-    if not m:
-        return (text or "").strip(), []
-    try:
-        obj = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return (text or "").strip(), []
-    if not isinstance(obj, dict):
-        return (text or "").strip(), []
+    raw = (text or "").strip()
+    if not raw:
+        return "", []
 
-    summary = str(obj.get("summary", "")).strip()
-    ts_raw = obj.get("troubleshooting", [])
-    troubleshooting: list[str] = []
-    if isinstance(ts_raw, list):
-        troubleshooting = [str(s).strip() for s in ts_raw if str(s).strip()]
-    elif isinstance(ts_raw, str):
-        # Some models return a newline-delimited string despite instructions.
-        troubleshooting = [s.strip(" -*•") for s in ts_raw.splitlines() if s.strip()]
+    # 1. Strip ```json ... ``` and ``` ... ``` fences wholesale.
+    stripped = re.sub(r"^```(?:json)?\s*", "", raw)
+    stripped = re.sub(r"\s*```$", "", stripped).strip()
 
-    if not summary:
-        summary = (text or "").strip()
-    return summary, troubleshooting[:8]  # guardrail against runaway lists
+    # 2. Greedy first-brace to last-brace (re.DOTALL) — works for
+    #    multi-line JSON with nested quotes/escapes.
+    candidate: str | None = None
+    if "{" in stripped and "}" in stripped:
+        candidate = stripped[stripped.index("{") : stripped.rindex("}") + 1]
+
+    if candidate:
+        try:
+            obj = json.loads(candidate)
+        except json.JSONDecodeError:
+            obj = None
+        if isinstance(obj, dict):
+            summary = str(obj.get("summary", "")).strip()
+            ts_raw = obj.get("troubleshooting", [])
+            troubleshooting: list[str] = []
+            if isinstance(ts_raw, list):
+                troubleshooting = [str(s).strip() for s in ts_raw if str(s).strip()]
+            elif isinstance(ts_raw, str):
+                troubleshooting = [s.strip(" -*•") for s in ts_raw.splitlines() if s.strip()]
+            if summary:
+                return summary, troubleshooting[:8]
+
+    # 3. Fallback: return the *stripped* text (no fences) and no steps.
+    #    Never leak the raw JSON envelope into the summary column.
+    fallback = stripped if not stripped.startswith("{") else raw
+    return fallback, []
 
 
 def write_alert(

@@ -383,8 +383,8 @@ function SyslogPage() {
       <StatsStrip />
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-        <Tab label="Approved alerts" />
         <Tab label="Pending review" />
+        <Tab label="Approved alerts" />
         <Tab label="All incidents" />
       </Tabs>
 
@@ -392,10 +392,9 @@ function SyslogPage() {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SyslogAlertsWidget
-              title="Approved alerts (24h)"
-              approvedOnly
+              title="Pending review"
+              approvedOnly={false}
               limit={50}
-              sinceHours={24}
               showLink={false}
             />
           </Grid>
@@ -406,9 +405,10 @@ function SyslogPage() {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SyslogAlertsWidget
-              title="Pending review"
-              approvedOnly={false}
+              title="Approved alerts (24h)"
+              approvedOnly
               limit={50}
+              sinceHours={24}
               showLink={false}
             />
           </Grid>

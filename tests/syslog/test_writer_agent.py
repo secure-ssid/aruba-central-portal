@@ -129,6 +129,32 @@ def test_parse_output_tolerates_json_fences():
     assert ts == ["a", "b"]
 
 
+def test_parse_output_strips_leading_and_trailing_fences():
+    """Regression: LLM wraps the whole response in ```json...``` — previous
+    parser leaked the fenced envelope into the summary column."""
+    text = '```json\n{"summary": "real summary", "troubleshooting": ["x"]}\n```'
+    s, ts = _parse_output(text)
+    assert s == "real summary"
+    assert ts == ["x"]
+    # Critically: the raw JSON string never appears in the summary.
+    assert '"summary"' not in s
+    assert not s.startswith("```")
+
+
+def test_parse_output_multiline_json_with_nested_quotes():
+    """Gemini often emits pretty-printed JSON with embedded quotes inside
+    the summary. The first-brace / last-brace span must still parse."""
+    text = (
+        '{\n'
+        '  "summary": "Device \\"AP-1\\" saw 12 events.",\n'
+        '  "troubleshooting": ["check uplink", "inspect logs"]\n'
+        '}'
+    )
+    s, ts = _parse_output(text)
+    assert 'AP-1' in s and '"' in s  # unescaped quote preserved
+    assert ts == ["check uplink", "inspect logs"]
+
+
 def test_parse_output_accepts_newline_delimited_troubleshooting():
     text = '{"summary":"x","troubleshooting":"- step a\\n- step b"}'
     s, ts = _parse_output(text)
