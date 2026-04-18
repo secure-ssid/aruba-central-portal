@@ -36,12 +36,17 @@ import {
   TableRow,
   Tab,
   Tabs,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 import SyslogAlertsWidget from '../components/SyslogAlertsWidget';
+import {
+  severityBand, severityTooltip,
+  anomalyBand, anomalyTooltip,
+} from '../components/alertLabels';
 import SyslogAlertsGrouped from '../components/SyslogAlertsGrouped';
 import {
   useSyslogAlerts,
@@ -221,9 +226,15 @@ function IncidentsTable() {
           <Alert severity="error">Failed to load incidents.</Alert>
         )}
         {!isLoading && rows.length === 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-            No incidents yet.
-          </Typography>
+          <Box sx={{ py: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+              No incidents in the current window.
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              That's normal for a quiet network. If you expected activity,
+              confirm devices are sending logs to this server's IP.
+            </Typography>
+          </Box>
         )}
 
         {rows.length > 0 && (
@@ -251,20 +262,26 @@ function IncidentsTable() {
                     <TableCell align="right">{r.event_count}</TableCell>
                     <TableCell>
                       {r.severity != null ? (
-                        <Chip
-                          size="small"
-                          label={SEVERITY_LABEL[r.severity] ?? `sev${r.severity}`}
-                          color={severityColor(r.severity)}
-                        />
+                        (() => {
+                          const band = severityBand(r.severity);
+                          return (
+                            <Tooltip title={severityTooltip(r.severity)}>
+                              <Chip size="small" label={band.label} color={band.color} />
+                            </Tooltip>
+                          );
+                        })()
                       ) : '—'}
                     </TableCell>
                     <TableCell align="right">
                       {r.anomaly_score != null ? (
-                        <Chip
-                          size="small"
-                          label={Number(r.anomaly_score).toFixed(1)}
-                          color={anomalyColor(r.anomaly_score)}
-                        />
+                        (() => {
+                          const band = anomalyBand(r.anomaly_score);
+                          return (
+                            <Tooltip title={anomalyTooltip(r.anomaly_score)}>
+                              <Chip size="small" label={band.label} color={band.color} />
+                            </Tooltip>
+                          );
+                        })()
                       ) : '—'}
                     </TableCell>
                     <TableCell>
@@ -355,18 +372,24 @@ function SyslogPage() {
             Events
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            LAN syslog + Aruba Central events → clustered incidents → LLM-written, reviewer-approved alerts.
+            Logs from your network devices. We group related messages into
+            incidents, flag the unusual ones, and write a plain-English
+            summary for each.
           </Typography>
         </Box>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={running ? <CircularProgress size={14} /> : <PlayArrowIcon />}
-          onClick={handleRunCluster}
-          disabled={running}
-        >
-          Cluster now
-        </Button>
+        <Tooltip title="Groups any new log messages into incidents and asks the assistant to summarize them. May take up to 30 seconds and uses a small amount of your AI quota.">
+          <span>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={running ? <CircularProgress size={14} /> : <AutorenewIcon />}
+              onClick={handleRunCluster}
+              disabled={running}
+            >
+              Re-scan for new incidents
+            </Button>
+          </span>
+        </Tooltip>
         <Button
           size="small"
           variant="text"
