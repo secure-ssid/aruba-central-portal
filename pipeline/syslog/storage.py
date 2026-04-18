@@ -95,6 +95,25 @@ CREATE TABLE IF NOT EXISTS incident_events (
     FOREIGN KEY (event_id)    REFERENCES events(id)    ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS proposed_actions (
+    id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id            INTEGER NOT NULL,
+    created_at             TEXT NOT NULL,
+    action_type            TEXT NOT NULL,       -- matches ACTION_CATALOG key
+    target_device_serial   TEXT,
+    target_device_name     TEXT,
+    params                 TEXT,                -- JSON blob of action-specific args
+    status                 TEXT NOT NULL DEFAULT 'pending',
+    -- pending | approved | rejected | executed | failed
+    review_notes           TEXT,
+    preflight_results      TEXT,                -- JSON of reviewer verdict
+    executed_at            TEXT,
+    execution_error        TEXT,
+    FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_actions_incident ON proposed_actions(incident_id);
+CREATE INDEX IF NOT EXISTS idx_actions_status ON proposed_actions(status);
+
 CREATE TABLE IF NOT EXISTS alerts (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     incident_id     INTEGER NOT NULL UNIQUE,
@@ -699,6 +718,102 @@ class SyslogStore:
             )
         return (cur.rowcount or 0) > 0
 
+    # ─────────────────────── proposed actions (phase 10) ──────
+
+    def insert_proposed_action(
+        self,
+        *,
+        incident_id: int,
+        action_type: str,
+        target_device_serial: str | None = None,
+        target_device_name: str | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> int:
+        now_iso = _iso(datetime.now(timezone.utc))
+        params_json = json.dumps(params) if params else None
+        with self._write_lock:
+            cur = self._conn.execute(
+                """
+                INSERT INTO proposed_actions (
+                    incident_id, created_at, action_type,
+                    target_device_serial, target_device_name, params, status
+                ) VALUES (?,?,?,?,?,?, 'pending')
+                """,
+                (incident_id, now_iso, action_type,
+                 target_device_serial, target_device_name, params_json),
+            )
+        return int(cur.lastrowid)
+
+    def list_proposed_actions(
+        self,
+        *,
+        incident_id: int | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        sql = ["SELECT * FROM proposed_actions WHERE 1=1"]
+        params: list[Any] = []
+        if incident_id is not None:
+            sql.append("AND incident_id = ?")
+            params.append(int(incident_id))
+        if status:
+            sql.append("AND status = ?")
+            params.append(status)
+        sql.append("ORDER BY created_at DESC LIMIT ?")
+        params.append(int(limit))
+        cur = self._conn.execute(" ".join(sql), params)
+        return [_decode_action_row(r) for r in cur.fetchall()]
+
+    def get_proposed_action(self, action_id: int) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT * FROM proposed_actions WHERE id = ?", (action_id,)
+        ).fetchone()
+        return _decode_action_row(row) if row else None
+
+    def update_proposed_action(
+        self,
+        action_id: int,
+        *,
+        status: str | None = None,
+        review_notes: str | None = None,
+        preflight_results: dict[str, str] | None = None,
+        executed_at: datetime | None = None,
+        execution_error: str | None = None,
+    ) -> bool:
+        """Partial update — only non-None kwargs are written. Raises
+        ValueError on an unknown status so typos fail loud."""
+        valid = ("pending", "approved", "rejected", "executed", "failed")
+        if status is not None and status not in valid:
+            raise ValueError(f"invalid action status: {status}")
+
+        fields: list[str] = []
+        values: list[Any] = []
+        if status is not None:
+            fields.append("status = ?")
+            values.append(status)
+        if review_notes is not None:
+            fields.append("review_notes = ?")
+            values.append(review_notes)
+        if preflight_results is not None:
+            fields.append("preflight_results = ?")
+            values.append(json.dumps(preflight_results))
+        if executed_at is not None:
+            fields.append("executed_at = ?")
+            values.append(_iso(executed_at))
+        if execution_error is not None:
+            fields.append("execution_error = ?")
+            values.append(execution_error)
+
+        if not fields:
+            return False
+        values.append(action_id)
+        with self._write_lock:
+            cur = self._conn.execute(
+                f"UPDATE proposed_actions SET {', '.join(fields)} WHERE id = ?",
+                values,
+            )
+        return (cur.rowcount or 0) > 0
+
     # ─────────────────────── anomaly baseline (phase 3) ───────
 
     def bucketed_event_counts(
@@ -764,6 +879,22 @@ def _iso(dt: datetime) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _decode_action_row(row: sqlite3.Row) -> dict[str, Any]:
+    """Parse the JSON columns on a proposed_actions row into real types
+    so callers don't have to juggle json.loads everywhere."""
+    d = dict(row)
+    for key in ("params", "preflight_results"):
+        raw_val = d.get(key)
+        if raw_val:
+            try:
+                d[key] = json.loads(raw_val)
+            except (TypeError, ValueError):
+                d[key] = {}
+        else:
+            d[key] = {} if key == "preflight_results" else None
+    return d
 
 
 def _decode_alert_row(row: sqlite3.Row) -> dict[str, Any]:
