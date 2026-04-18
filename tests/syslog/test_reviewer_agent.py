@@ -16,6 +16,14 @@ from pipeline.syslog.reviewer_agent import (
     review_alert,
 )
 from pipeline.syslog.storage import SyslogStore
+from pipeline.syslog.writer_agent import WriterOutput
+
+
+def _wo(summary: str, steps=None) -> WriterOutput:
+    return WriterOutput(
+        summary=summary, troubleshooting=list(steps or []),
+        provider="gemini", model="test", raw="",
+    )
 
 
 @pytest.fixture()
@@ -150,7 +158,7 @@ def test_approved_alert_lands_with_approved_flag_1(store):
     _seed_anomalous_incident(store, t)
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="summary", provider="gemini", model="m"),
+        return_value=_wo("summary"),
     ), patch(
         "pipeline.syslog.clusterer.review_alert",
         return_value=__import__("pipeline.syslog.reviewer_agent", fromlist=["ReviewResult"])
@@ -168,7 +176,7 @@ def test_rejected_alert_lands_with_approved_flag_minus_1(store):
     from pipeline.syslog.reviewer_agent import ReviewResult
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="bogus claim", provider="gemini", model="m"),
+        return_value=_wo("bogus claim"),
     ), patch(
         "pipeline.syslog.clusterer.review_alert",
         return_value=ReviewResult(approved=False, notes="invented port", raw=""),
@@ -185,7 +193,7 @@ def test_pending_verdict_keeps_approved_flag_0(store):
     from pipeline.syslog.reviewer_agent import ReviewResult
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="s", provider="gemini", model="m"),
+        return_value=_wo("s"),
     ), patch(
         "pipeline.syslog.clusterer.review_alert",
         return_value=ReviewResult(
@@ -203,7 +211,7 @@ def test_reviewer_llm_error_leaves_pending(store):
     _seed_anomalous_incident(store, t)
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="s", provider="gemini", model="m"),
+        return_value=_wo("s"),
     ), patch(
         "pipeline.syslog.clusterer.review_alert",
         side_effect=LLMError("reviewer offline"),
@@ -238,7 +246,7 @@ def test_reviewer_env_disable(store, monkeypatch):
     _seed_anomalous_incident(store, t)
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="s", provider="gemini", model="m"),
+        return_value=_wo("s"),
     ), patch("pipeline.syslog.clusterer.review_alert") as reviewer:
         cluster_once(store, now=t + timedelta(seconds=30))
     assert not reviewer.called

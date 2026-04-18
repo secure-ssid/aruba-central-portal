@@ -154,8 +154,10 @@ function StatsStrip() {
 // ── Incidents table ──────────────────────────────────────────────────────
 
 function IncidentsTable() {
+  const qc = useQueryClient();
   const [orderBy, setOrderBy] = useState('anomaly_score');
   const [status, setStatus] = useState('');
+  const [busyId, setBusyId] = useState(null);
 
   const { data, isLoading, isError } = useSyslogIncidents({
     orderBy,
@@ -164,6 +166,17 @@ function IncidentsTable() {
   });
 
   const rows = data?.items ?? [];
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ['syslog-alerts'] });
+    qc.invalidateQueries({ queryKey: ['syslog-incidents'] });
+    qc.invalidateQueries({ queryKey: ['syslog-stats'] });
+  };
+
+  const actOn = async (id, fn) => {
+    setBusyId(id);
+    try { await fn(); invalidate(); } finally { setBusyId(null); }
+  };
 
   return (
     <Card sx={{ mb: 2 }}>
@@ -182,6 +195,7 @@ function IncidentsTable() {
             >
               <MenuItem value="anomaly_score">Anomaly score</MenuItem>
               <MenuItem value="last_seen">Most recent</MenuItem>
+              <MenuItem value="first_seen">First seen</MenuItem>
               <MenuItem value="severity">Severity</MenuItem>
             </Select>
           </FormControl>
@@ -223,11 +237,14 @@ function IncidentsTable() {
                   <TableCell align="right">Anomaly</TableCell>
                   <TableCell>First → last</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((r) => (
-                  <TableRow key={r.id} hover>
+                {rows.map((r) => {
+                  const disabled = busyId === r.id;
+                  return (
+                  <TableRow key={r.id} hover sx={{ opacity: r.status === 'resolved' ? 0.55 : 1 }}>
                     <TableCell>{r.device_serial || <Typography component="span" variant="caption" color="text.secondary">unknown</Typography>}</TableCell>
                     <TableCell>{r.event_code || <Typography component="span" variant="caption" color="text.secondary">—</Typography>}</TableCell>
                     <TableCell align="right">{r.event_count}</TableCell>
@@ -262,8 +279,43 @@ function IncidentsTable() {
                         variant="outlined"
                       />
                     </TableCell>
+                    <TableCell align="right">
+                      <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                        {r.status === 'open' && (
+                          <Button
+                            size="small"
+                            variant="text"
+                            onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'ack'))}
+                            disabled={disabled}
+                          >
+                            Ack
+                          </Button>
+                        )}
+                        {r.status !== 'resolved' && (
+                          <Button
+                            size="small"
+                            variant="text"
+                            color="success"
+                            onClick={() => actOn(r.id, () => syslogAPI.setIncidentStatus(r.id, 'resolved'))}
+                            disabled={disabled}
+                          >
+                            Resolve
+                          </Button>
+                        )}
+                        <Button
+                          size="small"
+                          variant="text"
+                          color="error"
+                          onClick={() => actOn(r.id, () => syslogAPI.deleteIncident(r.id))}
+                          disabled={disabled}
+                        >
+                          Dismiss
+                        </Button>
+                      </Stack>
+                    </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

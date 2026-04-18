@@ -87,6 +87,41 @@ def get_provider() -> Provider | None:
 # ──────────────────────── text generation ────────────────────────
 
 
+def _rate_limited_or_server_error(exc: Exception) -> bool:
+    """Heuristic — worth trying another provider for these."""
+    msg = str(exc).lower()
+    return (
+        "429" in msg
+        or "too many requests" in msg
+        or "rate limit" in msg
+        or "500" in msg
+        or "502" in msg
+        or "503" in msg
+        or "504" in msg
+        or "timeout" in msg
+    )
+
+
+def _ordered_providers(primary: Provider | None) -> list[Provider]:
+    """Return the chain of providers to try. Primary first, then whatever
+    else is configured as a fallback. Ollama (local, free) is always
+    appended last if it's reachable, so rate-limited cloud providers
+    degrade gracefully to the local model."""
+    chain: list[Provider] = []
+    if primary:
+        chain.append(primary)
+    for cand in ("gemini", "claude", "ollama"):
+        if cand in chain:
+            continue
+        if cand == "gemini" and _gemini_configured():
+            chain.append("gemini")
+        elif cand == "claude" and _claude_configured():
+            chain.append("claude")
+        elif cand == "ollama" and _ollama_configured():
+            chain.append("ollama")
+    return chain
+
+
 def generate(
     prompt: str,
     *,
@@ -96,20 +131,41 @@ def generate(
     timeout: float = 20.0,
     provider: Provider | None = None,
 ) -> LLMResult:
-    """Run one text-in / text-out call against the selected provider."""
-    chosen = provider or get_provider()
-    if chosen is None:
+    """Run one text-in / text-out call, cascading to the next provider
+    on rate limits / transient server errors.
+
+    Order: `provider` arg > primary chosen by `get_provider()` > remaining
+    configured providers (Ollama is always last if reachable). Auth errors
+    or malformed responses raise immediately — only rate limits and 5xx
+    trigger the cascade.
+    """
+    primary = provider or get_provider()
+    chain = _ordered_providers(primary)
+    if not chain:
         raise LLMUnavailable(
             "No LLM configured — set GEMINI_API_KEY, ANTHROPIC_API_KEY, or run Ollama locally."
         )
 
-    if chosen == "gemini":
-        return _call_gemini(prompt, system, max_output_tokens, temperature, timeout)
-    if chosen == "claude":
-        return _call_claude(prompt, system, max_output_tokens, temperature, timeout)
-    if chosen == "ollama":
-        return _call_ollama(prompt, system, max_output_tokens, temperature, timeout)
-    raise LLMError(f"Unknown provider: {chosen}")
+    last_exc: Exception | None = None
+    for prov in chain:
+        try:
+            if prov == "gemini":
+                return _call_gemini(prompt, system, max_output_tokens, temperature, timeout)
+            if prov == "claude":
+                return _call_claude(prompt, system, max_output_tokens, temperature, timeout)
+            if prov == "ollama":
+                return _call_ollama(prompt, system, max_output_tokens, temperature, timeout)
+        except LLMError as exc:
+            last_exc = exc
+            if not _rate_limited_or_server_error(exc):
+                raise  # genuine error — don't mask it by trying a second provider
+            logger.warning(
+                "llm: %s rate-limited/transient (%s) — falling back", prov, exc,
+            )
+            continue
+
+    # Exhausted all providers.
+    raise last_exc or LLMError("all LLM providers failed")
 
 
 # ──────────────────────── Gemini ────────────────────────

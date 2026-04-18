@@ -1482,6 +1482,10 @@ export const syslogAPI = {
     const { data } = await apiClient.post(`/syslog/incidents/${id}/status`, { status });
     return data;
   },
+  deleteIncident: async (id) => {
+    const { data } = await apiClient.delete(`/syslog/incidents/${id}`);
+    return data;
+  },
   runCluster: async () => {
     const { data } = await apiClient.post('/syslog/cluster/run');
     return data;

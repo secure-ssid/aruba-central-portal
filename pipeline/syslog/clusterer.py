@@ -32,7 +32,12 @@ from datetime import datetime, timedelta, timezone
 from .anomaly import score_incident
 from .reviewer_agent import review_alert
 from .storage import StoredEvent, SyslogStore
-from .writer_agent import LLMError, fallback_summary, write_alert
+from .writer_agent import (
+    LLMError,
+    fallback_summary,
+    fallback_troubleshooting,
+    write_alert,
+)
 
 # Minimum anomaly_score above which we invoke the LLM writer. Below this,
 # the clusterer still creates the incident but doesn't spend tokens
@@ -135,6 +140,7 @@ def cluster_once(
             groups[sig] = {
                 "device_key": dkey,
                 "device_serial": ev.device_serial,
+                "device_name": ev.device_name,
                 "event_code": ev.event_code,
                 "severity": ev.severity,
                 "first_seen": ts,
@@ -151,9 +157,11 @@ def cluster_once(
         # Lowest severity wins (emerg=0 beats debug=7).
         if g["severity"] is None or ev.severity is not None and ev.severity < g["severity"]:
             g["severity"] = ev.severity
-        # Prefer a real device_serial over None.
+        # Prefer a real device_serial / device_name over None.
         if not g["device_serial"] and ev.device_serial:
             g["device_serial"] = ev.device_serial
+        if not g["device_name"] and ev.device_name:
+            g["device_name"] = ev.device_name
 
     new_count = 0
     touched = 0
@@ -162,6 +170,7 @@ def cluster_once(
         incident_id = store.upsert_incident(
             cluster_signature=sig,
             device_serial=g["device_serial"],
+            device_name=g.get("device_name"),
             event_code=g["event_code"],
             severity=g["severity"],
             first_seen=g["first_seen"],
@@ -196,23 +205,28 @@ def cluster_once(
             updated["anomaly_score"] = result.score  # include latest score in prompt
             events_for_prompt = store.incident_events(incident_id, limit=20)
             summary_text: str | None = None
+            troubleshooting: list[str] = []
             notes: str | None = None
             approved = 0
+            used_fallback = False
 
             try:
                 llm = write_alert(updated, events_for_prompt)
-                summary_text = llm.text
+                summary_text = llm.summary
+                troubleshooting = llm.troubleshooting or fallback_troubleshooting(updated)
             except LLMError as exc:
                 logger.warning(
                     "writer: LLM unavailable for incident=%s — using fallback (%s)",
                     incident_id, exc,
                 )
                 summary_text = fallback_summary(updated)
+                troubleshooting = fallback_troubleshooting(updated)
                 notes = f"fallback: {exc}"
+                used_fallback = True
 
             # Reviewer pass — only runs when we have an LLM-generated summary
             # (skipped for fallback text, which isn't the writer's work).
-            if REVIEWER_ENABLED and notes is None:
+            if REVIEWER_ENABLED and not used_fallback:
                 try:
                     verdict = review_alert(updated, events_for_prompt, summary_text)
                     if verdict.pending:
@@ -231,6 +245,7 @@ def cluster_once(
             store.upsert_alert(
                 incident_id=incident_id,
                 summary=summary_text,
+                troubleshooting=troubleshooting,
                 review_notes=notes,
                 approved=approved,
             )

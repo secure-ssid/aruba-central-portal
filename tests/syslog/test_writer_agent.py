@@ -15,10 +15,22 @@ from pipeline.syslog.clusterer import cluster_once
 from pipeline.syslog.reviewer_agent import ReviewResult
 from pipeline.syslog.storage import SyslogStore
 from pipeline.syslog.writer_agent import (
+    WriterOutput,
     _build_prompt,
+    _parse_output,
     fallback_summary,
+    fallback_troubleshooting,
     write_alert,
 )
+
+
+def _wo(summary: str, steps=None) -> WriterOutput:
+    """Shorthand to build a WriterOutput in tests."""
+    return WriterOutput(
+        summary=summary,
+        troubleshooting=list(steps or []),
+        provider="gemini", model="test", raw="",
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -79,10 +91,14 @@ def test_build_prompt_handles_dataclass_events(store):
 
 # ──────────────── write_alert (mocked) ────────────────
 
-def test_write_alert_returns_llm_result():
+def test_write_alert_returns_summary_and_troubleshooting():
+    llm_text = (
+        '{"summary": "AP-1 went down 5 times.", '
+        ' "troubleshooting": ["Check AP-1 uplink.", "Review switch logs."]}'
+    )
     with patch(
         "pipeline.syslog.writer_agent.generate",
-        return_value=LLMResult(text="AP-1 went down 5 times.", provider="gemini", model="test"),
+        return_value=LLMResult(text=llm_text, provider="gemini", model="test"),
     ) as gen:
         result = write_alert(
             {"device_serial": "CN", "event_code": "X", "severity": 3,
@@ -90,8 +106,43 @@ def test_write_alert_returns_llm_result():
              "anomaly_score": 3.0},
             [],
         )
-    assert result.text == "AP-1 went down 5 times."
+    assert result.summary == "AP-1 went down 5 times."
+    assert result.troubleshooting == ["Check AP-1 uplink.", "Review switch logs."]
     assert gen.called
+
+
+def test_write_alert_falls_back_when_json_malformed():
+    """LLM ignored our JSON instruction — we still surface the text as summary."""
+    with patch(
+        "pipeline.syslog.writer_agent.generate",
+        return_value=LLMResult(text="plain text summary", provider="gemini", model="test"),
+    ):
+        result = write_alert({"event_count": 1}, [])
+    assert result.summary == "plain text summary"
+    assert result.troubleshooting == []
+
+
+def test_parse_output_tolerates_json_fences():
+    text = 'Sure!\n```json\n{"summary":"ok","troubleshooting":["a","b"]}\n```'
+    s, ts = _parse_output(text)
+    assert s == "ok"
+    assert ts == ["a", "b"]
+
+
+def test_parse_output_accepts_newline_delimited_troubleshooting():
+    text = '{"summary":"x","troubleshooting":"- step a\\n- step b"}'
+    s, ts = _parse_output(text)
+    assert s == "x"
+    assert ts == ["step a", "step b"]
+
+
+def test_fallback_troubleshooting_specializes_on_event_code():
+    steps_storm = fallback_troubleshooting({"event_code": "BROADCAST_STORM"})
+    assert any("loop" in s.lower() for s in steps_storm)
+    steps_auth = fallback_troubleshooting({"event_code": "WPA_AUTH_FAIL"})
+    assert any("radius" in s.lower() or "psk" in s.lower() for s in steps_auth)
+    steps_none = fallback_troubleshooting({"event_code": None})
+    assert len(steps_none) >= 3  # generic fallback still returns useful steps
 
 
 def test_write_alert_propagates_errors():
@@ -134,7 +185,7 @@ def test_clusterer_writes_alert_for_anomalous_incident(store):
 
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="mocked summary", provider="gemini", model="m"),
+        return_value=_wo("mocked summary", ["step A", "step B"]),
     ) as mock_writer:
         cluster_once(store, now=t + timedelta(seconds=30))
 
@@ -144,6 +195,8 @@ def test_clusterer_writes_alert_for_anomalous_incident(store):
     alert = store.get_alert_by_incident(incident_id)
     assert alert is not None
     assert alert["summary"] == "mocked summary"
+    # Troubleshooting survived the round trip through SQLite JSON column.
+    assert alert["troubleshooting"] == ["step A", "step B"]
     # Auto-stubbed reviewer approves → alerts.approved == 1
     assert alert["approved"] == 1
     assert mock_writer.called
@@ -179,6 +232,9 @@ def test_clusterer_uses_fallback_when_llm_unavailable(store):
     assert alert is not None
     assert alert["review_notes"].startswith("fallback:")
     assert "25x" in alert["summary"]  # came from fallback_summary
+    # Fallback path also supplies troubleshooting steps so the UI isn't empty.
+    assert isinstance(alert["troubleshooting"], list)
+    assert len(alert["troubleshooting"]) > 0
 
 
 def test_alert_is_upserted_not_duplicated(store):
@@ -189,7 +245,7 @@ def test_alert_is_upserted_not_duplicated(store):
 
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="first", provider="gemini", model="m"),
+        return_value=_wo("first", ["one"]),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
 
@@ -199,7 +255,7 @@ def test_alert_is_upserted_not_duplicated(store):
 
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="second", provider="gemini", model="m"),
+        return_value=_wo("second", ["two"]),
     ):
         cluster_once(store, now=t + timedelta(seconds=45))
 
@@ -218,7 +274,7 @@ def test_update_alert_review_roundtrip(store):
         _ingest(store, when=t + timedelta(seconds=i))
     with patch(
         "pipeline.syslog.clusterer.write_alert",
-        return_value=LLMResult(text="s", provider="gemini", model="m"),
+        return_value=_wo("s"),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
 

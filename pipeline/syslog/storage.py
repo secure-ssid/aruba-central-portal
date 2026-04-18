@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS incidents (
     first_seen        TEXT NOT NULL,
     last_seen         TEXT NOT NULL,
     device_serial     TEXT,
+    device_name       TEXT,        -- human-friendly label (AP name, hostname)
     event_code        TEXT,
     severity          INTEGER,
     event_count       INTEGER NOT NULL DEFAULT 0,
@@ -89,15 +90,23 @@ CREATE TABLE IF NOT EXISTS incident_events (
 );
 
 CREATE TABLE IF NOT EXISTS alerts (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    incident_id   INTEGER NOT NULL UNIQUE,
-    created_at    TEXT NOT NULL,
-    summary       TEXT NOT NULL,       -- LLM writer output
-    review_notes  TEXT,                -- LLM reviewer output
-    approved      INTEGER NOT NULL DEFAULT 0,  -- 0 pending, 1 approved, -1 rejected
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id     INTEGER NOT NULL UNIQUE,
+    created_at      TEXT NOT NULL,
+    summary         TEXT NOT NULL,        -- LLM writer output (human summary)
+    troubleshooting TEXT,                 -- JSON array of step strings
+    review_notes    TEXT,                 -- LLM reviewer output
+    approved        INTEGER NOT NULL DEFAULT 0,  -- 0 pending, 1 approved, -1 rejected
     FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE
 );
 """
+
+# Lightweight in-line migration — additive columns added after the initial
+# schema shipped. Safe to re-run; "duplicate column" is swallowed below.
+_MIGRATIONS = [
+    "ALTER TABLE alerts ADD COLUMN troubleshooting TEXT",
+    "ALTER TABLE incidents ADD COLUMN device_name TEXT",
+]
 
 
 @dataclass
@@ -187,6 +196,14 @@ class SyslogStore:
             self._conn.execute("PRAGMA synchronous=NORMAL")
             self._conn.execute("PRAGMA foreign_keys=ON")
             self._conn.executescript(SCHEMA)
+            # Additive column migrations — swallow "duplicate column name"
+            # so this is idempotent across restarts.
+            for stmt in _MIGRATIONS:
+                try:
+                    self._conn.execute(stmt)
+                except sqlite3.OperationalError as exc:
+                    if "duplicate column" not in str(exc).lower():
+                        raise
         logger.info("SyslogStore initialized at %s", self.db_path)
 
     def close(self) -> None:
@@ -389,6 +406,7 @@ class SyslogStore:
         *,
         cluster_signature: str,
         device_serial: str | None,
+        device_name: str | None = None,
         event_code: str | None,
         severity: int | None,
         first_seen: datetime,
@@ -413,13 +431,14 @@ class SyslogStore:
             if row is None:
                 cur = self._conn.execute(
                     "INSERT INTO incidents ("
-                    "  first_seen, last_seen, device_serial, event_code, "
-                    "  severity, event_count, cluster_signature, status"
-                    ") VALUES (?,?,?,?,?,?,?, 'open')",
+                    "  first_seen, last_seen, device_serial, device_name, "
+                    "  event_code, severity, event_count, cluster_signature, status"
+                    ") VALUES (?,?,?,?,?,?,?,?, 'open')",
                     (
                         _iso(first_seen),
                         _iso(last_seen),
                         device_serial,
+                        device_name,
                         event_code,
                         severity,
                         len(event_ids),
@@ -436,11 +455,16 @@ class SyslogStore:
                 new_sev = severity if cur_sev is None else (
                     cur_sev if severity is None else min(cur_sev, severity)
                 )
+                # Back-fill device_name if the existing row didn't have one
+                # (early events for a device may have been parsed before the
+                # AOS 8 enricher could extract the human label).
                 self._conn.execute(
                     "UPDATE incidents SET first_seen=?, last_seen=?, "
-                    "event_count = event_count + ?, severity=? "
+                    "event_count = event_count + ?, severity=?, "
+                    "device_name = COALESCE(device_name, ?) "
                     "WHERE id=?",
-                    (new_first, new_last, len(event_ids), new_sev, incident_id),
+                    (new_first, new_last, len(event_ids), new_sev,
+                     device_name, incident_id),
                 )
 
             self._conn.executemany(
@@ -477,8 +501,9 @@ class SyslogStore:
 
         # Allow-listed sort columns so query params can't inject SQL.
         sort_col = {"last_seen": "last_seen DESC",
+                    "first_seen": "first_seen DESC",
                     "anomaly_score": "COALESCE(anomaly_score, 0) DESC, last_seen DESC",
-                    "severity": "COALESCE(severity, 99) ASC, last_seen DESC"
+                    "severity": "COALESCE(severity, 99) ASC, last_seen DESC",
                     }.get(order_by, "last_seen DESC")
         sql.append(f"ORDER BY {sort_col} LIMIT ? OFFSET ?")
         params.extend([int(limit), int(offset)])
@@ -517,6 +542,21 @@ class SyslogStore:
             )
         return (cur.rowcount or 0) > 0
 
+    def delete_incident(self, incident_id: int) -> bool:
+        """Hard-delete an incident and its FK-linked alert + incident_events.
+
+        Used by the dashboard "dismiss" button when an operator wants a row
+        to disappear entirely. The raw `events` rows stay in place so the
+        same burst won't immediately re-cluster — they're still linked to
+        the incident row via `incident_events` (which ON DELETE CASCADE's
+        those link rows away).
+        """
+        with self._write_lock:
+            cur = self._conn.execute(
+                "DELETE FROM incidents WHERE id = ?", (incident_id,)
+            )
+        return (cur.rowcount or 0) > 0
+
     def set_incident_anomaly_score(self, incident_id: int, score: float) -> None:
         with self._write_lock:
             self._conn.execute(
@@ -531,6 +571,7 @@ class SyslogStore:
         *,
         incident_id: int,
         summary: str,
+        troubleshooting: list[str] | None = None,
         review_notes: str | None = None,
         approved: int = 0,
     ) -> int:
@@ -541,21 +582,25 @@ class SyslogStore:
         same row instead of stacking duplicates in the UI.
         """
         now_iso = _iso(datetime.now(timezone.utc))
+        ts_json = json.dumps(list(troubleshooting)) if troubleshooting else None
         with self._write_lock:
             row = self._conn.execute(
                 "SELECT id FROM alerts WHERE incident_id = ?", (incident_id,)
             ).fetchone()
             if row is None:
                 cur = self._conn.execute(
-                    "INSERT INTO alerts (incident_id, created_at, summary, review_notes, approved) "
-                    "VALUES (?,?,?,?,?)",
-                    (incident_id, now_iso, summary, review_notes, int(approved)),
+                    "INSERT INTO alerts ("
+                    "  incident_id, created_at, summary, troubleshooting, "
+                    "  review_notes, approved"
+                    ") VALUES (?,?,?,?,?,?)",
+                    (incident_id, now_iso, summary, ts_json, review_notes, int(approved)),
                 )
                 return int(cur.lastrowid)
             alert_id = int(row["id"])
             self._conn.execute(
-                "UPDATE alerts SET summary=?, review_notes=?, approved=? WHERE id=?",
-                (summary, review_notes, int(approved), alert_id),
+                "UPDATE alerts SET summary=?, troubleshooting=?, review_notes=?, approved=? "
+                "WHERE id=?",
+                (summary, ts_json, review_notes, int(approved), alert_id),
             )
             return alert_id
 
@@ -563,7 +608,9 @@ class SyslogStore:
         row = self._conn.execute(
             "SELECT * FROM alerts WHERE incident_id = ?", (incident_id,)
         ).fetchone()
-        return dict(row) if row else None
+        if not row:
+            return None
+        return _decode_alert_row(row)
 
     def list_alerts(
         self,
@@ -591,7 +638,7 @@ class SyslogStore:
         sql.append("ORDER BY a.created_at DESC LIMIT ? OFFSET ?")
         params.extend([int(limit), int(offset)])
         cur = self._conn.execute(" ".join(sql), params)
-        return [dict(r) for r in cur.fetchall()]
+        return [_decode_alert_row(r) for r in cur.fetchall()]
 
     def update_alert_review(
         self,
@@ -676,3 +723,21 @@ def _iso(dt: datetime) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _decode_alert_row(row: sqlite3.Row) -> dict[str, Any]:
+    """Turn an alerts row into a dashboard-friendly dict. Parses the
+    JSON-encoded `troubleshooting` column into a list; keeps an empty
+    list when the column is null/blank so the frontend never has to
+    guard against `undefined.map`."""
+    d = dict(row)
+    raw_ts = d.get("troubleshooting")
+    if raw_ts:
+        try:
+            parsed = json.loads(raw_ts)
+            d["troubleshooting"] = parsed if isinstance(parsed, list) else []
+        except (TypeError, ValueError):
+            d["troubleshooting"] = []
+    else:
+        d["troubleshooting"] = []
+    return d

@@ -176,8 +176,8 @@ def list_incidents():
             return jsonify({"error": "anomaly_min must be numeric"}), 400
 
     order_by = args.get("order_by", "last_seen")
-    if order_by not in ("last_seen", "anomaly_score", "severity"):
-        return jsonify({"error": "order_by must be last_seen|anomaly_score|severity"}), 400
+    if order_by not in ("last_seen", "first_seen", "anomaly_score", "severity"):
+        return jsonify({"error": "order_by must be last_seen|first_seen|anomaly_score|severity"}), 400
 
     return jsonify({
         "items": get_store().list_incidents(
@@ -218,6 +218,17 @@ def set_incident_status(incident_id: int):
     if not ok:
         return jsonify({"error": "incident not found"}), 404
     return jsonify({"id": incident_id, "status": status})
+
+
+@syslog_bp.route("/incidents/<int:incident_id>", methods=["DELETE"])
+@require_session
+@rate_limit(max_requests=60, window_seconds=60)
+def delete_incident(incident_id: int):
+    """Hard-delete an incident and its alert. Raw events are preserved."""
+    ok = get_store().delete_incident(incident_id)
+    if not ok:
+        return jsonify({"error": "incident not found"}), 404
+    return jsonify({"id": incident_id, "deleted": True})
 
 
 @syslog_bp.route("/cluster/run", methods=["POST"])

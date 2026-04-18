@@ -73,6 +73,58 @@ def test_unknown_fallback():
     assert ev.severity is None
 
 
+def test_arubaos8_extracts_ap_name_and_source_ip():
+    """ArubaOS 8 puts the year where RFC 3164 puts the hostname.
+    Parser should detect that, hoist the source IP, and pull the AP
+    name out of the body so the dashboard shows 'LR-AP735'."""
+    line = (
+        b"<140>Apr 18 04:41:36 2026 10.11.154.54 stm[8926]: "
+        b"<132094> <WARN> AP:LR-AP735 <10.11.154.54 48:00:20:C9:AB:0A> "
+        b"MIC failed in WPA2 Key Message 2"
+    )
+    ev = parse_syslog(line, now=datetime(2026, 4, 18, 5, 0, tzinfo=timezone.utc))
+    assert ev.format == "3164-aos8"
+    assert ev.hostname == "10.11.154.54"
+    assert ev.device_name == "LR-AP735"
+    assert ev.event_code == "132094"
+    assert ev.app_name == "stm"
+    assert ev.proc_id == "8926"
+
+
+def test_arubaos8_switch_and_gateway_prefixes():
+    for prefix in ("GW", "SWITCH", "STA"):
+        line = (
+            f"<140>Apr 18 04:41:36 2026 10.11.154.50 cli[8206]: "
+            f"<312402> <ERRS> {prefix}:NODE-001 body"
+        ).encode()
+        ev = parse_syslog(line, now=datetime(2026, 4, 18, 5, 0, tzinfo=timezone.utc))
+        assert ev.format == "3164-aos8"
+        assert ev.device_name == "NODE-001"
+        assert ev.event_code == "312402"
+
+
+def test_arubaos8_without_tag_prefix_still_upgrades_format():
+    """ArubaOS 8 lines that don't carry AP:<name> should still parse
+    cleanly — just no device_name promotion."""
+    line = (
+        b"<140>Apr 18 04:41:36 2026 10.11.154.54 dhcp[123]: client lease renewed"
+    )
+    ev = parse_syslog(line, now=datetime(2026, 4, 18, 5, 0, tzinfo=timezone.utc))
+    assert ev.format == "3164-aos8"
+    assert ev.hostname == "10.11.154.54"
+    assert ev.app_name == "dhcp"
+    assert ev.device_name == "10.11.154.54"
+    assert ev.event_code is None
+
+
+def test_plain_rfc3164_still_works_after_aos8_addition():
+    """Guardrail: plain RFC 3164 must not fall into the AOS 8 path."""
+    line = b"<134>Apr 17 21:45:01 AP-FLOOR-3 stm[1234]: AP_EVENT_DOT11_ASSOC"
+    ev = parse_syslog(line, now=datetime(2026, 4, 18, 0, 0, tzinfo=timezone.utc))
+    assert ev.format == "3164"
+    assert ev.hostname == "AP-FLOOR-3"
+
+
 def test_never_raises_on_garbage():
     # Random bytes incl. invalid utf-8 — must not raise.
     ev = parse_syslog(b"<\xff\xfe bogus")
