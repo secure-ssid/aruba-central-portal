@@ -304,6 +304,31 @@ export const useSyslogIncident = (id, options = {}) =>
     ...options,
   });
 
+export const useSyslogOverview = (
+  { sinceHours = 24, limit = 50, includeResolved = false, severityMax } = {},
+  options = {},
+) => {
+  const params = { since_hours: sinceHours, limit };
+  if (includeResolved) params.include_resolved = true;
+  if (severityMax !== undefined) params.severity_max = severityMax;
+  return useQuery({
+    queryKey: ['syslog-overview', params],
+    queryFn: () => syslogAPI.getOverview(params),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    ...options,
+  });
+};
+
+export const useSyslogLLMMetrics = (days = 1, options = {}) =>
+  useQuery({
+    queryKey: ['syslog-llm-metrics', days],
+    queryFn: () => syslogAPI.getLLMMetrics(days),
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+    ...options,
+  });
+
 export const useSyslogStats = (windowHours = 24, options = {}) =>
   useQuery({
     queryKey: ['syslog-stats', windowHours],

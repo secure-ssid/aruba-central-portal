@@ -124,6 +124,35 @@ CREATE TABLE IF NOT EXISTS alerts (
     approved        INTEGER NOT NULL DEFAULT 0,  -- 0 pending, 1 approved, -1 rejected
     FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE
 );
+
+-- Phase 14a: reuse prior writer+reviewer output for a cluster signature
+-- whose fingerprint set hasn't changed. Saves LLM calls across ticks and
+-- across restarts (the in-memory skip in the clusterer loses state on
+-- process exit; this table survives).
+CREATE TABLE IF NOT EXISTS llm_summary_cache (
+    signature        TEXT PRIMARY KEY,     -- incidents.cluster_signature
+    fingerprints_hash TEXT NOT NULL,
+    summary          TEXT NOT NULL,
+    troubleshooting  TEXT,                 -- JSON array of steps
+    review_notes     TEXT,
+    approved         INTEGER NOT NULL DEFAULT 0,
+    created_at       TEXT NOT NULL,
+    last_used_at     TEXT NOT NULL,
+    hits             INTEGER NOT NULL DEFAULT 0
+);
+
+-- Phase 14a: per-day LLM call counters so we can enforce a daily cap
+-- and surface a "summaries today: N / cap" chip on the dashboard.
+CREATE TABLE IF NOT EXISTS llm_metrics (
+    date               TEXT PRIMARY KEY,   -- YYYY-MM-DD UTC
+    calls_made         INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_cache     INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_cooldown  INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_min_size  INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_daily_cap INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_tick_cap  INTEGER NOT NULL DEFAULT 0,
+    calls_skipped_fp_growth INTEGER NOT NULL DEFAULT 0
+);
 """
 
 # Lightweight in-line migration — additive columns added after the initial
@@ -139,6 +168,13 @@ _MIGRATIONS = [
     # roll up "same client bouncing off the same AP" as one group
     # without a second query per row.
     "ALTER TABLE incidents ADD COLUMN client_mac TEXT",
+    # Phase 14b: structured writer output — verdict, device category, split
+    # benign vs real items. Stored as additive columns so existing alerts
+    # remain valid (NULL = old format, use troubleshooting only).
+    "ALTER TABLE alerts ADD COLUMN verdict TEXT",
+    "ALTER TABLE alerts ADD COLUMN device_category TEXT",
+    "ALTER TABLE alerts ADD COLUMN benign_items TEXT",  # JSON array
+    "ALTER TABLE alerts ADD COLUMN real_items TEXT",    # JSON array
     # Phase 13: fingerprint = sha1(device_key, event_code, normalized_message).
     # Identical log lines repeating dozens of times collapse under the same
     # fingerprint. Used by the grouped-events UI to show one row per
@@ -678,6 +714,77 @@ class SyslogStore:
         cur = self._conn.execute(" ".join(sql), params)
         return [dict(r) for r in cur.fetchall()]
 
+    def overview_rows(
+        self,
+        *,
+        since_hours: float = 24,
+        limit: int = 50,
+        include_resolved: bool = False,
+        severity_max: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Problem-summary rows for the Overview landing page. One row per
+        open/ack incident, with the LLM-written summary and first
+        troubleshooting step surfaced so the dashboard renders without
+        a second round-trip per row. Resolved and dismissed incidents
+        are hidden by default.
+        """
+        since_iso = _iso(datetime.now(timezone.utc) - timedelta(hours=float(since_hours)))
+        status_filter = "AND i.status IN ('open','ack')" if not include_resolved else ""
+        sev_clause = ""
+        params: list[Any] = [since_iso]
+        if severity_max is not None:
+            sev_clause = "AND (i.severity IS NULL OR i.severity <= ?)"
+            params.append(int(severity_max))
+        params.extend([int(limit)])
+
+        sql = f"""
+            SELECT
+                i.id                 AS incident_id,
+                i.cluster_signature  AS cluster_signature,
+                i.first_seen         AS first_seen,
+                i.last_seen          AS last_seen,
+                i.device_serial      AS device_serial,
+                i.device_name        AS device_name,
+                i.client_mac         AS client_mac,
+                i.event_code         AS event_code,
+                i.severity           AS severity,
+                i.event_count        AS event_count,
+                i.anomaly_score      AS anomaly_score,
+                i.status             AS status,
+                a.summary            AS summary,
+                a.troubleshooting    AS troubleshooting,
+                a.verdict            AS verdict,
+                a.device_category    AS device_category,
+                a.benign_items       AS benign_items,
+                a.real_items         AS real_items,
+                a.approved           AS approved
+            FROM incidents i
+            LEFT JOIN alerts a ON a.incident_id = i.id
+            WHERE i.last_seen >= ?
+              {status_filter}
+              {sev_clause}
+            ORDER BY
+              COALESCE(i.anomaly_score, 0) DESC,
+              COALESCE(i.severity, 99) ASC,
+              i.last_seen DESC
+            LIMIT ?
+        """
+        cur = self._conn.execute(sql, params)
+        rows: list[dict[str, Any]] = []
+        for r in cur.fetchall():
+            d = dict(r)
+            for col in ("troubleshooting", "benign_items", "real_items"):
+                raw_val = d.pop(col, None)
+                try:
+                    parsed = json.loads(raw_val) if raw_val else []
+                    d[col] = parsed if isinstance(parsed, list) else []
+                except (ValueError, TypeError):
+                    d[col] = []
+            d["suggested_fix"] = d["troubleshooting"][0] if d["troubleshooting"] else None
+            d["has_llm_summary"] = bool(d.get("summary"))
+            rows.append(d)
+        return rows
+
     def get_incident(self, incident_id: int) -> dict[str, Any] | None:
         row = self._conn.execute(
             "SELECT * FROM incidents WHERE id = ?", (incident_id,)
@@ -742,6 +849,10 @@ class SyslogStore:
         troubleshooting: list[str] | None = None,
         review_notes: str | None = None,
         approved: int = 0,
+        verdict: str | None = None,
+        device_category: str | None = None,
+        benign_items: list[str] | None = None,
+        real_items: list[str] | None = None,
     ) -> int:
         """Create or replace the alert row for an incident.
 
@@ -751,6 +862,8 @@ class SyslogStore:
         """
         now_iso = _iso(datetime.now(timezone.utc))
         ts_json = json.dumps(list(troubleshooting)) if troubleshooting else None
+        bi_json = json.dumps(list(benign_items)) if benign_items else None
+        ri_json = json.dumps(list(real_items)) if real_items else None
         with self._write_lock:
             row = self._conn.execute(
                 "SELECT id FROM alerts WHERE incident_id = ?", (incident_id,)
@@ -759,16 +872,20 @@ class SyslogStore:
                 cur = self._conn.execute(
                     "INSERT INTO alerts ("
                     "  incident_id, created_at, summary, troubleshooting, "
-                    "  review_notes, approved"
-                    ") VALUES (?,?,?,?,?,?)",
-                    (incident_id, now_iso, summary, ts_json, review_notes, int(approved)),
+                    "  review_notes, approved, verdict, device_category, "
+                    "  benign_items, real_items"
+                    ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+                    (incident_id, now_iso, summary, ts_json, review_notes, int(approved),
+                     verdict, device_category, bi_json, ri_json),
                 )
                 return int(cur.lastrowid)
             alert_id = int(row["id"])
             self._conn.execute(
-                "UPDATE alerts SET summary=?, troubleshooting=?, review_notes=?, approved=? "
+                "UPDATE alerts SET summary=?, troubleshooting=?, review_notes=?, approved=?,"
+                " verdict=?, device_category=?, benign_items=?, real_items=? "
                 "WHERE id=?",
-                (summary, ts_json, review_notes, int(approved), alert_id),
+                (summary, ts_json, review_notes, int(approved),
+                 verdict, device_category, bi_json, ri_json, alert_id),
             )
             return alert_id
 
@@ -845,6 +962,143 @@ class SyslogStore:
                 "UPDATE alerts SET fingerprints_hash = ? WHERE incident_id = ?",
                 (fp_hash, incident_id),
             )
+
+    # ─────────────────────── LLM summary cache / metrics (phase 14a) ──────
+
+    def get_cached_summary(
+        self, signature: str, fingerprints_hash: str
+    ) -> dict[str, Any] | None:
+        """Return a prior writer+reviewer output for this cluster signature
+        iff its fingerprint set hasn't changed. Caller should reuse it
+        verbatim instead of re-calling the LLM. Bumps hit counter."""
+        if not signature or not fingerprints_hash:
+            return None
+        row = self._conn.execute(
+            "SELECT * FROM llm_summary_cache WHERE signature = ?",
+            (signature,),
+        ).fetchone()
+        if not row or row["fingerprints_hash"] != fingerprints_hash:
+            return None
+        with self._write_lock:
+            self._conn.execute(
+                "UPDATE llm_summary_cache SET hits = hits + 1, last_used_at = ? "
+                "WHERE signature = ?",
+                (_iso(datetime.now(timezone.utc)), signature),
+            )
+        tb = row["troubleshooting"]
+        return {
+            "summary": row["summary"],
+            "troubleshooting": json.loads(tb) if tb else [],
+            "review_notes": row["review_notes"],
+            "approved": int(row["approved"] or 0),
+            "last_used_at": row["last_used_at"],
+        }
+
+    def put_cached_summary(
+        self,
+        *,
+        signature: str,
+        fingerprints_hash: str,
+        summary: str,
+        troubleshooting: list[str] | None,
+        review_notes: str | None,
+        approved: int,
+    ) -> None:
+        if not signature:
+            return
+        now = _iso(datetime.now(timezone.utc))
+        tb = json.dumps(troubleshooting or [])
+        with self._write_lock:
+            self._conn.execute(
+                """
+                INSERT INTO llm_summary_cache
+                    (signature, fingerprints_hash, summary, troubleshooting,
+                     review_notes, approved, created_at, last_used_at, hits)
+                VALUES (?,?,?,?,?,?,?,?,0)
+                ON CONFLICT(signature) DO UPDATE SET
+                    fingerprints_hash = excluded.fingerprints_hash,
+                    summary           = excluded.summary,
+                    troubleshooting   = excluded.troubleshooting,
+                    review_notes      = excluded.review_notes,
+                    approved          = excluded.approved,
+                    last_used_at      = excluded.last_used_at
+                """,
+                (signature, fingerprints_hash, summary, tb,
+                 review_notes, int(approved), now, now),
+            )
+
+    def cached_summary_age_seconds(self, signature: str) -> float | None:
+        """How long ago was this signature's LLM summary generated?
+        Used by the cooldown gate — skip the LLM if a recent call exists
+        even when fingerprints have drifted slightly."""
+        row = self._conn.execute(
+            "SELECT last_used_at FROM llm_summary_cache WHERE signature = ?",
+            (signature,),
+        ).fetchone()
+        if not row:
+            return None
+        try:
+            ts = datetime.fromisoformat(row["last_used_at"].replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            return None
+        return (datetime.now(timezone.utc) - ts).total_seconds()
+
+    def _today_utc(self) -> str:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def incr_llm_metric(self, field: str, delta: int = 1) -> None:
+        """Bump one of the llm_metrics counters for today. `field` must be
+        one of the column names on llm_metrics — caller's responsibility
+        (validated here to prevent SQL injection through the column name)."""
+        allowed = {
+            "calls_made",
+            "calls_skipped_cache",
+            "calls_skipped_cooldown",
+            "calls_skipped_min_size",
+            "calls_skipped_daily_cap",
+            "calls_skipped_tick_cap",
+            "calls_skipped_fp_growth",
+        }
+        if field not in allowed:
+            raise ValueError(f"unknown llm metric field: {field}")
+        today = self._today_utc()
+        with self._write_lock:
+            self._conn.execute(
+                "INSERT INTO llm_metrics (date) VALUES (?) "
+                "ON CONFLICT(date) DO NOTHING",
+                (today,),
+            )
+            self._conn.execute(
+                f"UPDATE llm_metrics SET {field} = {field} + ? WHERE date = ?",
+                (int(delta), today),
+            )
+
+    def llm_calls_today(self) -> int:
+        row = self._conn.execute(
+            "SELECT calls_made FROM llm_metrics WHERE date = ?",
+            (self._today_utc(),),
+        ).fetchone()
+        return int(row["calls_made"]) if row else 0
+
+    def get_llm_metrics(self, days: int = 1) -> dict[str, Any]:
+        """Return today's counters plus an N-day rollup."""
+        today = self._today_utc()
+        today_row = self._conn.execute(
+            "SELECT * FROM llm_metrics WHERE date = ?", (today,),
+        ).fetchone()
+        fields = [
+            "calls_made", "calls_skipped_cache", "calls_skipped_cooldown",
+            "calls_skipped_min_size", "calls_skipped_daily_cap",
+            "calls_skipped_tick_cap", "calls_skipped_fp_growth",
+        ]
+        today_d = {f: int(today_row[f]) if today_row else 0 for f in fields}
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+        agg_sql = ",".join(f"COALESCE(SUM({f}),0) AS {f}" for f in fields)
+        agg_row = self._conn.execute(
+            f"SELECT {agg_sql} FROM llm_metrics WHERE date >= ?", (cutoff,),
+        ).fetchone()
+        window_d = {f: int(agg_row[f]) if agg_row else 0 for f in fields}
+        return {"today": today_d, "window_days": days, "window": window_d}
 
     def update_alert_review(
         self,
@@ -1044,18 +1298,18 @@ def _decode_action_row(row: sqlite3.Row) -> dict[str, Any]:
 
 
 def _decode_alert_row(row: sqlite3.Row) -> dict[str, Any]:
-    """Turn an alerts row into a dashboard-friendly dict. Parses the
-    JSON-encoded `troubleshooting` column into a list; keeps an empty
-    list when the column is null/blank so the frontend never has to
-    guard against `undefined.map`."""
+    """Turn an alerts row into a dashboard-friendly dict. Parses all
+    JSON-encoded list columns; keeps empty lists when null so the
+    frontend never has to guard against `undefined.map`."""
     d = dict(row)
-    raw_ts = d.get("troubleshooting")
-    if raw_ts:
-        try:
-            parsed = json.loads(raw_ts)
-            d["troubleshooting"] = parsed if isinstance(parsed, list) else []
-        except (TypeError, ValueError):
-            d["troubleshooting"] = []
-    else:
-        d["troubleshooting"] = []
+    for col in ("troubleshooting", "benign_items", "real_items"):
+        raw_val = d.get(col)
+        if raw_val:
+            try:
+                parsed = json.loads(raw_val)
+                d[col] = parsed if isinstance(parsed, list) else []
+            except (TypeError, ValueError):
+                d[col] = []
+        else:
+            d[col] = []
     return d

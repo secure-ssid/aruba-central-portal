@@ -124,7 +124,7 @@ def test_write_alert_falls_back_when_json_malformed():
 
 def test_parse_output_tolerates_json_fences():
     text = 'Sure!\n```json\n{"summary":"ok","troubleshooting":["a","b"]}\n```'
-    s, ts = _parse_output(text)
+    s, ts, _ = _parse_output(text)
     assert s == "ok"
     assert ts == ["a", "b"]
 
@@ -133,7 +133,7 @@ def test_parse_output_strips_leading_and_trailing_fences():
     """Regression: LLM wraps the whole response in ```json...``` — previous
     parser leaked the fenced envelope into the summary column."""
     text = '```json\n{"summary": "real summary", "troubleshooting": ["x"]}\n```'
-    s, ts = _parse_output(text)
+    s, ts, _ = _parse_output(text)
     assert s == "real summary"
     assert ts == ["x"]
     # Critically: the raw JSON string never appears in the summary.
@@ -150,14 +150,14 @@ def test_parse_output_multiline_json_with_nested_quotes():
         '  "troubleshooting": ["check uplink", "inspect logs"]\n'
         '}'
     )
-    s, ts = _parse_output(text)
+    s, ts, _ = _parse_output(text)
     assert 'AP-1' in s and '"' in s  # unescaped quote preserved
     assert ts == ["check uplink", "inspect logs"]
 
 
 def test_parse_output_accepts_newline_delimited_troubleshooting():
     text = '{"summary":"x","troubleshooting":"- step a\\n- step b"}'
-    s, ts = _parse_output(text)
+    s, ts, _ = _parse_output(text)
     assert s == "x"
     assert ts == ["step a", "step b"]
 
@@ -283,7 +283,10 @@ def test_alert_is_upserted_not_duplicated(store):
     for i in range(25, 40):
         _ingest(store, when=t + timedelta(seconds=i), code="520013")
 
-    with patch(
+    # Disable the per-signature cooldown for this test so the novel-content
+    # path actually re-invokes the writer. The cooldown is validated
+    # independently in test_writer_skipped_by_cooldown.
+    with patch("pipeline.syslog.clusterer.WRITER_COOLDOWN_SEC", 0), patch(
         "pipeline.syslog.clusterer.write_alert",
         return_value=_wo("second", ["two"]),
     ):

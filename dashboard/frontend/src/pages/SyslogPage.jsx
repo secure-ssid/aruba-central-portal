@@ -11,7 +11,8 @@
  * worth of UI, not a sub-app.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Alert,
   Box,
@@ -254,13 +255,20 @@ function IncidentDetail({ incidentId }) {
 
 // ── Incidents table ──────────────────────────────────────────────────────
 
-function IncidentsTable() {
+function IncidentsTable({ initialExpandedId = null }) {
   const qc = useQueryClient();
   const [orderBy, setOrderBy] = useState('anomaly_score');
   const [status, setStatus] = useState('');
   const [busyId, setBusyId] = useState(null);
   const [search, setSearch] = useState('');
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedId, setExpandedId] = useState(initialExpandedId);
+
+  // Deep-link from /overview: when the URL arrives with ?incident=N, snap
+  // this table open on that row. Only on mount — don't fight the user if
+  // they close it manually.
+  useEffect(() => {
+    if (initialExpandedId != null) setExpandedId(initialExpandedId);
+  }, [initialExpandedId]);
 
   const { data, isLoading, isError } = useSyslogIncidents({
     orderBy,
@@ -497,7 +505,12 @@ function IncidentsTable() {
 
 function SyslogPage() {
   const qc = useQueryClient();
-  const [tab, setTab] = useState(0);
+  const [searchParams] = useSearchParams();
+  const deepLinkIncident = searchParams.get('incident');
+  const deepLinkIncidentId = deepLinkIncident ? Number(deepLinkIncident) : null;
+  // If Overview drilled us in with ?incident=N, open the "All incidents"
+  // tab (index 3) so the expanded row is actually visible.
+  const [tab, setTab] = useState(deepLinkIncidentId ? 3 : 0);
   const [running, setRunning] = useState(false);
 
   const handleRunCluster = async () => {
@@ -603,7 +616,7 @@ function SyslogPage() {
         </Grid>
       )}
 
-      {tab === 3 && <IncidentsTable />}
+      {tab === 3 && <IncidentsTable initialExpandedId={deepLinkIncidentId} />}
     </Container>
   );
 }

@@ -32,6 +32,10 @@ logger = logging.getLogger(__name__)
 BACKLOG_ENABLED = os.environ.get("SYSLOG_BACKLOG_ENABLED", "true").lower() in ("1", "true", "yes")
 BACKLOG_LIMIT = int(os.environ.get("SYSLOG_BACKLOG_LIMIT", "20"))
 BACKLOG_THRESHOLD = float(os.environ.get("SYSLOG_WRITER_THRESHOLD", "2.5"))
+# Share the cost-control knobs with the clusterer. Keeping them in one
+# place means operators only have to tune the writer in one spot.
+BACKLOG_MIN_EVENTS = int(os.environ.get("SYSLOG_WRITER_MIN_EVENTS", "3"))
+BACKLOG_DAILY_CAP = int(os.environ.get("SYSLOG_WRITER_DAILY_CAP", "200"))
 
 
 def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
@@ -54,7 +58,41 @@ def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
     fell_back = 0
     approved = 0
     rejected = 0
+    skipped_cache = 0
+    skipped_small = 0
+    skipped_cap = 0
     for inc in pending[:limit]:
+        # Daily quota — hard floor. Stop before making any more LLM calls.
+        if store.llm_calls_today() >= BACKLOG_DAILY_CAP:
+            store.incr_llm_metric("calls_skipped_daily_cap")
+            skipped_cap += 1
+            continue
+
+        # Min cluster size — same gate the clusterer applies.
+        if int(inc.get("event_count") or 0) < BACKLOG_MIN_EVENTS:
+            store.incr_llm_metric("calls_skipped_min_size")
+            skipped_small += 1
+            continue
+
+        # Signature cache — reuse a prior summary when the fingerprints
+        # match what we've already summarized for this cluster signature.
+        sig = inc.get("cluster_signature") or ""
+        fp_now = store.incident_fingerprints_hash(inc["id"])
+        cached = store.get_cached_summary(sig, fp_now) if (sig and fp_now) else None
+        if cached:
+            store.incr_llm_metric("calls_skipped_cache")
+            store.upsert_alert(
+                incident_id=inc["id"],
+                summary=cached["summary"],
+                troubleshooting=cached["troubleshooting"],
+                review_notes=cached.get("review_notes"),
+                approved=int(cached.get("approved") or 0),
+            )
+            if fp_now:
+                store.set_alert_fingerprints_hash(inc["id"], fp_now)
+            skipped_cache += 1
+            continue
+
         events = store.incident_events(inc["id"], limit=20)
         notes: str | None = None
         used_fallback = False
@@ -62,6 +100,7 @@ def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
             llm = write_alert(inc, events)
             summary = llm.summary
             troubleshooting = llm.troubleshooting or fallback_troubleshooting(inc)
+            store.incr_llm_metric("calls_made")
         except LLMError as exc:
             logger.warning("backlog: writer unavailable for incident=%s (%s)", inc["id"], exc)
             summary = fallback_summary(inc)
@@ -83,6 +122,7 @@ def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
                         approved += 1
                     else:
                         rejected += 1
+                store.incr_llm_metric("calls_made")
             except LLMError as exc:
                 notes = f"review unavailable: {exc}"
 
@@ -93,6 +133,17 @@ def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
             review_notes=notes,
             approved=approved_flag,
         )
+        if fp_now:
+            store.set_alert_fingerprints_hash(inc["id"], fp_now)
+        if not used_fallback and sig and fp_now:
+            store.put_cached_summary(
+                signature=sig,
+                fingerprints_hash=fp_now,
+                summary=summary,
+                troubleshooting=troubleshooting,
+                review_notes=notes,
+                approved=approved_flag,
+            )
         processed += 1
         if used_fallback:
             fell_back += 1
@@ -104,6 +155,9 @@ def run_backlog(store: SyslogStore, *, limit: int = BACKLOG_LIMIT) -> dict:
         "fallback": fell_back,
         "approved": approved,
         "rejected": rejected,
+        "skipped_cache": skipped_cache,
+        "skipped_small": skipped_small,
+        "skipped_daily_cap": skipped_cap,
     }
     logger.info("alert backlog complete: %s", summary_dict)
     return summary_dict

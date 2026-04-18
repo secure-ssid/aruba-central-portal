@@ -26,6 +26,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 import DevicesIcon from '@mui/icons-material/Devices';
 import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -67,6 +68,7 @@ const ACTIVE_LIGHT  = 'var(--color-primary-light)';
 
 const monitoringItems = [
   { text: 'Dashboard',       icon: <DashboardIcon />,      path: '/' },
+  { text: 'Overview',        icon: <SummarizeIcon />,      path: '/overview' },
   { text: 'Devices',         icon: <DevicesIcon />,        path: '/devices' },
   { text: 'Clients',         icon: <GroupsIcon />,         path: '/clients' },
   { text: 'Network Monitor', icon: <NetworkCheckIcon />,   path: '/network-monitor' },

@@ -284,6 +284,89 @@ def run_cluster_now():
     })
 
 
+# ─────────────────────── overview (phase 14a) ─────────────────
+
+@syslog_bp.route("/overview", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def overview():
+    """Problem-summary rows for the Overview landing page.
+
+    One row per open/ack incident, enriched with the LLM summary + first
+    troubleshooting step so the frontend can render the whole landing
+    page from a single query. Resolved incidents are hidden unless
+    include_resolved=true.
+    """
+    args = request.args
+    try:
+        since_hours = float(args.get("since_hours", 24))
+        limit = min(int(args.get("limit", 50)), 200)
+    except ValueError:
+        return jsonify({"error": "since_hours/limit must be numeric"}), 400
+
+    severity_max = None
+    if "severity_max" in args:
+        try:
+            severity_max = int(args["severity_max"])
+        except ValueError:
+            return jsonify({"error": "severity_max must be integer"}), 400
+
+    include_resolved = args.get("include_resolved", "").lower() in ("1", "true", "yes")
+
+    rows = get_store().overview_rows(
+        since_hours=since_hours,
+        limit=limit,
+        include_resolved=include_resolved,
+        severity_max=severity_max,
+    )
+    return jsonify({
+        "items": rows,
+        "total": len(rows),
+        "since_hours": since_hours,
+        "include_resolved": include_resolved,
+    })
+
+
+# ─────────────────────── LLM metrics (phase 14a) ──────────────
+
+@syslog_bp.route("/llm-metrics", methods=["GET"])
+@require_session
+@rate_limit(max_requests=60, window_seconds=60)
+def llm_metrics():
+    """Today's LLM call counters + N-day rollup. Used by the Overview
+    footer chip to show 'AI summaries today: 37 / 200'."""
+    try:
+        days = int(request.args.get("days", 1))
+        days = max(1, min(days, 90))
+    except ValueError:
+        return jsonify({"error": "days must be integer"}), 400
+
+    store = get_store()
+    metrics = store.get_llm_metrics(days=days)
+
+    import os as _os
+    daily_cap = int(_os.environ.get("SYSLOG_WRITER_DAILY_CAP", "200"))
+    today = metrics.get("today", {})
+    calls_today = today.get("calls_made", 0)
+    total_skipped_today = sum(
+        today.get(k, 0) for k in (
+            "calls_skipped_cache", "calls_skipped_cooldown",
+            "calls_skipped_min_size", "calls_skipped_daily_cap",
+            "calls_skipped_tick_cap", "calls_skipped_fp_growth",
+        )
+    )
+
+    return jsonify({
+        "today": today,
+        "window_days": metrics.get("window_days", 1),
+        "window": metrics.get("window", {}),
+        "daily_cap": daily_cap,
+        "calls_today": calls_today,
+        "quota_remaining": max(0, daily_cap - calls_today),
+        "total_skipped_today": total_skipped_today,
+    })
+
+
 # ─────────────────────── alerts (phase 4+) ────────────────────
 
 @syslog_bp.route("/alerts", methods=["GET"])
