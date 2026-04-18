@@ -144,10 +144,17 @@ def _parse_output(text: str) -> tuple[str, list[str]]:
             if summary:
                 return summary, troubleshooting[:8]
 
-    # 3. Fallback: return the *stripped* text (no fences) and no steps.
-    #    Never leak the raw JSON envelope into the summary column.
-    fallback = stripped if not stripped.startswith("{") else raw
-    return fallback, []
+    # 3. Fallback: return a safe plain-text summary and no steps. Never
+    #    leak a JSON envelope or code fences into the summary column —
+    #    operators saw `\`\`\`json {"summary": ...` in the UI in prod because
+    #    the previous guard only checked the leading `{` of `stripped`,
+    #    which still let the raw fenced text through.
+    if stripped.startswith("{") or "```" in raw or '"summary"' in raw:
+        return (
+            "LLM response could not be parsed. Check the review notes on "
+            "this alert for the raw output."
+        ), []
+    return stripped, []
 
 
 def write_alert(

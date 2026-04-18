@@ -103,22 +103,32 @@ def _build_prompt(
 # ──────────────────────── JSON parsing ────────────────────────
 
 
-_JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
-
-
 def _parse_verdict(text: str) -> tuple[bool | None, str]:
     """Pull a {"approved": bool, "notes": "..."} object out of the LLM text.
+
+    Robust to two common LLM habits (same approach the writer uses in
+    writer_agent._parse_output, kept in sync for consistency):
+    - ```json ... ``` fences wrapping the whole response
+    - Multi-line JSON with escaped quotes → first-brace to last-brace
 
     Returns (approved, notes). `approved=None` means we couldn't parse —
     caller should treat as pending.
     """
-    # LLMs often wrap JSON in ```json fences or add prose despite
-    # instructions. Extract the first {...} block and parse that.
-    m = _JSON_OBJECT_RE.search(text or "")
-    if not m:
+    raw = (text or "").strip()
+    if not raw:
+        return None, "reviewer returned empty response"
+
+    stripped = re.sub(r"^```(?:json)?\s*", "", raw)
+    stripped = re.sub(r"\s*```$", "", stripped).strip()
+
+    candidate: str | None = None
+    if "{" in stripped and "}" in stripped:
+        candidate = stripped[stripped.index("{") : stripped.rindex("}") + 1]
+
+    if not candidate:
         return None, "reviewer returned no JSON"
     try:
-        obj = json.loads(m.group(0))
+        obj = json.loads(candidate)
     except json.JSONDecodeError as exc:
         return None, f"reviewer JSON parse failed: {exc}"
 

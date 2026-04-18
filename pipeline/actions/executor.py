@@ -53,6 +53,19 @@ HANDLERS: dict[str, ActionHandler] = {
 }
 
 
+def _safe_mark(store, action_id: int, **kwargs) -> None:
+    """update_proposed_action can itself raise (DB locked, transient OS
+    error). Swallow and log — the caller is already in a failure path
+    and can't do anything useful with a second exception."""
+    try:
+        store.update_proposed_action(action_id, **kwargs)
+    except Exception:  # noqa: BLE001
+        logger.exception(
+            "action executor: failed to mark action %s with %s — status may be stale",
+            action_id, kwargs,
+        )
+
+
 def execute_action(store, action_id: int, aruba_client: Any = None) -> dict[str, Any]:
     """Run a proposed action. Must be in status 'approved' to fire.
 
@@ -69,8 +82,8 @@ def execute_action(store, action_id: int, aruba_client: Any = None) -> dict[str,
 
     spec: ActionSpec | None = ACTION_CATALOG.get(action["action_type"])
     if spec is None:
-        store.update_proposed_action(
-            action_id, status="failed",
+        _safe_mark(
+            store, action_id, status="failed",
             execution_error=f"unknown action type: {action['action_type']}",
         )
         raise ExecutionError(f"unknown action type: {action['action_type']}")
@@ -80,13 +93,11 @@ def execute_action(store, action_id: int, aruba_client: Any = None) -> dict[str,
         meta = handler(action, aruba_client)
     except Exception as exc:  # noqa: BLE001 — record the error verbatim
         logger.exception("action executor: handler failed for %s", spec.type)
-        store.update_proposed_action(
-            action_id, status="failed", execution_error=str(exc),
-        )
+        _safe_mark(store, action_id, status="failed", execution_error=str(exc))
         raise ExecutionError(str(exc)) from exc
 
-    store.update_proposed_action(
-        action_id,
+    _safe_mark(
+        store, action_id,
         status="executed",
         executed_at=datetime.now(timezone.utc),
     )

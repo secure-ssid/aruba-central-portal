@@ -107,13 +107,17 @@ def _find_continuing_incident(
     boundaries — that's the whole point.
     """
     cutoff_iso = (new_event_ts - window).isoformat().replace("+00:00", "Z")
-    # Check both device_serial and hostname so we match incidents that
-    # were created before we had the serial enriched onto the row.
+    # Only match incidents whose device_serial OR device_name equals the
+    # current event's device_key. Previously we also included
+    # `device_serial IS NULL` — which matched EVERY unnamed incident in
+    # the window, letting a syslog event without a serial silently extend
+    # an unrelated incident. Python-side filtering caught most of these
+    # but burned a per-candidate lookup; now the SQL itself is tight.
     row = store._conn.execute(  # noqa: SLF001 — intentional direct read
         """
         SELECT cluster_signature
         FROM incidents
-        WHERE (device_serial = ? OR device_name = ? OR device_serial IS NULL)
+        WHERE (device_serial = ? OR device_name = ?)
           AND last_seen >= ?
           AND status = 'open'
         ORDER BY last_seen DESC
@@ -123,23 +127,13 @@ def _find_continuing_incident(
     ).fetchall()
 
     for candidate in row:
-        # We only know the family via signature reconstruction, so compare
-        # against each candidate's signature computed from its own
-        # (device_key, cluster_key) and *its* original bucket. Simpler:
-        # just check if this exact (device, cluster_key) pairing was
-        # already chosen for this candidate, using a stored column.
-        # To avoid a join we encode cluster_key inside signature already,
-        # so we just need to verify by looking up the incident's fields.
+        # Confirm the cluster_key (family-or-raw-code) matches too —
+        # same device + same story, different bucket.
         incident = store.get_incident_by_signature(candidate["cluster_signature"])
         if not incident:
             continue
         incident_key = cluster_key_for(incident.get("event_code"))
-        incident_dev = (
-            incident.get("device_serial")
-            or incident.get("device_name")
-            or "unknown"
-        )
-        if incident_key == cluster_key and incident_dev == device_key:
+        if incident_key == cluster_key:
             return str(candidate["cluster_signature"])
     return None
 
@@ -241,9 +235,13 @@ def cluster_once(
             g["first_seen"] = ts
         if ts > g["last_seen"]:
             g["last_seen"] = ts
-        # Lowest severity wins (emerg=0 beats debug=7).
-        if g["severity"] is None or ev.severity is not None and ev.severity < g["severity"]:
-            g["severity"] = ev.severity
+        # Lowest severity wins (emerg=0 beats debug=7). Only touch the
+        # group's severity when the new event brings a real number;
+        # otherwise leave whatever we had — a None from the first event
+        # used to get stuck even after a later event carried severity 3.
+        if ev.severity is not None:
+            if g["severity"] is None or ev.severity < g["severity"]:
+                g["severity"] = ev.severity
         # Prefer a real device_serial / device_name / client_mac over None.
         if not g["device_serial"] and ev.device_serial:
             g["device_serial"] = ev.device_serial
