@@ -49,6 +49,24 @@ _RFC5424_RE = re.compile(
 # TAG[PID]: MSG — the RFC 3164 "rest" is typically this
 _TAG_RE = re.compile(r"^(?P<tag>[^\[\s:]+)(?:\[(?P<pid>[^\]]+)\])?:\s*(?P<body>.*)$", re.DOTALL)
 
+# ArubaOS 8 shape after the RFC 3164 header:
+#   2026 10.11.154.54 stm[8926]: <132094> <WARN> AP:LR-AP735 <10.11.154.54 48:00:20:C9:AB:0A> ...
+# The "hostname" our RFC 3164 regex grabbed is actually the year; the real
+# source IP is next, and the AP name lives inside "AP:<name>" further in.
+# We detect this post-parse and re-point the fields so downstream clustering
+# and alerts get meaningful device names instead of "2026".
+_AOS8_HOST_IS_YEAR_RE = re.compile(r"^\d{4}$")
+_AOS8_REST_RE = re.compile(
+    r"^(?P<src_ip>\d{1,3}(?:\.\d{1,3}){3})\s+"
+    r"(?P<app>[^\[\s:]+)(?:\[(?P<pid>[^\]]+)\])?:\s*"
+    r"(?P<body>.*)$",
+    re.DOTALL,
+)
+# Inside the AOS 8 body: <code> <sev> AP:<name>  or  <code> <sev> TAG:<name>
+_AOS8_DEVICE_RE = re.compile(
+    r"<(?P<code>\d{4,8})>\s*<(?P<sev>[A-Z]{3,6})>\s*(?:AP|STA|SWITCH|GW):(?P<name>\S+)"
+)
+
 # Aruba serial numbers: 9-12 alphanumerics, starts with 2-4 uppercase letters,
 # must contain at least one digit somewhere after the prefix. Conservative —
 # rejects plain words like "ERROR" but matches CNABC12345, SG12345ABC, etc.
@@ -112,14 +130,48 @@ def parse_syslog(data: bytes | str, *, now: datetime | None = None) -> ParsedEve
 
 def _from_3164(m: re.Match[str], raw: str, now: datetime) -> ParsedEvent:
     pri = int(m.group("pri"))
-    facility, severity = divmod(pri, 8)
-    # order: (severity = pri & 7, facility = pri >> 3) — divmod is (q, r) so swap
     facility = pri >> 3
     severity = pri & 7
 
     ts = _parse_3164_ts(m.group("ts"), now)
     host = m.group("host")
     rest = m.group("rest")
+
+    # ArubaOS 8 detour: the "hostname" field is actually the year (e.g. "2026"),
+    # and the real source IP + app are in the `rest`. Re-parse and hoist the
+    # AP name out of the body so the device column is meaningful.
+    aos8_name: str | None = None
+    aos8_code: str | None = None
+    if host and _AOS8_HOST_IS_YEAR_RE.fullmatch(host):
+        rm = _AOS8_REST_RE.match(rest)
+        if rm:
+            host = rm.group("src_ip")  # source IP is better than "2026"
+            app_name = rm.group("app")
+            proc_id = rm.group("pid")
+            body = rm.group("body")
+            # Pull the AP/device name and numeric code out of the body.
+            dm = _AOS8_DEVICE_RE.search(body)
+            if dm:
+                aos8_name = dm.group("name")
+                aos8_code = dm.group("code")
+            ev = ParsedEvent(
+                facility=facility,
+                severity=severity,
+                event_time=ts,
+                hostname=host,
+                app_name=app_name,
+                proc_id=proc_id,
+                message=body,
+                raw=raw,
+                format="3164-aos8",
+            )
+            _enrich_aruba(ev)
+            # Prefer the AOS 8 AP name over whatever the generic enricher picked.
+            if aos8_name:
+                ev.device_name = aos8_name
+            if aos8_code and not ev.event_code:
+                ev.event_code = aos8_code
+            return ev
 
     app_name = proc_id = None
     body = rest
