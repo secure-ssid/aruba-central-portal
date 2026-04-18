@@ -231,3 +231,44 @@ def run_cluster_now():
         "incidents_touched": result.incidents_touched,
         "new_incidents": result.new_incidents,
     })
+
+
+# ─────────────────────── alerts (phase 4+) ────────────────────
+
+@syslog_bp.route("/alerts", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def list_alerts():
+    """List generated alerts (human summaries of high-anomaly incidents)."""
+    args = request.args
+    try:
+        limit = min(int(args.get("limit", 50)), 200)
+        offset = max(int(args.get("offset", 0)), 0)
+    except ValueError:
+        return jsonify({"error": "limit/offset must be integers"}), 400
+
+    approved_only = args.get("approved_only", "").lower() in ("1", "true", "yes")
+    since = None
+    if "since_hours" in args:
+        try:
+            since = datetime.now(timezone.utc) - timedelta(hours=float(args["since_hours"]))
+        except ValueError:
+            return jsonify({"error": "since_hours must be numeric"}), 400
+
+    return jsonify({
+        "items": get_store().list_alerts(
+            limit=limit, offset=offset, approved_only=approved_only, since=since,
+        ),
+        "limit": limit,
+        "offset": offset,
+    })
+
+
+@syslog_bp.route("/incidents/<int:incident_id>/alert", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def get_incident_alert(incident_id: int):
+    alert = get_store().get_alert_by_incident(incident_id)
+    if not alert:
+        return jsonify({"error": "no alert for this incident"}), 404
+    return jsonify(alert)

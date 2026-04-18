@@ -31,6 +31,13 @@ from datetime import datetime, timedelta, timezone
 
 from .anomaly import score_incident
 from .storage import StoredEvent, SyslogStore
+from .writer_agent import LLMError, fallback_summary, write_alert
+
+# Minimum anomaly_score above which we invoke the LLM writer. Below this,
+# the clusterer still creates the incident but doesn't spend tokens
+# generating a human summary. Tunable via env for cost control.
+WRITER_THRESHOLD = float(os.environ.get("SYSLOG_WRITER_THRESHOLD", "2.0"))
+WRITER_ENABLED = os.environ.get("SYSLOG_WRITER_ENABLED", "true").lower() in ("1", "true", "yes")
 
 logger = logging.getLogger(__name__)
 
@@ -164,17 +171,43 @@ def cluster_once(
         # events added to an existing row), not just this tick's event_ids,
         # so the score stays stable across reruns.
         updated = store.get_incident(incident_id)
-        if updated:
-            bucket = _bucket_start(g["first_seen"], window)
-            result = score_incident(
-                store,
-                device_key=g["device_key"],
-                event_code=g["event_code"],
-                current_count=int(updated["event_count"]),
-                bucket_start=bucket,
-                window_sec=int(window.total_seconds()),
-            )
-            store.set_incident_anomaly_score(incident_id, result.score)
+        if not updated:
+            continue
+        bucket = _bucket_start(g["first_seen"], window)
+        result = score_incident(
+            store,
+            device_key=g["device_key"],
+            event_code=g["event_code"],
+            current_count=int(updated["event_count"]),
+            bucket_start=bucket,
+            window_sec=int(window.total_seconds()),
+        )
+        store.set_incident_anomaly_score(incident_id, result.score)
+
+        # If the incident is interesting enough, ask the LLM to produce a
+        # human summary. Below threshold we skip the call entirely (saves
+        # tokens; the incident is still available via /api/syslog/incidents).
+        if WRITER_ENABLED and result.score >= WRITER_THRESHOLD:
+            updated["anomaly_score"] = result.score  # include latest score in prompt
+            events_for_prompt = store.incident_events(incident_id, limit=20)
+            try:
+                llm = write_alert(updated, events_for_prompt)
+                store.upsert_alert(
+                    incident_id=incident_id,
+                    summary=llm.text,
+                    approved=0,  # reviewer (phase 5) sets to 1 or -1
+                )
+            except LLMError as exc:
+                logger.warning(
+                    "writer: LLM unavailable for incident=%s — using fallback (%s)",
+                    incident_id, exc,
+                )
+                store.upsert_alert(
+                    incident_id=incident_id,
+                    summary=fallback_summary(updated),
+                    review_notes=f"fallback: {exc}",
+                    approved=0,
+                )
 
     logger.info(
         "clusterer: processed=%d groups=%d new=%d",
