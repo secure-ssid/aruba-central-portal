@@ -283,3 +283,146 @@ def get_incident_alert(incident_id: int):
     if not alert:
         return jsonify({"error": "no alert for this incident"}), 404
     return jsonify(alert)
+
+
+# ─────────────────────── proposed actions (phase 10) ──────────
+
+@syslog_bp.route("/actions", methods=["GET"])
+@require_session
+@rate_limit(max_requests=120, window_seconds=60)
+def list_actions():
+    """Paginated list of proposed remediation actions."""
+    args = request.args
+    try:
+        limit = min(int(args.get("limit", 50)), 200)
+    except ValueError:
+        return jsonify({"error": "limit must be integer"}), 400
+    status = args.get("status")
+    if status and status not in ("pending", "approved", "rejected", "executed", "failed"):
+        return jsonify({
+            "error": "status must be pending|approved|rejected|executed|failed",
+        }), 400
+    return jsonify({
+        "items": get_store().list_proposed_actions(status=status, limit=limit),
+    })
+
+
+@syslog_bp.route("/actions/catalog", methods=["GET"])
+@require_session
+@rate_limit(max_requests=60, window_seconds=60)
+def actions_catalog():
+    """Surface the catalog so the UI can render per-action tooltips
+    (description, risk, preflight) without duplicating the data."""
+    from pipeline.actions import ACTION_CATALOG  # type: ignore
+    return jsonify({
+        "items": [
+            {
+                "type": spec.type,
+                "label": spec.label,
+                "description": spec.description,
+                "family": spec.family,
+                "risk": spec.risk,
+                "requires_maintenance_window": spec.requires_maintenance_window,
+                "preflight_checks": list(spec.preflight_checks),
+                "rollback": spec.rollback,
+            }
+            for spec in ACTION_CATALOG.values()
+        ],
+    })
+
+
+@syslog_bp.route("/incidents/<int:incident_id>/propose-action", methods=["POST"])
+@require_session
+@rate_limit(max_requests=30, window_seconds=60)
+def propose_action_route(incident_id: int):
+    """Ask the system to propose a remediation for an approved incident.
+    Deduplicates against existing proposals."""
+    from pipeline.actions import propose_action  # type: ignore
+    result = propose_action(get_store(), incident_id)
+    return jsonify({
+        "action_id": result.action_id,
+        "action_type": result.action_type,
+        "skipped_reason": result.skipped_reason,
+        "proposed": result.proposed,
+    })
+
+
+@syslog_bp.route("/actions/<int:action_id>/review", methods=["POST"])
+@require_session
+@rate_limit(max_requests=15, window_seconds=60)
+def review_action_route(action_id: int):
+    """Run the action reviewer (LLM-backed) against a pending action.
+    Updates the action's status and review notes."""
+    from pipeline.actions import review_action  # type: ignore
+    from pipeline.llm import LLMError  # type: ignore
+
+    store = get_store()
+    action = store.get_proposed_action(action_id)
+    if not action:
+        return jsonify({"error": "action not found"}), 404
+    incident = store.get_incident(int(action["incident_id"]))
+    if not incident:
+        return jsonify({"error": "incident missing"}), 404
+
+    # State context passed to the reviewer — caller can extend from the body.
+    body = request.get_json(silent=True) or {}
+    state_context = body.get("state_context") or {}
+
+    try:
+        verdict = review_action(incident, action["action_type"], state_context)
+    except LLMError as exc:
+        return jsonify({"error": f"reviewer unavailable: {exc}"}), 503
+
+    new_status = "pending" if verdict.pending else (
+        "approved" if verdict.approved else "rejected"
+    )
+    store.update_proposed_action(
+        action_id,
+        status=new_status,
+        review_notes=verdict.notes,
+        preflight_results=verdict.preflight_results,
+    )
+    return jsonify({
+        "action_id": action_id,
+        "status": new_status,
+        "approved": verdict.approved,
+        "pending": verdict.pending,
+        "notes": verdict.notes,
+        "preflight_results": verdict.preflight_results,
+    })
+
+
+@syslog_bp.route("/actions/<int:action_id>/execute", methods=["POST"])
+@require_session
+@rate_limit(max_requests=10, window_seconds=60)
+def execute_action_route(action_id: int):
+    """Fire an approved action. Phase 10a is a stub — it marks the
+    row executed without calling any real API yet."""
+    from pipeline.actions import ExecutionError, execute_action  # type: ignore
+    import app as _app
+
+    try:
+        result = execute_action(get_store(), action_id, aruba_client=_app.aruba_client)
+    except ExecutionError as exc:
+        return jsonify({"error": str(exc)}), 409
+    return jsonify(result)
+
+
+@syslog_bp.route("/actions/<int:action_id>", methods=["PATCH"])
+@require_session
+@rate_limit(max_requests=30, window_seconds=60)
+def patch_action_route(action_id: int):
+    """Operator override — manually set status + notes without an LLM pass."""
+    body = request.get_json(silent=True) or {}
+    status = body.get("status")
+    notes = body.get("review_notes")
+    if status and status not in ("pending", "approved", "rejected"):
+        return jsonify({
+            "error": "status must be pending|approved|rejected",
+        }), 400
+    ok = get_store().update_proposed_action(
+        action_id, status=status, review_notes=notes,
+    )
+    if not ok:
+        return jsonify({"error": "action not found or nothing changed"}), 404
+    return jsonify({"action_id": action_id, "status": status})
