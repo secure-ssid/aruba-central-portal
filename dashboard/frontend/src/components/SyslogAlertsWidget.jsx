@@ -64,7 +64,8 @@ function formatTs(iso) {
   try {
     const d = new Date(iso);
     return d.toLocaleString(undefined, {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
     });
   } catch {
     return iso;
@@ -131,9 +132,15 @@ function AlertRow({ alert, onChanged }) {
               />
             )}
             <Chip size="small" label={`${alert.event_count} events`} variant="outlined" />
+            {/* Event window: when the device actually logged the events, not
+                when we persisted the alert row. Far more useful for triage. */}
             <Chip
               size="small"
-              label={formatTs(alert.last_seen || alert.created_at)}
+              label={
+                alert.first_seen && alert.last_seen && alert.first_seen !== alert.last_seen
+                  ? `${formatTs(alert.first_seen)} → ${formatTs(alert.last_seen)}`
+                  : formatTs(alert.last_seen || alert.first_seen || alert.created_at)
+              }
               variant="outlined"
             />
             {alert.incident_status && (
