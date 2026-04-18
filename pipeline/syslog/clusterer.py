@@ -29,6 +29,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
+from .anomaly import score_incident
 from .storage import StoredEvent, SyslogStore
 
 logger = logging.getLogger(__name__)
@@ -120,6 +121,7 @@ def cluster_once(
         g = groups.get(sig)
         if g is None:
             groups[sig] = {
+                "device_key": dkey,
                 "device_serial": ev.device_serial,
                 "event_code": ev.event_code,
                 "severity": ev.severity,
@@ -144,8 +146,8 @@ def cluster_once(
     new_count = 0
     touched = 0
     for sig, g in groups.items():
-        existed = store.get_incident_by_signature(sig) is not None
-        store.upsert_incident(
+        existed_row = store.get_incident_by_signature(sig)
+        incident_id = store.upsert_incident(
             cluster_signature=sig,
             device_serial=g["device_serial"],
             event_code=g["event_code"],
@@ -155,8 +157,24 @@ def cluster_once(
             event_ids=g["event_ids"],
         )
         touched += 1
-        if not existed:
+        if existed_row is None:
             new_count += 1
+
+        # Anomaly score uses the *total* count now on the incident (includes
+        # events added to an existing row), not just this tick's event_ids,
+        # so the score stays stable across reruns.
+        updated = store.get_incident(incident_id)
+        if updated:
+            bucket = _bucket_start(g["first_seen"], window)
+            result = score_incident(
+                store,
+                device_key=g["device_key"],
+                event_code=g["event_code"],
+                current_count=int(updated["event_count"]),
+                bucket_start=bucket,
+                window_sec=int(window.total_seconds()),
+            )
+            store.set_incident_anomaly_score(incident_id, result.score)
 
     logger.info(
         "clusterer: processed=%d groups=%d new=%d",

@@ -52,10 +52,16 @@ def test_signature_stable():
 
 
 def test_same_device_same_code_same_bucket_clusters(store):
-    t0 = datetime.now(timezone.utc) - timedelta(minutes=5)
+    # Pin all events inside a single aligned 5-minute bucket so this test
+    # can't flake near a bucket boundary (wall-clock-dependent otherwise).
+    t0 = datetime(2026, 4, 17, 22, 12, 30, tzinfo=timezone.utc)  # inside 22:10-22:15
     for i in range(4):
-        _ingest(store, when=t0 + timedelta(seconds=i * 30))
-    result = cluster_once(store)
+        _ingest(store, when=t0 + timedelta(seconds=i * 10))
+    result = cluster_once(
+        store,
+        lookback=timedelta(days=3650),  # wall-clock independent
+        now=t0 + timedelta(seconds=45),
+    )
     assert result.processed == 4
     assert result.new_incidents == 1
     incidents = store.list_incidents()
