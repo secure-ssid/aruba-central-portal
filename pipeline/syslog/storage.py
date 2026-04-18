@@ -508,15 +508,33 @@ class SyslogStore:
     # ─────────────────────── retention ────────────────────
 
     def prune_older_than(self, days: int = RETENTION_DAYS) -> int:
-        """Delete events older than N days. Returns rows deleted."""
+        """Delete events older than N days. Returns rows deleted.
+
+        Note: we intentionally do NOT run VACUUM here. VACUUM requires an
+        exclusive lock on the database and under WAL blocks every reader
+        (dashboard API) for the duration. The page cache does reclaim
+        freed pages as new rows arrive, so skipping VACUUM only costs us
+        a small amount of on-disk slack. Set `SYSLOG_VACUUM_AFTER_PRUNE=true`
+        to opt into the old behavior if the DB file ever gets large
+        enough to justify the stall.
+        """
         cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        vacuum = os.environ.get("SYSLOG_VACUUM_AFTER_PRUNE", "").lower() in ("1", "true", "yes")
         with self._write_lock:
             cur = self._conn.execute(
                 "DELETE FROM events WHERE received_at < ?", (_iso(cutoff),)
             )
             deleted = cur.rowcount or 0
-            if deleted:
-                self._conn.execute("VACUUM")
+        if deleted and vacuum:
+            # Run VACUUM outside the main connection so dashboard reads
+            # can still use `self._conn`. Opens a short-lived connection,
+            # executes VACUUM, closes. Still blocks writers — intentional.
+            try:
+                aux = sqlite3.connect(self.db_path, isolation_level=None)
+                aux.execute("VACUUM")
+                aux.close()
+            except sqlite3.OperationalError as exc:
+                logger.warning("VACUUM skipped (db busy): %s", exc)
         if deleted:
             logger.info("Pruned %d syslog events older than %d days", deleted, days)
         return deleted
