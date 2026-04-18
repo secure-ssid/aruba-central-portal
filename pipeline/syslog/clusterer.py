@@ -292,6 +292,20 @@ def cluster_once(
         # human summary. Below threshold we skip the call entirely (saves
         # tokens; the incident is still available via /api/syslog/incidents).
         if WRITER_ENABLED and result.score >= WRITER_THRESHOLD:
+            # Fingerprint dedup: if the set of distinct fingerprints on
+            # this incident hasn't changed since we last wrote the alert,
+            # the new events are duplicates of existing content — skip
+            # the writer/reviewer pass entirely. Saves LLM quota dramatically
+            # when a single bad client emits the same line thousands of times.
+            fp_now = store.incident_fingerprints_hash(incident_id)
+            fp_prev = store.alert_fingerprints_hash(incident_id)
+            if fp_now and fp_now == fp_prev:
+                logger.debug(
+                    "writer: incident=%s fingerprint unchanged — skip LLM (%s)",
+                    incident_id, fp_now,
+                )
+                continue
+
             updated["anomaly_score"] = result.score  # include latest score in prompt
             events_for_prompt = store.incident_events(incident_id, limit=20)
             summary_text: str | None = None
@@ -339,6 +353,10 @@ def cluster_once(
                 review_notes=notes,
                 approved=approved,
             )
+            # Stamp the alert with the fingerprint set we just summarized
+            # so the next tick can skip the LLM if nothing new arrived.
+            if fp_now:
+                store.set_alert_fingerprints_hash(incident_id, fp_now)
 
     logger.info(
         "clusterer: processed=%d groups=%d new=%d",
