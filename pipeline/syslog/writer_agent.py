@@ -168,10 +168,6 @@ def _build_prompt(incident: dict, events: list[Any], *, max_event_samples: int =
             lines.append("Action required (if any):")
             for a in knowledge.action_required:
                 lines.append(f"  • {a}")
-        if knowledge.never_do:
-            lines.append("NEVER do:")
-            for n in knowledge.never_do:
-                lines.append(f"  • {n}")
 
     lines += [
         "",

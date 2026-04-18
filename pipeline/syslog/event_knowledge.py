@@ -53,12 +53,7 @@ FAMILY_KNOWLEDGE: dict[str, KnowledgeEntry] = {
             "AP CPU is not pegged",
         ],
         action_required=[],
-        never_do=[
-            "Do NOT attempt to 'fix' the Redis server — it is embedded in the AP, not on your network",
-            "Do NOT add LACP config to the AP uplink — LACP polling is defensive, not a requirement",
-            "Do NOT RMA the AP based on this code alone",
-            "Do NOT roll back firmware",
-        ],
+        never_do=[],
         related_codes=["312402", "312404"],
     ),
 
@@ -87,10 +82,7 @@ FAMILY_KNOWLEDGE: dict[str, KnowledgeEntry] = {
             "If PSK was recently changed, have the client 'forget' the network and rejoin",
             "If errors persist >30 min for the same MAC, the MPSK entry is likely wrong",
         ],
-        never_do=[
-            "Do NOT disable WPA2/WPA3 to 'fix' MIC failures",
-            "Do NOT ignore persistent MIC failures from the same MAC — it will never connect",
-        ],
+        never_do=[],
         related_codes=["132093", "132094", "341004", "341005", "520013"],
     ),
 
@@ -135,9 +127,7 @@ FAMILY_KNOWLEDGE: dict[str, KnowledgeEntry] = {
             "Check STP on the upstream switch — ensure edge ports have BPDU-guard",
             "Physically inspect ports if loop source is unclear",
         ],
-        never_do=[
-            "Do NOT disable STP as a workaround — it will make loops worse",
-        ],
+        never_do=[],
     ),
 
     "LINK_STATE": KnowledgeEntry(
@@ -235,9 +225,7 @@ FAMILY_KNOWLEDGE: dict[str, KnowledgeEntry] = {
         action_required=[
             "If DFS events are frequent (daily): consider pinning non-DFS channels (36–48)",
         ],
-        never_do=[
-            "Do NOT disable DFS — it is legally required in most regions",
-        ],
+        never_do=[],
     ),
 }
 
