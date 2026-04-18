@@ -352,10 +352,10 @@ function SyslogPage() {
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Syslog pipeline
+            Events
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Local-network events → clustered incidents → LLM-written, reviewer-approved alerts.
+            LAN syslog + Aruba Central events → clustered incidents → LLM-written, reviewer-approved alerts.
           </Typography>
         </Box>
         <Button
