@@ -35,18 +35,42 @@ from __future__ import annotations
 import re
 
 # Exact (AOS numeric code or UPPER_SNAKE string) → family.
+#
+# Numeric codes below are AOS 10 / New Central — observed in live
+# traffic on LR-AP735 / Off_655 / MB_635 / BY-AP763 / Outsidefront /
+# MasterBa. Grouping rationale per code is inline so future additions
+# have a reference for "why did this get that family?".
 _EXACT_FAMILY: dict[str, str] = {
-    # ArubaOS 8 WPA/key handshake failures
+    # WPA key exchange / authentication story. These codes fire together
+    # whenever a client (usually the same MAC) fails the 4-way handshake —
+    # MIC mismatch (132094), wrong Message 2 (132093), handshake timeout
+    # (520013), and the authenticate-fail-integrity-check pair (341004
+    # "auth fail because integrity check" / 341005 RSSI telemetry that
+    # follows it). Grouped so one client/AP pair = one incident.
+    "132093": "WPA_HANDSHAKE",
     "132094": "WPA_HANDSHAKE",
+    "341004": "WPA_HANDSHAKE",
+    "341005": "WPA_HANDSHAKE",
     "520013": "WPA_HANDSHAKE",
-    # Classic AOS / RFC3164 codes that tend to emit together
-    "AP_EVENT_DOT11_ASSOC": "CLIENT_LIFECYCLE",
-    "AP_EVENT_DOT11_DISASSOC": "CLIENT_LIFECYCLE",
-    "AP_EVENT_DOT11_DEAUTH": "CLIENT_LIFECYCLE",
+    # Classic AOS / RFC3164 codes that tend to emit together with the
+    # numeric ones above.
+    "AP_EVENT_DOT11_ASSOC":   "CLIENT_LIFECYCLE",
+    "AP_EVENT_DOT11_DISASSOC":"CLIENT_LIFECYCLE",
+    "AP_EVENT_DOT11_DEAUTH":  "CLIENT_LIFECYCLE",
+    # Client roam / cloud sync — all "client X moved/left" stories.
+    "541023": "CLIENT_LIFECYCLE",
+    # AP telemetry / internal subsystems (LACP polling, redis event
+    # pipeline). Low-actionability, often noisy — keep them in their
+    # own family so they don't mask real client-facing issues and so a
+    # sudden storm of them still surfaces as one row.
+    "312402": "AP_INTERNAL",
+    "312404": "AP_INTERNAL",
+    # Rogue/neighbor AP detection — IDS-AP subsystem.
+    "127001": "ROGUE_AP",
     # Central normalized codes — see pipeline.central_events.normalizer
     "ONBOARDING_FAILURE_KEY_EXCHANGE": "WPA_HANDSHAKE",
     "ONBOARDING_FAILURE_KEY_EXCHANGE_MIC_FAILURE": "WPA_HANDSHAKE",
-    "802_11_DE_AUTHENTICATION_TO_CLIENT": "CLIENT_LIFECYCLE",
+    "802_11_DE_AUTHENTICATION_TO_CLIENT":   "CLIENT_LIFECYCLE",
     "802_11_DE_AUTHENTICATION_FROM_CLIENT": "CLIENT_LIFECYCLE",
     "CLIENT_ROAM_SUCCESS": "CLIENT_LIFECYCLE",
     "CLIENT_ROAM_FAILURE": "CLIENT_LIFECYCLE",

@@ -247,32 +247,93 @@ def _call_claude(prompt, system, max_tokens, temperature, timeout) -> LLMResult:
 # ──────────────────────── Ollama ────────────────────────
 
 
+def _ollama_pick_model(url: str, requested: str, timeout: float) -> str:
+    """Pick a model that actually exists on this Ollama server.
+
+    Ollama returns 404 on `/api/chat` for an unknown model, with no hint
+    about what's available — easy to miss in a sudo-launched process
+    where the env differs from the shell. Probe `/api/tags` and fall
+    back to the first locally installed model when the requested one
+    isn't there. If `requested` matches, use it unchanged.
+    """
+    try:
+        r = httpx.get(f"{url}/api/tags", timeout=min(timeout, 3.0))
+        r.raise_for_status()
+        models = [m.get("name") for m in (r.json().get("models") or []) if m.get("name")]
+    except Exception:  # noqa: BLE001 — probe only; if this fails, the
+        return requested  # main call will fail with a useful error too.
+    if requested in models:
+        return requested
+    # Try a loose prefix match (e.g. "gemma3:4b" matches "gemma3:latest")
+    stem = requested.split(":", 1)[0]
+    for m in models:
+        if m.split(":", 1)[0] == stem:
+            logger.info("ollama: requested model %r not present; using %r", requested, m)
+            return m
+    # No match at all — take the first non-cloud model, else the first.
+    local = [m for m in models if "cloud" not in m.lower()]
+    fallback = (local or models or [requested])[0]
+    if fallback != requested:
+        logger.warning(
+            "ollama: neither %r nor a %r variant found; falling back to %r",
+            requested, stem, fallback,
+        )
+    return fallback
+
+
+def _call_ollama_one(url: str, model: str, payload: dict, timeout: float) -> dict:
+    """Single HTTP attempt. Returns the parsed JSON or raises LLMError."""
+    try:
+        resp = httpx.post(f"{url}/api/chat", json=payload, timeout=timeout)
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise LLMError(f"Ollama HTTP error: {exc}") from exc
+    data = resp.json()
+    text = (data.get("message") or {}).get("content", "").strip()
+    if not text:
+        raise LLMError(f"Ollama returned empty response for {model}: {data!r}")
+    return {"text": text, "model": model}
+
+
 def _call_ollama(prompt, system, max_tokens, temperature, timeout) -> LLMResult:
     url = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-    model = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
+    requested = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
+    primary = _ollama_pick_model(url, requested, timeout)
+
+    # Optional secondary Ollama model — defaults to `qwen3.5:cloud` which
+    # Ollama hosts as a free remote 397B backing model. Set to empty to
+    # disable. The cascade only kicks in for rate-limit / 5xx / timeout
+    # errors on the primary; genuine bad-request / bad-payload errors
+    # still propagate so they don't get masked.
+    secondary = os.environ.get("OLLAMA_FALLBACK_MODEL", "qwen3.5:cloud").strip()
 
     messages: list[dict] = []
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
 
-    payload = {
-        "model": model,
-        "messages": messages,
-        "stream": False,
-        "options": {
-            "temperature": float(temperature),
-            "num_predict": int(max_tokens),
-        },
-    }
-    try:
-        resp = httpx.post(f"{url}/api/chat", json=payload, timeout=timeout)
-        resp.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise LLMError(f"Ollama HTTP error: {exc}") from exc
+    def _payload(model: str) -> dict:
+        return {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": float(temperature),
+                "num_predict": int(max_tokens),
+            },
+        }
 
-    data = resp.json()
-    text = (data.get("message") or {}).get("content", "").strip()
-    if not text:
-        raise LLMError(f"Ollama returned empty response: {data!r}")
-    return LLMResult(text=text, provider="ollama", model=model)
+    try:
+        out = _call_ollama_one(url, primary, _payload(primary), timeout)
+        return LLMResult(text=out["text"], provider="ollama", model=out["model"])
+    except LLMError as exc:
+        # Retry against the secondary if it's configured, different, and
+        # the primary failure is the "transient" kind.
+        if secondary and secondary != primary and _rate_limited_or_server_error(exc):
+            logger.warning(
+                "ollama: primary %r failed (%s) — retrying with %r",
+                primary, exc, secondary,
+            )
+            out = _call_ollama_one(url, secondary, _payload(secondary), timeout)
+            return LLMResult(text=out["text"], provider="ollama", model=out["model"])
+        raise
