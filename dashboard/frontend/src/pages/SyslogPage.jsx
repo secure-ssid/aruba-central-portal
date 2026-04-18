@@ -42,6 +42,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import SyslogAlertsWidget from '../components/SyslogAlertsWidget';
+import SyslogAlertsGrouped from '../components/SyslogAlertsGrouped';
 import {
   useSyslogAlerts,
   useSyslogIncidents,
@@ -383,12 +384,26 @@ function SyslogPage() {
       <StatsStrip />
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
+        <Tab label="Grouped by device / client" />
         <Tab label="Pending review" />
         <Tab label="Approved alerts" />
         <Tab label="All incidents" />
       </Tabs>
 
       {tab === 0 && (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <SyslogAlertsGrouped
+              title="Alerts grouped by device / client"
+              approvedOnly={false}
+              limit={200}
+              sinceHours={24}
+            />
+          </Grid>
+        </Grid>
+      )}
+
+      {tab === 1 && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SyslogAlertsWidget
@@ -401,7 +416,7 @@ function SyslogPage() {
         </Grid>
       )}
 
-      {tab === 1 && (
+      {tab === 2 && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SyslogAlertsWidget
@@ -415,7 +430,7 @@ function SyslogPage() {
         </Grid>
       )}
 
-      {tab === 2 && <IncidentsTable />}
+      {tab === 3 && <IncidentsTable />}
     </Container>
   );
 }

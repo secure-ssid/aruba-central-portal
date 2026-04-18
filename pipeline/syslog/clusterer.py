@@ -144,6 +144,19 @@ def _find_continuing_incident(
     return None
 
 
+def _event_client_mac(ev: StoredEvent) -> str | None:
+    """Pull client_mac out of Central events (it's in structured_data).
+    Syslog parser doesn't currently extract it, so those just return None."""
+    sd = ev.structured_data or {}
+    if not isinstance(sd, dict):
+        return None
+    for key in ("client-mac", "clientMac", "client_mac", "calling-station-id"):
+        val = sd.get(key)
+        if val:
+            return str(val).lower()
+    return None
+
+
 def _event_ts(ev: StoredEvent) -> datetime:
     """Prefer the device-reported time; fall back to server ingest time."""
     for candidate in (ev.event_time, ev.received_at):
@@ -207,12 +220,14 @@ def cluster_once(
             if prior is not None:
                 sig = prior
 
+        client_mac = _event_client_mac(ev)
         g = groups.get(sig)
         if g is None:
             groups[sig] = {
                 "device_key": dkey,
                 "device_serial": ev.device_serial,
                 "device_name": ev.device_name,
+                "client_mac": client_mac,
                 "event_code": ev.event_code,
                 "severity": ev.severity,
                 "first_seen": ts,
@@ -229,11 +244,13 @@ def cluster_once(
         # Lowest severity wins (emerg=0 beats debug=7).
         if g["severity"] is None or ev.severity is not None and ev.severity < g["severity"]:
             g["severity"] = ev.severity
-        # Prefer a real device_serial / device_name over None.
+        # Prefer a real device_serial / device_name / client_mac over None.
         if not g["device_serial"] and ev.device_serial:
             g["device_serial"] = ev.device_serial
         if not g["device_name"] and ev.device_name:
             g["device_name"] = ev.device_name
+        if not g.get("client_mac") and client_mac:
+            g["client_mac"] = client_mac
 
     new_count = 0
     touched = 0
@@ -243,6 +260,7 @@ def cluster_once(
             cluster_signature=sig,
             device_serial=g["device_serial"],
             device_name=g.get("device_name"),
+            client_mac=g.get("client_mac"),
             event_code=g["event_code"],
             severity=g["severity"],
             first_seen=g["first_seen"],

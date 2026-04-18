@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS incidents (
     last_seen         TEXT NOT NULL,
     device_serial     TEXT,
     device_name       TEXT,        -- human-friendly label (AP name, hostname)
+    client_mac        TEXT,        -- phase 11: per-client grouping on dashboard
     event_code        TEXT,
     severity          INTEGER,
     event_count       INTEGER NOT NULL DEFAULT 0,
@@ -135,6 +136,10 @@ _MIGRATIONS = [
     # 'udp' | 'tcp' | 'central' | 'test'. Back-filled to 'udp' for legacy
     # rows via the default; new rows will carry their actual source.
     "ALTER TABLE events ADD COLUMN source TEXT DEFAULT 'udp'",
+    # Phase 11: carry client_mac on the incident so the dashboard can
+    # roll up "same client bouncing off the same AP" as one group
+    # without a second query per row.
+    "ALTER TABLE incidents ADD COLUMN client_mac TEXT",
 ]
 
 
@@ -467,6 +472,7 @@ class SyslogStore:
         cluster_signature: str,
         device_serial: str | None,
         device_name: str | None = None,
+        client_mac: str | None = None,
         event_code: str | None,
         severity: int | None,
         first_seen: datetime,
@@ -491,14 +497,15 @@ class SyslogStore:
             if row is None:
                 cur = self._conn.execute(
                     "INSERT INTO incidents ("
-                    "  first_seen, last_seen, device_serial, device_name, "
+                    "  first_seen, last_seen, device_serial, device_name, client_mac, "
                     "  event_code, severity, event_count, cluster_signature, status"
-                    ") VALUES (?,?,?,?,?,?,?,?, 'open')",
+                    ") VALUES (?,?,?,?,?,?,?,?,?, 'open')",
                     (
                         _iso(first_seen),
                         _iso(last_seen),
                         device_serial,
                         device_name,
+                        client_mac,
                         event_code,
                         severity,
                         len(event_ids),
@@ -521,10 +528,11 @@ class SyslogStore:
                 self._conn.execute(
                     "UPDATE incidents SET first_seen=?, last_seen=?, "
                     "event_count = event_count + ?, severity=?, "
-                    "device_name = COALESCE(device_name, ?) "
+                    "device_name = COALESCE(device_name, ?), "
+                    "client_mac  = COALESCE(client_mac, ?) "
                     "WHERE id=?",
                     (new_first, new_last, len(event_ids), new_sev,
-                     device_name, incident_id),
+                     device_name, client_mac, incident_id),
                 )
 
             self._conn.executemany(
@@ -684,9 +692,9 @@ class SyslogStore:
         the LLM summary and the underlying severity/score in one call.
         """
         sql = [
-            "SELECT a.*, i.device_serial, i.event_code, i.severity, "
-            "       i.event_count, i.anomaly_score, i.first_seen, i.last_seen, "
-            "       i.status AS incident_status "
+            "SELECT a.*, i.device_serial, i.device_name, i.client_mac, "
+            "       i.event_code, i.severity, i.event_count, i.anomaly_score, "
+            "       i.first_seen, i.last_seen, i.status AS incident_status "
             "FROM alerts a JOIN incidents i ON i.id = a.incident_id WHERE 1=1",
         ]
         params: list[Any] = []
