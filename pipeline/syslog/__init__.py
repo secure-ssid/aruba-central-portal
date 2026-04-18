@@ -13,6 +13,7 @@ from .clusterer import ClusterResult, cluster_once
 from .parser import ParsedEvent, parse_syslog
 from .server import SyslogServer, get_store, start_default_server
 from .storage import DEFAULT_DB_PATH, SyslogStore
+from .writer_agent import fallback_summary, write_alert
 
 __all__ = [
     "SyslogStore",
@@ -26,4 +27,6 @@ __all__ = [
     "ClusterResult",
     "score_incident",
     "AnomalyScore",
+    "write_alert",
+    "fallback_summary",
 ]

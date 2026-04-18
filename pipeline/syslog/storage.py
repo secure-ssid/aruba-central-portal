@@ -524,6 +524,93 @@ class SyslogStore:
                 (float(score), incident_id),
             )
 
+    # ─────────────────────── alerts (phase 4+) ────────────────
+
+    def upsert_alert(
+        self,
+        *,
+        incident_id: int,
+        summary: str,
+        review_notes: str | None = None,
+        approved: int = 0,
+    ) -> int:
+        """Create or replace the alert row for an incident.
+
+        The alerts table has a UNIQUE constraint on incident_id, so
+        re-writing a summary (e.g. after the incident grew) updates the
+        same row instead of stacking duplicates in the UI.
+        """
+        now_iso = _iso(datetime.now(timezone.utc))
+        with self._write_lock:
+            row = self._conn.execute(
+                "SELECT id FROM alerts WHERE incident_id = ?", (incident_id,)
+            ).fetchone()
+            if row is None:
+                cur = self._conn.execute(
+                    "INSERT INTO alerts (incident_id, created_at, summary, review_notes, approved) "
+                    "VALUES (?,?,?,?,?)",
+                    (incident_id, now_iso, summary, review_notes, int(approved)),
+                )
+                return int(cur.lastrowid)
+            alert_id = int(row["id"])
+            self._conn.execute(
+                "UPDATE alerts SET summary=?, review_notes=?, approved=? WHERE id=?",
+                (summary, review_notes, int(approved), alert_id),
+            )
+            return alert_id
+
+    def get_alert_by_incident(self, incident_id: int) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT * FROM alerts WHERE incident_id = ?", (incident_id,)
+        ).fetchone()
+        return dict(row) if row else None
+
+    def list_alerts(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        approved_only: bool = False,
+        since: datetime | None = None,
+    ) -> list[dict[str, Any]]:
+        """Alerts joined with their incident row so the dashboard gets both
+        the LLM summary and the underlying severity/score in one call.
+        """
+        sql = [
+            "SELECT a.*, i.device_serial, i.event_code, i.severity, "
+            "       i.event_count, i.anomaly_score, i.first_seen, i.last_seen, "
+            "       i.status AS incident_status "
+            "FROM alerts a JOIN incidents i ON i.id = a.incident_id WHERE 1=1",
+        ]
+        params: list[Any] = []
+        if approved_only:
+            sql.append("AND a.approved = 1")
+        if since:
+            sql.append("AND a.created_at >= ?")
+            params.append(_iso(since))
+        sql.append("ORDER BY a.created_at DESC LIMIT ? OFFSET ?")
+        params.extend([int(limit), int(offset)])
+        cur = self._conn.execute(" ".join(sql), params)
+        return [dict(r) for r in cur.fetchall()]
+
+    def update_alert_review(
+        self,
+        alert_id: int,
+        *,
+        review_notes: str | None,
+        approved: int,
+    ) -> bool:
+        """Reviewer agent writes back its verdict (approved=-1 rejected,
+        0 pending, 1 approved)."""
+        if approved not in (-1, 0, 1):
+            raise ValueError(f"invalid approved flag: {approved}")
+        with self._write_lock:
+            cur = self._conn.execute(
+                "UPDATE alerts SET review_notes=?, approved=? WHERE id=?",
+                (review_notes, int(approved), alert_id),
+            )
+        return (cur.rowcount or 0) > 0
+
     # ─────────────────────── anomaly baseline (phase 3) ───────
 
     def bucketed_event_counts(
