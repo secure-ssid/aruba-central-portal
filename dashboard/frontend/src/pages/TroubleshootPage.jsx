@@ -3,7 +3,7 @@
  * Tools for diagnosing network issues and viewing device configurations
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Box,
@@ -50,7 +50,7 @@ import {
   RestartAlt as RestartIcon,
   Route as RouteIcon,
 } from '@mui/icons-material';
-import { troubleshootAPI, deviceAPI, showCommandsAPI } from '../services/api';
+import { troubleshootAPI, showCommandsAPI } from '../services/api';
 import DeviceSelector from '../components/DeviceSelector';
 import { getErrorMessage } from '../utils/errorUtils';
 
@@ -103,13 +103,9 @@ function TroubleshootPage() {
   const [success, setSuccess] = useState('');
   const [expandedCard, setExpandedCard] = useState(null);
 
-  // Device lists
-  const [switches, setSwitches] = useState([]);
-  const [accessPoints, setAccessPoints] = useState([]);
-  const [devicesLoading, setDevicesLoading] = useState(true);
-
   // Ping test state
   const [deviceSerial, setDeviceSerial] = useState(deviceFromUrl || '');
+  const [pingDevice, setPingDevice] = useState(null);
   const [pingTarget, setPingTarget] = useState('');
 
   // Client session state
@@ -120,6 +116,11 @@ function TroubleshootPage() {
 
   // Show commands state
   const [showCmdSerial, setShowCmdSerial] = useState(deviceFromUrl || '');
+  const [showCmdDevice, setShowCmdDevice] = useState(null);
+
+  // Export config state
+  const [exportSerial, setExportSerial] = useState(deviceFromUrl || '');
+  const [exportDevice, setExportDevice] = useState(null);
 
   // AP troubleshooting state
   const [apToolSerial, setApToolSerial] = useState(deviceFromUrl || '');
@@ -140,36 +141,6 @@ function TroubleshootPage() {
   const [cxShowCommand, setCxShowCommand] = useState('');
   const [cxLocateEnable, setCxLocateEnable] = useState(true);
 
-  // Fetch devices on component mount
-  useEffect(() => {
-    fetchDevices();
-  }, []);
-
-
-  const fetchDevices = async () => {
-    try {
-      setDevicesLoading(true);
-      const [switchesData, apsData] = await Promise.allSettled([
-        deviceAPI.getSwitches(),
-        deviceAPI.getAccessPoints(),
-      ]);
-
-      if (switchesData.status === 'fulfilled') {
-        const switchList = switchesData.value.switches || switchesData.value.result || switchesData.value.items || [];
-        setSwitches(switchList);
-      }
-
-      if (apsData.status === 'fulfilled') {
-        const apList = apsData.value.aps || apsData.value.result || apsData.value.items || [];
-        setAccessPoints(apList);
-      }
-    } catch (err) {
-      console.error('Error fetching devices:', err);
-    } finally {
-      setDevicesLoading(false);
-    }
-  };
-
   const setLoadingState = (key, value) => {
     setLoading(prev => ({ ...prev, [key]: value }));
   };
@@ -185,7 +156,10 @@ function TroubleshootPage() {
     setResult(null);
 
     try {
-      const response = await troubleshootAPI.ping(deviceSerial, pingTarget);
+      const isAP = (pingDevice?.type || '').toUpperCase() === 'AP';
+      const response = isAP
+        ? await troubleshootAPI.pingAP(deviceSerial, pingTarget)
+        : await troubleshootAPI.ping(deviceSerial, pingTarget);
       setResult({ type: 'ping', data: response });
     } catch (err) {
       setError(getErrorMessage(err, 'Ping test failed'));
@@ -247,7 +221,7 @@ function TroubleshootPage() {
     setResult(null);
 
     try {
-      const response = await showCommandsAPI.getTechSupport(showCmdSerial);
+      const response = await showCommandsAPI.getTechSupport(showCmdSerial, showCmdDevice?.type || null);
       
       // Check for error in response
       if (response.error) {
@@ -279,7 +253,7 @@ function TroubleshootPage() {
   };
 
   const handleExportConfig = async () => {
-    if (!showCmdSerial) {
+    if (!exportSerial) {
       setError('Please enter device serial');
       return;
     }
@@ -288,11 +262,11 @@ function TroubleshootPage() {
     setError('');
 
     try {
-      const blob = await showCommandsAPI.exportConfig(showCmdSerial);
+      const blob = await showCommandsAPI.exportConfig(exportSerial);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${showCmdSerial}_config.txt`;
+      a.download = `${exportSerial}_config.txt`;
       a.click();
       window.URL.revokeObjectURL(url);
       setSuccess('Configuration exported successfully');
@@ -1443,7 +1417,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={deviceSerial} onChange={setDeviceSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={deviceSerial} onChange={setDeviceSerial} onDeviceChange={setPingDevice} required label="Device" helperText="Select a device" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Target IP or Hostname" value={pingTarget} onChange={(e) => setPingTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
                   <Button variant="contained" fullWidth onClick={handlePingTest} disabled={loading.ping} startIcon={loading.ping ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
                     {loading.ping ? 'Running...' : 'Run Ping Test'}
@@ -1484,7 +1458,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apSerial} onChange={setApSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apSerial} onChange={setApSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <Button variant="contained" fullWidth onClick={handleGetAPDiagnostics} disabled={loading.ap} startIcon={loading.ap ? <CircularProgress size={20} /> : <BugReportIcon />}>
                     {loading.ap ? 'Fetching...' : 'Get AP Diagnostics'}
                   </Button>
@@ -1504,7 +1478,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} onDeviceChange={setShowCmdDevice} required label="Device" helperText="Select a device" sx={{ mb: 1 }} />
                   <Button variant="contained" fullWidth onClick={handleShowTechSupport} disabled={loading.techSupport || !showCmdSerial} startIcon={loading.techSupport ? <CircularProgress size={20} /> : <BugReportIcon />}>
                     {loading.techSupport ? 'Loading...' : 'Get Tech Support'}
                   </Button>
@@ -1524,8 +1498,8 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={showCmdSerial} onChange={setShowCmdSerial} required label="Device" helperText="Select a device" disabled={devicesLoading} sx={{ mb: 1 }} />
-                  <Button variant="contained" fullWidth onClick={handleExportConfig} disabled={loading.export || !showCmdSerial} startIcon={loading.export ? <CircularProgress size={20} /> : <DownloadIcon />}>
+                  <DeviceSelector value={exportSerial} onChange={setExportSerial} onDeviceChange={setExportDevice} required label="Device" helperText="Select a device" sx={{ mb: 1 }} />
+                  <Button variant="contained" fullWidth onClick={handleExportConfig} disabled={loading.export || !exportSerial} startIcon={loading.export ? <CircularProgress size={20} /> : <DownloadIcon />}>
                     {loading.export ? 'Exporting...' : 'Export Configuration'}
                   </Button>
                 </Box>
@@ -1551,7 +1525,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Target IP or Hostname" value={apPingTarget} onChange={(e) => setApPingTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
                   <Button variant="contained" fullWidth onClick={handleApPing} disabled={loading.apPing} startIcon={loading.apPing ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
                     {loading.apPing ? 'Running...' : 'Run Ping'}
@@ -1572,7 +1546,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Target IP or Hostname" value={apTracerouteTarget} onChange={(e) => setApTracerouteTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
                   <Button variant="contained" fullWidth onClick={handleApTraceroute} disabled={loading.apTraceroute} startIcon={loading.apTraceroute ? <CircularProgress size={20} /> : <RouteIcon />}>
                     {loading.apTraceroute ? 'Running...' : 'Run Traceroute'}
@@ -1593,7 +1567,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Hostname" value={apNslookupHost} onChange={(e) => setApNslookupHost(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., google.com" />
                   <Button variant="contained" fullWidth onClick={handleApNslookup} disabled={loading.apNslookup} startIcon={loading.apNslookup ? <CircularProgress size={20} /> : <HttpIcon />}>
                     {loading.apNslookup ? 'Running...' : 'Run DNS Lookup'}
@@ -1614,7 +1588,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <TextField fullWidth label="URL" value={apHttpUrl} onChange={(e) => setApHttpUrl(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., http://example.com" />
                   <Button variant="contained" fullWidth onClick={handleApHttpTest} disabled={loading.apHttpTest} startIcon={loading.apHttpTest ? <CircularProgress size={20} /> : <HttpIcon />}>
                     {loading.apHttpTest ? 'Running...' : 'Run HTTP Test'}
@@ -1635,7 +1609,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <Button variant="contained" fullWidth onClick={handleApSpeedtest} disabled={loading.apSpeedtest} startIcon={loading.apSpeedtest ? <CircularProgress size={20} /> : <NetworkCheckIcon />}>
                     {loading.apSpeedtest ? 'Running...' : 'Run Speed Test'}
                   </Button>
@@ -1655,7 +1629,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <Button variant="contained" fullWidth onClick={handleApLocate} disabled={loading.apLocate} startIcon={loading.apLocate ? <CircularProgress size={20} /> : <LocationIcon />}>
                     {loading.apLocate ? 'Locating...' : 'Locate AP'}
                   </Button>
@@ -1675,7 +1649,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={apToolSerial} onChange={setApToolSerial} required label="Access Point" deviceType="AP" helperText="Select an access point" sx={{ mb: 1 }} />
                   <Alert severity="warning" sx={{ mb: 1 }}>
                     Warning: Clients connected to this AP will be disconnected.
                   </Alert>
@@ -1705,7 +1679,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Target IP or Hostname" value={cxTracerouteTarget} onChange={(e) => setCxTracerouteTarget(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 8.8.8.8 or google.com" />
                   <Button variant="contained" fullWidth onClick={handleCxTraceroute} disabled={loading.cxTraceroute} startIcon={loading.cxTraceroute ? <CircularProgress size={20} /> : <RouteIcon />}>
                     {loading.cxTraceroute ? 'Running...' : 'Run Traceroute'}
@@ -1726,7 +1700,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Port" value={cxPoePort} onChange={(e) => setCxPoePort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
                   <Button variant="contained" fullWidth onClick={handleCxPoeBounce} disabled={loading.cxPoeBounce} startIcon={loading.cxPoeBounce ? <CircularProgress size={20} /> : <PowerIcon />}>
                     {loading.cxPoeBounce ? 'Running...' : 'Bounce PoE'}
@@ -1747,7 +1721,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Port" value={cxPortBouncePort} onChange={(e) => setCxPortBouncePort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
                   <Button variant="contained" fullWidth onClick={handleCxPortBounce} disabled={loading.cxPortBounce} startIcon={loading.cxPortBounce ? <CircularProgress size={20} /> : <RouterIcon />}>
                     {loading.cxPortBounce ? 'Running...' : 'Bounce Port'}
@@ -1768,7 +1742,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Port" value={cxCableTestPort} onChange={(e) => setCxCableTestPort(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., 1/1" />
                   <Button variant="contained" fullWidth onClick={handleCxCableTest} disabled={loading.cxCableTest} startIcon={loading.cxCableTest ? <CircularProgress size={20} /> : <CableIcon />}>
                     {loading.cxCableTest ? 'Running...' : 'Run Cable Test'}
@@ -1789,7 +1763,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="URL" value={cxHttpUrl} onChange={(e) => setCxHttpUrl(e.target.value)} sx={{ mb: 1 }} placeholder="e.g., http://example.com" />
                   <Button variant="contained" fullWidth onClick={handleCxHttpTest} disabled={loading.cxHttpTest} startIcon={loading.cxHttpTest ? <CircularProgress size={20} /> : <HttpIcon />}>
                     {loading.cxHttpTest ? 'Running...' : 'Run HTTP Test'}
@@ -1810,7 +1784,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <TextField fullWidth label="Username" value={cxAaaUsername} onChange={(e) => setCxAaaUsername(e.target.value)} sx={{ mb: 1 }} placeholder="Enter username" />
                   <TextField fullWidth type="password" label="Password" value={cxAaaPassword} onChange={(e) => setCxAaaPassword(e.target.value)} sx={{ mb: 1 }} placeholder="Enter password" />
                   <Button variant="contained" fullWidth onClick={handleCxAaaTest} disabled={loading.cxAaaTest} startIcon={loading.cxAaaTest ? <CircularProgress size={20} /> : <SecurityIcon />}>
@@ -1832,7 +1806,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                     <Button variant="outlined" fullWidth onClick={handleCxListShowCommands} disabled={loading.cxListShowCommands} startIcon={loading.cxListShowCommands ? <CircularProgress size={20} /> : <CodeIcon />}>
                       {loading.cxListShowCommands ? 'Loading...' : 'List Commands'}
@@ -1858,7 +1832,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button variant={cxLocateEnable ? 'contained' : 'outlined'} fullWidth onClick={() => { setCxLocateEnable(true); handleCxLocate(true); }} disabled={loading.cxLocate} startIcon={loading.cxLocate ? <CircularProgress size={20} /> : <LocationIcon />}>
                       {loading.cxLocate ? 'Enabling...' : 'Enable Locate'}
@@ -1883,7 +1857,7 @@ function TroubleshootPage() {
                 toggleCard={toggleCard}
               >
                 <Box>
-                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" disabled={devicesLoading} sx={{ mb: 1 }} />
+                  <DeviceSelector value={cxSerial} onChange={setCxSerial} required label="CX Switch" deviceType="Switch" helperText="Select a CX switch" sx={{ mb: 1 }} />
                   <Alert severity="warning" sx={{ mb: 1 }}>
                     Warning: This will reboot the switch and cause a network interruption.
                   </Alert>

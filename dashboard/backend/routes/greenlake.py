@@ -239,7 +239,7 @@ def get_alerts():
         for ep in [
             "/network-notifications/v1/alerts",
             "/network-notifications/v1alpha1/alerts",
-            "/network-monitoring/v1/alerts",
+            "/network-monitoring/v1alpha1/alerts",
         ]:
             try:
                 response = aruba_client.get(ep, params=params)
@@ -482,7 +482,7 @@ def get_events():
             params["type"] = event_type
 
         last_err = None
-        for ep in ["/network-monitoring/v1/events", "/network-notifications/v1/events"]:
+        for ep in ["/network-monitoring/v1alpha1/events", "/network-notifications/v1/events"]:
             try:
                 response = aruba_client.get(ep, params=params)
                 return jsonify(response)
@@ -516,7 +516,7 @@ def get_bandwidth_analytics():
     try:
         params = request.args.to_dict()
         try:
-            response = aruba_client.get("/network-monitoring/v1/top-aps-by-usage", params=params)
+            response = aruba_client.get("/network-monitoring/v1alpha1/top-aps-by-usage", params=params)
             return jsonify(response)
         except Exception as aerr:
             if (
@@ -543,7 +543,7 @@ def get_client_count_analytics():
     try:
         params = request.args.to_dict()
         try:
-            response = aruba_client.get("/network-monitoring/v1/clients-trend", params=params)
+            response = aruba_client.get("/network-monitoring/v1alpha1/clients-trend", params=params)
             return jsonify(response)
         except Exception as aerr:
             if (
@@ -563,24 +563,14 @@ def get_client_count_analytics():
 @greenlake_bp.route("/api/analytics/device-uptime", methods=["GET"])
 @require_session
 def get_device_uptime():
-    """Get device uptime statistics."""
+    """Get device uptime via New Central sites-health (Classic /monitoring/v1/devices/uptime removed)."""
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        try:
-            response = aruba_client.get("/monitoring/v1/devices/uptime")
-            return jsonify(response)
-        except Exception as aerr:
-            if (
-                "404" in str(aerr)
-                or "400" in str(aerr)
-                or "Not Found" in str(aerr)
-                or "Bad Request" in str(aerr)
-            ):
-                logger.warning("Device uptime not available; returning empty list")
-                return jsonify({"items": [], "count": 0})
-            raise aerr
+        params = request.args.to_dict()
+        response = aruba_client.get("/network-monitoring/v1alpha1/sites-health", params=params)
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching device uptime: {e}")
         return jsonify({"error": str(e)}), 500
@@ -589,24 +579,16 @@ def get_device_uptime():
 @greenlake_bp.route("/api/analytics/ap-performance", methods=["GET"])
 @require_session
 def get_ap_performance():
-    """Get AP performance metrics."""
+    """Get AP performance via New Central top-aps-by-wireless-usage (Classic /monitoring/v1/aps/performance removed)."""
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        try:
-            response = aruba_client.get("/monitoring/v1/aps/performance")
-            return jsonify(response)
-        except Exception as aerr:
-            if (
-                "404" in str(aerr)
-                or "400" in str(aerr)
-                or "Not Found" in str(aerr)
-                or "Bad Request" in str(aerr)
-            ):
-                logger.warning("AP performance not available; returning empty list")
-                return jsonify({"items": [], "count": 0})
-            raise aerr
+        params = request.args.to_dict()
+        response = aruba_client.get(
+            "/network-monitoring/v1alpha1/top-aps-by-wireless-usage", params=params
+        )
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching AP performance: {e}")
         return jsonify({"error": str(e)}), 500
@@ -622,7 +604,7 @@ def get_top_apps():
     try:
         params = request.args.to_dict()
         # Requires site-id, start-at, end-at query params per MRT API spec
-        response = aruba_client.get("/network-monitoring/v1/applications", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/applications", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top apps: {e}")
@@ -639,7 +621,7 @@ def get_top_aps_wireless():
     try:
         params = request.args.to_dict()
         response = aruba_client.get(
-            "/network-monitoring/v1/top-aps-by-wireless-usage", params=params
+            "/network-monitoring/v1alpha1/top-aps-by-wireless-usage", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -656,7 +638,7 @@ def get_clients_trend():
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get("/network-monitoring/v1/clients-trend", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/clients-trend", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching clients trend: {e}")
@@ -1510,7 +1492,7 @@ def get_top_aps_by_wireless_usage():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = cached_get("/central/v2/sites")
+                sites = cached_get("/network-config/v1alpha1/sites")
                 if isinstance(sites, dict) and sites.get("sites"):
                     site_id = sites["sites"][0].get("site_id") or sites["sites"][0].get("id")
             except Exception as _:
@@ -1526,7 +1508,7 @@ def get_top_aps_by_wireless_usage():
 
         try:
             response = aruba_client.get(
-                "/network-monitoring/v1/top-aps-by-wireless-usage", params=params
+                "/network-monitoring/v1alpha1/top-aps-by-wireless-usage", params=params
             )
             return jsonify(response)
         except Exception:
@@ -1557,7 +1539,7 @@ def get_top_aps_by_client_count():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = cached_get("/central/v2/sites")
+                sites = cached_get("/network-config/v1alpha1/sites")
                 if isinstance(sites, dict) and sites.get("sites"):
                     site_id = sites["sites"][0].get("site_id") or sites["sites"][0].get("id")
             except Exception as _:
@@ -1569,7 +1551,7 @@ def get_top_aps_by_client_count():
 
         try:
             response = aruba_client.get(
-                "/network-monitoring/v1/top-aps-by-client-count", params=params
+                "/network-monitoring/v1alpha1/top-aps-by-client-count", params=params
             )
             return jsonify(response)
         except Exception:
@@ -1597,7 +1579,7 @@ def get_network_usage_report():
         # Auto-select first site if not provided
         if not site_id:
             try:
-                sites = cached_get("/central/v2/sites")
+                sites = cached_get("/network-config/v1alpha1/sites")
                 if isinstance(sites, dict) and sites.get("sites"):
                     site_id = sites["sites"][0].get("site_id") or sites["sites"][0].get("id")
             except Exception as _:
@@ -1608,7 +1590,7 @@ def get_network_usage_report():
             params["site-id"] = site_id
 
         try:
-            response = aruba_client.get("/network-monitoring/v1/network-usage", params=params)
+            response = aruba_client.get("/network-monitoring/v1alpha1/network-usage", params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -1631,7 +1613,7 @@ def get_device_inventory_report():
     try:
         # Get all devices
         try:
-            devices_response = cached_get("/network-monitoring/v1/devices")
+            devices_response = cached_get("/network-monitoring/v1alpha1/devices")
         except Exception:
             try:
                 devices_response = aruba_client.get("/reporting/v1/device-inventory")
@@ -1684,7 +1666,7 @@ def get_wireless_health_report():
             params["site-id"] = site_id
 
         try:
-            response = aruba_client.get("/network-monitoring/v1/wireless-health", params=params)
+            response = aruba_client.get("/network-monitoring/v1alpha1/wireless-health", params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -1713,7 +1695,7 @@ def get_top_ssids_by_usage():
             params["site-id"] = site_id
 
         try:
-            response = aruba_client.get("/network-monitoring/v1/top-ssids-by-usage", params=params)
+            response = aruba_client.get("/network-monitoring/v1alpha1/top-ssids-by-usage", params=params)
             return jsonify(response)
         except Exception:
             try:
@@ -1762,7 +1744,7 @@ def get_devices_with_greenlake():
         devices = []
         try:
             # Try network-monitoring v1alpha1 first (preferred)
-            devices_response = cached_get("/network-monitoring/v1/devices")
+            devices_response = cached_get("/network-monitoring/v1alpha1/devices")
             devices = monitoring_list_items(devices_response)
             if devices:
                 logger.info(
@@ -1773,7 +1755,7 @@ def get_devices_with_greenlake():
             warnings.append("Primary device API unavailable, using fallback endpoint")
             # Fallback to monitoring/v1 API
             try:
-                devices_response = aruba_client.get("/monitoring/v1/devices")
+                devices_response = aruba_client.get("/network-monitoring/v1alpha1/devices")
                 devices = monitoring_list_items(devices_response)
                 if devices:
                     logger.info(
@@ -1941,7 +1923,7 @@ def grafana_kpis():
     def fetch():
         result = {}
         try:
-            r = cached_get("/network-monitoring/v1/devices")
+            r = cached_get("/network-monitoring/v1alpha1/devices")
             items = monitoring_list_items(r)
             total = r.get("count", r.get("total", len(items)))
             up = sum(
@@ -1968,7 +1950,7 @@ def grafana_kpis():
                 fleet_health_pct=0,
             )
         try:
-            r = cached_get("/network-monitoring/v1/aps")
+            r = cached_get("/network-monitoring/v1alpha1/aps")
             items = monitoring_list_items(r)
             total = r.get("count", r.get("total", len(items)))
             up = sum(
@@ -1979,13 +1961,13 @@ def grafana_kpis():
             logger.warning(f"Grafana KPI APs: {e}")
             result.update(total_aps=0, aps_up=0, aps_down=0)
         try:
-            r = aruba_client.get("/network-monitoring/v1/clients")
+            r = aruba_client.get("/network-monitoring/v1alpha1/clients")
             result["total_clients"] = r.get("count", len(monitoring_list_items(r)))
         except Exception as e:
             logger.warning(f"Grafana KPI clients: {e}")
             result["total_clients"] = 0
         try:
-            r = cached_get("/network-monitoring/v1/sites-health")
+            r = cached_get("/network-monitoring/v1alpha1/sites-health")
             sites = monitoring_list_items(r)
             result["total_sites"] = r.get("count", r.get("total", len(sites)))
             result["healthy_sites"] = sum(
@@ -2009,7 +1991,7 @@ def grafana_devices_by_type():
     aruba_client = _app.aruba_client
 
     def fetch():
-        r = cached_get("/network-monitoring/v1/devices")
+        r = cached_get("/network-monitoring/v1alpha1/devices")
         by_type = {}
         for d in monitoring_list_items(r):
             dt = d.get("deviceType", d.get("type", "Unknown"))
@@ -2028,7 +2010,7 @@ def grafana_sites_health():
     aruba_client = _app.aruba_client
 
     def fetch():
-        r = aruba_client.get("/network-monitoring/v1/sites-health")
+        r = aruba_client.get("/network-monitoring/v1alpha1/sites-health")
         sites = monitoring_list_items(r)
         return [
             {

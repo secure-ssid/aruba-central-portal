@@ -728,34 +728,25 @@ def get_clients():
             f = base_params.get("filter", "")
             base_params["filter"] = (f + " and " if f else "") + f"wlanName eq '{ssid}'"
 
-        # Try v1 first (what MCP uses and what works)
-        endpoints_to_try = [
-            ("/network-monitoring/v1/clients", lambda r: r.get("clients", r.get("items", []))),
-            ("/monitoring/v2/clients", lambda r: r.get("clients", r.get("items", []))),
-            ("/monitoring/v1/clients", lambda r: r.get("clients", r.get("items", []))),
-        ]
-
         all_clients = []
-        for endpoint, extractor in endpoints_to_try:
-            try:
-                response = aruba_client.get(endpoint, params=base_params)
-                clients = extractor(response)
-                total = response.get("total", response.get("count", len(clients)))
-                logger.info(f"Clients fetched from {endpoint}: {len(clients)} (total={total})")
-                all_clients = list(clients)
+        try:
+            response = aruba_client.get("/network-monitoring/v1alpha1/clients", params=base_params)
+            extractor = lambda r: r.get("clients", r.get("items", []))
+            clients = extractor(response)
+            total = response.get("total", response.get("count", len(clients)))
+            logger.info(f"Clients fetched: {len(clients)} (total={total})")
+            all_clients = list(clients)
 
-                # Auto-paginate 100 at a time until we have everything (or hit max_total)
-                while len(all_clients) < total and len(all_clients) < max_total:
-                    next_params = {**base_params, "offset": len(all_clients)}
-                    next_resp = aruba_client.get(endpoint, params=next_params)
-                    next_page = extractor(next_resp)
-                    if not next_page:
-                        break
-                    all_clients.extend(next_page)
-                break
-            except Exception as e:
-                logger.warning(f"Clients endpoint {endpoint} failed: {e}")
-                continue
+            # Auto-paginate 100 at a time until we have everything (or hit max_total)
+            while len(all_clients) < total and len(all_clients) < max_total:
+                next_params = {**base_params, "offset": len(all_clients)}
+                next_resp = aruba_client.get("/network-monitoring/v1alpha1/clients", params=next_params)
+                next_page = extractor(next_resp)
+                if not next_page:
+                    break
+                all_clients.extend(next_page)
+        except Exception as e:
+            logger.warning(f"Clients endpoint failed: {e}")
 
         return jsonify(
             {
@@ -784,7 +775,7 @@ def get_client_trends():
         if site_id:
             params["site-id"] = site_id
 
-        response = aruba_client.get("/network-monitoring/v1/clients-trend", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/clients-trend", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching client trends: {e}")
@@ -804,7 +795,7 @@ def get_top_clients():
         if site_id:
             params["site-id"] = site_id
 
-        response = aruba_client.get("/network-monitoring/v1/clients-topn-usage", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/clients-topn-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top clients: {e}")
@@ -821,7 +812,7 @@ def get_client_health_summary():
     try:
         params = request.args.to_dict()
         params.setdefault("limit", "500")
-        response = aruba_client.get("/network-monitoring/v1/clients", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/clients", params=params)
         items = response.get("items", [])
 
         # Aggregate by status
@@ -881,24 +872,15 @@ def get_client_by_mac(mac):
 
     aruba_client = _app.aruba_client
     try:
-        legacy_data = {}
         new_data = {}
         session_data = {}
 
         # Normalise MAC for endpoints that want no separators
         mac_no_sep = mac.lower().replace(":", "").replace("-", "")
 
-        # Legacy API — device fingerprinting: device_type, os_type, manufacturer, os, labels
-        try:
-            legacy_data = aruba_client.get(f"/monitoring/v1/clients/{mac}") or {}
-        except Exception as le:
-            logger.debug(f"Legacy client endpoint failed for {mac}: {le}")
-
-        # New API — try the same endpoint variants the MCP tool uses so we get
-        # whatever the platform actually supports.
         for endpoint in [
-            f"/network-monitoring/v1/clients/{mac}",
-            f"/network-monitoring/v1/clients/details?macAddress={mac}",
+            f"/network-monitoring/v1alpha1/clients/{mac}",
+            f"/network-monitoring/v1alpha1/clients/details?macAddress={mac}",
             f"/network-monitoring/v1alpha1/clients/{mac_no_sep}",
         ]:
             try:
@@ -912,15 +894,14 @@ def get_client_by_mac(mac):
 
         # Session endpoint — real-time performance metrics (SNR, throughput, etc.)
         try:
-            session_data = aruba_client.get(f"/network-monitoring/v1/clients/{mac}/session") or {}
+            session_data = aruba_client.get(f"/network-monitoring/v1alpha1/clients/{mac}/session") or {}
         except Exception as se:
             logger.debug(f"Session endpoint failed for {mac}: {se}")
 
-        if not legacy_data and not new_data and not session_data:
+        if not new_data and not session_data:
             return jsonify({"error": "Client not found"}), 404
 
-        # Merge priority: legacy fingerprinting > new-API detail > session (base)
-        merged = {**session_data, **new_data, **legacy_data}
+        merged = {**session_data, **new_data}
         return jsonify(merged)
     except Exception as e:
         logger.error(f"Error fetching client {mac}: {e}")
@@ -932,7 +913,7 @@ def get_client_by_mac(mac):
 def get_client_mobility_trail(mac):
     """Get mobility trail (roaming history) for a client.
 
-    Endpoint: /network-monitoring/v1/clients/{mac-address}/mobility-trail
+    Endpoint: /network-monitoring/v1alpha1/clients/{mac-address}/mobility-trail
     Shows AP-to-AP roaming history for a wireless client.
     """
     import app as _app
@@ -940,7 +921,7 @@ def get_client_mobility_trail(mac):
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}/mobility-trail", params=params)
+        r = aruba_client.get(f"/network-monitoring/v1alpha1/clients/{mac}/mobility-trail", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching mobility trail for client {mac}: {e}")
@@ -967,7 +948,7 @@ def get_sites_health():
         # Aruba Central sites-health API enforces limit <= 100
         if "limit" in params:
             params["limit"] = min(int(params["limit"]), 100)
-        endpoint = "/network-monitoring/v1/sites-health"
+        endpoint = "/network-monitoring/v1alpha1/sites-health"
 
         # Try with fields parameter if provided
         if "fields" in params:
@@ -1060,7 +1041,7 @@ def get_sites_device_health():
         params = request.args.to_dict()
         if "limit" in params:
             params["limit"] = min(int(params["limit"]), 100)
-        response = aruba_client.get("/network-monitoring/v1/sites-device-health", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/sites-device-health", params=params)
         return jsonify(response or {"items": []})
     except Exception as e:
         logger.error(f"Sites device health error: {e}", exc_info=True)
@@ -1069,7 +1050,7 @@ def get_sites_device_health():
 
 @config_bp.route("/api/tenant/device-health", methods=["GET"])
 @require_session
-@api_proxy("/network-monitoring/v1/tenant-device-health", error_msg="Tenant device health")
+@api_proxy("/network-monitoring/v1alpha1/tenant-device-health", error_msg="Tenant device health")
 def get_tenant_device_health():
     pass
 
@@ -1079,7 +1060,7 @@ def get_tenant_device_health():
 def get_sites_client_health():
     """Get client health metrics aggregated per site.
 
-    Endpoint: /network-monitoring/v1/sites-client-health
+    Endpoint: /network-monitoring/v1alpha1/sites-client-health
     """
     import app as _app
 
@@ -1088,7 +1069,7 @@ def get_sites_client_health():
         params = request.args.to_dict()
         if "site_id" in params and "site-id" not in params:
             params["site-id"] = params.pop("site_id")
-        r = aruba_client.get("/network-monitoring/v1/sites-client-health", params=params)
+        r = aruba_client.get("/network-monitoring/v1alpha1/sites-client-health", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching sites client health: {e}")
@@ -1100,14 +1081,14 @@ def get_sites_client_health():
 def get_tenant_client_health():
     """Get client health metrics aggregated at the tenant level.
 
-    Endpoint: /network-monitoring/v1/tenant-client-health
+    Endpoint: /network-monitoring/v1alpha1/tenant-client-health
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get("/network-monitoring/v1/tenant-client-health", params=params)
+        r = aruba_client.get("/network-monitoring/v1alpha1/tenant-client-health", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching tenant client health: {e}")
@@ -1171,7 +1152,7 @@ def get_sites():
     try:
         params = request.args.to_dict()
         response = cached_get_paginated(
-            "/network-config/v1/sites",
+            "/network-config/v1alpha1/sites",
             params=params,
             max_pages=10,
             page_size=100,
@@ -1190,7 +1171,7 @@ def get_sites():
 @config_bp.route("/api/sites/<site_id>", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda site_id: f"/network-config/v1/sites/{site_id}",
+    lambda site_id: f"/network-config/v1alpha1/sites/{site_id}",
     error_msg="Site details",
     fallback_data={},
 )
@@ -1200,7 +1181,7 @@ def get_site_details(site_id):
 
 @config_bp.route("/api/sites", methods=["POST"])
 @require_session
-@api_proxy("/network-config/v1/sites", method="POST", error_msg="Create site")
+@api_proxy("/network-config/v1alpha1/sites", method="POST", error_msg="Create site")
 def create_site():
     pass
 
@@ -1208,7 +1189,7 @@ def create_site():
 @config_bp.route("/api/sites/<site_id>", methods=["DELETE"])
 @require_session
 @api_proxy(
-    lambda site_id: f"/network-config/v1/sites/{site_id}", method="DELETE", error_msg="Delete site"
+    lambda site_id: f"/network-config/v1alpha1/sites/{site_id}", method="DELETE", error_msg="Delete site"
 )
 def delete_site(site_id):
     pass
@@ -1221,9 +1202,9 @@ def get_groups():
     try:
         params = request.args.to_dict()
         response = cached_get_paginated(
-            "/configuration/v1/groups",
+            "/network-config/v1alpha1/device-groups",
             params=params,
-            items_key="groups",
+            items_key="items",
             max_pages=10,
             page_size=100,
         )
@@ -1249,7 +1230,7 @@ def create_group():
         data = request.get_json()
         if not data or not data.get("group"):
             return jsonify({"error": "group name is required"}), 400
-        response = aruba_client.post("/configuration/v1/groups", json=data)
+        response = aruba_client.post("/network-config/v1alpha1/device-groups", json=data)
         return jsonify(response or {"success": True})
     except Exception as e:
         logger.error(f"Error creating group: {e}")
@@ -1264,7 +1245,7 @@ def delete_group(group_name):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.delete(f"/configuration/v1/groups/{group_name}")
+        response = aruba_client.delete(f"/network-config/v1alpha1/device-groups/{group_name}")
         return jsonify(response or {"success": True})
     except Exception as e:
         logger.error(f"Error deleting group {group_name}: {e}")
@@ -1310,7 +1291,7 @@ def get_nac_client_auth():
             )
 
         params = {"site-id": site_id}
-        response = aruba_client.get("/network-monitoring/v1/clients", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/clients", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching NAC client auth: {e}")
@@ -1491,7 +1472,7 @@ def get_site_hierarchy():
     aruba_client = _app.aruba_client
     try:
         # Get all sites first
-        sites_response = cached_get("/central/v2/sites")
+        sites_response = cached_get("/network-config/v1alpha1/sites")
         sites = sites_response.get("sites", [])
 
         # Build hierarchy structure
@@ -1519,14 +1500,14 @@ def get_site_hierarchy():
 
 @config_bp.route("/api/appexperience/applications", methods=["GET"])
 @require_session
-@api_proxy("/monitoring/v1/applications", error_msg="Applications")
+@api_proxy("/network-monitoring/v1alpha1/applications", error_msg="Applications")
 def get_applications():
     pass
 
 
 @config_bp.route("/api/appexperience/app-categories", methods=["GET"])
 @require_session
-@api_proxy("/monitoring/v1/app_categories", error_msg="App categories")
+@api_proxy("/network-monitoring/v1alpha1/app_categories", error_msg="App categories")
 def get_app_categories():
     pass
 
@@ -1555,7 +1536,7 @@ def get_traffic_analysis():
         if request.args.get("timeframe"):
             params["timeframe"] = request.args.get("timeframe")
 
-        response = aruba_client.get("/monitoring/v1/app_analytics", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/app_analytics", params=params)
         return jsonify(response)
     except CentralAPIError as e:
         if e.status_code in (400, 404):
@@ -1592,7 +1573,7 @@ def get_app_visibility():
     try:
         group = request.args.get("group", "all")
         params = {"group": group} if group != "all" else {}
-        response = aruba_client.get("/monitoring/v1/app_visibility", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/app_visibility", params=params)
         return jsonify(response)
     except CentralAPIError as e:
         if e.status_code in (400, 404):
@@ -1635,8 +1616,8 @@ def bulk_ap_rename():
 
             try:
                 # Update AP name via Central API
-                response = aruba_client.post(
-                    f"/configuration/v1/ap/{serial}", data={"hostname": new_name}
+                response = aruba_client.patch(
+                    f"/network-config/v1/aps/{serial}", json={"hostname": new_name}
                 )
                 results.append({"serial": serial, "new_name": new_name, "status": "success"})
             except Exception as e:
@@ -1680,7 +1661,7 @@ def bulk_group_assign():
 
             try:
                 response = aruba_client.post(
-                    f"/configuration/v2/devices/{serial}/group", data={"group": group}
+                    f"/configuration/v3/devices/{serial}/group", json={"group": group}
                 )
                 results.append({"serial": serial, "group": group, "status": "success"})
             except Exception as e:
@@ -1724,7 +1705,7 @@ def bulk_site_assign():
 
             try:
                 response = aruba_client.post(
-                    f"/central/v2/sites/associations",
+                    f"/network-config/v1alpha1/sites/associations",
                     data={"device_id": serial, "site_id": site_id},
                 )
                 results.append({"serial": serial, "site_id": site_id, "status": "success"})
@@ -1758,18 +1739,13 @@ def export_configuration():
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
-        # Try New Central path first, fall back to legacy
         response = None
-        for endpoint in [
-            f"/network-config/v1/devices/{serial}/config",
-            f"/configuration/v1/devices/{serial}/configuration",
-        ]:
-            try:
-                response = aruba_client.get(endpoint)
-                if response and not response.get("error"):
-                    break
-            except Exception:
-                continue
+        try:
+            response = aruba_client.get(f"/network-config/v1/devices/{serial}/config")
+            if response and response.get("error"):
+                response = None
+        except Exception:
+            pass
 
         if not response:
             return jsonify({"error": "Could not retrieve configuration from device"}), 404
@@ -1936,7 +1912,7 @@ def get_site_health(site_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/site-health/{site_id}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/site-health/{site_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching health for site {site_id}: {e}")

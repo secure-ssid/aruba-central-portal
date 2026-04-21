@@ -30,14 +30,14 @@ def get_network_health():
         # Fetch devices and APs in parallel (both cached 5 min)
         data = parallel_get(
             [
-                ("/network-monitoring/v1/devices",),
-                ("/network-monitoring/v1/aps",),
+                ("/network-monitoring/v1alpha1/devices",),
+                ("/network-monitoring/v1alpha1/aps",),
             ]
         )
 
         health_data = {}
 
-        devices = data.get("/network-monitoring/v1/devices")
+        devices = data.get("/network-monitoring/v1alpha1/devices")
         if devices:
             health_data["total_devices"] = devices.get("count", 0)
             device_list = devices.get("items") or devices.get("result") or devices.get("devices") or []
@@ -48,7 +48,7 @@ def get_network_health():
             health_data["total_devices"] = 0
             health_data["switches"] = 0
 
-        aps = data.get("/network-monitoring/v1/aps")
+        aps = data.get("/network-monitoring/v1alpha1/aps")
         health_data["access_points"] = aps.get("count", 0) if aps else 0
 
         return jsonify(health_data)
@@ -140,16 +140,16 @@ def get_services_health():
         # Fetch all three in parallel (all cached)
         data = parallel_get(
             [
-                ("/network-monitoring/v1/devices",),
-                ("/network-monitoring/v1/wlans",),
-                ("/central/v2/sites",),
+                ("/network-monitoring/v1alpha1/devices",),
+                ("/network-monitoring/v1alpha1/wlans",),
+                ("/network-config/v1alpha1/sites",),
             ]
         )
 
         health_status = {"overall_status": "healthy", "services": [], "timestamp": time.time()}
 
         # Device service
-        devices = data.get("/network-monitoring/v1/devices")
+        devices = data.get("/network-monitoring/v1alpha1/devices")
         if devices is not None:
             health_status["services"].append(
                 {
@@ -165,7 +165,7 @@ def get_services_health():
             health_status["overall_status"] = "degraded"
 
         # Wireless service
-        wlans = data.get("/network-monitoring/v1/wlans")
+        wlans = data.get("/network-monitoring/v1alpha1/wlans")
         if wlans is not None:
             health_status["services"].append(
                 {
@@ -181,7 +181,7 @@ def get_services_health():
             health_status["overall_status"] = "degraded"
 
         # Site service
-        sites = data.get("/central/v2/sites")
+        sites = data.get("/network-config/v1alpha1/sites")
         if sites is not None:
             health_status["services"].append(
                 {
@@ -232,7 +232,7 @@ def get_service_capacity():
     aruba_client = _app.aruba_client
     try:
         # Get device counts and calculate capacity
-        devices = aruba_client.get("/network-monitoring/v1/devices")
+        devices = aruba_client.get("/network-monitoring/v1alpha1/devices")
 
         capacity = {
             "devices": {
@@ -272,7 +272,7 @@ def get_top_aps_bandwidth():
         if request.args.get("site_id"):
             params["site_id"] = request.args.get("site_id")
 
-        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wireless-usage", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/top-aps-by-wireless-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top APs by bandwidth: {e}")
@@ -294,7 +294,7 @@ def get_top_aps_wired_bandwidth():
         if site_id:
             params["site-id"] = site_id
 
-        response = aruba_client.get("/network-monitoring/v1/top-aps-by-wired-usage", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/top-aps-by-wired-usage", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching top APs by wired bandwidth: {e}")
@@ -317,7 +317,7 @@ def get_aps_monitoring():
             params["offset"] = request.args.get("offset")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/aps",
+            "/network-monitoring/v1alpha1/aps",
             params=params,
             max_pages=10,
             page_size=100,
@@ -336,7 +336,7 @@ def get_ap_monitoring_details(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/aps/{serial}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching AP monitoring details for {serial}: {e}")
@@ -462,7 +462,7 @@ def get_ap_cpu_utilization(serial):
         device_type="AP",
         serial=serial,
         metric="cpu_utilization",
-        endpoint_path=f"/network-monitoring/v1/aps/{serial}/cpu-utilization-trends",
+        endpoint_path=f"/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends",
     )
 
 
@@ -474,7 +474,7 @@ def get_ap_memory_utilization(serial):
         device_type="AP",
         serial=serial,
         metric="memory_utilization",
-        endpoint_path=f"/network-monitoring/v1/aps/{serial}/memory-utilization-trends",
+        endpoint_path=f"/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends",
     )
 
 
@@ -499,7 +499,7 @@ def get_ap_temperature(serial):
 
         # Try the inferred endpoint path
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/hardware-temperature-trends", params=params
+            f"/network-monitoring/v1alpha1/aps/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
     except CentralAPIError as e:
@@ -536,7 +536,7 @@ def get_ap_throughput_trend(serial):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/throughput-trends", params=params
+            f"/network-monitoring/v1alpha1/aps/{serial}/throughput-trends", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -552,7 +552,7 @@ def get_ap_radios(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/aps/{serial}/radios")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}/radios")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching radios for AP {serial}: {e}")
@@ -574,7 +574,7 @@ def get_radio_channel_utilization(serial, radio_id):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_id}/channel-utilization-trends",
+            f"/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_id}/channel-utilization-trends",
             params=params,
         )
         return jsonify(response)
@@ -591,7 +591,7 @@ def get_ap_ports(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/aps/{serial}/ports")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}/ports")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching ports for AP {serial}: {e}")
@@ -613,7 +613,7 @@ def get_wlans_monitoring():
             params["offset"] = request.args.get("offset")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/wlans",
+            "/network-monitoring/v1alpha1/wlans",
             params=params,
             max_pages=10,
             page_size=100,
@@ -639,7 +639,7 @@ def get_wlan_throughput(wlan_name):
             params["duration"] = request.args.get("duration")
 
         response = aruba_client.get(
-            f"/network-monitoring/v1/wlans/{wlan_name}/throughput", params=params
+            f"/network-monitoring/v1alpha1/wlans/{wlan_name}/throughput", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -668,7 +668,7 @@ def get_switches_monitoring():
             params["offset"] = request.args.get("offset")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/switches",
+            "/network-monitoring/v1alpha1/switches",
             params=params,
             max_pages=10,
             page_size=100,
@@ -702,7 +702,7 @@ def get_switch_monitoring_details(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/switches/{serial}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/switch/{serial}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching switch monitoring details for {serial}: {e}")
@@ -717,7 +717,7 @@ def get_switch_cpu_utilization(serial):
         device_type="switch",
         serial=serial,
         metric="cpu_utilization",
-        endpoint_path=f"/network-monitoring/v1/switches/{serial}/cpu-utilization-trends",
+        endpoint_path=f"/network-monitoring/v1alpha1/switch/{serial}/cpu-utilization-trends",
     )
 
 
@@ -729,7 +729,7 @@ def get_switch_memory_utilization(serial):
         device_type="switch",
         serial=serial,
         metric="memory_utilization",
-        endpoint_path=f"/network-monitoring/v1/switches/{serial}/memory-utilization-trends",
+        endpoint_path=f"/network-monitoring/v1alpha1/switch/{serial}/memory-utilization-trends",
     )
 
 
@@ -741,7 +741,7 @@ def get_switch_power_consumption(serial):
         device_type="switch",
         serial=serial,
         metric="power_consumption",
-        endpoint_path=f"/network-monitoring/v1/switches/{serial}/power-consumption-trends",
+        endpoint_path=f"/network-monitoring/v1alpha1/switch/{serial}/power-consumption-trends",
         extra_fields=lambda avg: {"power_consumption_watts": round(avg, 2)},
         unit="watts",
     )
@@ -768,7 +768,7 @@ def get_switch_temperature(serial):
 
         # Try the inferred endpoint path
         response = aruba_client.get(
-            f"/network-monitoring/v1/switches/{serial}/hardware-temperature-trends", params=params
+            f"/network-monitoring/v1alpha1/switch/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
     except CentralAPIError as e:
@@ -798,7 +798,7 @@ def get_switch_ports_monitoring(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/switches/{serial}/ports")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/switch/{serial}/ports")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching ports for switch {serial}: {e}")
@@ -816,7 +816,7 @@ def get_gateways_monitoring():
             params["site_id"] = request.args.get("site_id")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/gateways",
+            "/network-monitoring/v1alpha1/gateways",
             params=params,
             max_pages=10,
             page_size=100,
@@ -835,7 +835,7 @@ def get_gateway_monitoring_details(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/gateways/{serial}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/gateways/{serial}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching gateway monitoring details for {serial}: {e}")
@@ -850,7 +850,7 @@ def get_gateway_tunnels(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/gateways/{serial}/tunnels")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/gateways/{serial}/tunnels")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching tunnels for gateway {serial}: {e}")
@@ -877,7 +877,7 @@ def get_gateway_temperature(serial):
 
         # Try the inferred endpoint path
         response = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/hardware-temperature-trends", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/hardware-temperature-trends", params=params
         )
         return jsonify(response)
     except CentralAPIError as e:
@@ -969,7 +969,7 @@ def get_devices_monitoring():
             params["device_type"] = request.args.get("device_type")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/devices",
+            "/network-monitoring/v1alpha1/devices",
             params=params,
             max_pages=10,
             page_size=100,
@@ -989,7 +989,7 @@ def get_client_session_details(mac):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/clients/{mac}/session")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/clients/{mac}/session")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching session for client {mac}: {e}")
@@ -1011,7 +1011,7 @@ def get_firewall_sessions():
         if request.args.get("limit"):
             params["limit"] = request.args.get("limit")
 
-        response = aruba_client.get("/network-monitoring/v1/firewall/sessions", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/firewall/sessions", params=params)
         return jsonify(response)
     except Exception as e:
         sc = getattr(e, 'status_code', None)
@@ -1039,7 +1039,7 @@ def get_idps_events():
         if request.args.get("limit"):
             params["limit"] = request.args.get("limit")
 
-        response = aruba_client.get("/network-monitoring/v1/idps/events", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/idps/events", params=params)
         return jsonify(response)
     except Exception as e:
         sc = getattr(e, 'status_code', None)
@@ -1071,7 +1071,7 @@ def get_applications_monitoring():
             params["offset"] = request.args.get("offset")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/applications",
+            "/network-monitoring/v1alpha1/applications",
             params=params,
             max_pages=10,
             page_size=100,
@@ -1122,7 +1122,7 @@ def get_top_applications():
 
         # Fallback logic
         try:
-            apps_response = aruba_client.get("/network-monitoring/v1/applications", params=params)
+            apps_response = aruba_client.get("/network-monitoring/v1alpha1/applications", params=params)
         except Exception as apps_err:
             sc = getattr(apps_err, 'status_code', None)
             if sc in (400, 404) or any(x in str(apps_err) for x in ('400', '404', 'Not Found', 'Bad Request', 'Route Not Found')):
@@ -1180,7 +1180,7 @@ def get_swarms():
             params["site_id"] = request.args.get("site_id")
 
         response = cached_get_paginated(
-            "/network-monitoring/v1/swarms",
+            "/network-monitoring/v1alpha1/swarms",
             params=params,
             max_pages=10,
             page_size=100,
@@ -1199,7 +1199,7 @@ def get_swarm_details(swarm_id):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/swarms/{swarm_id}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/swarms/{swarm_id}")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching swarm details for {swarm_id}: {e}")
@@ -1214,14 +1214,14 @@ def get_swarm_details(swarm_id):
 def get_gateway_uplinks(serial):
     """Get WAN uplinks for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/uplinks
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get(f"/network-monitoring/v1/gateways/{serial}/uplinks", params=params)
+        r = aruba_client.get(f"/network-monitoring/v1alpha1/gateways/{serial}/uplinks", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching uplinks for gateway {serial}: {e}")
@@ -1235,7 +1235,7 @@ def get_gateway_uplinks(serial):
 def get_gateway_uplink_throughput(serial, link_tag):
     """Get throughput trends for a specific gateway uplink.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks/{link-tag}/throughput-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/uplinks/{link-tag}/throughput-trends
     """
     import app as _app
 
@@ -1243,7 +1243,7 @@ def get_gateway_uplink_throughput(serial, link_tag):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/uplinks/{link_tag}/throughput-trends",
+            f"/network-monitoring/v1alpha1/gateways/{serial}/uplinks/{link_tag}/throughput-trends",
             params=params,
         )
         return jsonify(r)
@@ -1259,7 +1259,7 @@ def get_gateway_uplink_throughput(serial, link_tag):
 def get_gateway_uplink_wan_availability(serial, link_tag):
     """Get WAN availability trends for a specific gateway uplink.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/uplinks/{link-tag}/wan-availability-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/uplinks/{link-tag}/wan-availability-trends
     """
     import app as _app
 
@@ -1267,7 +1267,7 @@ def get_gateway_uplink_wan_availability(serial, link_tag):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/uplinks/{link_tag}/wan-availability-trends",
+            f"/network-monitoring/v1alpha1/gateways/{serial}/uplinks/{link_tag}/wan-availability-trends",
             params=params,
         )
         return jsonify(r)
@@ -1281,7 +1281,7 @@ def get_gateway_uplink_wan_availability(serial, link_tag):
 def get_gateway_wan_availability(serial):
     """Get WAN availability trends for a gateway (all uplinks aggregated).
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/wan-availability-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/wan-availability-trends
     """
     import app as _app
 
@@ -1289,7 +1289,7 @@ def get_gateway_wan_availability(serial):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/wan-availability-trends", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/wan-availability-trends", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1302,7 +1302,7 @@ def get_gateway_wan_availability(serial):
 def get_gateway_wan_tunnels_health(serial):
     """Get WAN tunnel health summary for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/wan-tunnels-health-summary
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/wan-tunnels-health-summary
     """
     import app as _app
 
@@ -1310,7 +1310,7 @@ def get_gateway_wan_tunnels_health(serial):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/wan-tunnels-health-summary", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/wan-tunnels-health-summary", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1323,7 +1323,7 @@ def get_gateway_wan_tunnels_health(serial):
 def get_gateway_lan_tunnels_health(serial):
     """Get LAN tunnel health summary for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/lan-tunnels-health-summary
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/lan-tunnels-health-summary
     """
     import app as _app
 
@@ -1331,7 +1331,7 @@ def get_gateway_lan_tunnels_health(serial):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/lan-tunnels-health-summary", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/lan-tunnels-health-summary", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1344,7 +1344,7 @@ def get_gateway_lan_tunnels_health(serial):
 def get_gateway_cpu_utilization(serial):
     """Get CPU utilization trends for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/cpu-utilization-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/cpu-utilization-trends
     """
     import app as _app
 
@@ -1352,7 +1352,7 @@ def get_gateway_cpu_utilization(serial):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/cpu-utilization-trends", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/cpu-utilization-trends", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1365,7 +1365,7 @@ def get_gateway_cpu_utilization(serial):
 def get_gateway_memory_utilization(serial):
     """Get memory utilization trends for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/memory-utilization-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/memory-utilization-trends
     """
     import app as _app
 
@@ -1373,7 +1373,7 @@ def get_gateway_memory_utilization(serial):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/memory-utilization-trends", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/memory-utilization-trends", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1386,14 +1386,14 @@ def get_gateway_memory_utilization(serial):
 def get_gateway_ports(serial):
     """Get port information for a gateway.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/ports
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get(f"/network-monitoring/v1/gateways/{serial}/ports", params=params)
+        r = aruba_client.get(f"/network-monitoring/v1alpha1/gateways/{serial}/ports", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching ports for gateway {serial}: {e}")
@@ -1405,7 +1405,7 @@ def get_gateway_ports(serial):
 def get_gateway_port_details(serial, port_number):
     """Get details for a specific gateway port.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports/{port-number}
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/ports/{port-number}
     """
     import app as _app
 
@@ -1413,7 +1413,7 @@ def get_gateway_port_details(serial, port_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/ports/{port_number}", params=params
+            f"/network-monitoring/v1alpha1/gateways/{serial}/ports/{port_number}", params=params
         )
         return jsonify(r)
     except Exception as e:
@@ -1428,7 +1428,7 @@ def get_gateway_port_details(serial, port_number):
 def get_gateway_port_throughput(serial, port_number):
     """Get throughput trends for a specific gateway port.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/ports/{port-number}/throughput-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/ports/{port-number}/throughput-trends
     """
     import app as _app
 
@@ -1436,7 +1436,7 @@ def get_gateway_port_throughput(serial, port_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/ports/{port_number}/throughput-trends",
+            f"/network-monitoring/v1alpha1/gateways/{serial}/ports/{port_number}/throughput-trends",
             params=params,
         )
         return jsonify(r)
@@ -1452,7 +1452,7 @@ def get_gateway_port_throughput(serial, port_number):
 def get_gateway_tunnel_throughput(serial, tunnel_name):
     """Get throughput trends for a specific gateway tunnel.
 
-    Endpoint: /network-monitoring/v1/gateways/{serial-number}/tunnels/{tunnel-name}/throughput-trends
+    Endpoint: /network-monitoring/v1alpha1/gateways/{serial-number}/tunnels/{tunnel-name}/throughput-trends
     """
     import app as _app
 
@@ -1460,7 +1460,7 @@ def get_gateway_tunnel_throughput(serial, tunnel_name):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/gateways/{serial}/tunnels/{tunnel_name}/throughput-trends",
+            f"/network-monitoring/v1alpha1/gateways/{serial}/tunnels/{tunnel_name}/throughput-trends",
             params=params,
         )
         return jsonify(r)
@@ -1498,7 +1498,7 @@ def get_monitoring_sites():
     try:
         params = request.args.to_dict()
         params.setdefault("limit", "100")
-        response = aruba_client.get("/network-monitoring/v1/sites", params=params)
+        response = aruba_client.get("/network-monitoring/v1alpha1/sites", params=params)
         return jsonify(response or {"result": []})
     except Exception as e:
         sc = getattr(e, 'status_code', None)

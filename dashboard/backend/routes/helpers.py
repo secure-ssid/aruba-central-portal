@@ -169,16 +169,16 @@ def require_session(f):
 # TTL in seconds per endpoint prefix.  Inventory data changes rarely (5 min),
 # health/monitoring data needs freshness (30 s), everything else passes through.
 CACHE_TIERS = {
-    "/network-monitoring/v1/devices": 300,
-    "/network-monitoring/v1/aps": 300,
-    "/network-monitoring/v1/wlans": 300,
-    "/central/v2/sites": 300,
-    "/network-monitoring/v1/sites-health": 30,
-    "/network-monitoring/v1/clients": 60,
+    "/network-monitoring/v1alpha1/devices": 300,
+    "/network-monitoring/v1alpha1/aps": 300,
+    "/network-monitoring/v1alpha1/wlans": 300,
+    "/network-config/v1alpha1/sites": 300,
+    "/network-monitoring/v1alpha1/sites-health": 30,
+    "/network-monitoring/v1alpha1/clients": 60,
     "/network-notifications/v1/alerts": 15,
     "/platform/licensing/v1/subscriptions": 300,
     "/network-config/v1alpha1/wlan-ssids": 300,
-    "/network-config/v1/sites": 300,
+    "/network-config/v1alpha1/device-groups": 300,
 }
 
 

@@ -96,12 +96,23 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
         }
       });
 
+      // Canonical type normalisation — Central API returns namespace strings like
+      // "network-monitoring/access-point-monitoring"; map them to short canonical form.
+      function canonicalType(raw) {
+        if (!raw) return 'UNKNOWN';
+        const r = raw.toLowerCase();
+        if (r === 'ap' || r === 'access_point' || r.includes('access-point') || r.includes('access_point')) return 'AP';
+        if (r === 'switch' || r.includes('switch')) return 'SWITCH';
+        if (r === 'gateway' || r.includes('gateway')) return 'GATEWAY';
+        return raw.toUpperCase();
+      }
+
       // Optional type filter
       let list = Array.from(deviceMap.values());
       if (deviceType) {
         list = list.filter((d) => {
-          const t = d.device_type || d.type || d.deviceType;
-          return t && t.toUpperCase() === deviceType.toUpperCase();
+          const raw = d.device_type || d.type || d.deviceType;
+          return canonicalType(raw) === deviceType.toUpperCase();
         });
       }
 
@@ -113,6 +124,9 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
             device.serialNumber ||
             device.device_id ||
             device.id;
+          const type = canonicalType(
+            device.device_type || device.type || device.deviceType
+          );
           return {
             serial,
             serialNumber: device.serialNumber || device.serial || serial,
@@ -128,9 +142,8 @@ export default function useDeviceInventory({ deviceType = null } = {}) {
               device.name ||
               device.device_name ||
               device.display_name,
-            type: device.device_type || device.type || device.deviceType || 'UNKNOWN',
-            deviceType:
-              device.deviceType || device.device_type || device.type,
+            type,
+            deviceType: type,
             model: device.model || device.platform || device.platformModel || '',
             ...device,
           };

@@ -1094,7 +1094,7 @@ def _handle_ap_status(text, _session_id):
             items = [d for d in all_devices if "ap" in d.get("deviceType", "").lower()]
         else:
             try:
-                r = cached_get("/network-monitoring/v1/aps", params={"limit": 100})
+                r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 100})
                 items = r.get("aps", r.get("items", []))
             except Exception:
                 r = cached_get("/network-monitoring/v1alpha1/aps", params={"limit": 100})
@@ -1200,7 +1200,7 @@ def _handle_site_health(text, _session_id):
             return "\n".join(lines), sites, 200
 
     try:
-        r = cached_get("/network-monitoring/v1/sites-health")
+        r = cached_get("/network-monitoring/v1alpha1/sites-health")
         sites = r.get("items", r.get("sites", []))
 
         if site_name:
@@ -1268,10 +1268,7 @@ def _handle_clients_by_ssid(text, _session_id):
         else:
             import app as _app
             aruba_client = _app.aruba_client
-            try:
-                r = aruba_client.get("/monitoring/v1/clients")
-            except Exception:
-                r = aruba_client.get("/network-monitoring/v1/clients")
+            r = aruba_client.get("/network-monitoring/v1alpha1/clients")
             all_items = r.get("items", r.get("clients", []))
             matched = [
                 c
@@ -1315,7 +1312,7 @@ def _handle_client_by_mac(text, _session_id):
         return ("Please provide a MAC address, e.g. *'find client aa:bb:cc:dd:ee:ff'*", None, 200)
 
     try:
-        r = aruba_client.get(f"/network-monitoring/v1/clients/{mac}")
+        r = aruba_client.get(f"/network-monitoring/v1alpha1/clients/{mac}")
         name = _first_present_str(r, "name", "hostname", "client_name", "clientName") or mac
         ip = _cell(_first_present_str(r, "ip_address", "ipAddress", "ipv4", "ip"))
         ssid = _cell(_first_present_str(r, "ssid", "essid", "wlanName", "network"))
@@ -1354,7 +1351,7 @@ def _handle_switch_port_errors(text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = cached_get("/network-monitoring/v1/devices")
+        r = cached_get("/network-monitoring/v1alpha1/devices")
         switches = [d for d in r.get("items", []) if d.get("deviceType", "").upper() == "SWITCH"]
 
         if not switches:
@@ -1371,7 +1368,7 @@ def _handle_switch_port_errors(text, _session_id):
             if not serial:
                 return None
             try:
-                iface_r = aruba_client.get(f"/network-monitoring/v1/switches/{serial}/interfaces")
+                iface_r = aruba_client.get(f"/network-monitoring/v1alpha1/switches/{serial}/interfaces")
                 ifaces = iface_r.get("items", iface_r if isinstance(iface_r, list) else [])
                 total_errors = sum(
                     (i.get("inputErrors", 0) or 0) + (i.get("outputErrors", 0) or 0) for i in ifaces
@@ -1453,7 +1450,7 @@ def _handle_bounce_ap(text, session_id):
         err = str(e)
         # Try alternative endpoint used by some firmware versions
         try:
-            r2 = aruba_client.post(f"/configuration/v1/devices/{serial}/action/reboot", data={})
+            r2 = aruba_client.post(f"/network-troubleshooting/v1alpha1/aps/{serial}/reboot", json={})
             reply = f"Reboot command sent to AP **{serial}** (via alt endpoint)."
             return reply, {"serial": serial, "result": r2}, 200
         except Exception as e2:
@@ -1534,7 +1531,7 @@ def _handle_alert_summary(text, _session_id):
             for ep in [
                 "/network-notifications/v1/alerts",
                 "/network-notifications/v1alpha1/alerts",
-                "/network-monitoring/v1/alerts",
+                "/network-monitoring/v1alpha1/alerts",
             ]:
                 try:
                     r = aruba_client.get(ep, params=params)
@@ -1574,7 +1571,7 @@ def _handle_firmware_status(text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = cached_get("/network-monitoring/v1/devices")
+        r = cached_get("/network-monitoring/v1alpha1/devices")
         items = r.get("items", [])
 
         version_map: dict = {}
@@ -1631,7 +1628,7 @@ def _handle_top_clients(text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get("/network-monitoring/v1/clients/usage/topn")
+        r = aruba_client.get("/network-monitoring/v1alpha1/clients/usage/topn")
         clients = r.get("items", r.get("clients", []))
 
         if not clients:
@@ -1670,7 +1667,7 @@ def _handle_device_inventory(text, _session_id):
         return "\n".join(lines), rows, 200
 
     try:
-        r = cached_get("/network-monitoring/v1/devices")
+        r = cached_get("/network-monitoring/v1alpha1/devices")
         items = r.get("items", [])
         total = r.get("count", len(items))
         by_type: dict = {}
@@ -1705,7 +1702,7 @@ def _handle_ack_alert(text, session_id):
         return ("Please provide the alert ID, " "e.g. *'acknowledge alert 12345abc'*", None, 200)
 
     try:
-        aruba_client.post(f"/network-monitoring/v1/alerts/{alert_id}/acknowledge")
+        aruba_client.post(f"/network-monitoring/v1alpha1/alerts/{alert_id}/acknowledge")
         return (
             f"Alert **{alert_id}** acknowledged.",
             {"alert_id": alert_id, "acknowledged": True},
@@ -1807,7 +1804,7 @@ def _handle_device_status(text, _session_id):
             r = aruba_client.get("/network-monitoring/v1alpha1/device-inventory", params={"limit": 200})
             items = r.get("devices", r.get("items", []))
             if not items:
-                r = cached_get("/network-monitoring/v1/devices", params={"limit": 200})
+                r = cached_get("/network-monitoring/v1alpha1/devices", params={"limit": 200})
                 items = r.get("devices", r.get("items", []))
 
         if want_type:
@@ -1903,7 +1900,7 @@ def _handle_find_client(text, _session_id):
                 else:
                     import app as _app
                     aruba_client = _app.aruba_client
-                    r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
+                    r = aruba_client.get("/network-monitoring/v1alpha1/clients", params={"limit": 100})
                     clients_list = r.get("clients", r.get("items", []))
             except Exception as _fetch_err:
                 logger.debug(f"find_client list fetch failed: {_fetch_err}")
@@ -1992,7 +1989,7 @@ def _handle_disconnect_client(text, session_id):
 
     try:
         # Aruba Central disconnect client endpoint
-        aruba_client.post(f"/network-monitoring/v1/clients/{mac}/disconnect")
+        aruba_client.post(f"/network-monitoring/v1alpha1/clients/{mac}/disconnect")
         return (
             f"Disconnect request sent for client **{mac}**.",
             {"mac": mac, "action": "disconnect"},
@@ -2059,7 +2056,7 @@ def _handle_client_count(_text, _session_id):
         else:
             import app as _app
             aruba_client = _app.aruba_client
-            r = aruba_client.get("/network-monitoring/v1/clients", params={"limit": 100})
+            r = aruba_client.get("/network-monitoring/v1alpha1/clients", params={"limit": 100})
             clients = r.get("clients", r.get("items", []))
 
         # Post-fetch filter: look for a device-type/OS keyword in the text
@@ -2132,7 +2129,7 @@ def _handle_site_list(_text, _session_id):
         else:
             import app as _app
             aruba_client = _app.aruba_client
-            r = aruba_client.get("/network-config/v1/sites")
+            r = aruba_client.get("/network-config/v1alpha1/sites")
             sites = r.get("sites", r.get("items", []))
 
         if not sites:
@@ -2169,12 +2166,12 @@ def _handle_top_bandwidth(_text, _session_id):
     aruba_client = _app.aruba_client
 
     try:
-        r = aruba_client.get("/network-monitoring/v1/top-aps-by-usage", params={"limit": 5})
+        r = aruba_client.get("/network-monitoring/v1alpha1/top-aps-by-usage", params={"limit": 5})
         aps = r.get("items", r.get("aps", r.get("data", [])))
 
         if not aps:
             # Fallback: try top clients by usage
-            r2 = aruba_client.get("/network-monitoring/v1/clients/usage/topn", params={"limit": 5})
+            r2 = aruba_client.get("/network-monitoring/v1alpha1/clients/usage/topn", params={"limit": 5})
             clients = r2.get("items", r2.get("clients", []))
             if clients:
                 table = [
@@ -2238,7 +2235,7 @@ def _handle_device_events(text, _session_id):
             import app as _app
             aruba_client = _app.aruba_client
             data = aruba_client.get(
-                "/network-monitoring/v1/events",
+                "/network-monitoring/v1alpha1/events",
                 params={"serial": serial, "limit": 20},
             )
             events = data.get("events", data.get("items", []))
@@ -2276,7 +2273,7 @@ def _handle_switch_vlans(text, _session_id):
         )
     try:
         data = aruba_client.get(
-            f"/network-monitoring/v1/cx_switches/{serial}/vlan",
+            f"/network-monitoring/v1alpha1/cx_switches/{serial}/vlan",
         )
         vlans = data.get("vlans", data.get("items", [data] if data and "vlanId" in data else []))
         if not vlans:
@@ -2309,7 +2306,7 @@ def _handle_ap_radios(text, _session_id):
         return "Please provide an AP serial number. Example: *'radios on AP ABC123'*", None, 200
     try:
         data = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/rf",
+            f"/network-monitoring/v1alpha1/aps/{serial}/rf",
         )
         radios = data.get("radios", data.get("items", []))
         if not radios:

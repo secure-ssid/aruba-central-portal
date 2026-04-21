@@ -1325,9 +1325,9 @@ export const showCommandsAPI = {
     });
     return response.data;
   },
-  getTechSupport: async (serial) => {
+  getTechSupport: async (serial, deviceType = null) => {
     const response = await apiClient.get('/troubleshoot/show-tech-support', {
-      params: { serial },
+      params: { serial, ...(deviceType && { device_type: deviceType }) },
     });
     return response.data;
   },

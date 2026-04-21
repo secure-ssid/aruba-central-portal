@@ -274,7 +274,7 @@ def get_wlan_details(ssid_name):
     aruba_client = _app.aruba_client
 
     try:
-        response = aruba_client.get(f'/configuration/v1/wlan/{ssid_name}')
+        response = aruba_client.get(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching WLAN {ssid_name}: {e}")
@@ -290,7 +290,10 @@ def create_wlan():
 
     try:
         data = request.get_json()
-        response = aruba_client.post('/configuration/v1/wlan', data=data)
+        ssid_name = data.get('ssid') if data else None
+        if not ssid_name:
+            return jsonify({"error": "ssid field is required"}), 400
+        response = aruba_client.post(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}', json=data)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error creating WLAN: {e}")
@@ -305,7 +308,7 @@ def delete_wlan(ssid_name):
     aruba_client = _app.aruba_client
 
     try:
-        response = aruba_client.delete(f'/configuration/v1/wlan/{ssid_name}')
+        response = aruba_client.delete(f'/network-config/v1alpha1/wlan-ssids/{ssid_name}')
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error deleting WLAN {ssid_name}: {e}")
@@ -410,7 +413,7 @@ def troubleshoot_cx_poe_bounce():
             result, status_code = _poll_async_operation(
                 device_serial,
                 f'/network-troubleshooting/v1alpha1/cx/{device_serial}/poeBounce',
-                {"port": port},
+                {"ports": [port]},
                 "POE bounce",
                 max_wait=30, poll_interval=1,
             )
@@ -445,7 +448,7 @@ def troubleshoot_cx_port_bounce():
             time.sleep(2)  # Wait for port to stabilize
             encoded = urllib.parse.quote(port_id, safe='')
             resp = aruba_client.get(
-                f'/network-monitoring/v1/switches/{serial}/interfaces/{encoded}'
+                f'/network-monitoring/v1alpha1/switches/{serial}/interfaces/{encoded}'
             )
             if resp:
                 return {
@@ -515,9 +518,9 @@ def troubleshoot_cx_port_bounce():
                 try:
                     aoss_result, aoss_sc = _poll_aoss_operation(
                         device_serial,
-                        f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce',
-                        {"port": port},
-                        f'/troubleshooting/v1alpha1/switches/{device_serial}/port-bounce/{{test_id}}',
+                        f'/network-troubleshooting/v1alpha1/aos-s/{device_serial}/portBounce',
+                        {"ports": [port]},
+                        f'/network-troubleshooting/v1alpha1/aos-s/{device_serial}/portBounce/{{test_id}}',
                         "Port bounce",
                         max_wait=30, poll_interval=1,
                     )
@@ -555,7 +558,7 @@ def troubleshoot_cx_cable_test():
         try:
             response = aruba_client.post(
                 f'/network-troubleshooting/v1alpha1/cx/{device_serial}/cableTest',
-                data={"port": port}
+                data={"ports": [port]}
             )
 
             location = response.get('location', '')
@@ -624,7 +627,7 @@ def troubleshoot_cx_http_test():
     """Execute HTTP test on CX switch using async API.
 
     Reference: https://developer.arubanetworks.com/new-central/reference/initiatecxhttp
-    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/httpTest
+    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/http
     """
     import app as _app
     aruba_client = _app.aruba_client
@@ -639,8 +642,8 @@ def troubleshoot_cx_http_test():
 
         try:
             response = aruba_client.post(
-                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/httpTest',
-                data={"url": url}
+                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/http',
+                data={"destination": url}
             )
 
             location = response.get('location', '')
@@ -667,7 +670,7 @@ def troubleshoot_cx_http_test():
                     }), 504
 
                 async_response = aruba_client.get(
-                    f'/network-troubleshooting/v1alpha1/cx/{device_serial}/httpTest/async-operations/{task_id}'
+                    f'/network-troubleshooting/v1alpha1/cx/{device_serial}/http/async-operations/{task_id}'
                 )
 
                 status = async_response.get('status', 'UNKNOWN')
@@ -709,7 +712,7 @@ def troubleshoot_cx_aaa_test():
     """Execute AAA test on CX switch using async API.
 
     Reference: https://developer.arubanetworks.com/new-central/reference/initiatecxaaa
-    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/aaaTest
+    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/aaa
     """
     import app as _app
     aruba_client = _app.aruba_client
@@ -725,7 +728,7 @@ def troubleshoot_cx_aaa_test():
 
         try:
             response = aruba_client.post(
-                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/aaaTest',
+                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/aaa',
                 data={"username": username, "password": password}
             )
 
@@ -753,7 +756,7 @@ def troubleshoot_cx_aaa_test():
                     }), 504
 
                 async_response = aruba_client.get(
-                    f'/network-troubleshooting/v1alpha1/cx/{device_serial}/aaaTest/async-operations/{task_id}'
+                    f'/network-troubleshooting/v1alpha1/cx/{device_serial}/aaa/async-operations/{task_id}'
                 )
 
                 status = async_response.get('status', 'UNKNOWN')
@@ -795,7 +798,7 @@ def troubleshoot_cx_list_show_commands():
     """List available show commands for CX switch.
 
     Reference: https://developer.arubanetworks.com/new-central/reference/listcxshowcommands
-    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/showCommand
+    Endpoint: /network-troubleshooting/v1alpha1/cx/{serial-number}/show-commands
     """
     import app as _app
     aruba_client = _app.aruba_client
@@ -807,7 +810,7 @@ def troubleshoot_cx_list_show_commands():
 
         try:
             response = aruba_client.get(
-                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/showCommand'
+                f'/network-troubleshooting/v1alpha1/cx/{device_serial}/show-commands'
             )
 
             # Transform response: combine all commands from all categories into one object
@@ -1163,7 +1166,7 @@ def troubleshoot_ap_nslookup(serial):
             result, status_code = _poll_async_operation(
                 serial,
                 f'{_AP_TROUBLESHOOTING_BASE}/{serial}/nslookup',
-                {"hostname": hostname},
+                {"host": hostname},
                 "AP NSLookup",
                 max_wait=30, poll_interval=2,
             )
@@ -1182,7 +1185,7 @@ def troubleshoot_ap_nslookup(serial):
 def troubleshoot_ap_http_test(serial):
     """Run HTTP connectivity test from AP (async, polls until COMPLETED).
 
-    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/httpTest
+    Endpoint: /network-troubleshooting/v1alpha1/aps/{serial}/http
     """
     try:
         data = request.get_json() or {}
@@ -1192,7 +1195,7 @@ def troubleshoot_ap_http_test(serial):
         try:
             result, status_code = _poll_async_operation(
                 serial,
-                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/httpTest',
+                f'{_AP_TROUBLESHOOTING_BASE}/{serial}/http',
                 {"url": url},
                 "AP HTTP Test",
                 max_wait=30, poll_interval=2,
@@ -1221,12 +1224,12 @@ def troubleshoot_gw_iperf(serial):
         target = data.get('target', '')
         if not target:
             return jsonify({"error": "Target IP/hostname required"}), 400
-        payload = {"target": target}
+        payload = {"iperfServerAddress": target}
         if data.get('duration'):
             payload['duration'] = int(data['duration'])
         if data.get('port'):
             payload['port'] = int(data['port'])
-        response = aruba_client.post(f'/troubleshooting/v1/gateways/{serial}/iperf', data=payload)
+        response = aruba_client.post(f'/network-troubleshooting/v1alpha1/gateways/{serial}/iperf', data=payload)
         return jsonify({"success": True, "message": f"iPerf test to {target} initiated", "response": response})
     except Exception as e:
         logger.error(f"Error running iPerf on gateway {serial}: {e}")
@@ -1247,7 +1250,7 @@ def troubleshoot_gw_pingsweep(serial):
         subnet = data.get('subnet', '')
         if not subnet:
             return jsonify({"error": "Subnet required (e.g., 192.168.1.0/24)"}), 400
-        response = aruba_client.post(f'/troubleshooting/v1/gateways/{serial}/pingsweep', data={"subnet": subnet})
+        response = aruba_client.post(f'/network-troubleshooting/v1alpha1/gateways/{serial}/pingSweep', data={"destination": subnet})
         return jsonify({"success": True, "message": f"Ping sweep of {subnet} initiated", "response": response})
     except Exception as e:
         logger.error(f"Error running ping sweep on gateway {serial}: {e}")
@@ -1268,7 +1271,7 @@ def troubleshoot_gw_disconnect_client(serial):
         mac = data.get('mac', '')
         if not mac:
             return jsonify({"error": "Client MAC address required"}), 400
-        response = aruba_client.post(f'/troubleshooting/v1/gateways/{serial}/disconnect-client', data={"mac": mac})
+        response = aruba_client.post(f'/network-troubleshooting/v1alpha1/gateways/{serial}/disconnectClientByMacAddress', data={"clientMacAddress": mac})
         return jsonify({"success": True, "message": f"Client {mac} disconnect from gateway initiated", "response": response})
     except Exception as e:
         logger.error(f"Error disconnecting client from gateway {serial}: {e}")
@@ -1308,7 +1311,7 @@ def get_client_session():
         if not mac_address:
             return jsonify({"error": "MAC address required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/clients/{mac_address}')
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
             return jsonify(response)
         except Exception:
             return jsonify({"session": None})
@@ -1329,13 +1332,17 @@ def get_ap_diagnostics():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}')
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}')
             return jsonify(response)
-        except Exception:
-            return jsonify({"items": [], "count": 0})
+        except Exception as e:
+            err = str(e)
+            logger.error(f"AP diagnostics error for {serial}: {e}")
+            if '404' in err or 'Not Found' in err:
+                return jsonify({"error": f"AP not found: {serial}. Verify the serial is correct and the device is registered in Central."}), 404
+            return jsonify({"error": err}), 500
     except Exception as e:
         logger.error(f"Error fetching AP diagnostics: {e}")
-        return jsonify({"items": [], "count": 0})
+        return jsonify({"error": str(e)}), 500
 
 
 @troubleshoot_bp.route('/api/troubleshoot/ap-radio-stats', methods=['GET'])
@@ -1350,7 +1357,7 @@ def get_ap_radio_stats():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/radio-stats')
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/radio-stats')
             return jsonify(response)
         except Exception:
             return jsonify({"items": [], "count": 0})
@@ -1371,7 +1378,7 @@ def get_ap_interference():
         if not serial:
             return jsonify({"error": "AP serial required"}), 400
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/aps/{serial}/interference')
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{serial}/interference')
             return jsonify(response)
         except Exception:
             return jsonify({"items": [], "count": 0})
@@ -1395,7 +1402,7 @@ def troubleshoot_client_connectivity():
             return jsonify({"error": "mac_address is required"}), 400
 
         # Get client details
-        client = aruba_client.get(f'/network-monitoring/v1/clients/{mac_address}')
+        client = aruba_client.get(f'/network-monitoring/v1alpha1/clients/{mac_address}')
 
         # Get associated AP if available
         ap_details = None
@@ -1403,7 +1410,7 @@ def troubleshoot_client_connectivity():
             ap_serial = client.get('associatedDevice') or client.get('apSerial')
             if ap_serial:
                 try:
-                    ap_details = aruba_client.get(f'/network-monitoring/v1/aps/{ap_serial}')
+                    ap_details = aruba_client.get(f'/network-monitoring/v1alpha1/aps/{ap_serial}')
                 except Exception as e:
                     logger.warning(f"Could not fetch AP details: {e}")
 
@@ -1459,9 +1466,9 @@ def get_switch_port_status():
 
         try:
             if port:
-                response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces/{port}')
+                response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/interfaces/{port}')
             else:
-                response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces')
+                response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/interfaces')
             return jsonify(response)
         except Exception:
             return jsonify({"interfaces": []})
@@ -1484,7 +1491,7 @@ def show_run_config():
 
         # Fetch running config
         try:
-            response = aruba_client.get(f'/configuration/v1/devices/{serial}/configuration')
+            response = aruba_client.get(f'/network-config/v1/devices/{serial}/configuration')
             # Check if response has configuration field
             if 'configuration' in response and response['configuration']:
                 return jsonify(response)
@@ -1509,18 +1516,59 @@ def show_run_config():
 @troubleshoot_bp.route('/api/troubleshoot/show-tech-support', methods=['GET'])
 @require_session
 def show_tech_support():
-    """Get tech support information from a device."""
+    """Get tech support information from a device.
+
+    For APs, uses the async showCommand endpoint with 'show tech-support'.
+    For CX switches and others, uses the legacy /troubleshooting/v1/devices path.
+    """
     import app as _app
     aruba_client = _app.aruba_client
 
     try:
         serial = request.args.get('serial')
+        device_type = (request.args.get('device_type') or '').upper()
         if not serial:
             return jsonify({"error": "Device serial required"}), 400
 
+        # APs use the async showCommand API — the legacy tech-support endpoint 404s for APs
+        if device_type == 'AP':
+            try:
+                response = aruba_client.post(
+                    f'{_AP_TROUBLESHOOTING_BASE}/{serial}/showCommand',
+                    json={"command": "show tech-support"}
+                )
+                location = response.get('location', '')
+                task_id_match = re.search(r'/async-operations/([a-f0-9\-]+)', location)
+                if not task_id_match:
+                    if response.get('status') == 'COMPLETED':
+                        return jsonify(response)
+                    return jsonify({"error": "Could not extract task ID from AP show command response"}), 500
+
+                task_id = task_id_match.group(1)
+                start_time = time.time()
+                for _ in range(60):
+                    if time.time() - start_time > 60:
+                        return jsonify({"error": "AP show tech-support timed out", "status": "TIMEOUT"}), 504
+                    async_response = aruba_client.get(
+                        f'{_AP_TROUBLESHOOTING_BASE}/{serial}/showCommand/async-operations/{task_id}'
+                    )
+                    status = async_response.get('status', 'UNKNOWN')
+                    if status == 'COMPLETED':
+                        return jsonify(async_response)
+                    elif status == 'FAILED':
+                        return jsonify({"error": f"AP show tech-support failed: {async_response.get('failReason', 'unknown')}"}), 500
+                    time.sleep(2)
+
+                return jsonify({"error": "AP show tech-support timed out", "status": "TIMEOUT"}), 504
+            except Exception as e:
+                if _is_device_unavailable_error(e):
+                    return jsonify({"status": "unavailable", "result": None})
+                logger.error(f"AP show tech-support error for {serial}: {e}")
+                return jsonify({"error": str(e)}), 500
+
+        # CX / other devices — legacy path
         try:
             response = aruba_client.get(f'/troubleshooting/v1/devices/{serial}/tech-support')
-            # Check if response has items
             if 'items' in response:
                 if not response['items'] or len(response['items']) == 0:
                     return jsonify({"items": [], "count": 0, "error": "Tech support data is empty. This device may not support this command."}), 404
@@ -1552,7 +1600,7 @@ def show_version():
             return jsonify({"error": "Device serial required"}), 400
 
         # Get device details which includes version (use cached_get to reduce API calls)
-        response = cached_get('/network-monitoring/v1/devices')
+        response = cached_get('/network-monitoring/v1alpha1/devices')
 
         # Filter for the specific device
         if 'items' in response:
@@ -1586,7 +1634,7 @@ def show_interfaces():
             return jsonify({"error": "Device serial required"}), 400
 
         try:
-            response = aruba_client.get(f'/network-monitoring/v1/switches/{serial}/interfaces')
+            response = aruba_client.get(f'/network-monitoring/v1alpha1/switches/{serial}/interfaces')
             # Check if response has interfaces
             if 'interfaces' in response:
                 if not response['interfaces'] or len(response['interfaces']) == 0:
@@ -1611,21 +1659,17 @@ def show_interfaces():
 @troubleshoot_bp.route('/api/firmware/versions', methods=['GET'])
 @require_session
 def get_firmware_versions():
-    """Get available firmware versions."""
+    """Get firmware details from New Central /network-services/v1alpha1/firmware-details."""
     import app as _app
     aruba_client = _app.aruba_client
 
     try:
-        device_type = request.args.get('device_type', 'IAP')
-        try:
-            response = aruba_client.get(f'/firmware/v1/versions/{device_type}')
-            return jsonify(response)
-        except Exception as fw_err:
-            # Fallback to new Central inventory-based versions (if available) or return empty
-            if '404' in str(fw_err) or 'Not Found' in str(fw_err):
-                logger.warning("Firmware versions API not found; returning empty list")
-                return jsonify({"versions": [], "count": 0})
-            raise fw_err
+        params = {}
+        device_type = request.args.get('device_type')
+        if device_type:
+            params['deviceType'] = device_type
+        response = aruba_client.get('/network-services/v1alpha1/firmware-details', params=params)
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching firmware versions: {e}")
         return jsonify({"error": str(e)}), 500
@@ -1639,28 +1683,17 @@ def get_firmware_compliance():
     aruba_client = _app.aruba_client
 
     try:
-        # Try different firmware API endpoints
-        try:
-            response = aruba_client.get('/firmware/v1/status')
-            return jsonify(response)
-        except Exception as fw_err:
-            # Try alternative endpoint
-            if "404" in str(fw_err) or "Not Found" in str(fw_err):
-                try:
-                    response = aruba_client.get('/platform/device_inventory/v1/devices')
-                    # Transform to compliance format
-                    devices = response.get('devices', [])
-                    return jsonify({
-                        "compliant": sum(1 for d in devices if d.get('firmware_compliant', False)),
-                        "non_compliant": sum(1 for d in devices if not d.get('firmware_compliant', True)),
-                        "total": len(devices),
-                        "devices": devices
-                    })
-                except Exception:
-                    # Return empty compliance data
-                    logger.warning("Firmware compliance endpoint not available")
-                    return jsonify({"compliant": 0, "non_compliant": 0, "total": 0, "devices": []})
-            raise fw_err
+        # Derive compliance from firmware-details: items where upgradeStatus != "Up To Date"
+        response = aruba_client.get('/network-services/v1alpha1/firmware-details')
+        items = response.get('items', [])
+        compliant = [d for d in items if d.get('upgradeStatus') == 'Up To Date']
+        non_compliant = [d for d in items if d.get('upgradeStatus') != 'Up To Date']
+        return jsonify({
+            "compliant": len(compliant),
+            "non_compliant": len(non_compliant),
+            "total": len(items),
+            "devices": items,
+        })
     except Exception as e:
         logger.error(f"Error fetching firmware compliance: {e}")
         return jsonify({"compliant": 0, "non_compliant": 0, "total": 0, "devices": [], "error": "Firmware API not available"})

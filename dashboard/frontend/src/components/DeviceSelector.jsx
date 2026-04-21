@@ -20,6 +20,7 @@ import useDeviceInventory from '../hooks/useDeviceInventory';
 function DeviceSelector({
   value,
   onChange,
+  onDeviceChange = null, // optional: receives full device object
   required = false,
   label = 'Device',
   helperText,
@@ -34,17 +35,18 @@ function DeviceSelector({
   const handleChange = (event) => {
     const selectedValue = event.target.value;
     // Find the device to get the serial (check both serial and serialNumber)
-    const device = devices.find(d => 
-      d.serial === selectedValue || 
+    const device = devices.find(d =>
+      d.serial === selectedValue ||
       d.serialNumber === selectedValue ||
       (d.serialNumber && d.serial === selectedValue)
     );
-    
+
     if (device) {
-      // Use serial as the value (prefer serialNumber if available for API compatibility)
       onChange(device.serialNumber || device.serial);
+      if (onDeviceChange) onDeviceChange(device);
     } else {
       onChange('');
+      if (onDeviceChange) onDeviceChange(null);
     }
   };
 

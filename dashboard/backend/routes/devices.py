@@ -39,7 +39,7 @@ def get_devices():
     try:
         params = request.args.to_dict()
         response = cached_get_paginated(
-            "/network-monitoring/v1/devices",
+            "/network-monitoring/v1alpha1/devices",
             params=params,
             max_pages=10,
             page_size=100,
@@ -67,10 +67,10 @@ def get_device_details(serial):
 
         # Direct lookup instead of fetching ALL devices and scanning
         try:
-            device = aruba_client.get(f"/network-monitoring/v1/devices/{serial}")
+            device = aruba_client.get(f"/network-monitoring/v1alpha1/devices/{serial}")
         except Exception:
             # Fallback: search in cached device list if direct endpoint fails
-            r = cached_get("/network-monitoring/v1/devices")
+            r = cached_get("/network-monitoring/v1alpha1/devices")
             device = None
             for d in monitoring_list_items(r):
                 if d.get("serial") == serial or d.get("serialNumber") == serial:
@@ -129,9 +129,9 @@ def get_device_details(serial):
             from concurrent.futures import ThreadPoolExecutor
 
             metrics = {
-                "cpu": f"/network-monitoring/v1/aps/{serial}/cpu-utilization-trends",
-                "mem": f"/network-monitoring/v1/aps/{serial}/memory-utilization-trends",
-                "power": f"/network-monitoring/v1/aps/{serial}/power-consumption-trends",
+                "cpu": f"/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends",
+                "mem": f"/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends",
+                "power": f"/network-monitoring/v1alpha1/aps/{serial}/power-consumption-trends",
             }
             with ThreadPoolExecutor(max_workers=3) as pool:
                 futures = {key: pool.submit(_fetch_utilization, ep) for key, ep in metrics.items()}
@@ -185,7 +185,7 @@ def get_device_details(serial):
 
 @devices_bp.route("/api/switches/<serial>/details", methods=["GET"])
 @require_session
-@api_proxy(lambda serial: f"/network-monitoring/v1/switches/{serial}", error_msg="Switch details")
+@api_proxy(lambda serial: f"/network-monitoring/v1alpha1/switch/{serial}", error_msg="Switch details")
 def get_switch_details(serial):
     pass
 
@@ -193,7 +193,7 @@ def get_switch_details(serial):
 @devices_bp.route("/api/switches/<serial>/hardware", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda serial: f"/network-monitoring/v1/switches/{serial}/hardware-categories",
+    lambda serial: f"/network-monitoring/v1alpha1/switch/{serial}/hardware-categories",
     error_msg="Switch hardware",
 )
 def get_switch_hardware(serial):
@@ -202,7 +202,7 @@ def get_switch_hardware(serial):
 
 @devices_bp.route("/api/switches/<serial>/lag", methods=["GET"])
 @require_session
-@api_proxy(lambda serial: f"/network-monitoring/v1/switches/{serial}/lag", error_msg="Switch LAG")
+@api_proxy(lambda serial: f"/network-monitoring/v1alpha1/switch/{serial}/lag", error_msg="Switch LAG")
 def get_switch_lag(serial):
     pass
 
@@ -210,7 +210,7 @@ def get_switch_lag(serial):
 @devices_bp.route("/api/switches/<serial>/interfaces", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda serial: f"/network-monitoring/v1/switches/{serial}/interfaces",
+    lambda serial: f"/network-monitoring/v1alpha1/switch/{serial}/interfaces",
     error_msg="Switch interfaces",
 )
 def get_switch_interfaces(serial):
@@ -280,7 +280,7 @@ def get_switch_show_command_result(serial, task_id):
 @devices_bp.route("/api/switches/<serial>/vlans", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda serial: f"/network-monitoring/v1/switches/{serial}/vlans", error_msg="Switch VLANs"
+    lambda serial: f"/network-monitoring/v1alpha1/switch/{serial}/vlans", error_msg="Switch VLANs"
 )
 def get_switch_vlans(serial):
     pass
@@ -289,7 +289,7 @@ def get_switch_vlans(serial):
 @devices_bp.route("/api/stacks/<stack_id>/members", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda stack_id: f"/network-monitoring/v1/stack/{stack_id}/members", error_msg="Stack members"
+    lambda stack_id: f"/network-monitoring/v1alpha1/stack/{stack_id}/members", error_msg="Stack members"
 )
 def get_stack_members(stack_id):
     pass
@@ -314,7 +314,7 @@ def get_device_parameters_by_model(platform_model):
 
 @devices_bp.route("/api/aps/<serial>/details", methods=["GET"])
 @require_session
-@api_proxy(lambda serial: f"/network-monitoring/v1/aps/{serial}", error_msg="AP details")
+@api_proxy(lambda serial: f"/network-monitoring/v1alpha1/aps/{serial}", error_msg="AP details")
 def get_ap_details(serial):
     pass
 
@@ -322,7 +322,7 @@ def get_ap_details(serial):
 @devices_bp.route("/api/aps/<serial>/power-consumption", methods=["GET"])
 @require_session
 @api_proxy(
-    lambda serial: f"/network-monitoring/v1/aps/{serial}/power-consumption-trends",
+    lambda serial: f"/network-monitoring/v1alpha1/aps/{serial}/power-consumption-trends",
     error_msg="AP power consumption",
 )
 def get_ap_power_consumption(serial):
@@ -336,7 +336,7 @@ def get_switches():
     try:
         params = request.args.to_dict()
         response = cached_get_paginated(
-            "/network-monitoring/v1/switches",
+            "/network-monitoring/v1alpha1/switches",
             params=params,
             max_pages=10,
             page_size=100,
@@ -354,7 +354,7 @@ def get_access_points():
     try:
         params = request.args.to_dict()
         response = cached_get_paginated(
-            "/network-monitoring/v1/aps",
+            "/network-monitoring/v1alpha1/aps",
             params=params,
             max_pages=10,
             page_size=100,
@@ -371,45 +371,25 @@ def get_access_points():
 @devices_bp.route("/api/devices/<serial>/info", methods=["GET"])
 @require_session
 def get_device_info(serial):
-    """Get device information from configuration API (device-info endpoint).
+    """Get device information from New Central monitoring API.
 
-    This uses the Aruba Central Configuration API which may include device status,
-    hardware information, and potentially temperature/CPU/memory data.
-    Reference: https://internal-ui.central.arubanetworks.com/cnxconfig/docs
+    Tries AP endpoint first, falls back to switch endpoint.
+    The old /configuration/v1/device-info paths are Classic Central and do not exist in New Central.
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        # Try configuration API device-info endpoint
-        # Format may vary - trying common patterns
         try:
-            response = aruba_client.get(f"/configuration/v1/device-info/{serial}")
+            response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}")
             return jsonify(response)
-        except Exception as e1:
-            # Try alternative path
+        except Exception:
             try:
-                response = aruba_client.get(f"/configuration/v1/devices/{serial}/device-info")
+                response = aruba_client.get(f"/network-monitoring/v1alpha1/switch/{serial}")
                 return jsonify(response)
             except Exception as e2:
-                # Try system-info endpoint
-                try:
-                    response = aruba_client.get(f"/configuration/v1/system-info/{serial}")
-                    return jsonify(response)
-                except Exception as e3:
-                    logger.warning(
-                        f"Device info endpoints not found. Tried: device-info/{serial}, devices/{serial}/device-info, system-info/{serial}"
-                    )
-                    return (
-                        jsonify(
-                            {
-                                "error": "Device info endpoint not found",
-                                "message": "Configuration API device-info endpoints not available. Trying device details from monitoring API.",
-                                "suggestion": "Use /api/monitoring/aps/{serial} or /api/monitoring/switches/{serial} for device information",
-                            }
-                        ),
-                        404,
-                    )
+                logger.warning(f"Device info not found for {serial}: {e2}")
+                return jsonify({"error": f"Device {serial} not found in monitoring API"}), 404
     except Exception as e:
         logger.error(f"Error fetching device info for {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -498,36 +478,25 @@ def upload_device_image():
 @devices_bp.route("/api/devices/<serial>/system-info", methods=["GET"])
 @require_session
 def get_device_system_info(serial):
-    """Get system information from configuration API (system-info endpoint).
+    """Get system information from New Central monitoring API.
 
-    Reference: https://internal-ui.central.arubanetworks.com/cnxconfig/docs
-    This may include CPU, memory, temperature, and other system metrics.
+    /configuration/v1/system-info does not exist in New Central.
+    Falls back to the monitoring AP or switch endpoint.
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        # Try system-info endpoint - format may vary
         try:
-            response = aruba_client.get(f"/configuration/v1/system-info/{serial}")
+            response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}")
             return jsonify(response)
-        except Exception as e1:
-            # Try alternative path
+        except Exception:
             try:
-                response = aruba_client.get(f"/configuration/v1/devices/{serial}/system-info")
+                response = aruba_client.get(f"/network-monitoring/v1alpha1/switch/{serial}")
                 return jsonify(response)
             except Exception as e2:
-                logger.warning(f"System info endpoint not found for {serial}")
-                return (
-                    jsonify(
-                        {
-                            "error": "System info endpoint not found",
-                            "message": "Configuration API system-info endpoint not available for this device.",
-                            "suggestion": "Check device type and try device-specific endpoints like /api/monitoring/aps/{serial}/cpu",
-                        }
-                    ),
-                    404,
-                )
+                logger.warning(f"System info not found for {serial}: {e2}")
+                return jsonify({"error": f"Device {serial} not found"}), 404
     except Exception as e:
         logger.error(f"Error fetching system info for {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -536,36 +505,16 @@ def get_device_system_info(serial):
 @devices_bp.route("/api/aps/<serial>/system", methods=["GET"])
 @require_session
 def get_ap_system(serial):
-    """Get AP system information from configuration API (ap-system endpoint).
+    """Get AP details from New Central monitoring API.
 
-    Reference: https://internal-ui.central.arubanetworks.com/cnxconfig/docs
-    The ap-system endpoint may include system status, temperature, and hardware info.
+    /configuration/v1/ap-system does not exist in New Central.
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        # Try ap-system endpoint
-        try:
-            response = aruba_client.get(f"/configuration/v1/ap-system/{serial}")
-            return jsonify(response)
-        except Exception as e1:
-            # Try alternative path
-            try:
-                response = aruba_client.get(f"/configuration/v1/aps/{serial}/ap-system")
-                return jsonify(response)
-            except Exception as e2:
-                logger.warning(f"AP system endpoint not found for {serial}")
-                return (
-                    jsonify(
-                        {
-                            "error": "AP system endpoint not found",
-                            "message": "Configuration API ap-system endpoint not available.",
-                            "suggestion": "Try /api/monitoring/aps/{serial} for AP monitoring data",
-                        }
-                    ),
-                    404,
-                )
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}")
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching AP system info for {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -574,36 +523,16 @@ def get_ap_system(serial):
 @devices_bp.route("/api/switches/<serial>/system", methods=["GET"])
 @require_session
 def get_switch_system(serial):
-    """Get switch system information from configuration API (switch-system endpoint).
+    """Get switch details from New Central monitoring API.
 
-    Reference: https://internal-ui.central.arubanetworks.com/cnxconfig/docs
-    The switch-system endpoint may include system status, temperature, CPU, memory, and hardware info.
+    /configuration/v1/switch-system does not exist in New Central.
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
-        # Try switch-system endpoint
-        try:
-            response = aruba_client.get(f"/configuration/v1/switch-system/{serial}")
-            return jsonify(response)
-        except Exception as e1:
-            # Try alternative path
-            try:
-                response = aruba_client.get(f"/configuration/v1/switches/{serial}/switch-system")
-                return jsonify(response)
-            except Exception as e2:
-                logger.warning(f"Switch system endpoint not found for {serial}")
-                return (
-                    jsonify(
-                        {
-                            "error": "Switch system endpoint not found",
-                            "message": "Configuration API switch-system endpoint not available.",
-                            "suggestion": "Try /api/monitoring/switches/{serial} for switch monitoring data",
-                        }
-                    ),
-                    404,
-                )
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/switch/{serial}")
+        return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching switch system info for {serial}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -622,7 +551,7 @@ def get_switch_ports(serial):
     try:
         params = request.args.to_dict()
         response = aruba_client.get(
-            f"/network-monitoring/v1/switches/{serial}/interfaces", params=params
+            f"/network-monitoring/v1alpha1/switch/{serial}/interfaces", params=params
         )
         return jsonify(response)
     except Exception as e:
@@ -639,7 +568,7 @@ def get_ap_radio(serial):
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        response = aruba_client.get(f"/network-monitoring/v1/aps/{serial}/radios", params=params)
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}/radios", params=params)
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error fetching radio details for {serial}: {e}")
@@ -654,7 +583,7 @@ def get_device_health(serial):
 
     aruba_client = _app.aruba_client
     try:
-        response = aruba_client.get(f"/network-monitoring/v1/devices/{serial}")
+        response = aruba_client.get(f"/network-monitoring/v1alpha1/devices/{serial}")
         # Also try to pull cpu/memory trend data
         health = {
             "device": response,
@@ -665,14 +594,14 @@ def get_device_health(serial):
         if device_type == "ACCESS_POINT":
             try:
                 cpu = aruba_client.get(
-                    f"/network-monitoring/v1/aps/{serial}/cpu-utilization-trends"
+                    f"/network-monitoring/v1alpha1/aps/{serial}/cpu-utilization-trends"
                 )
                 health["cpuTrends"] = cpu
             except Exception:
                 pass
             try:
                 mem = aruba_client.get(
-                    f"/network-monitoring/v1/aps/{serial}/memory-utilization-trends"
+                    f"/network-monitoring/v1alpha1/aps/{serial}/memory-utilization-trends"
                 )
                 health["memoryTrends"] = mem
             except Exception:
@@ -688,14 +617,14 @@ def get_device_health(serial):
 def get_ap_radios_v2(serial):
     """Get radios for a specific AP.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/radios
     """
     import app as _app
 
     aruba_client = _app.aruba_client
     try:
         params = request.args.to_dict()
-        r = aruba_client.get(f"/network-monitoring/v1/aps/{serial}/radios", params=params)
+        r = aruba_client.get(f"/network-monitoring/v1alpha1/aps/{serial}/radios", params=params)
         return jsonify(r)
     except Exception as e:
         logger.error(f"Error fetching radios for AP {serial}: {e}")
@@ -707,7 +636,7 @@ def get_ap_radios_v2(serial):
 def get_ap_radio_throughput(serial, radio_number):
     """Get throughput trends for a specific AP radio.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/throughput-trends
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/radios/{radio-number}/throughput-trends
     """
     import app as _app
 
@@ -715,7 +644,7 @@ def get_ap_radio_throughput(serial, radio_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_number}/throughput-trends",
+            f"/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_number}/throughput-trends",
             params=params,
         )
         return jsonify(r)
@@ -731,7 +660,7 @@ def get_ap_radio_throughput(serial, radio_number):
 def get_ap_radio_channel_utilization(serial, radio_number):
     """Get channel utilization trends for a specific AP radio.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/channel-utilization-trends
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/radios/{radio-number}/channel-utilization-trends
     """
     import app as _app
 
@@ -739,7 +668,7 @@ def get_ap_radio_channel_utilization(serial, radio_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_number}/channel-utilization-trends",
+            f"/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_number}/channel-utilization-trends",
             params=params,
         )
         return jsonify(r)
@@ -755,7 +684,7 @@ def get_ap_radio_channel_utilization(serial, radio_number):
 def get_ap_radio_channel_quality(serial, radio_number):
     """Get channel quality trends for a specific AP radio.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/channel-quality-trends
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/radios/{radio-number}/channel-quality-trends
     """
     import app as _app
 
@@ -763,7 +692,7 @@ def get_ap_radio_channel_quality(serial, radio_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_number}/channel-quality-trends",
+            f"/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_number}/channel-quality-trends",
             params=params,
         )
         return jsonify(r)
@@ -777,7 +706,7 @@ def get_ap_radio_channel_quality(serial, radio_number):
 def get_ap_radio_noise_floor(serial, radio_number):
     """Get noise floor trends for a specific AP radio.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/radios/{radio-number}/noise-floor-trends
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/radios/{radio-number}/noise-floor-trends
     """
     import app as _app
 
@@ -785,7 +714,7 @@ def get_ap_radio_noise_floor(serial, radio_number):
     try:
         params = request.args.to_dict()
         r = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/radios/{radio_number}/noise-floor-trends",
+            f"/network-monitoring/v1alpha1/aps/{serial}/radios/{radio_number}/noise-floor-trends",
             params=params,
         )
         return jsonify(r)
@@ -799,7 +728,7 @@ def get_ap_radio_noise_floor(serial, radio_number):
 def get_ap_throughput_trends(serial):
     """Get wireless throughput trends for an AP.
 
-    Endpoint: /network-monitoring/v1/aps/{serial-number}/throughput-trends?interface-type=WIRELESS
+    Endpoint: /network-monitoring/v1alpha1/aps/{serial-number}/throughput-trends?interface-type=WIRELESS
     """
     import app as _app
 
@@ -809,7 +738,7 @@ def get_ap_throughput_trends(serial):
         if "interface-type" not in params:
             params["interface-type"] = "WIRELESS"
         r = aruba_client.get(
-            f"/network-monitoring/v1/aps/{serial}/throughput-trends", params=params
+            f"/network-monitoring/v1alpha1/aps/{serial}/throughput-trends", params=params
         )
         return jsonify(r)
     except Exception as e:
