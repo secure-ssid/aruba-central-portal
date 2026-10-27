@@ -29,7 +29,9 @@ def _wo(summary: str, steps=None) -> WriterOutput:
     return WriterOutput(
         summary=summary,
         troubleshooting=list(steps or []),
-        provider="gemini", model="test", raw="",
+        provider="gemini",
+        model="test",
+        raw="",
     )
 
 
@@ -50,27 +52,53 @@ def store(tmp_path: Path) -> SyslogStore:
     s.close()
 
 
-def _ingest(store, *, when, code="STORM", serial="CNABC12345", hostname="AP-1",
-            severity=6, source_ip="10.0.0.1"):
+def _ingest(
+    store,
+    *,
+    when,
+    code="STORM",
+    serial="CNABC12345",
+    hostname="AP-1",
+    severity=6,
+    source_ip="10.0.0.1",
+):
     return store.insert_event(
-        received_at=when, event_time=when, source_ip=source_ip, transport="udp",
-        facility=16, severity=severity, hostname=hostname, app_name="stm",
-        proc_id=None, msg_id=None, device_serial=serial, device_name=hostname,
-        event_code=code, message=f"{code} detail", raw=f"<134>...{code}",
+        received_at=when,
+        event_time=when,
+        source_ip=source_ip,
+        transport="udp",
+        facility=16,
+        severity=severity,
+        hostname=hostname,
+        app_name="stm",
+        proc_id=None,
+        msg_id=None,
+        device_serial=serial,
+        device_name=hostname,
+        event_code=code,
+        message=f"{code} detail",
+        raw=f"<134>...{code}",
         structured_data=None,
     )
 
 
 # ──────────────── _build_prompt ────────────────
 
+
 def test_build_prompt_includes_key_fields():
     incident = {
-        "id": 7, "device_serial": "CN-X", "event_code": "LINK_DOWN",
-        "severity": 3, "event_count": 5, "first_seen": "t1", "last_seen": "t2",
+        "id": 7,
+        "device_serial": "CN-X",
+        "event_code": "LINK_DOWN",
+        "severity": 3,
+        "event_count": 5,
+        "first_seen": "t1",
+        "last_seen": "t2",
         "anomaly_score": 4.2,
     }
-    events = [{"message": "port 1 down", "hostname": "sw-1",
-               "event_time": "t1", "received_at": "t1"}]
+    events = [
+        {"message": "port 1 down", "hostname": "sw-1", "event_time": "t1", "received_at": "t1"}
+    ]
     prompt = _build_prompt(incident, events)
     for needle in ("CN-X", "LINK_DOWN", "error", "5", "4.2", "sw-1", "port 1 down"):
         assert needle in prompt, f"prompt missing: {needle!r}"
@@ -81,15 +109,22 @@ def test_build_prompt_handles_dataclass_events(store):
     _ingest(store, when=t)
     events = store.list_events(limit=10)
     prompt = _build_prompt(
-        {"device_serial": "CN", "event_code": "STORM", "severity": 6,
-         "event_count": 1, "first_seen": "a", "last_seen": "b",
-         "anomaly_score": 1.0},
+        {
+            "device_serial": "CN",
+            "event_code": "STORM",
+            "severity": 6,
+            "event_count": 1,
+            "first_seen": "a",
+            "last_seen": "b",
+            "anomaly_score": 1.0,
+        },
         events,
     )
     assert "AP-1" in prompt and "STORM" in prompt
 
 
 # ──────────────── write_alert (mocked) ────────────────
+
 
 def test_write_alert_returns_summary_and_troubleshooting():
     llm_text = (
@@ -101,9 +136,15 @@ def test_write_alert_returns_summary_and_troubleshooting():
         return_value=LLMResult(text=llm_text, provider="gemini", model="test"),
     ) as gen:
         result = write_alert(
-            {"device_serial": "CN", "event_code": "X", "severity": 3,
-             "event_count": 5, "first_seen": "a", "last_seen": "b",
-             "anomaly_score": 3.0},
+            {
+                "device_serial": "CN",
+                "event_code": "X",
+                "severity": 3,
+                "event_count": 5,
+                "first_seen": "a",
+                "last_seen": "b",
+                "anomaly_score": 3.0,
+            },
             [],
         )
     assert result.summary == "AP-1 went down 5 times."
@@ -145,13 +186,13 @@ def test_parse_output_multiline_json_with_nested_quotes():
     """Gemini often emits pretty-printed JSON with embedded quotes inside
     the summary. The first-brace / last-brace span must still parse."""
     text = (
-        '{\n'
+        "{\n"
         '  "summary": "Device \\"AP-1\\" saw 12 events.",\n'
         '  "troubleshooting": ["check uplink", "inspect logs"]\n'
-        '}'
+        "}"
     )
     s, ts, _ = _parse_output(text)
-    assert 'AP-1' in s and '"' in s  # unescaped quote preserved
+    assert "AP-1" in s and '"' in s  # unescaped quote preserved
     assert ts == ["check uplink", "inspect logs"]
 
 
@@ -172,21 +213,30 @@ def test_fallback_troubleshooting_specializes_on_event_code():
 
 
 def test_write_alert_propagates_errors():
-    with patch(
-        "pipeline.syslog.writer_agent.generate",
-        side_effect=LLMError("boom"),
-    ), pytest.raises(LLMError):
+    with (
+        patch(
+            "pipeline.syslog.writer_agent.generate",
+            side_effect=LLMError("boom"),
+        ),
+        pytest.raises(LLMError),
+    ):
         write_alert({"event_count": 1}, [])
 
 
 # ──────────────── fallback_summary ────────────────
 
+
 def test_fallback_summary_mentions_count_and_device():
-    summary = fallback_summary({
-        "device_serial": "CNABC12345", "event_code": "LINK_DOWN",
-        "event_count": 42, "anomaly_score": 3.4,
-        "first_seen": "2026-04-17T22:00:00Z", "last_seen": "2026-04-17T22:05:00Z",
-    })
+    summary = fallback_summary(
+        {
+            "device_serial": "CNABC12345",
+            "event_code": "LINK_DOWN",
+            "event_count": 42,
+            "anomaly_score": 3.4,
+            "first_seen": "2026-04-17T22:00:00Z",
+            "last_seen": "2026-04-17T22:05:00Z",
+        }
+    )
     assert "CNABC12345" in summary
     assert "42" in summary
     assert "LINK_DOWN" in summary
@@ -194,14 +244,21 @@ def test_fallback_summary_mentions_count_and_device():
 
 
 def test_fallback_summary_omits_anomaly_tail_when_low():
-    summary = fallback_summary({
-        "device_serial": "X", "event_code": "Y", "event_count": 1,
-        "anomaly_score": 0.5, "first_seen": "a", "last_seen": "b",
-    })
+    summary = fallback_summary(
+        {
+            "device_serial": "X",
+            "event_code": "Y",
+            "event_count": 1,
+            "anomaly_score": 0.5,
+            "first_seen": "a",
+            "last_seen": "b",
+        }
+    )
     assert "Anomaly score" not in summary
 
 
 # ──────────────── clusterer integration ────────────────
+
 
 def test_clusterer_writes_alert_for_anomalous_incident(store):
     # Simulate a big burst with no prior history → cold start score 5.0
@@ -286,9 +343,12 @@ def test_alert_is_upserted_not_duplicated(store):
     # Disable the per-signature cooldown for this test so the novel-content
     # path actually re-invokes the writer. The cooldown is validated
     # independently in test_writer_skipped_by_cooldown.
-    with patch("pipeline.syslog.clusterer.WRITER_COOLDOWN_SEC", 0), patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("second", ["two"]),
+    with (
+        patch("pipeline.syslog.clusterer.WRITER_COOLDOWN_SEC", 0),
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("second", ["two"]),
+        ),
     ):
         cluster_once(store, now=t + timedelta(seconds=45))
 
@@ -329,6 +389,7 @@ def test_writer_skipped_when_fingerprints_unchanged(store):
 
 
 # ──────────────── reviewer stub (approval flag persistence) ────────────
+
 
 def test_update_alert_review_roundtrip(store):
     # Direct exercise of the reviewer-facing API: store a pending alert,

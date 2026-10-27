@@ -6,12 +6,14 @@ from pipeline.syslog.parser import parse_syslog
 
 
 def test_rfc3164_basic():
-    line = b"<134>Apr 17 21:45:01 AP-FLOOR-3 stm[1234]: AP_EVENT_DOT11_ASSOC client=aa:bb:cc:dd:ee:ff"
+    line = (
+        b"<134>Apr 17 21:45:01 AP-FLOOR-3 stm[1234]: AP_EVENT_DOT11_ASSOC client=aa:bb:cc:dd:ee:ff"
+    )
     ev = parse_syslog(line, now=datetime(2026, 4, 17, 22, 0, tzinfo=timezone.utc))
 
     assert ev.format == "3164"
     assert ev.facility == 16  # 134 >> 3
-    assert ev.severity == 6   # 134 & 7
+    assert ev.severity == 6  # 134 & 7
     assert ev.hostname == "AP-FLOOR-3"
     assert ev.app_name == "stm"
     assert ev.proc_id == "1234"
@@ -106,9 +108,7 @@ def test_arubaos8_switch_and_gateway_prefixes():
 def test_arubaos8_without_tag_prefix_still_upgrades_format():
     """ArubaOS 8 lines that don't carry AP:<name> should still parse
     cleanly — just no device_name promotion."""
-    line = (
-        b"<140>Apr 18 04:41:36 2026 10.11.154.54 dhcp[123]: client lease renewed"
-    )
+    line = b"<140>Apr 18 04:41:36 2026 10.11.154.54 dhcp[123]: client lease renewed"
     ev = parse_syslog(line, now=datetime(2026, 4, 18, 5, 0, tzinfo=timezone.utc))
     assert ev.format == "3164-aos8"
     assert ev.hostname == "10.11.154.54"

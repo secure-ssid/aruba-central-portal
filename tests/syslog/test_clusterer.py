@@ -16,7 +16,9 @@ def store(tmp_path: Path) -> SyslogStore:
     s.close()
 
 
-def _ingest(store: SyslogStore, *, serial="CNABC12345", code="AP_LINK_UP", when: datetime, severity=6):
+def _ingest(
+    store: SyslogStore, *, serial="CNABC12345", code="AP_LINK_UP", when: datetime, severity=6
+):
     return store.insert_event(
         received_at=when,
         event_time=when,
@@ -169,6 +171,7 @@ def test_lookback_excludes_ancient_events(store):
 
 # ──────────────── Phase 9: family-based + sliding-window clustering ────────
 
+
 def test_related_codes_cluster_into_same_family(store):
     """AOS emits 132094 (MIC failure) and 520013 (handshake timeout) together
     for the same WPA failure. They must land in ONE incident."""
@@ -178,8 +181,7 @@ def test_related_codes_cluster_into_same_family(store):
     for i in range(5):
         _ingest(store, code="520013", when=t + timedelta(seconds=i + 10))
 
-    cluster_once(store, now=t + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t + timedelta(seconds=30), lookback=timedelta(days=3650))
     incidents = store.list_incidents()
     assert len(incidents) == 1
     assert incidents[0]["event_count"] == 10
@@ -192,8 +194,7 @@ def test_continuous_activity_merges_across_bucket_boundary(store):
     t0 = datetime(2026, 4, 18, 0, 4, 30, tzinfo=timezone.utc)
     for i in range(5):
         _ingest(store, code="132094", when=t0 + timedelta(seconds=i))
-    cluster_once(store, now=t0 + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t0 + timedelta(seconds=30), lookback=timedelta(days=3650))
     assert len(store.list_incidents()) == 1
     first_id = store.list_incidents()[0]["id"]
 
@@ -202,8 +203,7 @@ def test_continuous_activity_merges_across_bucket_boundary(store):
     t1 = datetime(2026, 4, 18, 0, 5, 10, tzinfo=timezone.utc)
     for i in range(5):
         _ingest(store, code="132094", when=t1 + timedelta(seconds=i))
-    cluster_once(store, now=t1 + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t1 + timedelta(seconds=30), lookback=timedelta(days=3650))
 
     incidents = store.list_incidents()
     assert len(incidents) == 1
@@ -216,15 +216,13 @@ def test_gap_longer_than_window_still_starts_new_incident(store):
     t0 = datetime(2026, 4, 18, 0, 0, 30, tzinfo=timezone.utc)
     for i in range(3):
         _ingest(store, code="132094", when=t0 + timedelta(seconds=i))
-    cluster_once(store, now=t0 + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t0 + timedelta(seconds=30), lookback=timedelta(days=3650))
 
     # 10 minutes later (window = 5 min default) → new incident
     t1 = datetime(2026, 4, 18, 0, 10, 30, tzinfo=timezone.utc)
     for i in range(3):
         _ingest(store, code="132094", when=t1 + timedelta(seconds=i))
-    cluster_once(store, now=t1 + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t1 + timedelta(seconds=30), lookback=timedelta(days=3650))
 
     assert len(store.list_incidents()) == 2
 
@@ -238,6 +236,5 @@ def test_different_families_do_not_merge_on_same_device(store):
     for i in range(5):
         _ingest(store, code="BROADCAST_STORM_DETECTED", when=t + timedelta(seconds=i + 10))
 
-    cluster_once(store, now=t + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t + timedelta(seconds=30), lookback=timedelta(days=3650))
     assert len(store.list_incidents()) == 2

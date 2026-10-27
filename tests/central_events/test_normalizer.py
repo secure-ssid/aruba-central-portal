@@ -10,7 +10,6 @@ from pipeline.central_events.normalizer import (
     normalize_central_event,
 )
 
-
 # A realistic row drawn from the user's CSV export (converted to the
 # API shape — hyphenated keys match the live `/v1/events` response).
 _SAMPLE_EVENT = {
@@ -85,7 +84,14 @@ def test_normalize_extracts_all_the_important_bits():
     assert out["severity"] == 3  # "Failure" → error
     assert out["msg_id"] == "evt-abc123"
     assert out["event_time"] == datetime(
-        2026, 4, 18, 0, 1, 50, 123_000, tzinfo=timezone.utc,
+        2026,
+        4,
+        18,
+        0,
+        1,
+        50,
+        123_000,
+        tzinfo=timezone.utc,
     )
     assert "MIC Failure" in out["message"]
     # All extras preserved so the LLM writer sees client MAC / SSID / BSSID.

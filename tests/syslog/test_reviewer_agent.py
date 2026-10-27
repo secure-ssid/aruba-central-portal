@@ -21,8 +21,11 @@ from pipeline.syslog.writer_agent import WriterOutput
 
 def _wo(summary: str, steps=None) -> WriterOutput:
     return WriterOutput(
-        summary=summary, troubleshooting=list(steps or []),
-        provider="gemini", model="test", raw="",
+        summary=summary,
+        troubleshooting=list(steps or []),
+        provider="gemini",
+        model="test",
+        raw="",
     )
 
 
@@ -33,18 +36,38 @@ def store(tmp_path: Path) -> SyslogStore:
     s.close()
 
 
-def _ingest(store, *, when, code="STORM", serial="CNABC12345", hostname="AP-1",
-            severity=6, source_ip="10.0.0.1"):
+def _ingest(
+    store,
+    *,
+    when,
+    code="STORM",
+    serial="CNABC12345",
+    hostname="AP-1",
+    severity=6,
+    source_ip="10.0.0.1",
+):
     return store.insert_event(
-        received_at=when, event_time=when, source_ip=source_ip, transport="udp",
-        facility=16, severity=severity, hostname=hostname, app_name="stm",
-        proc_id=None, msg_id=None, device_serial=serial, device_name=hostname,
-        event_code=code, message=f"{code} detail", raw=f"<134>...{code}",
+        received_at=when,
+        event_time=when,
+        source_ip=source_ip,
+        transport="udp",
+        facility=16,
+        severity=severity,
+        hostname=hostname,
+        app_name="stm",
+        proc_id=None,
+        msg_id=None,
+        device_serial=serial,
+        device_name=hostname,
+        event_code=code,
+        message=f"{code} detail",
+        raw=f"<134>...{code}",
         structured_data=None,
     )
 
 
 # ──────────────── _parse_verdict ────────────────
+
 
 def test_parse_verdict_clean_json():
     approved, notes = _parse_verdict('{"approved": true, "notes": "matches events"}')
@@ -98,12 +121,14 @@ def test_parse_verdict_default_notes_when_blank():
 
 # ──────────────── review_alert (mocked LLM) ────────────────
 
+
 def test_review_alert_approves():
     with patch(
         "pipeline.syslog.reviewer_agent.generate",
         return_value=LLMResult(
             text='{"approved": true, "notes": "consistent"}',
-            provider="gemini", model="m",
+            provider="gemini",
+            model="m",
         ),
     ):
         result = review_alert({"id": 1, "event_count": 5}, [], "AP-1 saw 5 events.")
@@ -117,7 +142,8 @@ def test_review_alert_rejects_hallucination():
         "pipeline.syslog.reviewer_agent.generate",
         return_value=LLMResult(
             text='{"approved": false, "notes": "mentions port 5 but events don\'t"}',
-            provider="gemini", model="m",
+            provider="gemini",
+            model="m",
         ),
     ):
         result = review_alert({"id": 1}, [], "Port 5 flapped.")
@@ -129,24 +155,30 @@ def test_review_alert_pending_on_malformed_json():
     with patch(
         "pipeline.syslog.reviewer_agent.generate",
         return_value=LLMResult(
-            text="this looks fine to me", provider="gemini", model="m",
+            text="this looks fine to me",
+            provider="gemini",
+            model="m",
         ),
     ):
         result = review_alert({"id": 1}, [], "summary")
     assert result.pending is True
-    assert result.approved is False   # pending ≠ approved
+    assert result.approved is False  # pending ≠ approved
     assert "no json" in result.notes.lower()
 
 
 def test_review_alert_propagates_llm_error():
-    with patch(
-        "pipeline.syslog.reviewer_agent.generate",
-        side_effect=LLMError("network down"),
-    ), pytest.raises(LLMError):
+    with (
+        patch(
+            "pipeline.syslog.reviewer_agent.generate",
+            side_effect=LLMError("network down"),
+        ),
+        pytest.raises(LLMError),
+    ):
         review_alert({"id": 1}, [], "summary")
 
 
 # ──────────────── clusterer integration ────────────────
+
 
 def _seed_anomalous_incident(store, t):
     for i in range(25):
@@ -156,13 +188,17 @@ def _seed_anomalous_incident(store, t):
 def test_approved_alert_lands_with_approved_flag_1(store):
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("summary"),
-    ), patch(
-        "pipeline.syslog.clusterer.review_alert",
-        return_value=__import__("pipeline.syslog.reviewer_agent", fromlist=["ReviewResult"])
-            .ReviewResult(approved=True, notes="looks right", raw=""),
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("summary"),
+        ),
+        patch(
+            "pipeline.syslog.clusterer.review_alert",
+            return_value=__import__(
+                "pipeline.syslog.reviewer_agent", fromlist=["ReviewResult"]
+            ).ReviewResult(approved=True, notes="looks right", raw=""),
+        ),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
     alert = store.list_alerts()[0]
@@ -174,12 +210,16 @@ def test_rejected_alert_lands_with_approved_flag_minus_1(store):
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
     from pipeline.syslog.reviewer_agent import ReviewResult
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("bogus claim"),
-    ), patch(
-        "pipeline.syslog.clusterer.review_alert",
-        return_value=ReviewResult(approved=False, notes="invented port", raw=""),
+
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("bogus claim"),
+        ),
+        patch(
+            "pipeline.syslog.clusterer.review_alert",
+            return_value=ReviewResult(approved=False, notes="invented port", raw=""),
+        ),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
     alert = store.list_alerts()[0]
@@ -191,13 +231,20 @@ def test_pending_verdict_keeps_approved_flag_0(store):
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
     from pipeline.syslog.reviewer_agent import ReviewResult
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("s"),
-    ), patch(
-        "pipeline.syslog.clusterer.review_alert",
-        return_value=ReviewResult(
-            approved=False, notes="no json", raw="blah", pending=True,
+
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("s"),
+        ),
+        patch(
+            "pipeline.syslog.clusterer.review_alert",
+            return_value=ReviewResult(
+                approved=False,
+                notes="no json",
+                raw="blah",
+                pending=True,
+            ),
         ),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
@@ -209,12 +256,15 @@ def test_pending_verdict_keeps_approved_flag_0(store):
 def test_reviewer_llm_error_leaves_pending(store):
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("s"),
-    ), patch(
-        "pipeline.syslog.clusterer.review_alert",
-        side_effect=LLMError("reviewer offline"),
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("s"),
+        ),
+        patch(
+            "pipeline.syslog.clusterer.review_alert",
+            side_effect=LLMError("reviewer offline"),
+        ),
     ):
         cluster_once(store, now=t + timedelta(seconds=30))
     alert = store.list_alerts()[0]
@@ -226,12 +276,16 @@ def test_reviewer_skipped_for_fallback_summary(store):
     """If the writer failed and we used a fallback, the reviewer should NOT
     audit it — that's a deterministic summary, not an LLM output."""
     from pipeline.llm import LLMUnavailable
+
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        side_effect=LLMUnavailable("no LLM"),
-    ), patch("pipeline.syslog.clusterer.review_alert") as reviewer:
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            side_effect=LLMUnavailable("no LLM"),
+        ),
+        patch("pipeline.syslog.clusterer.review_alert") as reviewer,
+    ):
         cluster_once(store, now=t + timedelta(seconds=30))
     assert not reviewer.called
     alert = store.list_alerts()[0]
@@ -244,11 +298,14 @@ def test_reviewer_env_disable(store, monkeypatch):
     monkeypatch.setattr("pipeline.syslog.clusterer.REVIEWER_ENABLED", False)
     t = datetime(2026, 4, 17, 22, 10, tzinfo=timezone.utc)
     _seed_anomalous_incident(store, t)
-    with patch(
-        "pipeline.syslog.clusterer.write_alert",
-        return_value=_wo("s"),
-    ), patch("pipeline.syslog.clusterer.review_alert") as reviewer:
+    with (
+        patch(
+            "pipeline.syslog.clusterer.write_alert",
+            return_value=_wo("s"),
+        ),
+        patch("pipeline.syslog.clusterer.review_alert") as reviewer,
+    ):
         cluster_once(store, now=t + timedelta(seconds=30))
     assert not reviewer.called
     alert = store.list_alerts()[0]
-    assert alert["approved"] == 0   # default = pending when reviewer disabled
+    assert alert["approved"] == 0  # default = pending when reviewer disabled

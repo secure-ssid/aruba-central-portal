@@ -375,9 +375,7 @@ class TestGetAllPaginated:
             status=200,
         )
 
-        result = api_client.get_all_paginated(
-            "/network-monitoring/v1/devices", page_size=100
-        )
+        result = api_client.get_all_paginated("/network-monitoring/v1/devices", page_size=100)
 
         assert result == [{"serialNumber": "SN1"}]
         assert len(responses.calls) == 1
@@ -449,8 +447,7 @@ class TestTokenRefreshOn401:
         assert result == {"result": "ok"}
         # get_access_token called: init + first _ensure_valid_token + force_refresh + second _ensure_valid_token
         force_refresh_calls = [
-            c for c in mock_manager.get_access_token.call_args_list
-            if c == call(force_refresh=True)
+            c for c in mock_manager.get_access_token.call_args_list if c == call(force_refresh=True)
         ]
         assert len(force_refresh_calls) >= 1
 

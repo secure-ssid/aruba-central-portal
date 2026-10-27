@@ -88,7 +88,9 @@ def test_propose_refuses_when_no_catalog_match(store):
 
 def test_propose_refuses_when_alert_not_approved(store):
     incident_id = _seed_incident_with_alert(
-        store, event_code="DFS_RADAR_DETECTED", approved=0,
+        store,
+        event_code="DFS_RADAR_DETECTED",
+        approved=0,
     )
     result = propose_action(store, incident_id)
     assert not result.proposed
@@ -99,10 +101,22 @@ def test_propose_refuses_when_no_alert_exists(store):
     """Alerts-less incidents (below writer threshold) don't get actions."""
     now = datetime.now(timezone.utc)
     event_id = store.insert_event(
-        received_at=now, event_time=now, source_ip="1.2.3.4", transport="udp",
-        facility=16, severity=6, hostname="h", app_name="a",
-        proc_id=None, msg_id=None, device_serial="SN1", device_name="h",
-        event_code="DFS_RADAR_DETECTED", message="", raw="", structured_data=None,
+        received_at=now,
+        event_time=now,
+        source_ip="1.2.3.4",
+        transport="udp",
+        facility=16,
+        severity=6,
+        hostname="h",
+        app_name="a",
+        proc_id=None,
+        msg_id=None,
+        device_serial="SN1",
+        device_name="h",
+        event_code="DFS_RADAR_DETECTED",
+        message="",
+        raw="",
+        structured_data=None,
     )
     incident_id = store.upsert_incident(
         cluster_signature="sig-only",
@@ -110,7 +124,8 @@ def test_propose_refuses_when_no_alert_exists(store):
         device_name="h",
         event_code="DFS_RADAR_DETECTED",
         severity=6,
-        first_seen=now, last_seen=now,
+        first_seen=now,
+        last_seen=now,
         event_ids=[event_id],
     )
     result = propose_action(store, incident_id)

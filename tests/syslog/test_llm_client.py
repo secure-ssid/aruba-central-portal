@@ -21,6 +21,7 @@ from pipeline.llm.client import (
 
 # ──────────────── provider selection ────────────────
 
+
 def test_get_provider_gemini_wins(monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "g")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "c")
@@ -61,12 +62,15 @@ def test_generate_raises_when_no_provider(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
-    with patch.object(llm_client, "_ollama_configured", return_value=False):
-        with pytest.raises(LLMUnavailable):
-            generate("hi")
+    with (
+        patch.object(llm_client, "_ollama_configured", return_value=False),
+        pytest.raises(LLMUnavailable),
+    ):
+        generate("hi")
 
 
 # ──────────────── Gemini payload ────────────────
+
 
 def _mock_resp(json_data, status=200):
     m = MagicMock(spec=httpx.Response)
@@ -101,6 +105,7 @@ def test_gemini_empty_response_raises(monkeypatch):
 
 # ──────────────── Claude payload ────────────────
 
+
 def test_claude_happy_path(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-xxx")
     monkeypatch.setenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
@@ -116,6 +121,7 @@ def test_claude_happy_path(monkeypatch):
 
 # ──────────────── Ollama payload ────────────────
 
+
 def test_ollama_happy_path(monkeypatch):
     monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
     monkeypatch.setenv("OLLAMA_MODEL", "llama3.2:3b")
@@ -123,8 +129,10 @@ def test_ollama_happy_path(monkeypatch):
     # Stub the /api/tags probe so model-picker sees the model as present.
     tags_resp = _mock_resp({"models": [{"name": "llama3.2:3b"}]})
     chat_resp = _mock_resp({"message": {"content": "yo"}})
-    with patch.object(llm_client.httpx, "get", return_value=tags_resp), \
-         patch.object(llm_client.httpx, "post", return_value=chat_resp) as post:
+    with (
+        patch.object(llm_client.httpx, "get", return_value=tags_resp),
+        patch.object(llm_client.httpx, "post", return_value=chat_resp) as post,
+    ):
         out = _call_ollama("prompt", "sys", 50, 0.1, 10.0)
     assert out.text == "yo"
     assert out.provider == "ollama"
@@ -138,10 +146,12 @@ def test_ollama_http_error_wrapped(monkeypatch):
     monkeypatch.setenv("OLLAMA_URL", "http://localhost:11434")
     # Clear fallback so ConnectError doesn't get retried.
     monkeypatch.setenv("OLLAMA_FALLBACK_MODEL", "")
-    with patch.object(llm_client.httpx, "get", side_effect=httpx.ConnectError("x")), \
-         patch.object(llm_client.httpx, "post", side_effect=httpx.ConnectError("refused")):
-        with pytest.raises(LLMError):
-            _call_ollama("p", None, 10, 0.0, 5.0)
+    with (
+        patch.object(llm_client.httpx, "get", side_effect=httpx.ConnectError("x")),
+        patch.object(llm_client.httpx, "post", side_effect=httpx.ConnectError("refused")),
+        pytest.raises(LLMError),
+    ):
+        _call_ollama("p", None, 10, 0.0, 5.0)
 
 
 def test_ollama_model_picker_falls_back_when_requested_missing(monkeypatch):
@@ -153,8 +163,10 @@ def test_ollama_model_picker_falls_back_when_requested_missing(monkeypatch):
     # Only "gemma3:latest" exists — prefix match should still resolve.
     tags = _mock_resp({"models": [{"name": "gemma3:latest"}, {"name": "other"}]})
     chat = _mock_resp({"message": {"content": "ok"}})
-    with patch.object(llm_client.httpx, "get", return_value=tags), \
-         patch.object(llm_client.httpx, "post", return_value=chat) as post:
+    with (
+        patch.object(llm_client.httpx, "get", return_value=tags),
+        patch.object(llm_client.httpx, "post", return_value=chat) as post,
+    ):
         out = _call_ollama("p", None, 10, 0.0, 5.0)
     assert out.text == "ok"
     assert post.call_args.kwargs["json"]["model"] == "gemma3:latest"
@@ -175,12 +187,25 @@ def test_ollama_qwen_fallback_on_primary_failure(monkeypatch):
     bad_err = httpx.HTTPStatusError("503 Service Unavailable", request=req_obj, response=bad)
     good = _mock_resp({"message": {"content": "rescued"}})
 
-    with patch.object(llm_client.httpx, "get", return_value=tags), \
-         patch.object(llm_client.httpx, "post", side_effect=[
-             type("R", (), {"raise_for_status": lambda self: (_ for _ in ()).throw(bad_err),
-                            "json": lambda self: {}, "text": "503"})(),
-             good,
-         ]):
+    with (
+        patch.object(llm_client.httpx, "get", return_value=tags),
+        patch.object(
+            llm_client.httpx,
+            "post",
+            side_effect=[
+                type(
+                    "R",
+                    (),
+                    {
+                        "raise_for_status": lambda self: (_ for _ in ()).throw(bad_err),
+                        "json": lambda self: {},
+                        "text": "503",
+                    },
+                )(),
+                good,
+            ],
+        ),
+    ):
         out = _call_ollama("p", None, 10, 0.0, 5.0)
     assert out.text == "rescued"
     assert out.model == "qwen3.5:cloud"

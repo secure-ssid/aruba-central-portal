@@ -6,6 +6,7 @@ Includes retry logic for rate limiting (429 errors).
 
 import logging
 import time
+from contextlib import suppress
 from typing import Any
 
 import requests
@@ -128,10 +129,8 @@ class CentralAPIClient:
                 # Respect Retry-After header from Central if present
                 retry_after = response.headers.get("Retry-After")
                 if retry_after:
-                    try:
+                    with suppress(ValueError, TypeError):
                         retry_delay = int(retry_after)
-                    except (ValueError, TypeError):
-                        pass  # Fall through to default delay
                 logger.warning(
                     f"Rate limit (429) hit on {method} {url}. "
                     f"Waiting {retry_delay}s before retry {attempt + 1}/{max_retries}"
@@ -190,7 +189,9 @@ class CentralAPIClient:
                 err_json = response.json()
                 if isinstance(err_json, dict):
                     error_code = err_json.get("error_code", err_json.get("errorCode", ""))
-                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+                    description = err_json.get(
+                        "description", err_json.get("message", err_json.get("error", description))
+                    )
             except (ValueError, TypeError):
                 pass
             raise CentralAPIError(
@@ -251,7 +252,9 @@ class CentralAPIClient:
                 err_json = response.json()
                 if isinstance(err_json, dict):
                     error_code = err_json.get("error_code", err_json.get("errorCode", ""))
-                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+                    description = err_json.get(
+                        "description", err_json.get("message", err_json.get("error", description))
+                    )
             except (ValueError, TypeError):
                 pass
             raise CentralAPIError(
@@ -298,7 +301,9 @@ class CentralAPIClient:
                 err_json = response.json()
                 if isinstance(err_json, dict):
                     error_code = err_json.get("error_code", err_json.get("errorCode", ""))
-                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+                    description = err_json.get(
+                        "description", err_json.get("message", err_json.get("error", description))
+                    )
             except (ValueError, TypeError):
                 pass
             raise CentralAPIError(
@@ -344,7 +349,9 @@ class CentralAPIClient:
                 err_json = response.json()
                 if isinstance(err_json, dict):
                     error_code = err_json.get("error_code", err_json.get("errorCode", ""))
-                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+                    description = err_json.get(
+                        "description", err_json.get("message", err_json.get("error", description))
+                    )
             except (ValueError, TypeError):
                 pass
             raise CentralAPIError(
@@ -388,7 +395,9 @@ class CentralAPIClient:
                 err_json = response.json()
                 if isinstance(err_json, dict):
                     error_code = err_json.get("error_code", err_json.get("errorCode", ""))
-                    description = err_json.get("description", err_json.get("message", err_json.get("error", description)))
+                    description = err_json.get(
+                        "description", err_json.get("message", err_json.get("error", description))
+                    )
             except (ValueError, TypeError):
                 pass
             raise CentralAPIError(
