@@ -25,17 +25,19 @@ def test_normalize_preserves_short_ids():
 
 def test_fingerprint_same_content_same_hash():
     """Two identical log bursts from the same AP/client must share fingerprint."""
-    a = fingerprint("LR-AP735", "132094",
-                    "MIC failed from station 60:74:f4:3e:ae:a2 48:00:20:1a:b0:a1")
-    b = fingerprint("LR-AP735", "132094",
-                    "MIC failed from station aa:bb:cc:dd:ee:ff 00:11:22:33:44:55")
+    a = fingerprint(
+        "LR-AP735", "132094", "MIC failed from station 60:74:f4:3e:ae:a2 48:00:20:1a:b0:a1"
+    )
+    b = fingerprint(
+        "LR-AP735", "132094", "MIC failed from station aa:bb:cc:dd:ee:ff 00:11:22:33:44:55"
+    )
     assert a == b
     assert len(a) == 16
 
 
 def test_fingerprint_different_device_different_hash():
     a = fingerprint("LR-AP735", "132094", "x")
-    b = fingerprint("Off_655",  "132094", "x")
+    b = fingerprint("Off_655", "132094", "x")
     assert a != b
 
 

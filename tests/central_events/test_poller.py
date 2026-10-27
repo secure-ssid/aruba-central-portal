@@ -22,7 +22,11 @@ def _mk_api(events: list[dict]) -> MagicMock:
     return api
 
 
-def _fake_event(eid: str, ts: str = "2026-04-18T00:01:50Z", code: str = "Client Onboarding Failure - Key Exchange") -> dict:
+def _fake_event(
+    eid: str,
+    ts: str = "2026-04-18T00:01:50Z",
+    code: str = "Client Onboarding Failure - Key Exchange",
+) -> dict:
     return {
         "event-id": eid,
         "occurred-at": ts,
@@ -93,7 +97,7 @@ def test_poll_continues_past_one_bad_row(store):
 def test_poll_sets_watermark_to_latest_event_time(store):
     events = [
         _fake_event("evt-early", ts="2026-04-18T00:01:00Z"),
-        _fake_event("evt-late",  ts="2026-04-18T00:05:00Z"),
+        _fake_event("evt-late", ts="2026-04-18T00:05:00Z"),
     ]
     api = _mk_api(events)
     result = poll_once(store, api)
@@ -103,9 +107,14 @@ def test_poll_sets_watermark_to_latest_event_time(store):
 
 def test_poll_params_use_rfc3339_with_ms_and_z(store):
     from datetime import datetime, timezone
+
     api = _mk_api([])
-    poll_once(store, api, since=datetime(2026, 4, 18, 0, 0, tzinfo=timezone.utc),
-              now=datetime(2026, 4, 18, 0, 1, tzinfo=timezone.utc))
+    poll_once(
+        store,
+        api,
+        since=datetime(2026, 4, 18, 0, 0, tzinfo=timezone.utc),
+        now=datetime(2026, 4, 18, 0, 1, tzinfo=timezone.utc),
+    )
     args, kwargs = api.get.call_args
     params = kwargs["params"]
     # Format example: 2026-04-17T23:59:30.000Z (note: overlap shifts `since`)

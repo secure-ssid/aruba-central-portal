@@ -51,13 +51,19 @@ def test_review_action_approves_from_mocked_llm():
         "pipeline.actions.reviewer.generate",
         return_value=LLMResult(
             text='{"approved": true, "notes": "ok", "preflight_results": {"a": "pass"}}',
-            provider="gemini", model="m",
+            provider="gemini",
+            model="m",
         ),
     ):
         result = review_action(
-            {"device_serial": "S1", "device_name": "AP-1",
-             "event_code": "DFS_RADAR_DETECTED", "severity": 4,
-             "event_count": 10, "anomaly_score": 5.0},
+            {
+                "device_serial": "S1",
+                "device_name": "AP-1",
+                "event_code": "DFS_RADAR_DETECTED",
+                "severity": 4,
+                "event_count": 10,
+                "anomaly_score": 5.0,
+            },
             "dfs_optimization",
             state_context={"site_status": "clean"},
         )
@@ -71,13 +77,19 @@ def test_review_action_rejects_from_mocked_llm():
         "pipeline.actions.reviewer.generate",
         return_value=LLMResult(
             text='{"approved": false, "notes": "serving 42 clients right now"}',
-            provider="gemini", model="m",
+            provider="gemini",
+            model="m",
         ),
     ):
         result = review_action(
-            {"device_serial": "S1", "device_name": "AP-1",
-             "event_code": "SWITCH_PORT_LINK_DOWN", "severity": 4,
-             "event_count": 10, "anomaly_score": 5.0},
+            {
+                "device_serial": "S1",
+                "device_name": "AP-1",
+                "event_code": "SWITCH_PORT_LINK_DOWN",
+                "severity": 4,
+                "event_count": 10,
+                "anomaly_score": 5.0,
+            },
             "bounce_switch_port",
         )
     assert result.approved is False
@@ -91,16 +103,19 @@ def test_review_action_pending_on_bad_json():
         return_value=LLMResult(text="sure, approved", provider="gemini", model="m"),
     ):
         result = review_action(
-            {"event_code": "DFS_RADAR"}, "dfs_optimization",
+            {"event_code": "DFS_RADAR"},
+            "dfs_optimization",
         )
     assert result.pending is True
     assert result.approved is False
 
 
 def test_review_action_propagates_llm_error():
-    with patch(
-        "pipeline.actions.reviewer.generate",
-        side_effect=LLMError("provider down"),
+    with (
+        patch(
+            "pipeline.actions.reviewer.generate",
+            side_effect=LLMError("provider down"),
+        ),
+        pytest.raises(LLMError),
     ):
-        with pytest.raises(LLMError):
-            review_action({"event_code": "DFS_RADAR"}, "dfs_optimization")
+        review_action({"event_code": "DFS_RADAR"}, "dfs_optimization")

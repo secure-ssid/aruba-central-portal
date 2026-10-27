@@ -25,17 +25,38 @@ def store(tmp_path: Path) -> SyslogStore:
     s.close()
 
 
-def _ingest(store, *, when, serial="CNABC12345", device_name="AP-1",
-            code="STORM", severity=6, source_ip="10.0.0.1"):
+def _ingest(
+    store,
+    *,
+    when,
+    serial="CNABC12345",
+    device_name="AP-1",
+    code="STORM",
+    severity=6,
+    source_ip="10.0.0.1",
+):
     return store.insert_event(
-        received_at=when, event_time=when, source_ip=source_ip, transport="udp",
-        facility=16, severity=severity, hostname=device_name, app_name="stm",
-        proc_id=None, msg_id=None, device_serial=serial, device_name=device_name,
-        event_code=code, message=f"{code}", raw=f"<134>{code}", structured_data=None,
+        received_at=when,
+        event_time=when,
+        source_ip=source_ip,
+        transport="udp",
+        facility=16,
+        severity=severity,
+        hostname=device_name,
+        app_name="stm",
+        proc_id=None,
+        msg_id=None,
+        device_serial=serial,
+        device_name=device_name,
+        event_code=code,
+        message=f"{code}",
+        raw=f"<134>{code}",
+        structured_data=None,
     )
 
 
 # ──────────────── QA fix: sliding window no longer matches NULL devices ────────────────
+
 
 def test_qa_sliding_window_requires_device_match(store):
     """Previously `device_serial IS NULL` in the SQL pulled every unnamed
@@ -45,17 +66,14 @@ def test_qa_sliding_window_requires_device_match(store):
 
     # Seed one event WITHOUT a device_serial (parser failed to extract)
     _ingest(store, when=t, serial=None, device_name=None, source_ip="10.0.0.99")
-    cluster_once(store, now=t + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t + timedelta(seconds=30), lookback=timedelta(days=3650))
     assert len(store.list_incidents()) == 1
     unnamed_id = store.list_incidents()[0]["id"]
 
     # Now an event 2 minutes later from a DIFFERENT, NAMED device.
     t2 = t + timedelta(minutes=2)
-    _ingest(store, when=t2, serial="CNOTHER99", device_name="AP-OTHER",
-            source_ip="10.0.0.50")
-    cluster_once(store, now=t2 + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    _ingest(store, when=t2, serial="CNOTHER99", device_name="AP-OTHER", source_ip="10.0.0.50")
+    cluster_once(store, now=t2 + timedelta(seconds=30), lookback=timedelta(days=3650))
 
     incidents = store.list_incidents()
     # Before the fix this was 1 — the named event would silently extend
@@ -65,6 +83,7 @@ def test_qa_sliding_window_requires_device_match(store):
 
 
 # ──────────────── QA fix: severity None doesn't stick ────────────────
+
 
 def test_qa_severity_not_stuck_at_none_when_first_event_missing(store):
     """Old code: if the first event in a group had `severity=None`, the
@@ -76,14 +95,14 @@ def test_qa_severity_not_stuck_at_none_when_first_event_missing(store):
     # Later event (same bucket, same code) has severity=3 (error)
     _ingest(store, when=t + timedelta(seconds=10), severity=3)
 
-    cluster_once(store, now=t + timedelta(seconds=30),
-                 lookback=timedelta(days=3650))
+    cluster_once(store, now=t + timedelta(seconds=30), lookback=timedelta(days=3650))
     incidents = store.list_incidents()
     assert len(incidents) == 1
     assert incidents[0]["severity"] == 3  # not None
 
 
 # ──────────────── QA fix: reviewer tolerates fenced JSON ────────────────
+
 
 def test_qa_reviewer_parse_tolerates_json_fences():
     """Previously the reviewer's greedy `\\{.*\\}` with fenced JSON could
@@ -96,12 +115,7 @@ def test_qa_reviewer_parse_tolerates_json_fences():
 
 
 def test_qa_reviewer_parse_multiline_with_escaped_quotes():
-    text = (
-        '{\n'
-        '  "approved": false,\n'
-        '  "notes": "port \\"1/0/3\\" still showing down"\n'
-        '}'
-    )
+    text = "{\n" '  "approved": false,\n' '  "notes": "port \\"1/0/3\\" still showing down"\n' "}"
     approved, notes = _parse_verdict(text)
     assert approved is False
     assert '"1/0/3"' in notes
@@ -114,6 +128,7 @@ def test_qa_reviewer_parse_empty_text_returns_pending():
 
 
 # ──────────────── QA fix: fallback never leaks raw JSON ────────────────
+
 
 def test_qa_writer_fallback_does_not_leak_fenced_json():
     """If the LLM returns garbled JSON we can't parse, the summary must
@@ -135,6 +150,7 @@ def test_qa_writer_fallback_clean_text_passes_through():
 
 # ──────────────── QA fix: prune no longer VACUUMs by default ────────────────
 
+
 def test_qa_prune_does_not_vacuum_without_opt_in(store, monkeypatch):
     """Default behavior: DELETE rows, skip VACUUM. VACUUM takes an
     exclusive lock and blocks dashboard reads — opt-in only.
@@ -147,13 +163,15 @@ def test_qa_prune_does_not_vacuum_without_opt_in(store, monkeypatch):
     _ingest(store, when=datetime.now(timezone.utc) - timedelta(days=30))
 
     import sqlite3
+
     import pipeline.syslog.storage as storage_mod
-    with patch.object(storage_mod.sqlite3, "connect",
-                      wraps=sqlite3.connect) as spy:
+
+    with patch.object(storage_mod.sqlite3, "connect", wraps=sqlite3.connect) as spy:
         deleted = store.prune_older_than(days=7)
     assert deleted >= 1
-    assert spy.call_count == 0, \
-        "prune opened a new sqlite connection — it must not VACUUM unless opted in"
+    assert (
+        spy.call_count == 0
+    ), "prune opened a new sqlite connection — it must not VACUUM unless opted in"
 
 
 def test_qa_prune_vacuums_when_opted_in(store, monkeypatch):
@@ -162,14 +180,16 @@ def test_qa_prune_vacuums_when_opted_in(store, monkeypatch):
     _ingest(store, when=datetime.now(timezone.utc) - timedelta(days=30))
 
     import sqlite3
+
     import pipeline.syslog.storage as storage_mod
-    with patch.object(storage_mod.sqlite3, "connect",
-                      wraps=sqlite3.connect) as spy:
+
+    with patch.object(storage_mod.sqlite3, "connect", wraps=sqlite3.connect) as spy:
         store.prune_older_than(days=7)
     assert spy.call_count == 1
 
 
 # ──────────────── QA fix: executor survives DB-lock on status write ────────────────
+
 
 def test_qa_executor_survives_status_write_failure():
     """If `update_proposed_action` throws mid-cleanup (e.g. DB lock),
@@ -189,7 +209,10 @@ def test_qa_executor_survives_status_write_failure():
     store.update_proposed_action.side_effect = RuntimeError("db locked")
 
     from pipeline.actions import executor as mod
-    with patch.dict(mod.HANDLERS, {"dfs_optimization": boom_handler}):
-        with pytest.raises(ExecutionError) as excinfo:
-            execute_action(store, 1)
+
+    with (
+        patch.dict(mod.HANDLERS, {"dfs_optimization": boom_handler}),
+        pytest.raises(ExecutionError) as excinfo,
+    ):
+        execute_action(store, 1)
     assert "handler died" in str(excinfo.value)

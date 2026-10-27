@@ -17,8 +17,16 @@ def store(tmp_path: Path) -> SyslogStore:
     s.close()
 
 
-def _ingest(store: SyslogStore, *, when: datetime, serial="CNABC12345",
-            hostname="AP-1", code="LINK_DOWN", severity=6, source_ip="10.0.0.1"):
+def _ingest(
+    store: SyslogStore,
+    *,
+    when: datetime,
+    serial="CNABC12345",
+    hostname="AP-1",
+    code="LINK_DOWN",
+    severity=6,
+    source_ip="10.0.0.1",
+):
     return store.insert_event(
         received_at=when,
         event_time=when,
@@ -40,6 +48,7 @@ def _ingest(store: SyslogStore, *, when: datetime, serial="CNABC12345",
 
 
 # ──────────────── bucketed_event_counts ────────────────
+
 
 def test_bucketed_event_counts_basic(store):
     base = datetime(2026, 4, 17, 22, 0, tzinfo=timezone.utc)
@@ -78,12 +87,16 @@ def test_bucketed_event_counts_nocode(store):
 
 # ──────────────── score_incident pure-function ────────────────
 
+
 def test_cold_start_scales_by_divisor(store):
     """No history → score = current / COLD_DIVISOR, never a fake big number."""
     bucket = datetime(2026, 4, 17, 22, 0, tzinfo=timezone.utc)
     result = score_incident(
-        store, device_key="NEW-DEVICE", event_code="BOOTING",
-        current_count=5, bucket_start=bucket,
+        store,
+        device_key="NEW-DEVICE",
+        event_code="BOOTING",
+        current_count=5,
+        bucket_start=bucket,
     )
     assert result.cold_start is True
     assert result.samples == 0
@@ -100,8 +113,11 @@ def test_score_flat_history_zero(store):
         _ingest(store, when=t + timedelta(seconds=30))
 
     result = score_incident(
-        store, device_key="CNABC12345", event_code="LINK_DOWN",
-        current_count=2, bucket_start=bucket,
+        store,
+        device_key="CNABC12345",
+        event_code="LINK_DOWN",
+        current_count=2,
+        bucket_start=bucket,
     )
     assert result.cold_start is False
     assert result.samples == 5
@@ -118,8 +134,11 @@ def test_score_spike_above_flat_history(store):
         _ingest(store, when=t + timedelta(seconds=30))
 
     result = score_incident(
-        store, device_key="CNABC12345", event_code="LINK_DOWN",
-        current_count=20, bucket_start=bucket,
+        store,
+        device_key="CNABC12345",
+        event_code="LINK_DOWN",
+        current_count=20,
+        bucket_start=bucket,
     )
     # mean=2, stddev=0 → floored to 1 → z = 18
     assert result.score == 18.0
@@ -137,8 +156,11 @@ def test_score_respects_variance(store):
             _ingest(store, when=t + timedelta(seconds=i))
 
     result = score_incident(
-        store, device_key="CNABC12345", event_code="LINK_DOWN",
-        current_count=10, bucket_start=bucket,
+        store,
+        device_key="CNABC12345",
+        event_code="LINK_DOWN",
+        current_count=10,
+        bucket_start=bucket,
     )
     # Expected score ≈ (10 - 5) / 2.83 ≈ 1.77 — not sigma-clipped to zero,
     # not crazy big either.
@@ -154,8 +176,11 @@ def test_score_below_mean_floored_to_zero(store):
             _ingest(store, when=t + timedelta(seconds=_))
 
     result = score_incident(
-        store, device_key="CNABC12345", event_code="LINK_DOWN",
-        current_count=2, bucket_start=bucket,
+        store,
+        device_key="CNABC12345",
+        event_code="LINK_DOWN",
+        current_count=2,
+        bucket_start=bucket,
     )
     assert result.score == 0.0  # quiet, not anomalous
 
@@ -163,13 +188,17 @@ def test_score_below_mean_floored_to_zero(store):
 def test_score_zero_count_short_circuits(store):
     bucket = datetime(2026, 4, 17, 22, 30, tzinfo=timezone.utc)
     result = score_incident(
-        store, device_key="X", event_code="Y",
-        current_count=0, bucket_start=bucket,
+        store,
+        device_key="X",
+        event_code="Y",
+        current_count=0,
+        bucket_start=bucket,
     )
     assert result.score == 0.0
 
 
 # ──────────────── integration with clusterer ────────────────
+
 
 def test_clusterer_persists_anomaly_score(store):
     """An incident built by cluster_once should get an anomaly_score written."""
@@ -203,8 +232,13 @@ def test_list_incidents_order_by_anomaly_score(store):
     # Two separate (device, code) groups so we get two incidents.
     _ingest(store, when=base, serial="CN-QUIET", code="NOISE")
     for i in range(20):
-        _ingest(store, when=base + timedelta(seconds=i), serial="CN-SPIKE", code="FLOOD",
-                hostname="AP-SPIKE")
+        _ingest(
+            store,
+            when=base + timedelta(seconds=i),
+            serial="CN-SPIKE",
+            code="FLOOD",
+            hostname="AP-SPIKE",
+        )
     cluster_once(store)
 
     by_anomaly = store.list_incidents(order_by="anomaly_score")

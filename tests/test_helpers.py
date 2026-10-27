@@ -12,7 +12,7 @@ from flask import Flask, jsonify
 # Ensure the dashboard backend is importable
 sys.path.insert(0, str(Path(__file__).parent.parent / "dashboard" / "backend"))
 
-from routes.helpers import rate_limit, _rate_limit_store, _rate_limit_lock, monitoring_list_items
+from routes.helpers import _rate_limit_lock, _rate_limit_store, monitoring_list_items, rate_limit
 
 
 @pytest.fixture()
@@ -72,9 +72,7 @@ class TestRateLimitDecorator:
 
 class TestMonitoringListItems:
     def test_prefers_nonempty_items_then_result(self):
-        assert monitoring_list_items({"items": [{"a": 1}], "result": [{"b": 2}]}) == [
-            {"a": 1}
-        ]
+        assert monitoring_list_items({"items": [{"a": 1}], "result": [{"b": 2}]}) == [{"a": 1}]
         assert monitoring_list_items({"items": [], "result": [{"b": 2}]}) == [{"b": 2}]
         assert monitoring_list_items({"result": [{"x": 1}]}) == [{"x": 1}]
         assert monitoring_list_items({}) == []

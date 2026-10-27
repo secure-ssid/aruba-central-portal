@@ -20,19 +20,38 @@ def _seed_approved_action(store: SyslogStore, action_type: str = "dfs_optimizati
     """Minimum plumbing to get an action row into status=approved."""
     now = datetime.now(timezone.utc)
     event_id = store.insert_event(
-        received_at=now, event_time=now, source_ip="1.1.1.1", transport="udp",
-        facility=16, severity=4, hostname="h", app_name="a", proc_id=None,
-        msg_id=None, device_serial="SN", device_name="h",
-        event_code="DFS_RADAR_DETECTED", message="", raw="", structured_data=None,
+        received_at=now,
+        event_time=now,
+        source_ip="1.1.1.1",
+        transport="udp",
+        facility=16,
+        severity=4,
+        hostname="h",
+        app_name="a",
+        proc_id=None,
+        msg_id=None,
+        device_serial="SN",
+        device_name="h",
+        event_code="DFS_RADAR_DETECTED",
+        message="",
+        raw="",
+        structured_data=None,
     )
     incident_id = store.upsert_incident(
-        cluster_signature=f"sig-{action_type}", device_serial="SN",
-        device_name="h", event_code="DFS_RADAR_DETECTED", severity=4,
-        first_seen=now, last_seen=now, event_ids=[event_id],
+        cluster_signature=f"sig-{action_type}",
+        device_serial="SN",
+        device_name="h",
+        event_code="DFS_RADAR_DETECTED",
+        severity=4,
+        first_seen=now,
+        last_seen=now,
+        event_ids=[event_id],
     )
     action_id = store.insert_proposed_action(
-        incident_id=incident_id, action_type=action_type,
-        target_device_serial="SN", target_device_name="h",
+        incident_id=incident_id,
+        action_type=action_type,
+        target_device_serial="SN",
+        target_device_name="h",
     )
     store.update_proposed_action(action_id, status="approved")
     return action_id
@@ -74,7 +93,8 @@ def test_execute_records_handler_failure(store, monkeypatch):
 
     monkeypatch.setitem(
         __import__("pipeline.actions.executor", fromlist=["HANDLERS"]).HANDLERS,
-        "dfs_optimization", boom,
+        "dfs_optimization",
+        boom,
     )
 
     with pytest.raises(ExecutionError):
